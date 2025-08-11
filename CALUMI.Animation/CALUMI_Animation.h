@@ -1,0 +1,43 @@
+#pragma once
+#ifdef CALUMIANIMATION_EXPORTS // This macro is typically defined by Visual Studio for DLL projects
+#define CALUMIANIMATION_API __declspec(dllexport)
+#else
+#define CALUMIANIMATION_API __declspec(dllimport)
+#endif
+#include <string>
+#include <vector>
+#include "CALUMI_AnimationEntries.h"
+
+namespace CALUMI {namespace UNIV {
+
+
+	struct CALUMIANIMATION_API AnimationBlock
+	{
+		int boneIndex = -2;
+		std::string boneName = "UNNAMED";
+		std::vector<CALUMI::UNIV::Rotation> _rotationSequence;
+		std::vector<CALUMI::UNIV::Translation> _translationSequence;
+		std::vector<CALUMI::UNIV::Scalar> _scalarSequence;
+		std::vector<CALUMI::UNIV::Priority> _prioritySequence;
+
+		//This will get the final frame entry, not the total number of frames in the sequence
+		unsigned int GetLastFrameInBlock();
+	};
+
+	class CALUMIANIMATION_API Animation
+	{
+	public:
+		std::string animationTitle = "NO TITLE";
+		int boneCount = 0;
+
+		std::vector<AnimationBlock> animationBlocks;
+
+		Animation(const std::string& title, const int initialBoneCount, int initialBlockCount);
+		void AddAnimationBlock(AnimationBlock& blockToAdd);
+		unsigned int GetFrameCount();
+
+		Animation() = default;
+	};
+
+
+}}
