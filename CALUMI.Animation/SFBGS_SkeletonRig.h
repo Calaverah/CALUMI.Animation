@@ -50,39 +50,43 @@ namespace CALUMI {namespace SFBGS {
 	};
 
 
+	extern  "C" {
+		struct CALUMIANIMATION_API SkeletonRig : CALUMI::ReadWritable
+		{
 
-	struct CALUMIANIMATION_API SkeletonRig : CALUMI::ReadWritable
-	{
-		
-		//HEADER
-		int versionNumber = 05;
-		unsigned int fileSize = 0; //NOTE: 4th Char in Buffer
-		int headerEntry80 = 0x50;  //Currently the only value seen is 0x50 (80)
-		unsigned int headerEmpty01 = 0; //Always empty, possibly padding
-		unsigned int suffixOffset = 0; //96* bone count + 80 bytes //NOTE: 16th Char in Buffer
-		unsigned int headerEmpty02 = 0; //Always empty, possibly padding
-		uint64_t matchingThree[3] = {0,0,0};  //No matter what, these three ALWAYS match. Could be internal number tracking for BGS and may not matter to anyone outside of the company
-		float lowPrecision = 0.03125;  //default precision values. For ships use 0.25. For first person use 0.0078125 (1/128)
-		float highPrecision = 0.00025; //default precision values. For ships use 0.002. For first person use 6.25e-5 (1/16000)
-		uint16_t boneCount = 0;
-		uint16_t unknownCount = 0;
-		unsigned int headerEmpty03 = 0; //Always empty
-		double endOfHeader[2] = {0.0,0.0};
+			//HEADER
+			int versionNumber = 05;
+			unsigned int fileSize = 0; //NOTE: 4th Char in Buffer
+			int headerEntry80 = 0x50;  //Currently the only value seen is 0x50 (80)
+			unsigned int headerEmpty01 = 0; //Always empty, possibly padding
+			unsigned int suffixOffset = 0; //96* bone count + 80 bytes //NOTE: 16th Char in Buffer
+			unsigned int headerEmpty02 = 0; //Always empty, possibly padding
+			uint64_t matchingThree[3] = { 0,0,0 };  //No matter what, these three ALWAYS match. Could be internal number tracking for BGS and may not matter to anyone outside of the company
+			float lowPrecision = 0.03125;  //default precision values. For ships use 0.25. For first person use 0.0078125 (1/128)
+			float highPrecision = 0.00025; //default precision values. For ships use 0.002. For first person use 6.25e-5 (1/16000)
+			uint16_t boneCount = 0;
+			uint16_t unknownCount = 0;
+			unsigned int headerEmpty03 = 0; //Always empty
+			double endOfHeader[2] = { 0.0,0.0 };
 
 
-		std::vector<SkeletonBone> boneEntries;
-		int16_t suffixArray[157];
-		
-		std::vector<std::string> stringArray;
+			std::vector<SkeletonBone> boneEntries;
+			int16_t suffixArray[157];
 
-		// Inherited via ReadWritable
-		std::expected<bool, FileError> ReadFromFile(std::filesystem::path& inputFilePath) override;
-		std::expected<std::string, FileError> WriteToFile(std::filesystem::path& outputFilePath) override;
+			std::vector<std::string> stringArray;
 
-		
-	};
-	SkeletonRig ConvertToSFBGSRig(const CALUMI::UNIV::SkeletonRig& inputRig, float& highPrecision, float& lowPrecision);
-	CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(const CALUMI::SFBGS::SkeletonRig& inputRig);
+			// Inherited via ReadWritable
+			std::expected<bool, FileError> ReadFromFile(std::filesystem::path& inputFilePath) override;
+			std::expected<std::string, FileError> WriteToFile(std::filesystem::path& outputFilePath) override;
+
+			std::expected<bool, FileError> ReadFromFile(char* inputFilePath);
+			std::expected<std::string, FileError> WriteToFile(char* outputFilePath);
+
+
+		};
+		SkeletonRig ConvertToSFBGSRig(const CALUMI::UNIV::SkeletonRig& inputRig, float& highPrecision, float& lowPrecision);
+		CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(const CALUMI::SFBGS::SkeletonRig& inputRig);
+	}
 }}
 
 

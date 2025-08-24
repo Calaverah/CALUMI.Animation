@@ -11,16 +11,17 @@
 
 namespace CALUMI{namespace UNIV{
 
+	extern  "C" {
+
+		class CALUMIANIMATION_API AnimationScene
+		{
+		public:
+			std::string sceneName = "MyAnimationScene";
+			std::vector<Animation> animations;
+			SkeletonRig rig;
 
 
-	class CALUMIANIMATION_API AnimationScene
-	{
-	public:
-		std::string sceneName = "MyAnimationScene";
-		std::vector<Animation> animations;
-		SkeletonRig rig;
-
-
-	};
+		};
+	}
 }}
 

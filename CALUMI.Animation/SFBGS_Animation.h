@@ -17,7 +17,7 @@
 #include <print>
 
 namespace CALUMI{
-	namespace SFBGS{
+	namespace SFBGS {
 		enum indexCountingSolution
 		{
 			odd, //1,3,5,etc
@@ -32,7 +32,7 @@ namespace CALUMI{
 			bool shortKeyCounters : 1 = false; //Flags if the animation block counters should be read/written as shorts (2 bytes)
 			bool shortKeyFrameEntries : 1 = false; //Flags if animation block keyframe entries are extended from a byte to a short (2 bytes)
 			bool scalarSequenceFlag : 1 = false;  //Must be marked true if scalar is present. If false, file will be read incorrectly if scalars are present
-			
+
 			bool u1 : 1 = false;  //UNKNOWN: Appears Blank
 			bool u2 : 1 = false;  //UNKNOWN: Appears Blank
 			bool u3 : 1 = false;  //UNKNOWN: Appears Blank
@@ -86,62 +86,66 @@ namespace CALUMI{
 		};
 
 
+		extern  "C" {
+			class CALUMIANIMATION_API Animation : CALUMI::ReadWritable
+			{
 
-		class CALUMIANIMATION_API Animation : CALUMI::ReadWritable
-		{
+			public:
+				unsigned int fileSize = 0; //temp value for debugging
+				std::string animationFileName; //For file tracking. Should be unique without extension
 
-		public:
-			unsigned int fileSize = 0; //temp value for debugging
-			std::string animationFileName; //For file tracking. Should be unique without extension
+				float HeaderStart[9] = {}; //2 blanks, 4 Quat Components (or all zero), 3 unknown (possibly xyz values)
 
-			float HeaderStart[9] = {}; //2 blanks, 4 Quat Components (or all zero), 3 unknown (possibly xyz values)
+				HeaderFlags _headerFlags; //1 byte and 3 empty bytes
 
-			HeaderFlags _headerFlags; //1 byte and 3 empty bytes
+				short _versionNumber = 0x05; //Always 05
 
-			short _versionNumber = 0x05; //Always 05
+				unsigned short _boneCount = 0;
+				unsigned short _frameCount = 0;
+				unsigned short _indexAtlasCounter = 0x02; //At least 2, unless bones are zero (special case where addition bones are filled in at the bottom but they may not be from the main rig)
 
-			unsigned short _boneCount = 0;
-			unsigned short _frameCount = 0;
-			unsigned short _indexAtlasCounter = 0x02; //At least 2, unless bones are zero (special case where addition bones are filled in at the bottom but they may not be from the main rig)
+				unsigned short _unknownFillCount = 0; //UNKNOWN: 
 
-			unsigned short _unknownFillCount = 0; //UNKNOWN: 
+				unsigned short _preambleOffset = 0; //NOTE: this tells us how long the unknown "Preamble" section is and when the regular animation data begins
 
-			unsigned short _preambleOffset = 0; //NOTE: this tells us how long the unknown "Preamble" section is and when the regular animation data begins
+				float _nZeroFloats[3] = { 0.0,-0.0,0.0 }; //UNKNOWN: Not always zero, sometimes has pi too yummy
 
-			float _nZeroFloats[3] = { 0.0,-0.0,0.0 }; //UNKNOWN: Not always zero, sometimes has pi too yummy
+				std::vector<float> _unknownSuffixFillFloats;
+				//--------------------------------------------------The header to this point is 64 bytes. The Animation blocks begin at address = 64+preambleOffset
 
-			std::vector<float> _unknownSuffixFillFloats;
-			//--------------------------------------------------The header to this point is 64 bytes. The Animation blocks begin at address = 64+preambleOffset
-
-			//preamble section goes here
-				//NOTE: Preamble begins after the nZeroFloat array and is [preambleOffset] bytes long.
-
-
-
-			//animation index atlas goes here
-			std::vector<unsigned short> _indexAtlas; //NOTE: this index is the size of the indexAtlasCounter, it is unknown if the entries are one byte only or if they can be expanded to two bytes, 
-			//so we will keep our entries as a short (2 bytes) and cast them if they can be casted as 1 byte
-
-			//animation blocks go here
-			std::vector<AnimationBlock> animationBlocks;
-			std::vector<AnimationBlock> animationSuffixBlocks;
+				//preamble section goes here
+					//NOTE: Preamble begins after the nZeroFloat array and is [preambleOffset] bytes long.
 
 
-			unsigned short _SumIndices(std::vector<unsigned short>inputVector, indexCountingSolution type);
-			/// <summary>
-			/// Header flags will be reset based on the values of the entries. It is not recommended to call this directly.
-			/// </summary>
-			void _evaluateHeaderFlags();
-			
+
+				//animation index atlas goes here
+				std::vector<unsigned short> _indexAtlas; //NOTE: this index is the size of the indexAtlasCounter, it is unknown if the entries are one byte only or if they can be expanded to two bytes, 
+				//so we will keep our entries as a short (2 bytes) and cast them if they can be casted as 1 byte
+
+				//animation blocks go here
+				std::vector<AnimationBlock> animationBlocks;
+				std::vector<AnimationBlock> animationSuffixBlocks;
 
 
-			// Inherited via CALUMI::ReadWritable
-			std::expected<bool, FileError> ReadFromFile(std::filesystem::path& inputFilePath) override;
-			std::expected<std::string, FileError> WriteToFile(std::filesystem::path& outputFilePath) override;
+				unsigned short _SumIndices(std::vector<unsigned short>inputVector, indexCountingSolution type);
+				/// <summary>
+				/// Header flags will be reset based on the values of the entries. It is not recommended to call this directly.
+				/// </summary>
+				void _evaluateHeaderFlags();
 
-			
 
-		};
+
+				// Inherited via CALUMI::ReadWritable
+				std::expected<bool, FileError> ReadFromFile(std::filesystem::path& inputFilePath) override;
+				std::expected<std::string, FileError> WriteToFile(std::filesystem::path& outputFilePath) override;
+
+				std::expected<bool, FileError> ReadFromFile(char* inputFilePath);
+				std::expected<std::string, FileError> WriteToFile(char* outputFilePath);
+
+
+
+			};
+		}
 	}
 }
 
