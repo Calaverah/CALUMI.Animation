@@ -99,7 +99,6 @@
       <AdditionalIncludeDirectories>C:\Users\camer\source\repos\CALUMI.Animation\packages\directxtk12_uwp.2025.7.10.1;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp23</LanguageStandard>
       <PreprocessorDefinitions>CALUMIANIMATION_EXPORTS</PreprocessorDefinitions>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -136,7 +135,6 @@
       <AdditionalIncludeDirectories>C:\Users\camer\source\repos\CALUMI.Animation\packages\directxtk12_uwp.2025.7.10.1;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp23</LanguageStandard>
       <PreprocessorDefinitions>CALUMIANIMATION_EXPORTS</PreprocessorDefinitions>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,12 +145,14 @@
   <ItemGroup>
     <ClInclude Include="CALUMI_AnimationEntries.h" />
     <ClInclude Include="CALUMI_AnimationScene.h" />
+    <ClInclude Include="CALUMI_Common.h" />
     <ClInclude Include="CALUMI_Convertible.h" />
     <ClInclude Include="CALUMI_Math.h" />
     <ClInclude Include="CALUMI_SkeletonRig.h" />
     <ClInclude Include="FileError.h" />
     <ClInclude Include="FileValidation.h" />
     <ClInclude Include="CALUMI_ReadWritable.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SFBGS_Animation.h" />
     <ClInclude Include="CALUMI_Animation.h" />
     <ClInclude Include="framework.h" />
@@ -184,6 +184,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CALUMI.Animation.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

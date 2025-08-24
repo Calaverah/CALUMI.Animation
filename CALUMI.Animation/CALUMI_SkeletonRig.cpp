@@ -1,3 +1,7 @@
+//Copyright © 2025 aka Calaverah. All rights reserved.
+//License: https://www.gnu.org/licenses/lgpl-3.0.html
+//Contact: Calaverahmedia@gmail.com
+
 #include "pch.h"
 #include "CALUMI_SkeletonRig.h"
 
@@ -6,6 +10,7 @@ namespace CALUMI{ namespace UNIV{
     {
         this->rigName = rigName;
     }
+
     std::expected< bool, std::string> SkeletonRig::ValidateNames()
     {
         
@@ -34,14 +39,14 @@ namespace CALUMI{ namespace UNIV{
             return std::unexpected("Not Enough Bone Entries To Validate Parent Entries");
         }
 
-        for (unsigned int i = 0; i < boneEntries.size(); i++)
+        for (int i = 0; i < boneEntries.size(); i++)
         {
             if (boneEntries.at(i).parentBoneIndex >= i)
             {
                 return std::unexpected(std::format("Bone Index: {} Has Parent Index: {}. Parent Index Cannot Be Greater Than Or Equal To Bone's Index", i, boneEntries.at(i).parentBoneIndex));
             }
         }
-
+        return true;
     }
     bool SkeletonRig::AddBoneToRig(DirectX::SimpleMath::Quaternion rotation, DirectX::SimpleMath::Vector3 position, std::string boneName, std::string parentName, bool localValues)
     {

@@ -1,0 +1,10 @@
+Notice August 23rd, 2025
+
+The works within this repository fall under the GNU LGPL-v3.0 license
+
+The required GPL and LGPL licenses are included as per GNU's documentation.
+
+If only headers (.h) are used by another project, then the MIT License is granted to that project during the time in which only headers (.h) from this repository are used.
+
+Thank you,
+Calaverah
