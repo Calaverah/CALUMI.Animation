@@ -405,16 +405,4 @@ namespace CALUMI {namespace SFBGS {
 		return CALUMI::WriteToBinaryFile(outputFilePath,buffer);
 	}
 
-	std::expected<bool, FileError> SkeletonRig::ReadFromFile(char* inputFilePath)
-	{
-		std::filesystem::path newPath(inputFilePath);
-		return ReadFromFile(newPath);
-	}
-
-	std::expected<std::string, FileError> SkeletonRig::WriteToFile(char* outputFilePath)
-	{
-		std::filesystem::path newPath(outputFilePath);
-		return WriteToFile(newPath);
-	}
-
 }}

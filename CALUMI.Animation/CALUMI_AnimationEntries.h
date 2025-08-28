@@ -12,53 +12,63 @@
 
 namespace CALUMI {namespace UNIV {
 
+	
+
+	struct CALUMIANIMATION_API Translation
+	{
+		uint16_t frame = 0;
+		CALUMI::Math::Vector3D translation;
+
+		Translation() = default;
+		Translation(const uint16_t& frame, const CALUMI::Math::Vector3D& translation)
+			: frame(frame), translation(translation)
+		{
+		}
+	};
+
+	struct CALUMIANIMATION_API Rotation
+	{
+		uint16_t frame = 0;
+		DirectX::SimpleMath::Quaternion rotation;
+
+		Rotation() = default;
+		Rotation(const uint16_t& frame, const DirectX::SimpleMath::Quaternion& rotation)
+			: frame(frame), rotation(rotation)
+		{
+		}
+	};
+
+	struct CALUMIANIMATION_API Scalar
+	{
+		uint16_t frame = 0;
+		float scalar = 1.0;
+
+		Scalar() = default;
+		Scalar(const uint16_t& frame, float scalar)
+			: frame(frame), scalar(scalar)
+		{
+		}
+	};
+
+	struct CALUMIANIMATION_API Priority
+	{
+		uint16_t frame = 0;
+		uint8_t priority;
+
+		Priority(const uint16_t& frame, const uint8_t& priority)
+			: frame(frame), priority(priority)
+		{
+		}
+	};
+
 	extern  "C" {
-
-		struct CALUMIANIMATION_API Translation
-		{
-			uint16_t frame = 0;
-			CALUMI::Math::Vector3D translation;
-
-			Translation() = default;
-			Translation(const uint16_t& frame, const CALUMI::Math::Vector3D& translation)
-				: frame(frame), translation(translation)
-			{
-			}
-		};
-
-		struct CALUMIANIMATION_API Rotation
-		{
-			uint16_t frame = 0;
-			DirectX::SimpleMath::Quaternion rotation;
-
-			Rotation() = default;
-			Rotation(const uint16_t& frame, const DirectX::SimpleMath::Quaternion& rotation)
-				: frame(frame), rotation(rotation)
-			{
-			}
-		};
-
-		struct CALUMIANIMATION_API Scalar
-		{
-			uint16_t frame = 0;
-			float scalar = 1.0;
-
-			Scalar() = default;
-			Scalar(const uint16_t& frame, float scalar)
-				: frame(frame), scalar(scalar)
-			{
-			}
-		};
-
-		struct CALUMIANIMATION_API Priority
-		{
-			uint16_t frame = 0;
-			uint8_t priority;
-
-			Priority(const uint16_t& frame, const uint8_t& priority)
-				: frame(frame), priority(priority)
-			{
-			}
-		};
+		CALUMIANIMATION_API Rotation* CreateRotationEntryC(uint16_t frame, float x, float y, float z, float w);
+		CALUMIANIMATION_API bool DeleteRotationEntryC(Rotation* ptr);
+		CALUMIANIMATION_API Translation* CreateTranslationEntryC(uint16_t frame, double x, double y, double z);
+		CALUMIANIMATION_API bool DeleteTranslationEntryC(Translation* ptr);
+		CALUMIANIMATION_API Scalar* CreateScalarEntryC(uint16_t frame, float scalar);
+		CALUMIANIMATION_API bool DeleteScalarEntryC(Scalar* ptr);
+		CALUMIANIMATION_API Priority* CreatePriorityEntryC(uint16_t frame, uint8_t priority);
+		CALUMIANIMATION_API bool DeletePriorityEntryC(Priority* ptr);
 	}
 }}

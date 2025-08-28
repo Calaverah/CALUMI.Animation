@@ -124,5 +124,51 @@ namespace CALUMI{ namespace UNIV{
         return true;
     };
 
-}}
+    SkeletonRig* CreateSkeletonRigC(const char* rigName)
+    {
+        SkeletonRig* outputSkeletonRig = new SkeletonRig(rigName);
+        return outputSkeletonRig;
+    }
+    bool DeleteSkeletonRigC(SkeletonRig* ptr)
+    {
+        if (ptr)
+        {
+            delete ptr;
+            return true;
+        }
+        return false;
+    }
+    bool AddBoneToSkeletonRigC(SkeletonRig* rig, float rotationX, float rotationY, float rotationZ, float rotationW, float positionX, float positionY, float positionZ, const char* boneName, int parentIndex, bool usingLocalValues, const char* errorMessage)
+    {
+        if (boneName == "")
+        {
+            errorMessage = "[CALUMI.Animation API] Bone Entry Must Have Bone Name!";
+            return false;
+        }
+        float w = rotationW;
+        if (rotationX == 0.0 && rotationY == 0.0 && rotationZ == 0.0)
+        {
+            w = 1.0;
+        }
+
+        DirectX::SimpleMath::Quaternion q1 = { rotationX, rotationY, rotationZ, w };
+        q1.Normalize();
+
+        bool result = rig->AddBoneToRig(q1, { positionX,positionY,positionZ }, boneName, parentIndex, usingLocalValues);
+        char buffer[MAX_PATH];
+        if (!result)
+        {
+            snprintf(buffer, sizeof(buffer), "[CALUMI.Animation API] Failure When Adding Bone: %s To Rig", boneName);
+            
+        }
+        else
+        {
+            snprintf(buffer, sizeof(buffer), "[CALUMI.Animation API] %s Added To Rig Successfully!", boneName);
+        }
+        errorMessage = buffer;
+        return result;
+    }
+}
+
+}
 

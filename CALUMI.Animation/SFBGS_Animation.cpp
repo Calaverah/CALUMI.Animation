@@ -459,17 +459,6 @@ namespace CALUMI{
 			return CALUMI::WriteToBinaryFile(outputFilePath, buffer);
 		}
 
-		std::expected<bool, FileError> Animation::ReadFromFile(char* inputFilePath)
-		{
-			std::filesystem::path newPath(inputFilePath);
-			return ReadFromFile(newPath);
-		}
-
-		std::expected<std::string, FileError> Animation::WriteToFile(char* outputFilePath)
-		{
-			std::filesystem::path newPath(outputFilePath);
-			return WriteToFile(newPath);
-		}
 
 	}
 }

@@ -10,17 +10,17 @@ namespace CALUMI {
 	namespace UNIV {
 
 
-	Animation::Animation::Animation(const std::string& title, const int initialBoneCount, int initialBlockCount = 8)
-	{
-		animationTitle = title;
-		boneCount = initialBoneCount;
-		animationBlocks.reserve(initialBlockCount);
-	}
+		Animation::Animation::Animation(const std::string& title, const int initialBoneCount, int initialBlockCount = 8)
+		{
+			animationTitle = title;
+			boneCount = initialBoneCount;
+			animationBlocks.reserve(initialBlockCount);
+		}
 
 		void Animation::Animation::AddAnimationBlock(AnimationBlock& blockToAdd)
-	{
-		animationBlocks.push_back(blockToAdd);
-	}
+		{
+			animationBlocks.push_back(blockToAdd);
+		}
 
 		unsigned int Animation::GetFrameCount()
 		{
@@ -67,6 +67,89 @@ namespace CALUMI {
 
 			return output;
 		}
-}
+
+
+		Animation* CreateAnimationC(const char* animationTitle, int rigBoneCount)
+		{
+			Animation* outputAnimation = new Animation(animationTitle, rigBoneCount);
+			return outputAnimation;
+		}
+		bool DeleteAnimationC(Animation* ptr)
+		{
+			if (ptr)
+			{
+				delete ptr;
+				return true;
+			}
+			return false;
+		}
+		bool AddAnimBlockToAnimationC(Animation* anim, AnimationBlock* blockToAdd, const char* errorMessage)
+		{
+			anim->AddAnimationBlock(*blockToAdd);
+			delete blockToAdd;
+			errorMessage = "[CALUMI.Animation API] Animation Block Copied Into Animation Successfully. Original Block Deleted!";
+			return false;
+		}
+		AnimationBlock* CreateAnimBlockC(const char* boneName, int boneIndex, const char* errorMessage)
+		{
+			if (boneName == "")
+			{
+				errorMessage = "[CALUMI.Animation API] Animation Block Must Have Bone Name!";
+				return nullptr;
+			}
+			if (boneIndex < 0)
+			{
+				errorMessage = "[CALUMI.Animation API] Animation Block Must Have Valid Bone Index! (ix > -1)";
+				return nullptr;
+			}
+			AnimationBlock* outputAnimationBlock = new AnimationBlock;
+			outputAnimationBlock->boneIndex = boneIndex;
+			outputAnimationBlock->boneName = boneName;
+			errorMessage = "[CALUMI.Animation API] Animation Block Created!";
+			return outputAnimationBlock;
+		}
+		bool DeleteAnimationBlockC(AnimationBlock* ptr)
+		{
+			if (ptr)
+			{
+				delete ptr;
+				return true;
+			}
+			return false;
+		}
+		bool AddRotationSqToAnimBlockC(AnimationBlock* block, Rotation* rotSq, int size)
+		{
+			for (int i = 0; i < size; i++)
+			{
+				block->_rotationSequence.push_back(rotSq[i]);
+			}
+			return true;
+		}
+		bool AddTranslationSqToAnimBlockC(AnimationBlock* block, Translation* trnSq, int size)
+		{
+			for (int i = 0; i < size; i++)
+			{
+				block->_translationSequence.push_back(trnSq[i]);
+			}
+			return true;
+		}
+		bool AddScalarSqToAnimBlockC(AnimationBlock* block, Scalar* sclrSq, int size)
+		{
+			for (int i = 0; i < size; i++)
+			{
+				block->_scalarSequence.push_back(sclrSq[i]);
+			}
+			return true;
+		}
+		bool AddPrioritySqToAnimBlockC(AnimationBlock* block, Priority* prtySq, int size)
+		{
+			for (int i = 0; i < size; i++)
+			{
+				block->_prioritySequence.push_back(prtySq[i]);
+			}
+			return true;
+		}
+
+	}
 	
 }

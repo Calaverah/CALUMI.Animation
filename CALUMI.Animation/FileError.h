@@ -9,31 +9,30 @@
 #include <print>
 #include <format>
 
-extern  "C" {
 
-	enum CALUMIANIMATION_API FileErrorCode
-	{
-		FileNotFound,
-		PermissionDenied,
-		NotAFile,
-		ReadFailure,
-		IncorrectFileType,
-		FileTooLarge,
-		FileTooSmall,
-		UnknownErrorCode,
-		WriteFailure
-	};
 
-	struct CALUMIANIMATION_API FileError
-	{
-		FileErrorCode fileCode = FileErrorCode::UnknownErrorCode;
-		std::filesystem::path path;
-		std::string errorMessage;
+enum CALUMIANIMATION_API FileErrorCode
+{
+	FileNotFound,
+	PermissionDenied,
+	NotAFile,
+	ReadFailure,
+	IncorrectFileType,
+	FileTooLarge,
+	FileTooSmall,
+	UnknownErrorCode,
+	WriteFailure
+};
 
-		//friend std::ostream& operator<<(std::ostream& os, FileError error);
+struct CALUMIANIMATION_API FileError
+{
+	FileErrorCode fileCode = FileErrorCode::UnknownErrorCode;
+	std::filesystem::path path;
+	std::string errorMessage;
 
-		std::string ToString();
-		//FileError() = default;
-	};
+	//friend std::ostream& operator<<(std::ostream& os, FileError error);
 
-}
+	std::string ToString();
+	//FileError() = default;
+};
+

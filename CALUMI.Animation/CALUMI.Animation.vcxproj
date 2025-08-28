@@ -163,6 +163,7 @@
     <ClInclude Include="CALUMI_Utilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CALUMI_AnimationEntries.cpp" />
     <ClCompile Include="CALUMI_AnimationScene.cpp" />
     <ClCompile Include="CALUMI_Math.cpp" />
     <ClCompile Include="CALUMI_SkeletonRig.cpp" />

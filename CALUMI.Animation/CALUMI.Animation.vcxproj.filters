@@ -146,6 +146,9 @@
     <ClCompile Include="SFBGS_AnimationEntries.cpp">
       <Filter>Source Files\SFBGS</Filter>
     </ClCompile>
+    <ClCompile Include="CALUMI_AnimationEntries.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

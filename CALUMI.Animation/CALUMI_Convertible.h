@@ -13,7 +13,7 @@ namespace CALUMI {namespace UNIV
 	class CALUMIANIMATION_API Convertible
 	{
 	public:
-		virtual void ConvertFromUniversalScene(AnimationScene& input) = 0;
+		virtual bool ConvertFromUniversalScene(AnimationScene& input) = 0;
 		virtual AnimationScene ConvertToUniversalScene() = 0;
 	};
 }}
