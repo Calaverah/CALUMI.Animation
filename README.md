@@ -1,11 +1,100 @@
-Warning: This animation conversion library is in early alpha and is not in a state that is considered stable, consistent, or tested. Use at your own risk and do not use for content that you will be releasing.
+>[!WARNING]
+>Warning: This animation conversion library is in early alpha and is not in a state that is considered stable, consistent, or tested. Use at your own risk and do not use for content that you will be releasing. There may be memory leaks in the extern C section of the repository so beware and proceed with caution. They will be addressed as we proceed.
 
 
+Extern C functions (ie Python accessable)
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+-**AnimationScene*** $${\color{green}LoadAnimationSceneFromSFBGSFormatC}$$(**const wchar_t**** filePathsArray, **int** numberOfFiles, **const char*** errorMessage); 
+>_Error message should tell more information on status of the load. File paths should include a single skeleton.rig file as one is needed for conversion_
+
+-**bool** $${\color{green}SaveAnimationSceneToSFBGSFormatC}$$(**AnimationScene*** scene, **float** highPrecisionValue, **float** lowPrecisionValue, **const wchar_t*** directoryPath, **const char*** errorMessage); 
+>_Directory path should just be a file that the user would like to save the files to. Each file will be named after the animation title given. The rig will simply be named skeleton.rig (warning, rig output is very basic at present and is not reccommended for use in game)_
+
+-**AnimationScene*** $${\color{green}CreateAnimationSceneC}$$(**const char*** sceneName); 
+>_Scene name may be important in the future_
+
+-**bool** $${\color{green}AddRigToAnimationSceneC}$$(**AnimationScene*** scene, **SkeletonRig*** rig, **const char*** errorMessage); 
+>_rig pointer will point to null upon successful passing of data, refer to the AnimationScene after this point_
+
+-**bool** $${\color{green}AddAnimationToAnimationSceneC}$$(**AnimationScene*** scene, **Animation*** animation, **const char*** errorMessage); 
+>_animation will be copied and the original will be deleted upon successful copying of data after this point_
+
+-**bool** $${\color{green}DeleteAnimationSceneC}$$(**AnimationScene*** ptr); 
+>_Reccommended that the scene be deleted when finished_
+
+---------------------------------------------------------------------------------------------------------------------
+
+-**Rotation*** $${\color{green}CreateRotationEntryC}$$(**uint16_t** frame, **float** x, **float** y, **float** z, **float** w);
+
+-**bool** $${\color{green}DeleteRotationEntryC}$$(**Rotation*** ptr);
+
+-**Translation*** $${\color{green}CreateTranslationEntryC}$$(**uint16_t** frame, **double** x, **double** y, **double** z);
+
+-**bool** $${\color{green}DeleteTranslationEntryC}$$(**Translation*** ptr);
+
+-**Scalar*** $${\color{green}CreateScalarEntryC}$$(**uint16_t** frame, **float** scalar);
+
+-**bool** $${\color{green}DeleteScalarEntryC}$$(**Scalar*** ptr);
+
+-**Priority*** $${\color{green}CreatePriorityEntryC}$$(**uint16_t** frame, **uint8_t** priority);
+
+-**bool** $${\color{green}DeletePriorityEntryC}$$(**Priority*** ptr);
+
+---------------------------------------------------------------------------------------------------------------------
+
+-**Animation*** $${\color{green}CreateAnimationC}$$(**const char*** animationTitle, **int** rigBoneCount);
+
+-**bool** $${\color{green}DeleteAnimationC}$$(**Animation*** ptr); 
+>_Animation should be deleted when added to scene, however if a mistake is made you can use this to delete it from allocated memory instead_
+
+-**bool** $${\color{green}AddAnimBlockToAnimationC}$$(**Animation*** anim, **AnimationBlock*** blockToAdd, **const char*** errorMessage); 
+>_AnimationBlock is added and the old copy deleted_
+
+-**AnimationBlock*** $${\color{green}CreateAnimBlockC}$$(**const char*** boneName, **int** boneIndex, **const char*** errorMessage); 
+>_You shouldn't need to add empty blocks, but please ensure that the correct index/title is used for the boneIndex and boneName_
+
+-**bool** $${\color{green}DeleteAnimationBlockC}$$(**AnimationBlock*** ptr); 
+>_If a mistake is made and memory needs to be cleared_
+
+-**bool** $${\color{green}AddRotationSqToAnimBlockC}$$(**AnimationBlock*** block, **Rotation*** rotSq, **int** size); 
+>_An array of rotation entries to be added to the rotation sequence of the animation block_
+
+-**bool** $${\color{green}AddTranslationSqToAnimBlockC}$$(**AnimationBlock*** block, **Translation*** trnSq, **int** size); 
+>_An array of translation entries to be added to the translation sequence of the animation block_
+
+-**bool** $${\color{green}AddScalarSqToAnimBlockC}$$(**AnimationBlock*** block, **Scalar*** sclrSq, **int** size); 
+>_An array of scalar entries to be added to the scalar sequence of the animation block_
+
+-**bool** $${\color{green}AddPrioritySqToAnimBlockC}$$(**AnimationBlock*** block, **Priority*** prtySq, **int** size); 
+>_An array of priority entries to be added to the priority sequence of the animation block_
+
+---------------------------------------------------------------------------------------------------------------------
+
+-**SkeletonRig*** $${\color{green}CreateSkeletonRigC}$$(**const char*** rigName); 
+>_Creates a heap allocated SkeletonRig to add data to_  
+
+-**bool** $${\color{green}DeleteSkeletonRigC}$$(**SkeletonRig*** ptr); 
+>_To delete a SkeletonRig if not added to scene_
+
+-**bool** $${\color{green}AddBoneToSkeletonRigC}$$(
+			**SkeletonRig*** rig,
+			**float** rotationX, **float** rotationY, **float** rotationZ, **float** rotationW,
+			**float** positionX, **float** positionY, **float** positionZ,
+			**const char*** boneName,
+			**int** parentIndex,
+			**bool** usingLocalValues,
+			**const char*** errorMessage
+		); 
+  >_Returns true if successful, false if an error is found. Error message may have string for both. IMPORTANT: Order of implementation matters, the first added bone should be the root bone with a parent index of -1_
+
+---------------------------------------------------------------------------------------------------------------------
+**For C++ Use**
+---------------------------------------------------------------------------------------------------------------------
 The intended method for use in animation conversion is to use an intermediary animation format that we are calling the Universal Animation format (within the CALUMI namespace).
 
 For SFBGS .af + skeleton.rig import
------------------------------------
+---------------------------------------------------------------------------------------------------------------------
 1. Create an AnimationScene using the CALUMI::SFBGS namespace. (eg. ...::AnimationScene myStarfieldScene;)
 2. This animation scene will consist of a SkeletonRig and a collection of Animations, however for now it will be empty.
 3. Create a SkeletonRig under the same namespace, CALUMI::SFBGS (eg. ...::SkeletonRig myStarfieldRig;)
