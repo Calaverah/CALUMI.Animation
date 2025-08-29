@@ -4,6 +4,7 @@
 
 #pragma once
 
+
 #ifdef CALUMIANIMATION_EXPORTS
 #define CALUMIANIMATION_API __declspec(dllexport)
 #else

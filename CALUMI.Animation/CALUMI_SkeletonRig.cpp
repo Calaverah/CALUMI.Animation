@@ -48,7 +48,7 @@ namespace CALUMI{ namespace UNIV{
         }
         return true;
     }
-    bool SkeletonRig::AddBoneToRig(DirectX::SimpleMath::Quaternion rotation, DirectX::SimpleMath::Vector3 position, std::string boneName, std::string parentName, bool localValues)
+    bool SkeletonRig::AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, std::string boneName, std::string parentName, bool localValues)
     {
         int newParentIndex = 0;
         if (boneEntries.size() == 0)
@@ -69,7 +69,7 @@ namespace CALUMI{ namespace UNIV{
         return AddBoneToRig(rotation,position,boneName,newParentIndex, localValues);
     }
 
-    bool SkeletonRig::AddBoneToRig(DirectX::SimpleMath::Quaternion rotation, DirectX::SimpleMath::Vector3 position, std::string boneName, int parentIndex, bool localValues)
+    bool SkeletonRig::AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, std::string boneName, int parentIndex, bool localValues)
     {
         SkeletonBone input;
         input.name = boneName;
@@ -84,10 +84,10 @@ namespace CALUMI{ namespace UNIV{
         //    input.parentBoneIndex = 0; //Cannot have a parent with the same index as child, default to root
         //}
 
-        DirectX::SimpleMath::Quaternion rootRotation;
-        DirectX::SimpleMath::Quaternion localRotation;
-        DirectX::SimpleMath::Vector3 rootPosition;
-        DirectX::SimpleMath::Vector3 localPosition;
+        CALUMI::Math::Quaternion rootRotation;
+        CALUMI::Math::Quaternion localRotation;
+        CALUMI::Math::Vector3 rootPosition;
+        CALUMI::Math::Vector3 localPosition;
         if (boneEntries.empty())
         {
             rootRotation = rotation;
@@ -104,7 +104,7 @@ namespace CALUMI{ namespace UNIV{
         }
         else
         {
-            DirectX::SimpleMath::Quaternion inverseParentRoot;
+            CALUMI::Math::Quaternion inverseParentRoot;
             boneEntries.at(input.parentBoneIndex).rootRotation.Inverse(inverseParentRoot); //why did they not make this a return value.
             localRotation = rotation * inverseParentRoot;
             rootRotation = rotation;
@@ -151,7 +151,7 @@ namespace CALUMI{ namespace UNIV{
             w = 1.0;
         }
 
-        DirectX::SimpleMath::Quaternion q1 = { rotationX, rotationY, rotationZ, w };
+        CALUMI::Math::Quaternion q1 = { rotationX, rotationY, rotationZ, w };
         q1.Normalize();
 
         bool result = rig->AddBoneToRig(q1, { positionX,positionY,positionZ }, boneName, parentIndex, usingLocalValues);
@@ -167,6 +167,74 @@ namespace CALUMI{ namespace UNIV{
         }
         errorMessage = buffer;
         return result;
+    }
+    size_t GetSkeletonRigBoneCount(SkeletonRig* source)
+    {
+        return source->boneEntries.size();
+    }
+    const char* GetSkeletonRigName(SkeletonRig* source)
+    {
+        return source->rigName.c_str();
+    }
+    SkeletonBone* GetSkeletonBone(SkeletonRig* source, int index, const char* errorMessage)
+    {
+        if(source->boneEntries.size() <= index)
+        {
+            errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+            return nullptr;
+        }
+        if (index < 0)
+        {
+            errorMessage = "[CALUMI.Animation API] Index Is Negative! Is This Parent Index Coming From The Root?";
+            return nullptr;
+        }
+        return &source->boneEntries.at(index);
+    }
+    const char* GetSkeletonBoneName(SkeletonBone* source)
+    {
+        return source->name.c_str();
+    }
+    int GetSkeletonBoneParentIndex(SkeletonBone* source)
+    {
+        return source->parentBoneIndex;
+    }
+    CALUMI::Math::Quaternion* GetSkeletonBoneRotation(SkeletonBone* source, bool fromRoot)
+    {
+        if (fromRoot)
+        {
+            return &source->rootRotation;
+        }
+        
+        return &source->localRotation;
+    }
+    CALUMI::Math::Vector3* GetSkeletonBoneTranslation(SkeletonBone* source, bool fromRoot)
+    {
+        if (fromRoot)
+        {
+            return &source->rootPosition;
+        }
+
+        return &source->localPosition;
+    }
+    bool ValidateSkeletonRigNames(SkeletonRig* source, const char* errorMessage)
+    {
+        auto result = source->ValidateNames();
+        if (!result.has_value())
+        {
+            errorMessage = result.error().c_str();
+            return false;
+        }
+        return true;
+    }
+    bool ValidateSkeletonRigParentIndices(SkeletonRig* source, const char* errorMessage)
+    {
+        auto result = source->ValidateParentIndices();
+        if (!result.has_value())
+        {
+            errorMessage = result.error().c_str();
+            return false;
+        }
+        return true;
     }
 }
 

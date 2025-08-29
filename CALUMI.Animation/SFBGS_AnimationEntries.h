@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <algorithm>
 #include "CALUMI_Math.h"
-#include <SimpleMath.h>
+#include <vector>
 
 namespace CALUMI{ namespace SFBGS{
 
@@ -89,8 +89,8 @@ namespace CALUMI{ namespace SFBGS{
 		}
 	};
 
-	std::pair<RotationPrefix, RotationEntry> GetSFBGSRotationPair(const DirectX::SimpleMath::Quaternion& input);
-	DirectX::SimpleMath::Quaternion GetUniversalRotation(const CALUMI::SFBGS::RotationPrefix& prefix, const CALUMI::SFBGS::RotationEntry& suffix);
+	std::pair<RotationPrefix, RotationEntry> GetSFBGSRotationPair(const CALUMI::Math::Quaternion& input);
+	CALUMI::Math::Quaternion GetUniversalRotation(const CALUMI::SFBGS::RotationPrefix& prefix, const CALUMI::SFBGS::RotationEntry& suffix);
 
 	std::pair<TranslationPrefix, TranslationEntry> GetSFBGSTranslationPair(const CALUMI::Math::Vector3D& input, const float& highPrecision, const float& lowPrecision);
 	CALUMI::Math::Vector3D GetUniversalTranslation(const CALUMI::SFBGS::TranslationPrefix& prefix, const CALUMI::SFBGS::TranslationEntry& suffix, const float& highPrecision, const float& lowPrecision);

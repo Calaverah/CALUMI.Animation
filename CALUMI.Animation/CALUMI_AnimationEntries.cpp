@@ -64,6 +64,35 @@ namespace CALUMI {
             return false;
         }
 
+        uint16_t GetFrameFromEntryC(void* source)
+        {
+            uint16_t output;
+            std::memcpy(&output, source, sizeof(uint16_t));
+            return output;
+        }
+
+        Math::Quaternion* GetValueFromRotationEntryC(Rotation* source)
+        {
+            return &source->rotation;
+        }
+
+        Math::Vector3D* GetValueFromTranslationEntryC(Translation* source)
+        {
+            return &source->translation;
+        }
+
+        float GetValueFromScalarEntryC(Scalar* source)
+        {
+            return source->scalar;
+        }
+
+        uint8_t GetValueFromPriorityEntryC(Priority* source)
+        {
+            return source->priority;
+        }
+
+        
+
 } }
 
 

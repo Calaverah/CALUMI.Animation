@@ -9,7 +9,6 @@
 #include <expected>
 #include <format>
 #include <set>
-#include <SimpleMath.h>
 #include <string>
 #include <vector>
 
@@ -19,10 +18,10 @@ namespace CALUMI{ namespace UNIV{
 
 	struct CALUMIANIMATION_API SkeletonBone
 	{
-		DirectX::SimpleMath::Quaternion localRotation;
-		DirectX::SimpleMath::Quaternion rootRotation;
-		DirectX::SimpleMath::Vector3 localPosition;
-		DirectX::SimpleMath::Vector3 rootPosition;
+		CALUMI::Math::Quaternion localRotation;
+		CALUMI::Math::Quaternion rootRotation;
+		CALUMI::Math::Vector3 localPosition;
+		CALUMI::Math::Vector3 rootPosition;
 
 		std::string name;
 
@@ -54,7 +53,7 @@ namespace CALUMI{ namespace UNIV{
 		/// <param name="parentName">If a parent name is not found, the parent will default to the root bone</param>
 		/// <param name="localValues">Enter false for values to be read as relative to root</param>
 		/// <returns></returns>
-		bool AddBoneToRig(DirectX::SimpleMath::Quaternion rotation, DirectX::SimpleMath::Vector3 position, std::string boneName, std::string parentName, bool localValues = true);
+		bool AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, std::string boneName, std::string parentName, bool localValues = true);
 
 		/// <summary>
 		/// The proper way to add bones to a universal rig definition.
@@ -65,7 +64,7 @@ namespace CALUMI{ namespace UNIV{
 		/// <param name="parentIndex">	If a parent name is not found, the parent will default to the root bone</param>
 		/// <param name="localValues">	Enter false for values to be read as relative to root</param>
 		/// <returns></returns>
-		bool AddBoneToRig(DirectX::SimpleMath::Quaternion rotation, DirectX::SimpleMath::Vector3 position, std::string boneName, int parentIndex, bool localValues = true);
+		bool AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, std::string boneName, int parentIndex, bool localValues = true);
 	};
 
 	extern  "C" {
@@ -80,6 +79,15 @@ namespace CALUMI{ namespace UNIV{
 			bool usingLocalValues,
 			const char* errorMessage
 		);
+		CALUMIANIMATION_API size_t GetSkeletonRigBoneCount(SkeletonRig* source);
+		CALUMIANIMATION_API const char* GetSkeletonRigName(SkeletonRig* source);
+		CALUMIANIMATION_API SkeletonBone* GetSkeletonBone(SkeletonRig* source, int index, const char* errorMessage);
+		CALUMIANIMATION_API const char* GetSkeletonBoneName(SkeletonBone* source);
+		CALUMIANIMATION_API int GetSkeletonBoneParentIndex(SkeletonBone* source);
+		CALUMIANIMATION_API CALUMI::Math::Quaternion* GetSkeletonBoneRotation(SkeletonBone* source, bool fromRoot = false);
+		CALUMIANIMATION_API CALUMI::Math::Vector3* GetSkeletonBoneTranslation(SkeletonBone* source, bool fromRoot = false);
+		CALUMIANIMATION_API bool ValidateSkeletonRigNames(SkeletonRig* source, const char* errorMessage);
+		CALUMIANIMATION_API bool ValidateSkeletonRigParentIndices(SkeletonRig* source, const char* errorMessage);
 	}
 
 }}

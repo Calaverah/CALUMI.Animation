@@ -74,6 +74,31 @@ namespace CALUMI {
 			Animation* outputAnimation = new Animation(animationTitle, rigBoneCount);
 			return outputAnimation;
 		}
+		AnimationBlock* GetAnimationBlockC(Animation* source, int index, const char* errorMessage)
+		{
+			if (source->animationBlocks.size() <= index)
+			{
+				errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+				return nullptr;
+			}
+			return &source->animationBlocks.at(index);
+		}
+		size_t GetAnimationBlockCountC(Animation* source)
+		{
+			return source->animationBlocks.size();
+		}
+		const char* GetAnimationTitleC(Animation* source)
+		{
+			return source->animationTitle.c_str();
+		}
+		size_t GetAnimationBoneCountC(Animation* source)
+		{
+			return source->boneCount;
+		}
+		size_t GetFrameCountC(Animation* source)
+		{
+			return source->GetFrameCount();
+		}
 		bool DeleteAnimationC(Animation* ptr)
 		{
 			if (ptr)
@@ -125,6 +150,17 @@ namespace CALUMI {
 			}
 			return true;
 		}
+		Rotation* GetRotationSq(AnimationBlock* source)
+		{
+			if(source->_rotationSequence.empty())
+			return nullptr;
+
+			return source->_rotationSequence.data();
+		}
+		size_t GetRotationSqSize(AnimationBlock* source)
+		{
+			return source->_rotationSequence.size();
+		}
 		bool AddTranslationSqToAnimBlockC(AnimationBlock* block, Translation* trnSq, int size)
 		{
 			for (int i = 0; i < size; i++)
@@ -132,6 +168,17 @@ namespace CALUMI {
 				block->_translationSequence.push_back(trnSq[i]);
 			}
 			return true;
+		}
+		Translation* GetTranslationSq(AnimationBlock* source)
+		{
+			if (source->_translationSequence.empty())
+				return nullptr;
+
+			return source->_translationSequence.data();
+		}
+		size_t GetTranslationSqSize(AnimationBlock* source)
+		{
+			return source->_translationSequence.size();
 		}
 		bool AddScalarSqToAnimBlockC(AnimationBlock* block, Scalar* sclrSq, int size)
 		{
@@ -141,6 +188,17 @@ namespace CALUMI {
 			}
 			return true;
 		}
+		Scalar* GetScalarSq(AnimationBlock* source)
+		{
+			if(source->_scalarSequence.empty())
+			return nullptr;
+
+			return source->_scalarSequence.data();
+		}
+		size_t GetScalarSqSize(AnimationBlock* source)
+		{
+			return source->_scalarSequence.size();
+		}
 		bool AddPrioritySqToAnimBlockC(AnimationBlock* block, Priority* prtySq, int size)
 		{
 			for (int i = 0; i < size; i++)
@@ -148,6 +206,17 @@ namespace CALUMI {
 				block->_prioritySequence.push_back(prtySq[i]);
 			}
 			return true;
+		}
+		Priority* GetPrioritySq(AnimationBlock* source)
+		{
+			if(source->_prioritySequence.empty())
+			return nullptr;
+
+			return source->_prioritySequence.data();
+		}
+		size_t GetPrioritySqSize(AnimationBlock* source)
+		{
+			return source->_prioritySequence.size();
 		}
 
 	}

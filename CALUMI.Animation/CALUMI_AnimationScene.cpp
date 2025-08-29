@@ -19,6 +19,31 @@ namespace CALUMI {
             }
             return false;
         }
+        Animation* GetAnimationC(AnimationScene* source, int index, const char* errorMessage)
+        {
+            if(source->animations.size()<=index)
+            {
+                errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+                return nullptr;
+            }
+            return &source->animations.at(index);
+        }
+        size_t GetAnimationCountC(AnimationScene* source)
+        {
+            return source->animations.size();
+        }
+        const char* GetAnimationSceneName(AnimationScene* source)
+        {
+            return source->sceneName.c_str();
+        }
+        SkeletonRig* GetSkeletonRig(AnimationScene* source)
+        {
+            return &source->rig;
+        }
+        bool HasSkeletonRig(AnimationScene* source)
+        {
+            return !source->rig.boneEntries.empty();
+        }
         AnimationScene* UNIV::CreateAnimationSceneC(const char* sceneName)
         {
             UNIV::AnimationScene* univAnimationScene = new UNIV::AnimationScene;

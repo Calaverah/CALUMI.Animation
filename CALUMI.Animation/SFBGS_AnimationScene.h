@@ -3,16 +3,16 @@
 //Contact: Calaverahmedia@gmail.com
 
 #pragma once
+#include "CALUMI_AnimationScene.h"
 #include "CALUMI_Common.h"
-#include <vector>
-#include <string>
-#include <cstdint>
+#include "CALUMI_Convertible.h"
 #include "SFBGS_Animation.h"
 #include "SFBGS_SkeletonRig.h"
-#include "CALUMI_AnimationScene.h"
-#include "CALUMI_Convertible.h"
-#include <iostream>
+#include <cstdint>
 #include <filesystem>
+#include <iostream>
+#include <string>
+#include <vector>
 
 namespace CALUMI {
 	namespace SFBGS {
@@ -35,7 +35,8 @@ namespace CALUMI {
 			float lowPrecisionValue = 0.03125;
 
 			AnimationScene() = default;
-
+			const char* GetSceneName() { return sceneName.c_str(); }
+			void SetSceneName(const char* name) { sceneName = name; }
 
 			// Inherited via Convertible
 			bool ConvertFromUniversalScene(UNIV::AnimationScene& input) override;

@@ -27,8 +27,8 @@ namespace CALUMI { namespace SFBGS{
 
 	std::tuple<int8_t, int8_t, bool> GetSFBGSRotationComponents(const float& component)
 	{
-		float lowPrecision = 1.0 / (sqrt(2) * 64.0);		//2^6
-		float highPrecision = 1.0 / (sqrt(2) * 16384.0);	//2^14
+		float lowPrecision = M_SQRT1_2 / 64.0; //1.0 / (sqrt(2) * 64.0);		//2^6
+		float highPrecision = M_SQRT1_2 / 16384.0; //1.0 / (sqrt(2) * 16384.0);	//2^14
 
 		float value = 0.0;
 		if(component != 0)
@@ -68,15 +68,15 @@ namespace CALUMI { namespace SFBGS{
 	/// </summary>
 	/// <param name="input"></param>
 	/// <returns></returns>
-	std::pair<RotationPrefix, RotationEntry> GetSFBGSRotationPair(const DirectX::SimpleMath::Quaternion& input)
+	std::pair<RotationPrefix, RotationEntry> GetSFBGSRotationPair(const CALUMI::Math::Quaternion& input)
 	{
 		RotationPrefix prefix;
-		DirectX::SimpleMath::Quaternion tempInput = input;
+		CALUMI::Math::Quaternion tempInput = input;
 
 		prefix.missing = 3;
-		if (abs(input.x) > (1 / sqrt(2))) prefix.missing = 0;
-		if (abs(input.y) > (1 / sqrt(2))) prefix.missing = 1;
-		if (abs(input.z) > (1 / sqrt(2))) prefix.missing = 2;
+		if (abs(input.x) > M_SQRT1_2) prefix.missing = 0;
+		if (abs(input.y) > M_SQRT1_2) prefix.missing = 1;
+		if (abs(input.z) > M_SQRT1_2) prefix.missing = 2;
 
 		//We must flip the quaternion values such that the missing value is positive. When derived, the missing will always be positive. So long as all values flip the quaternion is equal.
 		if (prefix.missing == 0 && input.x < 0) tempInput = -input;
@@ -107,10 +107,10 @@ namespace CALUMI { namespace SFBGS{
 		return std::make_pair(prefix, suffix);
 	}
 
-	DirectX::SimpleMath::Quaternion GetUniversalRotation(const CALUMI::SFBGS::RotationPrefix& prefix, const CALUMI::SFBGS::RotationEntry& suffix)
+	CALUMI::Math::Quaternion GetUniversalRotation(const CALUMI::SFBGS::RotationPrefix& prefix, const CALUMI::SFBGS::RotationEntry& suffix)
 	{
-		double lowPrecision = 1.0 / (64.0 * sqrt(2));
-		double highPrecision = 1.0 / (16384.0 * sqrt(2));
+		double lowPrecision		= M_SQRT1_2 / 64.0;
+		double highPrecision	= M_SQRT1_2 / 16384.0;
 
 		uint8_t s1 = 1 << (3 * prefix.firstFlag);
 		uint8_t s2 = 1 << (3 * prefix.secondFlag);
@@ -121,7 +121,7 @@ namespace CALUMI { namespace SFBGS{
 		double component3 = lowPrecision * prefix.third + highPrecision * suffix.third * s3;
 		double component4 = sqrt(1 - pow(component1, 2) - pow(component2, 2) - pow(component3, 2));
 
-		DirectX::SimpleMath::Quaternion output;
+		CALUMI::Math::Quaternion output;
 
 		switch (prefix.missing)
 		{

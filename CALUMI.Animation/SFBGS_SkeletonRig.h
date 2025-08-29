@@ -12,8 +12,8 @@
 #include <expected>
 #include <string>
 #include <vector>
-#include <SimpleMath.h>
 #include <iostream>
+#include <algorithm>
 
 
 
@@ -22,9 +22,9 @@ namespace CALUMI {namespace SFBGS {
 
 	struct CALUMIANIMATION_API SkeletonBone
 	{
-		DirectX::SimpleMath::Quaternion localRotation;
-		DirectX::SimpleMath::Quaternion rootRotation;
-		DirectX::SimpleMath::Vector3 position;
+		CALUMI::Math::Quaternion localRotation;
+		CALUMI::Math::Quaternion rootRotation;
+		CALUMI::Math::Vector3 position;
 		int32_t term01 = -1; //Only +1 on twist bones?? Correlates to the unknown bone count on SFBGS::SkeletonRig
 		uint64_t nameOffset = 0;
 		int32_t parentBoneIndex = -1; //-1 for the root bone
@@ -71,7 +71,15 @@ namespace CALUMI {namespace SFBGS {
 
 
 		std::vector<SkeletonBone> boneEntries;
-		int16_t suffixArray[157];
+
+		//Don't ask why I'm initializing like this... let's just move on.
+		int16_t suffixArray[157] = 
+		{
+			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+			-1,-1,-1,-1,-1,-1,-1
+		};
 
 		std::vector<std::string> stringArray;
 

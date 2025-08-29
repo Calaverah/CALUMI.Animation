@@ -4,11 +4,10 @@
 
 #pragma once
 #include "CALUMI_Common.h"
-#include <vector>
-#include <SimpleMath.h>
 #include "CALUMI_Math.h"
-#include <cstdint>
 #include <algorithm>
+#include <cstdint>
+#include <vector>
 
 namespace CALUMI {namespace UNIV {
 
@@ -29,10 +28,10 @@ namespace CALUMI {namespace UNIV {
 	struct CALUMIANIMATION_API Rotation
 	{
 		uint16_t frame = 0;
-		DirectX::SimpleMath::Quaternion rotation;
+		CALUMI::Math::Quaternion rotation;
 
 		Rotation() = default;
-		Rotation(const uint16_t& frame, const DirectX::SimpleMath::Quaternion& rotation)
+		Rotation(const uint16_t& frame, const CALUMI::Math::Quaternion& rotation)
 			: frame(frame), rotation(rotation)
 		{
 		}
@@ -70,5 +69,35 @@ namespace CALUMI {namespace UNIV {
 		CALUMIANIMATION_API bool DeleteScalarEntryC(Scalar* ptr);
 		CALUMIANIMATION_API Priority* CreatePriorityEntryC(uint16_t frame, uint8_t priority);
 		CALUMIANIMATION_API bool DeletePriorityEntryC(Priority* ptr);
+		/// <summary>
+		/// This will return a uint16_t corresponding to the frame of the sequence entry provided.
+		/// </summary>
+		/// <param name="source">Caution: If the source given is not of the proper entry type, then the returned value may be garbage</param>
+		/// <returns></returns>
+		CALUMIANIMATION_API uint16_t GetFrameFromEntryC(void* source);
+		/// <summary>
+		/// Returns a pointer to a rotation entry value (Quaternion). An array of 4 floats (4 bytes each)
+		/// </summary>
+		/// <param name="source"></param>
+		/// <returns></returns>
+		CALUMIANIMATION_API Math::Quaternion* GetValueFromRotationEntryC(Rotation* source);
+		/// <summary>
+		/// Returns a pointer to the translation entry value (Vector3D). An array of 3 doubles  (8 bytes each)
+		/// </summary>
+		/// <param name="source"></param>
+		/// <returns></returns>
+		CALUMIANIMATION_API Math::Vector3D* GetValueFromTranslationEntryC(Translation* source);
+		/// <summary>
+		/// Returns the scalar entry value (float)
+		/// </summary>
+		/// <param name="source"></param>
+		/// <returns></returns>
+		CALUMIANIMATION_API float GetValueFromScalarEntryC(Scalar* source);
+		/// <summary>
+		/// Returns the priority entry value (uint8_t)
+		/// </summary>
+		/// <param name="source"></param>
+		/// <returns></returns>
+		CALUMIANIMATION_API uint8_t GetValueFromPriorityEntryC(Priority* source);
 	}
 }}
