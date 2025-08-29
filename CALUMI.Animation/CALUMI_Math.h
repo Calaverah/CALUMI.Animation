@@ -78,6 +78,12 @@ namespace CALUMI
 		CALUMIANIMATION_API Math::Vector3 operator/ (const Vector3& A, float B) noexcept;
 		CALUMIANIMATION_API Math::Vector3 operator/ (float A, const Vector3& B) noexcept;
 
+		extern "C" {
+			CALUMIANIMATION_API float GetVector3X(Vector3* source);
+			CALUMIANIMATION_API float GetVector3Y(Vector3* source);
+			CALUMIANIMATION_API float GetVector3Z(Vector3* source);
+		}
+
 		struct CALUMIANIMATION_API Vector3D
 		{
 			double x = 0.0;
@@ -137,6 +143,12 @@ namespace CALUMI
 		CALUMIANIMATION_API Math::Vector3D operator/ (const Vector3D& A, const Vector3D& B) noexcept;
 		CALUMIANIMATION_API Math::Vector3D operator/ (const Vector3D& A, double B) noexcept;
 		CALUMIANIMATION_API Math::Vector3D operator/ (double A, const Vector3D& B) noexcept;
+
+		extern "C" {
+			CALUMIANIMATION_API double GetVector3DX(Vector3D* source);
+			CALUMIANIMATION_API double GetVector3DY(Vector3D* source);
+			CALUMIANIMATION_API double GetVector3DZ(Vector3D* source);
+		}
 
 		/// <summary>
 		/// CALUMI::MATH::Quaternions are normalized by default
@@ -199,6 +211,13 @@ namespace CALUMI
 		CALUMIANIMATION_API Math::Quaternion operator* (const Quaternion& A, float B) noexcept;
 		CALUMIANIMATION_API Math::Quaternion operator* (float A, const Quaternion& B) noexcept;
 		CALUMIANIMATION_API Math::Quaternion operator/ (const Quaternion& A, const Quaternion& B) noexcept;
+
+		extern "C" {
+			CALUMIANIMATION_API float GetQuaternionX(Quaternion* source);
+			CALUMIANIMATION_API float GetQuaternionY(Quaternion* source);
+			CALUMIANIMATION_API float GetQuaternionZ(Quaternion* source);
+			CALUMIANIMATION_API float GetQuaternionW(Quaternion* source);
+		}
 	}
 	
 }

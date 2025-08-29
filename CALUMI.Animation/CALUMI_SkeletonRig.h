@@ -84,8 +84,8 @@ namespace CALUMI{ namespace UNIV{
 		CALUMIANIMATION_API SkeletonBone* GetSkeletonBone(SkeletonRig* source, int index, const char* errorMessage);
 		CALUMIANIMATION_API const char* GetSkeletonBoneName(SkeletonBone* source);
 		CALUMIANIMATION_API int GetSkeletonBoneParentIndex(SkeletonBone* source);
-		CALUMIANIMATION_API CALUMI::Math::Quaternion* GetSkeletonBoneRotation(SkeletonBone* source, bool fromRoot = false);
-		CALUMIANIMATION_API CALUMI::Math::Vector3* GetSkeletonBoneTranslation(SkeletonBone* source, bool fromRoot = false);
+		CALUMIANIMATION_API CALUMI::Math::Quaternion* GetSkeletonBoneRotation(SkeletonBone* source, bool fromRoot);
+		CALUMIANIMATION_API CALUMI::Math::Vector3* GetSkeletonBoneTranslation(SkeletonBone* source, bool fromRoot);
 		CALUMIANIMATION_API bool ValidateSkeletonRigNames(SkeletonRig* source, const char* errorMessage);
 		CALUMIANIMATION_API bool ValidateSkeletonRigParentIndices(SkeletonRig* source, const char* errorMessage);
 	}

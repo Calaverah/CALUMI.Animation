@@ -172,6 +172,21 @@ namespace CALUMI
 			return Math::Vector3(A / B.x, A / B.y, A / B.z);
 		}
 
+		float GetVector3X(Vector3* source)
+		{
+			return source->x;
+		}
+
+		float GetVector3Y(Vector3* source)
+		{
+			return source->y;
+		}
+
+		float GetVector3Z(Vector3* source)
+		{
+			return source->z;
+		}
+
 
 		//Math::Vector3D (double)
 		const Math::Vector3D Math::Vector3D::Zero = 0.0; 
@@ -330,6 +345,21 @@ namespace CALUMI
 		Math::Vector3D CALUMI::Math::operator/(double A, const Math::Vector3D& B) noexcept
 		{
 			return Math::Vector3D(A / B.x, A / B.y, A / B.z);
+		}
+
+		double GetVector3DX(Vector3D* source)
+		{
+			return source->x;
+		}
+
+		double GetVector3DY(Vector3D* source)
+		{
+			return source->y;
+		}
+
+		double GetVector3DZ(Vector3D* source)
+		{
+			return source->z;
 		}
 
 		//Math::Quaternions (float)
@@ -578,6 +608,22 @@ namespace CALUMI
 			Math::Quaternion nB;
 			B.Inverse(nB);
 			return A * nB;
+		}
+		float GetQuaternionX(Quaternion* source)
+		{
+			return source->x;
+		}
+		float GetQuaternionY(Quaternion* source)
+		{
+			return source->y;
+		}
+		float GetQuaternionZ(Quaternion* source)
+		{
+			return source->z;
+		}
+		float GetQuaternionW(Quaternion* source)
+		{
+			return source->w;
 		}
 	}
 
