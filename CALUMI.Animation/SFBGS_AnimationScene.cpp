@@ -205,6 +205,27 @@ namespace CALUMI{ namespace SFBGS{
         return true;
     }
 
+    //Converting a scene overloaded so that an existing converted rig can be used
+    bool AnimationScene::ConvertFromUniversalScene(CALUMI::UNIV::AnimationScene& input, SFBGS::SkeletonRig& rigReference)
+    {
+        if (rigReference.boneEntries.empty())
+        {
+            std::println("No Rig Entry Found In SFBGS Reference Rig. Cannot Convert.");
+            return false;
+        }
+
+        sceneName = input.sceneName;
+        rig = rigReference;
+
+        animations.reserve(input.animations.size());
+        for (CALUMI::UNIV::Animation anim : input.animations)
+        {
+            animations.push_back(ConvertToSFBGSAnimation(anim, rig));
+        }
+
+        return true;
+    }
+
     CALUMI::UNIV::AnimationScene AnimationScene::ConvertToUniversalScene()
     {
         CALUMI::UNIV::AnimationScene outputScene;
@@ -229,7 +250,7 @@ namespace CALUMI{ namespace SFBGS{
 
 }
 
-    //EXTERN C
+    //EXTERN C ===============================================================================================================================================================================
     bool SFBGS::SaveAnimationSceneToSFBGSFormatC(UNIV::AnimationScene* scene, float highPrecisionValue, float lowPrecisionValue, const wchar_t* directoryPath, const char* errorMessage)
     {
         if (scene->rig.boneEntries.empty())
@@ -246,30 +267,24 @@ namespace CALUMI{ namespace SFBGS{
             return false;
         }
         std::filesystem::path rigFilePath(directoryPath);
-        rigFilePath /= scene->rig.rigName;
+        //rigFilePath /= scene->rig.rigName;
+        rigFilePath /= "characterassets";
         rigFilePath /= "skeleton.rig";
         rigFilePath.replace_extension(rigExt);
 
-        std::vector<std::filesystem::path> animationFilePaths;
-        animationFilePaths.reserve(scene->animations.size());
-        for (UNIV::Animation entry : scene->animations)
+        auto animPathResult = scene->GetFilePathsFromAnimationScene(directoryPath, afExt);
+        if (!animPathResult.has_value())
         {
-            if (entry.animationTitle.empty())
-            {
-                errorMessage = "[CALUMI.Animation API] Empty string found for Animation Title";
-                return false;
-            }
-            std::filesystem::path pathToAdd(directoryPath);
-            pathToAdd /= "animations";
-            pathToAdd /= entry.animationTitle;
-            pathToAdd.replace_extension(afExt);
-            animationFilePaths.push_back(pathToAdd);
+            errorMessage = animPathResult.error().c_str();
+            return false;
         }
+        std::vector<std::filesystem::path> animationFilePaths = animPathResult.value();
 
         SFBGS::AnimationScene translatedScene;
         if (!translatedScene.ConvertFromUniversalScene(*scene))
         {
             errorMessage = "[CALUMI.Animation API] Could not convert animation scene";
+            return false;
         }
 
         auto rigResult = translatedScene.rig.WriteToFile(rigFilePath);
@@ -291,7 +306,191 @@ namespace CALUMI{ namespace SFBGS{
             }
         }
 
-        errorMessage = "Successful Save To " + *directoryPath;
+        std::filesystem::path dirPath = directoryPath;
+        char buffer[] = "Successful Save To ";
+        strcat(buffer, dirPath.string().c_str());
+        errorMessage = buffer;
+        return true;
+    }
+
+    //Warning, desired directory path array must be in the same order as the animations in the scene. .rig file must be present and can be placed anywhere within the array. 
+    bool SFBGS::SaveAnimationSceneToSFBGSFormatPathOverrideC(UNIV::AnimationScene* scene, float highPrecisionValue, float lowPrecisionValue, const wchar_t** directoryPathArray, size_t arraySize, const char* errorMessage)
+    {
+        if (scene->rig.boneEntries.empty())
+        {
+            errorMessage = "[CALUMI.Animation API] No Rig Entry Found In Animation Scene. Cannot Convert";
+            return false;
+        }
+
+        if (arraySize < 1 || !directoryPathArray || !directoryPathArray[0])
+        {
+            errorMessage = ("[CALUMI.Animation API] Error, File Path Array Not Found");
+            return false;
+        }
+
+        std::vector<std::filesystem::path> animationFilePaths;
+        std::filesystem::path rigFilePath;
+        std::string pathPrintOut;
+        for (unsigned int i = 0; i < arraySize; i++)
+        {
+            std::filesystem::path pathToAdd(directoryPathArray[i]);
+            if (pathToAdd.extension() == ".rig")
+                rigFilePath = pathToAdd;
+            else
+                animationFilePaths.push_back(pathToAdd);
+
+            pathPrintOut += pathToAdd.string();
+            pathPrintOut += "\n";
+        }
+        animationFilePaths.shrink_to_fit();
+
+        if (rigFilePath.empty())
+        {
+            errorMessage = "[CALUMI.Animation API] Error, No .rig File Path Found";
+            return false;
+        }
+
+        SFBGS::AnimationScene translatedScene;
+        if (!translatedScene.ConvertFromUniversalScene(*scene))
+        {
+            errorMessage = "[CALUMI.Animation API] Could not convert animation scene";
+            return false;
+        }
+
+        auto rigResult = translatedScene.rig.WriteToFile(rigFilePath);
+        if (!rigResult.has_value())
+        {
+            std::string temp = "[CALUMI.Animation API] " + rigResult.error().ToString();
+            errorMessage = temp.c_str();
+            return false;
+        }
+
+        unsigned int minSize = min(translatedScene.animations.size(), (arraySize-1));
+
+        for (int i = 0; i < minSize; i++)
+        {
+            auto animResult = translatedScene.animations.at(i).WriteToFile(animationFilePaths.at(i));
+            if (!animResult.has_value())
+            {
+                std::string temp = "[CALUMI.Animation API] " + animResult.error().ToString();
+                errorMessage = temp.c_str();
+                return false;
+            }
+        }
+
+        
+        char buffer[] = "Successful Save To ";
+        strcat(buffer, pathPrintOut.c_str());
+        errorMessage = buffer;
+        return true;
+    }
+
+    //Warning, desired directory path array must be in the same order as the animations in the scene.
+    bool SFBGS::SaveAnimationSceneToSFBGSFormatUsingRigReferencePathOverrideC(UNIV::AnimationScene* scene, const wchar_t** directoryPathArray, size_t arraySize, const wchar_t* sfbgsRigPath, const char* errorMessage)
+    {
+        std::filesystem::path rigPath(sfbgsRigPath);
+        //const char* afExt = ".af";
+
+        SFBGS::SkeletonRig sfbgsRig;
+        auto rigResult = sfbgsRig.ReadFromFile(rigPath);
+
+        if (!rigResult.has_value())
+        {
+            char buffer[] = "[CALUMI.Animation API] Error during rig import with error message:> ";
+            strcat(buffer, rigResult.error().ToString().c_str());
+
+            errorMessage = buffer;
+            return false;
+        }
+        if (arraySize < 1 || !directoryPathArray || !directoryPathArray[0])
+        {
+            errorMessage = ("[CALUMI.Animation API] Error, File Path Array Not Found");
+            return false;
+        }
+
+        std::string pathPrintOut;
+        std::vector<std::filesystem::path> animationFilePaths;
+        animationFilePaths.reserve(arraySize);
+
+        for (unsigned int i = 0; i < arraySize; i++)
+        {
+            std::filesystem::path pathToAdd(directoryPathArray[i]);
+            animationFilePaths.push_back(pathToAdd);
+            pathPrintOut += pathToAdd.string();
+            pathPrintOut += "\n";
+        }
+        animationFilePaths.shrink_to_fit();
+        pathPrintOut += "Using Rig From: ";
+        pathPrintOut += rigPath.string() + "\n";
+
+        SFBGS::AnimationScene translatedScene;
+        if (!translatedScene.ConvertFromUniversalScene(*scene, sfbgsRig))
+        {
+            errorMessage = "[CALUMI.Animation API] Could not convert animation scene";
+            return false;
+        }
+
+        for (int i = 0; i < translatedScene.animations.size(); i++)
+        {
+            auto animResult = translatedScene.animations.at(i).WriteToFile(animationFilePaths.at(i));
+            if (!animResult.has_value())
+            {
+                std::string temp = "[CALUMI.Animation API] " + animResult.error().ToString();
+                errorMessage = temp.c_str();
+                return false;
+            }
+        }
+        
+        errorMessage = pathPrintOut.c_str();
+        return true;
+    }
+
+    bool SFBGS::SaveAnimationSceneToSFBGSFormatUsingRigReferenceC(UNIV::AnimationScene* scene, const wchar_t* directoryPath, const wchar_t* sfbgsRigPath, const char* errorMessage)
+    {
+        std::filesystem::path rigPath(sfbgsRigPath);
+        const char* afExt = ".af";
+
+        SFBGS::SkeletonRig sfbgsRig;
+        auto rigResult = sfbgsRig.ReadFromFile(rigPath);
+
+        if (!rigResult.has_value())
+        {
+            char buffer[] = "[CALUMI.Animation API] Error during rig import with error message:> ";
+            strcat(buffer, rigResult.error().ToString().c_str());
+
+            errorMessage = buffer;
+            return false;
+        }
+
+        auto animPathResult = scene->GetFilePathsFromAnimationScene(directoryPath, afExt);
+        if (!animPathResult.has_value())
+        {
+            errorMessage = animPathResult.error().c_str();
+            return false;
+        }
+        std::vector<std::filesystem::path> animationFilePaths = animPathResult.value();
+
+        SFBGS::AnimationScene translatedScene;
+        if (!translatedScene.ConvertFromUniversalScene(*scene, sfbgsRig))
+        {
+            errorMessage = "[CALUMI.Animation API] Could not convert animation scene";
+            return false;
+        }
+
+        for (int i = 0; i < translatedScene.animations.size(); i++)
+        {
+            auto animResult = translatedScene.animations.at(i).WriteToFile(animationFilePaths.at(i));
+            if (!animResult.has_value())
+            {
+                std::string temp = "[CALUMI.Animation API] " + animResult.error().ToString();
+                errorMessage = temp.c_str();
+                return false;
+            }
+        }
+        std::filesystem::path dirPath = directoryPath;
+        char buffer[] = "Successful Save To ";
+        strcat(buffer, dirPath.string().c_str());
+        errorMessage = buffer;
         return true;
     }
 
@@ -345,7 +544,6 @@ namespace CALUMI{ namespace SFBGS{
         *output = sfbgsAnimationScene.ConvertToUniversalScene();
 
         errorMessage = "[CALUMI.Animation API] AnimationScene Created. Please Remember To call DeleteAnimationSceneC(ptr) When Finished.";
-
         return output;
     }
 

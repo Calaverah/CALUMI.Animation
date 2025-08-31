@@ -22,9 +22,10 @@ namespace CALUMI{namespace UNIV{
 		std::vector<Animation> animations;
 		SkeletonRig rig;
 
-
+		std::expected<std::vector<std::filesystem::path>, std::string> GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension);
 	};
 
+	
 
 	extern  "C" {
 		CALUMIANIMATION_API AnimationScene* CreateAnimationSceneC(const char* sceneName);

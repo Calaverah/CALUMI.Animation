@@ -40,12 +40,16 @@ namespace CALUMI {
 
 			// Inherited via Convertible
 			bool ConvertFromUniversalScene(UNIV::AnimationScene& input) override;
+			bool ConvertFromUniversalScene(CALUMI::UNIV::AnimationScene& input, SFBGS::SkeletonRig& rigReference);
 			UNIV::AnimationScene ConvertToUniversalScene() override;
 		};
 
 
 		extern  "C" {
 			CALUMIANIMATION_API bool SaveAnimationSceneToSFBGSFormatC(UNIV::AnimationScene* scene, float highPrecisionValue, float lowPrecisionValue, const wchar_t* directoryPath, const char* errorMessage);
+			CALUMIANIMATION_API bool SaveAnimationSceneToSFBGSFormatPathOverrideC(UNIV::AnimationScene* scene, float highPrecisionValue, float lowPrecisionValue, const wchar_t** directoryPathArray, size_t arraySize, const char* errorMessage);
+			CALUMIANIMATION_API bool SaveAnimationSceneToSFBGSFormatUsingRigReferenceC(UNIV::AnimationScene* scene, const wchar_t* directoryPath,const wchar_t* sfbgsRigPath, const char* errorMessage);
+			CALUMIANIMATION_API bool SaveAnimationSceneToSFBGSFormatUsingRigReferencePathOverrideC(UNIV::AnimationScene* scene, const wchar_t** directoryPathArray, size_t arraySize, const wchar_t* sfbgsRigPath, const char* errorMessage);
 			CALUMIANIMATION_API UNIV::AnimationScene* LoadAnimationSceneFromSFBGSFormatC(const wchar_t** filePathsArray, int numberOfFiles, const char* errorMessage);
 		}
 	}

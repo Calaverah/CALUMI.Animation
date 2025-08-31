@@ -142,6 +142,18 @@ namespace CALUMI {
 			}
 			return false;
 		}
+		const char* GetAnimBlockBoneC(AnimationBlock* source)
+		{
+			return source->boneName.c_str();
+		}
+		int GetAnimBlockBoneIndexC(AnimationBlock* source)
+		{
+			return source->boneIndex;
+		}
+		unsigned int GetLastFrameInAnimBlockC(AnimationBlock* source)
+		{
+			return source->GetLastFrameInBlock();
+		}
 		bool AddRotationSqToAnimBlockC(AnimationBlock* block, Rotation* rotSq, int size)
 		{
 			for (int i = 0; i < size; i++)

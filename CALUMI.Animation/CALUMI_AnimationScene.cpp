@@ -85,6 +85,29 @@ namespace CALUMI {
             return true;
         }
         
+        std::expected<std::vector<std::filesystem::path>, std::string> AnimationScene::GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension)
+        {
+            std::vector<std::filesystem::path> animationFilePaths;
+            std::string errorMessage;
+            animationFilePaths.reserve(animations.size());
+            for (UNIV::Animation entry : animations)
+            {
+                if (entry.animationTitle.empty())
+                {
+                    errorMessage = "[CALUMI.Animation API] Empty string found for Animation Title";
+                    return std::unexpected(errorMessage);
+                }
+                std::filesystem::path pathToAdd(directoryPath);
+                pathToAdd /= "animations";
+                pathToAdd /= sceneName;
+                pathToAdd /= entry.animationTitle;
+                pathToAdd.replace_extension(extension);
+                animationFilePaths.push_back(pathToAdd);
+            }
+
+            return animationFilePaths;
+        }
+
     }
 }
 
