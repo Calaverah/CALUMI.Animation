@@ -76,7 +76,7 @@ namespace CALUMI {
 		}
 		AnimationBlock* GetAnimationBlockC(Animation* source, int index, const char* errorMessage)
 		{
-			if (source->animationBlocks.size() <= index)
+			if (source->animationBlocks.size() <= index || index < 0)
 			{
 				errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
 				return nullptr;
@@ -150,14 +150,23 @@ namespace CALUMI {
 			}
 			return true;
 		}
-		Rotation* GetRotationSq(AnimationBlock* source)
+		Rotation* GetRotationSqArrayC(AnimationBlock* source)
 		{
 			if(source->_rotationSequence.empty())
 			return nullptr;
 
 			return source->_rotationSequence.data();
 		}
-		size_t GetRotationSqSize(AnimationBlock* source)
+		Rotation* GetRotationFromSqC(AnimationBlock* source, int index, const char* errorMessage)
+		{
+			if (index >= source->_rotationSequence.size() || index < 0)
+			{
+				errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+				return nullptr;
+			}
+			return &source->_rotationSequence.at(index);
+		}
+		size_t GetRotationSqSizeC(AnimationBlock* source)
 		{
 			return source->_rotationSequence.size();
 		}
@@ -169,14 +178,23 @@ namespace CALUMI {
 			}
 			return true;
 		}
-		Translation* GetTranslationSq(AnimationBlock* source)
+		Translation* GetTranslationSqArrayC(AnimationBlock* source)
 		{
 			if (source->_translationSequence.empty())
 				return nullptr;
 
 			return source->_translationSequence.data();
 		}
-		size_t GetTranslationSqSize(AnimationBlock* source)
+		Translation* GetTranslationFromSqC(AnimationBlock* source, int index, const char* errorMessage)
+		{
+			if (index >= source->_translationSequence.size() || index < 0)
+			{
+				errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+				return nullptr;
+			}
+			return &source->_translationSequence.at(index);
+		}
+		size_t GetTranslationSqSizeC(AnimationBlock* source)
 		{
 			return source->_translationSequence.size();
 		}
@@ -188,14 +206,23 @@ namespace CALUMI {
 			}
 			return true;
 		}
-		Scalar* GetScalarSq(AnimationBlock* source)
+		Scalar* GetScalarSqArrayC(AnimationBlock* source)
 		{
 			if(source->_scalarSequence.empty())
 			return nullptr;
 
 			return source->_scalarSequence.data();
 		}
-		size_t GetScalarSqSize(AnimationBlock* source)
+		Scalar* GetScalarFromSqC(AnimationBlock* source, int index, const char* errorMessage)
+		{
+			if (index >= source->_scalarSequence.size() || index < 0)
+			{
+				errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+				return nullptr;
+			}
+			return &source->_scalarSequence.at(index);
+		}
+		size_t GetScalarSqSizeC(AnimationBlock* source)
 		{
 			return source->_scalarSequence.size();
 		}
@@ -207,14 +234,23 @@ namespace CALUMI {
 			}
 			return true;
 		}
-		Priority* GetPrioritySq(AnimationBlock* source)
+		Priority* GetPrioritySqArrayC(AnimationBlock* source)
 		{
 			if(source->_prioritySequence.empty())
 			return nullptr;
 
 			return source->_prioritySequence.data();
 		}
-		size_t GetPrioritySqSize(AnimationBlock* source)
+		Priority* GetPriorityFromSqC(AnimationBlock* source, int index, const char* errorMessage)
+		{
+			if (index >= source->_prioritySequence.size() || index < 0)
+			{
+				errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+				return nullptr;
+			}
+			return &source->_prioritySequence.at(index);
+		}
+		size_t GetPrioritySqSizeC(AnimationBlock* source)
 		{
 			return source->_prioritySequence.size();
 		}

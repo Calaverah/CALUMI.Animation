@@ -55,16 +55,20 @@ namespace CALUMI {namespace UNIV {
 		CALUMIANIMATION_API AnimationBlock* CreateAnimBlockC(const char* boneName, int boneIndex, const char* errorMessage);
 		CALUMIANIMATION_API bool DeleteAnimationBlockC(AnimationBlock* ptr);
 		CALUMIANIMATION_API bool AddRotationSqToAnimBlockC(AnimationBlock* block, Rotation* rotSq, int size);
-		CALUMIANIMATION_API Rotation* GetRotationSq(AnimationBlock* source);
-		CALUMIANIMATION_API size_t GetRotationSqSize(AnimationBlock* source);
+		CALUMIANIMATION_API Rotation* GetRotationSqArrayC(AnimationBlock* source);
+		CALUMIANIMATION_API Rotation* GetRotationFromSqC(AnimationBlock* source, int index, const char* errorMessage);
+		CALUMIANIMATION_API size_t GetRotationSqSizeC(AnimationBlock* source);
 		CALUMIANIMATION_API bool AddTranslationSqToAnimBlockC(AnimationBlock* block, Translation* trnSq, int size);
-		CALUMIANIMATION_API Translation* GetTranslationSq(AnimationBlock* source);
-		CALUMIANIMATION_API size_t GetTranslationSqSize(AnimationBlock* source);
+		CALUMIANIMATION_API Translation* GetTranslationSqArrayC(AnimationBlock* source);
+		CALUMIANIMATION_API Translation* GetTranslationFromSqC(AnimationBlock* source, int index, const char* errorMessage);
+		CALUMIANIMATION_API size_t GetTranslationSqSizeC(AnimationBlock* source);
 		CALUMIANIMATION_API bool AddScalarSqToAnimBlockC(AnimationBlock* block, Scalar* sclrSq, int size);
-		CALUMIANIMATION_API Scalar* GetScalarSq(AnimationBlock* source);
-		CALUMIANIMATION_API size_t GetScalarSqSize(AnimationBlock* source);
+		CALUMIANIMATION_API Scalar* GetScalarSqArrayC(AnimationBlock* source);
+		CALUMIANIMATION_API Scalar* GetScalarFromSqC(AnimationBlock* source, int index, const char* errorMessage);
+		CALUMIANIMATION_API size_t GetScalarSqSizeC(AnimationBlock* source);
 		CALUMIANIMATION_API bool AddPrioritySqToAnimBlockC(AnimationBlock* block, Priority* prtySq, int size);
-		CALUMIANIMATION_API Priority* GetPrioritySq(AnimationBlock* source);
-		CALUMIANIMATION_API size_t GetPrioritySqSize(AnimationBlock* source);
+		CALUMIANIMATION_API Priority* GetPrioritySqArrayC(AnimationBlock* source);
+		CALUMIANIMATION_API Priority* GetPriorityFromSqC(AnimationBlock* source, int index, const char* errorMessage);
+		CALUMIANIMATION_API size_t GetPrioritySqSizeC(AnimationBlock* source);
 	}
 }}

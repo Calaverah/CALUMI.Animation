@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 #include "..\CALUMI.Animation\CALUMI_Math.h"
+#include <iostream>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace CALUMI::Math;
@@ -189,6 +190,24 @@ namespace CALUMIAnimationUnitTests
 			Quaternion quaternion(2.251, 2.0, 3.0, 4.0, false);
 			Assert::AreEqual(quaternion.Dot(Quaternion().Identity), 4.0f, 0.0000001f);
 		}
+		TEST_METHOD(AxisAngleMultiplication1_E)
+		{
+			Quaternion quaternion1(Vector3(0.0, 0.0, 1.0), ToRadians(180.0)); //0,0,1,0
+			Quaternion quaternion2(Vector3(0.0, 1.0, 0.0), ToRadians(30.0)); //0,0.258819,0,0.9659258
+			Quaternion expectedOut(-0.258819,0.0,0.965926,0.0); //180 on Z axis
+			//std::cout << (quaternion1 * quaternion2).ToString() << std::endl;
+			Assert::IsTrue(expectedOut.AreSameRotation(quaternion1 * quaternion2, 0.0000001f));
+		}
+		TEST_METHOD(AxisAngleMultiplication2_E)
+		{
+			Quaternion quaternion1(Vector3(0.0, 0.0, 1.0), ToRadians(180.0)); //0,0,1,0
+			Quaternion quaternion2(Vector3(0.0, 1.0, 0.0), ToRadians(30.0)); //0,0.258819,0,0.9659258
+			Quaternion expectedOut = quaternion1 * quaternion2;
+			Quaternion result;
+			RotateQuaternionByAxisAngleC(&quaternion2, &result, 0.0, 0.0, 1.0, ToRadians(180.0));
+			Assert::IsTrue(expectedOut.AreSameRotation(result, 0.0000001f));
+		}
+
 	};
 
 

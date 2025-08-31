@@ -162,8 +162,8 @@ namespace CALUMI
 
 			Quaternion() = default;
 			Quaternion(float input[4], bool normalize = true);
-			Quaternion(Vector3 direction, float scalar, bool normalize = true);
-			Quaternion(Vector3D direction, float scalar, bool normalize = true);
+			Quaternion(Vector3 direction, float radians, bool normalize = true);
+			Quaternion(Vector3D direction, float radians, bool normalize = true);
 			Quaternion(float x, float y, float z, float w, bool normalize = true)
 				: x(x), y(y), z(z), w(w)
 			{
@@ -217,6 +217,7 @@ namespace CALUMI
 			CALUMIANIMATION_API float GetQuaternionY(Quaternion* source);
 			CALUMIANIMATION_API float GetQuaternionZ(Quaternion* source);
 			CALUMIANIMATION_API float GetQuaternionW(Quaternion* source);
+			CALUMIANIMATION_API bool RotateQuaternionByAxisAngleC(Quaternion* input, Quaternion* result, float x, float y, float z, float radians);
 		}
 	}
 	

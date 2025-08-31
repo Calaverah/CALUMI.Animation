@@ -374,10 +374,10 @@ namespace CALUMI
 			Normalize();
 		};
 
-		Math::Quaternion::Quaternion(Vector3 direction, float scalar, bool normalize)
+		Math::Quaternion::Quaternion(Vector3 direction, float radians, bool normalize)
 		{
 			direction.Normalize();
-			float halfTheta = scalar/2.0f;
+			float halfTheta = radians/2.0f;
 			float halfThetaSin = std::sin(halfTheta);
 			float halfThetaCos = std::cos(halfTheta);
 
@@ -390,10 +390,10 @@ namespace CALUMI
 				Normalize();
 		};
 
-		Math::Quaternion::Quaternion(Vector3D direction, float scalar, bool normalize)
+		Math::Quaternion::Quaternion(Vector3D direction, float radians, bool normalize)
 		{
 			direction.Normalize();
-			double halfTheta = scalar / 2.0f;
+			double halfTheta = radians / 2.0f;
 			double halfThetaSin = std::sin(halfTheta);
 			double halfThetaCos = std::cos(halfTheta);
 
@@ -624,6 +624,17 @@ namespace CALUMI
 		float GetQuaternionW(Quaternion* source)
 		{
 			return source->w;
+		}
+		bool RotateQuaternionByAxisAngleC(Quaternion* input, Quaternion* result, float x, float y, float z, float radians)
+		{
+			if (x == 0 && y == 0 && z == 0)
+			{
+				return false;
+			}
+
+			Quaternion rotation(Vector3(x,y,z) , radians);
+			*result = rotation * (*input);
+			return true;
 		}
 	}
 
