@@ -54,7 +54,7 @@ namespace CALUMI {namespace UNIV {
 
 		CALUMIANIMATION_API AnimationBlock* CreateAnimBlockC(const char* boneName, int boneIndex, const char* errorMessage);
 		CALUMIANIMATION_API bool DeleteAnimationBlockC(AnimationBlock* ptr);
-		CALUMIANIMATION_API const char* GetAnimBlockBoneC(AnimationBlock* source);
+		CALUMIANIMATION_API const char* GetAnimBlockBoneNameC(AnimationBlock* source);
 		CALUMIANIMATION_API int GetAnimBlockBoneIndexC(AnimationBlock* source);
 		CALUMIANIMATION_API unsigned int GetLastFrameInAnimBlockC(AnimationBlock* source);
 		CALUMIANIMATION_API bool AddRotationSqToAnimBlockC(AnimationBlock* block, Rotation* rotSq, int size);

@@ -308,7 +308,7 @@ namespace CALUMI{ namespace SFBGS{
 
         std::filesystem::path dirPath = directoryPath;
         char buffer[] = "Successful Save To ";
-        strcat(buffer, dirPath.string().c_str());
+        strcat_s(buffer, 240, dirPath.string().c_str());
         errorMessage = buffer;
         return true;
     }
@@ -380,7 +380,7 @@ namespace CALUMI{ namespace SFBGS{
 
         
         char buffer[] = "Successful Save To ";
-        strcat(buffer, pathPrintOut.c_str());
+        strcat_s(buffer,240, pathPrintOut.c_str());
         errorMessage = buffer;
         return true;
     }
@@ -397,7 +397,7 @@ namespace CALUMI{ namespace SFBGS{
         if (!rigResult.has_value())
         {
             char buffer[] = "[CALUMI.Animation API] Error during rig import with error message:> ";
-            strcat(buffer, rigResult.error().ToString().c_str());
+            strcat_s(buffer, 240, rigResult.error().ToString().c_str());
 
             errorMessage = buffer;
             return false;
@@ -456,7 +456,7 @@ namespace CALUMI{ namespace SFBGS{
         if (!rigResult.has_value())
         {
             char buffer[] = "[CALUMI.Animation API] Error during rig import with error message:> ";
-            strcat(buffer, rigResult.error().ToString().c_str());
+            strcat_s(buffer, 240, rigResult.error().ToString().c_str());
 
             errorMessage = buffer;
             return false;
@@ -489,7 +489,7 @@ namespace CALUMI{ namespace SFBGS{
         }
         std::filesystem::path dirPath = directoryPath;
         char buffer[] = "Successful Save To ";
-        strcat(buffer, dirPath.string().c_str());
+        strcat_s(buffer, 240, dirPath.string().c_str());
         errorMessage = buffer;
         return true;
     }

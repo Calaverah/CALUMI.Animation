@@ -142,7 +142,7 @@ namespace CALUMI {
 			}
 			return false;
 		}
-		const char* GetAnimBlockBoneC(AnimationBlock* source)
+		const char* GetAnimBlockBoneNameC(AnimationBlock* source)
 		{
 			return source->boneName.c_str();
 		}
