@@ -1,9 +1,11 @@
-//Copyright © 2025 aka Calaverah. All rights reserved.
+//Copyright ï¿½ 2025 aka Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
 #include "pch.h"
 #include "CALUMI_AnimationScene.h"
+
+#include "CALUMI_Utilities.h"
 
 
 namespace CALUMI {
@@ -107,6 +109,16 @@ namespace CALUMI {
 
             return animationFilePaths;
         }
+
+        std::string AnimationScene::ToJSON() const {
+            std::string output = "{\n\"sceneName\":\"" + sceneName + "\",\n\"animations\":";
+            output += Utilities::VectorToJSON(animations);
+            output += ",\n\"rig\":";
+            output += rig.ToJSON();
+            output += "\n}";
+            return output;
+        }
+
 
     }
 }

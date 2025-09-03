@@ -1,10 +1,12 @@
-//Copyright © 2025 aka Calaverah. All rights reserved.
+//Copyright ï¿½ 2025 aka Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
 #include "pch.h"
 #include "CALUMI_Animation.h"
 #include <print>
+
+#include "CALUMI_Utilities.h"
 
 namespace CALUMI {
 	namespace UNIV {
@@ -265,6 +267,24 @@ namespace CALUMI {
 		size_t GetPrioritySqSizeC(AnimationBlock* source)
 		{
 			return source->_prioritySequence.size();
+		}
+
+
+		std::string Animation::ToJSON() const
+		{
+			std::string output = "{\n\"animationTitle\":\"" + animationTitle + "\",\n\"boneCount\":" + std::to_string(boneCount) + ",\n\"animationBlocks\":";
+			output += Utilities::VectorToJSON(animationBlocks);
+			output += "\n}";
+			return output;
+		}
+
+		std::string AnimationBlock::ToJSON() const {
+			std::string output = "{\n\"boneName\":\"" + boneName + "\",\n\"boneIndex\":" + std::to_string(boneIndex) + ",\n";
+			output += "\"rotationSequence\":" + Utilities::VectorToJSON(_rotationSequence) + ",\n";
+			output += "\"translationSequence\":" + Utilities::VectorToJSON(_translationSequence) + ",\n";
+			output += "\"scalarSequence\":" + Utilities::VectorToJSON(_scalarSequence) + ",\n";
+			output += "\"prioritySequence\":" + Utilities::VectorToJSON(_prioritySequence) + "\n}";
+			return output;
 		}
 
 	}

@@ -1,4 +1,4 @@
-//Copyright © 2025 aka Calaverah. All rights reserved.
+//Copyright ï¿½ 2025 aka Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -23,6 +23,8 @@ namespace CALUMI {namespace UNIV {
 			: frame(frame), translation(translation)
 		{
 		}
+
+		std::string ToJSON() const;
 	};
 
 	struct CALUMIANIMATION_API Rotation
@@ -35,6 +37,8 @@ namespace CALUMI {namespace UNIV {
 			: frame(frame), rotation(rotation)
 		{
 		}
+
+		std::string ToJSON() const;
 	};
 
 	struct CALUMIANIMATION_API Scalar
@@ -47,6 +51,8 @@ namespace CALUMI {namespace UNIV {
 			: frame(frame), scalar(scalar)
 		{
 		}
+
+		std::string ToJSON() const;
 	};
 
 	struct CALUMIANIMATION_API Priority
@@ -58,6 +64,8 @@ namespace CALUMI {namespace UNIV {
 			: frame(frame), priority(priority)
 		{
 		}
+
+		std::string ToJSON() const;
 	};
 
 	extern  "C" {

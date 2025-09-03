@@ -1,4 +1,4 @@
-//Copyright © 2025 aka Calaverah. All rights reserved.
+//Copyright ï¿½ 2025 aka Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -91,7 +91,11 @@ namespace CALUMI {namespace SFBGS {
 	};
 	SkeletonRig ConvertToSFBGSRig(const CALUMI::UNIV::SkeletonRig& inputRig, float& highPrecision, float& lowPrecision);
 	CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(const CALUMI::SFBGS::SkeletonRig& inputRig);
-	
+
+	// Load rig from file and return pointer.
+	UNIV::SkeletonRig* LoadRigFromFile(const wchar_t* filePath, const char* errorMessage);
+
+
 }}
 
 

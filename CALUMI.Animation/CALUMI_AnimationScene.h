@@ -1,4 +1,4 @@
-//Copyright © 2025 aka Calaverah. All rights reserved.
+//Copyright ï¿½ 2025 aka Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -23,6 +23,7 @@ namespace CALUMI{namespace UNIV{
 		SkeletonRig rig;
 
 		std::expected<std::vector<std::filesystem::path>, std::string> GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension);
+		std::string ToJSON() const;
 	};
 
 	

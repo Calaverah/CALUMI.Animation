@@ -1,4 +1,4 @@
-//Copyright © 2025 aka Calaverah. All rights reserved.
+//Copyright ï¿½ 2025 aka Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -21,6 +21,8 @@ namespace CALUMI {namespace UNIV {
 
 		//This will get the final frame entry, not the total number of frames in the sequence
 		unsigned int GetLastFrameInBlock();
+
+		std::string ToJSON() const;
 	};
 
 	class CALUMIANIMATION_API Animation
@@ -37,7 +39,7 @@ namespace CALUMI {namespace UNIV {
 
 		Animation() = default;
 
-
+		std::string ToJSON() const;
 	};
 
 	//Ctype accessable, due to namespace being ignored in demangling, it is important to remember that only universal animation structs are exposed

@@ -1,9 +1,11 @@
-//Copyright © 2025 aka Calaverah. All rights reserved.
+//Copyright ï¿½ 2025 aka Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
 #include "pch.h"
 #include "CALUMI_SkeletonRig.h"
+
+#include "CALUMI_Utilities.h"
 
 namespace CALUMI{ namespace UNIV{
     SkeletonRig::SkeletonRig(std::string rigName)
@@ -236,6 +238,27 @@ namespace CALUMI{ namespace UNIV{
         }
         return true;
     }
+
+    std::string SkeletonRig::ToJSON() const {
+        std::string output = "{\n\"rigName\":\"" + rigName + "\",\n\"boneEntries\":";
+        output += Utilities::VectorToJSON(boneEntries);
+        output += "\n}";
+        return output;
+    }
+
+    std::string SkeletonBone::ToJSON() const {
+        std::string output = "{\n\"name\":\"" + name + "\",\n\"parentBoneIndex\":" + std::to_string(parentBoneIndex) + ",\n\"localRotation\": [\n";
+        output += "  " + std::to_string(localRotation.x) + ",\n  " + std::to_string(localRotation.y) + ",\n  " + std::to_string(localRotation.z) + ",\n  " + std::to_string(localRotation.w) + "\n],\n";
+        output += "\"rootRotation\": [\n";
+        output += "  " + std::to_string(rootRotation.x) + ",\n  " + std::to_string(rootRotation.y) + ",\n  " + std::to_string(rootRotation.z) + ",\n  " + std::to_string(rootRotation.w) + "\n],\n";
+        output += "\"localPosition\": [\n";
+        output += "  " + std::to_string(localPosition.x) + ",\n " + std::to_string(localPosition.y) + ",\n  " + std::to_string(localPosition.z) + "\n],\n";
+        output += "\"rootPosition\": [\n";
+        output += "  " + std::to_string(rootPosition.x) + ",\n  " + std::to_string(rootPosition.y) + ",\n  " + std::to_string(rootPosition.z) + "\n]\n";
+        output += "}";
+        return output;
+    }
+
 }
 
 }

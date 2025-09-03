@@ -91,6 +91,23 @@ namespace CALUMI {
             return source->priority;
         }
 
+        std::string Rotation::ToJSON() const {
+            return "{ \"frame\": " + std::to_string(frame) + ", \"value\": [" + std::to_string(rotation.w) + ", " + std::to_string(rotation.x) + ", " + std::to_string(rotation.y) + ", " + std::to_string(rotation.z) + "] }";
+        }
+
+        std::string Translation::ToJSON() const {
+            return "{ \"frame\": " + std::to_string(frame) + ", \"value\": [" + std::to_string(translation.x) + ", " + std::to_string(translation.y) + ", " + std::to_string(translation.z) + "] }";
+        }
+
+        std::string Scalar::ToJSON() const {
+            return "{ \"frame\": " + std::to_string(frame) + ", \"value\": " + std::to_string(scalar) + " }";
+        }
+
+        std::string Priority::ToJSON() const {
+            return "{ \"frame\": " + std::to_string(frame) + ", \"value\": " + std::to_string(priority) + " }";
+        }
+
+
         
 
 } }

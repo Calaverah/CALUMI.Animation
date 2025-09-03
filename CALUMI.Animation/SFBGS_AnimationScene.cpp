@@ -1,4 +1,4 @@
-//Copyright © 2025 aka Calaverah. All rights reserved.
+//Copyright ï¿½ 2025 aka Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -542,6 +542,8 @@ namespace CALUMI{ namespace SFBGS{
 
         UNIV::AnimationScene* output = new UNIV::AnimationScene;
         *output = sfbgsAnimationScene.ConvertToUniversalScene();
+
+        Utilities::WriteJSONToFile("C:/General Files/Git/AnimScript/AnimStarfieldMeshConverter_repo/scripts/tool_export_mesh/ExportedJSONs/LastFile.json", output->ToJSON());
 
         errorMessage = "[CALUMI.Animation API] AnimationScene Created. Please Remember To call DeleteAnimationSceneC(ptr) When Finished.";
         return output;

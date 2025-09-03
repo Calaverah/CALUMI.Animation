@@ -1,4 +1,4 @@
-//Copyright © 2025 aka Calaverah. All rights reserved.
+//Copyright ï¿½ 2025 aka Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -29,6 +29,8 @@ namespace CALUMI{ namespace UNIV{
 
 
 		SkeletonBone() = default;
+
+		std::string ToJSON() const;
 	};
 
 	struct CALUMIANIMATION_API SkeletonRig
@@ -65,6 +67,8 @@ namespace CALUMI{ namespace UNIV{
 		/// <param name="localValues">	Enter false for values to be read as relative to root</param>
 		/// <returns></returns>
 		bool AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, std::string boneName, int parentIndex, bool localValues = true);
+
+		std::string ToJSON() const;
 	};
 
 	extern  "C" {

@@ -1,4 +1,4 @@
-//Copyright © 2025 aka Calaverah. All rights reserved.
+//Copyright ï¿½ 2025 aka Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -403,6 +403,39 @@ namespace CALUMI {namespace SFBGS {
 		std::memcpy(&buffer.at(4), &fileSize, sizeof(fileSize));
 
 		return CALUMI::WriteToBinaryFile(outputFilePath,buffer);
+	}
+
+	UNIV::SkeletonRig* LoadRigFromFile(const wchar_t* filePath, const char* errorMessage)
+	{
+		if (!filePath)
+		{
+			errorMessage = "[CALUMI.Animation API] Error, No File Path Provided To Load Rig From. Returning Empty Rig.";
+			return new UNIV::SkeletonRig();
+		}
+
+		std::filesystem::path pathToLoad(filePath);
+		if (pathToLoad.extension() != ".rig")
+		{
+			errorMessage = "[CALUMI.Animation API] Error, File Path Provided Does Not Have .rig Extension. Returning Empty Rig.";
+			return new UNIV::SkeletonRig();
+		}
+
+		SkeletonRig rig;
+		auto rigResult = rig.ReadFromFile(pathToLoad);
+		if (!rigResult.has_value())
+		{
+			char buffer[] = "[CALUMI.Animation API] Error during rig import with error message:> ";
+			strcat_s(buffer, 240, rigResult.error().ToString().c_str());
+
+			errorMessage = buffer;
+
+			// Return pointer to empty rig
+			return new UNIV::SkeletonRig();
+		}
+		UNIV::SkeletonRig* output = new UNIV::SkeletonRig;
+		*output = ConvertToUniversalRig(rig);
+		errorMessage = "[CALUMI.Animation API] Rig Loaded Successfully From File Path Provided.";
+		return output;
 	}
 
 }}
