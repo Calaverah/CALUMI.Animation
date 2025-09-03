@@ -22,7 +22,7 @@ namespace CALUMI {namespace UNIV {
 		//This will get the final frame entry, not the total number of frames in the sequence
 		unsigned int GetLastFrameInBlock();
 
-		std::string ToJSON() const;
+		std::string ToJSON(int indents) const;
 	};
 
 	class CALUMIANIMATION_API Animation
@@ -39,7 +39,7 @@ namespace CALUMI {namespace UNIV {
 
 		Animation() = default;
 
-		std::string ToJSON() const;
+		std::string ToJSON(int indents) const;
 	};
 
 	//Ctype accessable, due to namespace being ignored in demangling, it is important to remember that only universal animation structs are exposed

@@ -239,23 +239,24 @@ namespace CALUMI{ namespace UNIV{
         return true;
     }
 
-    std::string SkeletonRig::ToJSON() const {
-        std::string output = "{\n\"rigName\":\"" + rigName + "\",\n\"boneEntries\":";
-        output += Utilities::VectorToJSON(boneEntries);
-        output += "\n}";
+    std::string SkeletonRig::ToJSON(const int indents = 0) const {
+        std::string output = Utilities::Indent(indents) + "{\n" + Utilities::Indent(indents+1) +  "\"rigName\":\"" + rigName + "\",\n" + Utilities::Indent(indents+1) + "\"boneEntries\":";
+        output += Utilities::VectorToJSON(boneEntries, indents + 1);
+        output += "\n " + Utilities::Indent(indents) + "}";
         return output;
     }
 
-    std::string SkeletonBone::ToJSON() const {
-        std::string output = "{\n\"name\":\"" + name + "\",\n\"parentBoneIndex\":" + std::to_string(parentBoneIndex) + ",\n\"localRotation\": [\n";
-        output += "  " + std::to_string(localRotation.x) + ",\n  " + std::to_string(localRotation.y) + ",\n  " + std::to_string(localRotation.z) + ",\n  " + std::to_string(localRotation.w) + "\n],\n";
-        output += "\"rootRotation\": [\n";
-        output += "  " + std::to_string(rootRotation.x) + ",\n  " + std::to_string(rootRotation.y) + ",\n  " + std::to_string(rootRotation.z) + ",\n  " + std::to_string(rootRotation.w) + "\n],\n";
-        output += "\"localPosition\": [\n";
-        output += "  " + std::to_string(localPosition.x) + ",\n " + std::to_string(localPosition.y) + ",\n  " + std::to_string(localPosition.z) + "\n],\n";
-        output += "\"rootPosition\": [\n";
-        output += "  " + std::to_string(rootPosition.x) + ",\n  " + std::to_string(rootPosition.y) + ",\n  " + std::to_string(rootPosition.z) + "\n]\n";
-        output += "}";
+    std::string SkeletonBone::ToJSON(const int indents = 0) const {
+        std::string output = Utilities::Indent(indents) + "{\n" +  Utilities::Indent(indents+1) + "\"name\":\"" + name + "\",\n" + Utilities::Indent(indents+1) + "\"parentBoneIndex\":" + std::to_string(parentBoneIndex) + ",\n";
+        output += Utilities::Indent(indents+1) + "\"localRotation\": [";
+        output += std::to_string(localRotation.x) + ", " + std::to_string(localRotation.y) + ", " + std::to_string(localRotation.z) + ", " + std::to_string(localRotation.w) + "],\n";
+        output += Utilities::Indent(indents+1) + "\"rootRotation\": [";
+        output += std::to_string(rootRotation.x) + ", " + std::to_string(rootRotation.y) + ", " + std::to_string(rootRotation.z) + ", " + std::to_string(rootRotation.w) + "],\n";
+        output += Utilities::Indent(indents+1) + "\"localPosition\": [";
+        output += std::to_string(localPosition.x) + ", " + std::to_string(localPosition.y) + ", " + std::to_string(localPosition.z) + "],\n";
+        output += Utilities::Indent(indents+1) + "\"rootPosition\": [";
+        output += std::to_string(rootPosition.x) + ", " + std::to_string(rootPosition.y) + ", " + std::to_string(rootPosition.z) + "]\n";
+        output += Utilities::Indent(indents) + "}";
         return output;
     }
 

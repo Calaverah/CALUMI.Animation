@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "CALUMI_AnimationEntries.h"
 
+#include "CALUMI_Utilities.h"
+
 namespace CALUMI {
     namespace UNIV {
 
@@ -91,20 +93,20 @@ namespace CALUMI {
             return source->priority;
         }
 
-        std::string Rotation::ToJSON() const {
-            return "{ \"frame\": " + std::to_string(frame) + ", \"value\": [" + std::to_string(rotation.w) + ", " + std::to_string(rotation.x) + ", " + std::to_string(rotation.y) + ", " + std::to_string(rotation.z) + "] }";
+        std::string Rotation::ToJSON(const int indents = 0) const {
+            return Utilities::Indent(indents) + "{\"frame\": " + std::to_string(frame) + ", \"value\": [" + std::to_string(rotation.w) + ", " + std::to_string(rotation.x) + ", " + std::to_string(rotation.y) + ", " + std::to_string(rotation.z) + "]}";
         }
 
-        std::string Translation::ToJSON() const {
-            return "{ \"frame\": " + std::to_string(frame) + ", \"value\": [" + std::to_string(translation.x) + ", " + std::to_string(translation.y) + ", " + std::to_string(translation.z) + "] }";
+        std::string Translation::ToJSON(const int indents = 0) const {
+            return Utilities::Indent(indents+1) + "{\"frame\": " + std::to_string(frame) + ", \"value\": [" + std::to_string(translation.x) + ", " + std::to_string(translation.y) + ", " + std::to_string(translation.z) + "]}";
         }
 
-        std::string Scalar::ToJSON() const {
-            return "{ \"frame\": " + std::to_string(frame) + ", \"value\": " + std::to_string(scalar) + " }";
+        std::string Scalar::ToJSON(const int indents = 0) const {
+            return Utilities::Indent(indents+1) + "{\"frame\": " + std::to_string(frame) + ", \"value\": " + std::to_string(scalar) + "}";
         }
 
-        std::string Priority::ToJSON() const {
-            return "{ \"frame\": " + std::to_string(frame) + ", \"value\": " + std::to_string(priority) + " }";
+        std::string Priority::ToJSON(const int indents = 0) const {
+            return Utilities::Indent(indents+1) + "{\"frame\": " + std::to_string(frame) + ", \"value\": " + std::to_string(priority) + "}";
         }
 
 

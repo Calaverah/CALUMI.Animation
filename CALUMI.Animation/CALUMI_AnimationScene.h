@@ -23,7 +23,7 @@ namespace CALUMI{namespace UNIV{
 		SkeletonRig rig;
 
 		std::expected<std::vector<std::filesystem::path>, std::string> GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension);
-		std::string ToJSON() const;
+		std::string ToJSON(int indents) const;
 	};
 
 	

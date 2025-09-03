@@ -494,7 +494,7 @@ namespace CALUMI{ namespace SFBGS{
         return true;
     }
 
-    UNIV::AnimationScene* SFBGS::LoadAnimationSceneFromSFBGSFormatC(const wchar_t** filePathsArray, int numberOfFiles, const char* errorMessage)
+    UNIV::AnimationScene* SFBGS::LoadAnimationSceneFromSFBGSFormatC(const wchar_t** filePathsArray, int numberOfFiles, const char* errorMessage, const wchar_t* jsonOutputPath = L"")
     {
         if (numberOfFiles < 1 || !filePathsArray)
         {
@@ -543,7 +543,10 @@ namespace CALUMI{ namespace SFBGS{
         UNIV::AnimationScene* output = new UNIV::AnimationScene;
         *output = sfbgsAnimationScene.ConvertToUniversalScene();
 
-        Utilities::WriteJSONToFile("file.json", output->ToJSON());
+        if (jsonOutputPath != nullptr && jsonOutputPath[0] != L'\0'){
+            std::filesystem::path jsonPath(jsonOutputPath);
+            Utilities::WriteJSONToFile(jsonPath, output->ToJSON(0));
+        }
 
         errorMessage = "[CALUMI.Animation API] AnimationScene Created. Please Remember To call DeleteAnimationSceneC(ptr) When Finished.";
         return output;

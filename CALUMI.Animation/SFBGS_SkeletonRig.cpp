@@ -428,10 +428,9 @@ namespace CALUMI {namespace SFBGS {
 			strcat_s(buffer, 240, rigResult.error().ToString().c_str());
 
 			errorMessage = buffer;
-
-			// Return pointer to empty rig
 			return new UNIV::SkeletonRig();
 		}
+
 		UNIV::SkeletonRig* output = new UNIV::SkeletonRig;
 		*output = ConvertToUniversalRig(rig);
 		errorMessage = "[CALUMI.Animation API] Rig Loaded Successfully From File Path Provided.";

@@ -110,12 +110,12 @@ namespace CALUMI {
             return animationFilePaths;
         }
 
-        std::string AnimationScene::ToJSON() const {
-            std::string output = "{\n\"sceneName\":\"" + sceneName + "\",\n\"animations\":";
+        std::string AnimationScene::ToJSON(const int indents = 0) const {
+            std::string output = Utilities::Indent(indents) + "{\n" + Utilities::Indent(indents+1) + "\"sceneName\":\"" + sceneName + "\",\n" + Utilities::Indent(indents+1) + "\"animations\":";
             output += Utilities::VectorToJSON(animations);
-            output += ",\n\"rig\":";
-            output += rig.ToJSON();
-            output += "\n}";
+            output += ",\n" + Utilities::Indent(indents+1) + "\"rig\":\n";
+            output += rig.ToJSON(indents + 1);
+            output += Utilities::Indent(indents+1) + "\n}";
             return output;
         }
 

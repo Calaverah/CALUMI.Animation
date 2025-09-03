@@ -270,20 +270,20 @@ namespace CALUMI {
 		}
 
 
-		std::string Animation::ToJSON() const
+		std::string Animation::ToJSON(const int indents = 0) const
 		{
-			std::string output = "{\n\"animationTitle\":\"" + animationTitle + "\",\n\"boneCount\":" + std::to_string(boneCount) + ",\n\"animationBlocks\":";
-			output += Utilities::VectorToJSON(animationBlocks);
-			output += "\n}";
+			std::string output = Utilities::Indent(indents) + "{\n" + Utilities::Indent(indents+1) + "\"animationTitle\":\"" + animationTitle + "\",\n" + Utilities::Indent(indents+1) + "\"boneCount\":" + std::to_string(boneCount) + ",\n" + Utilities::Indent(indents+1) + "\"animationBlocks\":";
+			output += Utilities::VectorToJSON(animationBlocks, indents + 1);
+			output += "\n" + Utilities::Indent(indents) + "}";
 			return output;
 		}
 
-		std::string AnimationBlock::ToJSON() const {
-			std::string output = "{\n\"boneName\":\"" + boneName + "\",\n\"boneIndex\":" + std::to_string(boneIndex) + ",\n";
-			output += "\"rotationSequence\":" + Utilities::VectorToJSON(_rotationSequence) + ",\n";
-			output += "\"translationSequence\":" + Utilities::VectorToJSON(_translationSequence) + ",\n";
-			output += "\"scalarSequence\":" + Utilities::VectorToJSON(_scalarSequence) + ",\n";
-			output += "\"prioritySequence\":" + Utilities::VectorToJSON(_prioritySequence) + "\n}";
+		std::string AnimationBlock::ToJSON(const int indents = 0) const {
+			std::string output = Utilities::Indent(indents) + "{\n" + Utilities::Indent(indents+1) + "\"boneName\":\"" + boneName + "\",\n" + Utilities::Indent(indents+1) + "\"boneIndex\":" + std::to_string(boneIndex) + ",\n";
+			output += Utilities::Indent(indents+1) + "\"rotationSequence\":" + Utilities::VectorToJSON(_rotationSequence, indents + 1) + ",\n";
+			output += Utilities::Indent(indents+1) + "\"translationSequence\":" + Utilities::VectorToJSON(_translationSequence, indents + 1) + ",\n";
+			output += Utilities::Indent(indents+1) + "\"scalarSequence\":" + Utilities::VectorToJSON(_scalarSequence, indents + 1) + ",\n";
+			output += Utilities::Indent(indents+1) + "\"prioritySequence\":" + Utilities::VectorToJSON(_prioritySequence, indents + 1) + "\n" + Utilities::Indent(indents) + "}";
 			return output;
 		}
 

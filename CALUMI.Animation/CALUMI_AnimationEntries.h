@@ -24,7 +24,7 @@ namespace CALUMI {namespace UNIV {
 		{
 		}
 
-		std::string ToJSON() const;
+		std::string ToJSON(int indents) const;
 	};
 
 	struct CALUMIANIMATION_API Rotation
@@ -38,7 +38,7 @@ namespace CALUMI {namespace UNIV {
 		{
 		}
 
-		std::string ToJSON() const;
+		std::string ToJSON(int indents) const;
 	};
 
 	struct CALUMIANIMATION_API Scalar
@@ -52,7 +52,7 @@ namespace CALUMI {namespace UNIV {
 		{
 		}
 
-		std::string ToJSON() const;
+		std::string ToJSON(int indents) const;
 	};
 
 	struct CALUMIANIMATION_API Priority
@@ -65,7 +65,7 @@ namespace CALUMI {namespace UNIV {
 		{
 		}
 
-		std::string ToJSON() const;
+		std::string ToJSON(int indents) const;
 	};
 
 	extern  "C" {

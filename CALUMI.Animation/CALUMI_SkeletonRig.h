@@ -30,7 +30,7 @@ namespace CALUMI{ namespace UNIV{
 
 		SkeletonBone() = default;
 
-		std::string ToJSON() const;
+		std::string ToJSON(int indents) const;
 	};
 
 	struct CALUMIANIMATION_API SkeletonRig
@@ -68,7 +68,7 @@ namespace CALUMI{ namespace UNIV{
 		/// <returns></returns>
 		bool AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, std::string boneName, int parentIndex, bool localValues = true);
 
-		std::string ToJSON() const;
+		std::string ToJSON(int indents) const;
 	};
 
 	extern  "C" {
