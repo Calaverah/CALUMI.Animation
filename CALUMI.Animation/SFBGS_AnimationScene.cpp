@@ -543,7 +543,7 @@ namespace CALUMI{ namespace SFBGS{
         UNIV::AnimationScene* output = new UNIV::AnimationScene;
         *output = sfbgsAnimationScene.ConvertToUniversalScene();
 
-        Utilities::WriteJSONToFile("C:/General Files/Git/AnimScript/AnimStarfieldMeshConverter_repo/scripts/tool_export_mesh/ExportedJSONs/LastFile.json", output->ToJSON());
+        Utilities::WriteJSONToFile("file.json", output->ToJSON());
 
         errorMessage = "[CALUMI.Animation API] AnimationScene Created. Please Remember To call DeleteAnimationSceneC(ptr) When Finished.";
         return output;
