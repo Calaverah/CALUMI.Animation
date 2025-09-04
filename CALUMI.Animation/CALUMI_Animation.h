@@ -42,8 +42,8 @@ namespace CALUMI {namespace UNIV {
 		std::string ToJSON(int indents) const;
 	};
 
-	//Ctype accessable, due to namespace being ignored in demangling, it is important to remember that only universal animation structs are exposed
-	//For programs like Blender, this should be sufficient as a user can create and push data into the universal format and call for a write to file function with the preffered file type
+	//Ctype accessible, due to namespace being ignored in demangling, it is important to remember that only universal animation structs are exposed
+	//For programs like Blender, this should be sufficient as a user can create and push data into the universal format and call for a write to file function with the preferred file type
 	extern  "C" {
 		CALUMIANIMATION_API Animation* CreateAnimationC(const char* animationTitle, int rigBoneCount);
 		CALUMIANIMATION_API AnimationBlock* GetAnimationBlockC(Animation* source, int index, const char* errorMessage);

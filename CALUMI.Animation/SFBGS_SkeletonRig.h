@@ -92,10 +92,6 @@ namespace CALUMI {namespace SFBGS {
 	SkeletonRig ConvertToSFBGSRig(const CALUMI::UNIV::SkeletonRig& inputRig, float& highPrecision, float& lowPrecision);
 	CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(const CALUMI::SFBGS::SkeletonRig& inputRig);
 
-	extern  "C" {
-		CALUMIANIMATION_API UNIV::SkeletonRig* LoadRigFromFile(const wchar_t* filePath, const char* errorMessage);
-	}
-
 
 }}
 

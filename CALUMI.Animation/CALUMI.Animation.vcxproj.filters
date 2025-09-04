@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\CALUMI">
-      <UniqueIdentifier>{7306da6e-8231-4c81-8b46-86d12b150a67}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\SFBGS">
       <UniqueIdentifier>{15dc1c76-3153-4374-983a-be06cf339803}</UniqueIdentifier>
     </Filter>
@@ -46,8 +43,11 @@
     <Filter Include="Header Files\Math">
       <UniqueIdentifier>{24a9eda6-9f9e-4757-aff9-ce4c99d1db1e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Universal Animations">
+    <Filter Include="Source Files\UNIV">
       <UniqueIdentifier>{bb320a3a-88d4-4235-8bff-ccfecaf9d4dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UNIV">
+      <UniqueIdentifier>{7306da6e-8231-4c81-8b46-86d12b150a67}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -58,7 +58,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CALUMI_Animation.h">
-      <Filter>Header Files\CALUMI</Filter>
+      <Filter>Header Files\UNIV</Filter>
     </ClInclude>
     <ClInclude Include="SFBGS_Animation.h">
       <Filter>Header Files\SFBGS</Filter>
@@ -82,19 +82,19 @@
       <Filter>Header Files\SFBGS</Filter>
     </ClInclude>
     <ClInclude Include="CALUMI_AnimationScene.h">
-      <Filter>Header Files\CALUMI</Filter>
+      <Filter>Header Files\UNIV</Filter>
     </ClInclude>
     <ClInclude Include="SFBGS_AnimationScene.h">
       <Filter>Header Files\SFBGS</Filter>
     </ClInclude>
     <ClInclude Include="CALUMI_SkeletonRig.h">
-      <Filter>Header Files\CALUMI</Filter>
+      <Filter>Header Files\UNIV</Filter>
     </ClInclude>
     <ClInclude Include="CALUMI_Convertible.h">
       <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="CALUMI_AnimationEntries.h">
-      <Filter>Header Files\CALUMI</Filter>
+      <Filter>Header Files\UNIV</Filter>
     </ClInclude>
     <ClInclude Include="SFBGS_AnimationEntries.h">
       <Filter>Header Files\SFBGS</Filter>
@@ -117,7 +117,7 @@
       <Filter>Source Files\SFBGS</Filter>
     </ClCompile>
     <ClCompile Include="CALUMI_Animation.cpp">
-      <Filter>Source Files\Universal Animations</Filter>
+      <Filter>Source Files\UNIV</Filter>
     </ClCompile>
     <ClCompile Include="FileError.cpp">
       <Filter>Source Files\File Validation</Filter>
@@ -135,19 +135,19 @@
       <Filter>Source Files\SFBGS</Filter>
     </ClCompile>
     <ClCompile Include="CALUMI_AnimationScene.cpp">
-      <Filter>Source Files\Universal Animations</Filter>
+      <Filter>Source Files\UNIV</Filter>
     </ClCompile>
     <ClCompile Include="SFBGS_AnimationScene.cpp">
       <Filter>Source Files\SFBGS</Filter>
     </ClCompile>
     <ClCompile Include="CALUMI_SkeletonRig.cpp">
-      <Filter>Source Files\Universal Animations</Filter>
+      <Filter>Source Files\UNIV</Filter>
     </ClCompile>
     <ClCompile Include="SFBGS_AnimationEntries.cpp">
       <Filter>Source Files\SFBGS</Filter>
     </ClCompile>
     <ClCompile Include="CALUMI_AnimationEntries.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\UNIV</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

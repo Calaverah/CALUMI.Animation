@@ -19,6 +19,7 @@ namespace CALUMI{
 	std::expected<std::vector<char>, FileError> ValidateFile(const std::filesystem::path& inputPath, unsigned int minFileSize, unsigned long long maxFileSize);
 
 	std::expected<std::string, FileError> WriteToBinaryFile(const std::filesystem::path& outputPath, std::vector<char>& buffer);
+	std::expected<std::string, FileError> WriteToBinaryFile(const std::filesystem::path& outputPath, const std::string& buffer);
 
 
 	namespace priv {

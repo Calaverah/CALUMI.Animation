@@ -5,8 +5,6 @@
 #include "pch.h"
 #include "CALUMI_Utilities.h"
 
-#include <fstream>
-
 namespace CALUMI { namespace Utilities {
 
 	void _AlignBuffer(std::vector<char>& buffer, unsigned long long& currentIndex, int alignmentSize)
@@ -61,6 +59,10 @@ namespace CALUMI { namespace Utilities {
 		std::memcpy(&buffer.at(currentIndex), Source, variableSize);
 			
 		currentIndex += variableSize;
+	}
+
+	std::string Indent(const int indents) {
+		return std::string(indents * 2, ' ');
 	}
 
 	}}

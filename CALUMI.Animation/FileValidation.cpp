@@ -110,6 +110,14 @@ namespace CALUMI {
 		return std::format("Output successful, written to {}", outputPath.string());
 	}
 
+	std::expected<std::string, FileError> WriteToBinaryFile(const std::filesystem::path& outputPath, const std::string& buffer)
+	{
+		std::vector<char> vBuffer(buffer.begin(),buffer.end());
+		vBuffer.push_back('\0');
+
+		return WriteToBinaryFile(outputPath, vBuffer);
+	}
+
 	namespace priv {
 		/// <summary>
 		/// This method will check for common validations to be used by the validate file method and it's overloads. It will return a meaningless bool, or an error code to pass along.

@@ -13,16 +13,17 @@
 
 namespace CALUMI { namespace Utilities {
 
-	//void _AlignBuffer(std::vector<char>& buffer, unsigned long long& currentIndex, int alignmentSize);
+	//Buff Stuff
 	void AlignBufferAndRead(std::vector<char>& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, void* Destination);
 	void AlignFillBufferAndWrite(std::vector<char>& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, void* Source);
 
-	inline std::string Indent(const int indents) {
-		return std::string(indents*2, ' ');
-	}
+	//String Stuff
+	std::string Indent(const int indents);
 
+	//Json Stuff
 	template <typename T>
-	std::string VectorToJSON(const std::vector<T>& vec, const int indents = 0) {
+	std::string VectorToJSON(const std::vector<T>& vec, const int indents = 0)
+	{
 		if (vec.empty()) {
 			return " []";
 		}
@@ -37,28 +38,6 @@ namespace CALUMI { namespace Utilities {
 		output += "\n" + Indent(indents) + "]";
 		return output;
 	}
-
-	inline void WriteJSONToFile(const std::filesystem::path filePath, const std::string& json) {
-
-		if (filePath.empty()) {
-			std::print("[CALUMI.Utilities] Provided file path is empty. Cannot write JSON.\n");
-			return;
-		}
-
-		std::ofstream outFile(filePath);
-
-		if (!outFile.is_open()) {
-			std::print("[CALUMI.Utilities] Failed to open file for writing: {}\n", filePath.string());
-			return;
-		}
-
-		outFile.clear();
-		outFile << json;
-		outFile.close();
-
-		std::print("[CALUMI.Utilities] JSON written to: {}\n", filePath.string());
-	}
-
 
 }
 }
