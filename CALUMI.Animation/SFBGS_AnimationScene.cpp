@@ -573,7 +573,7 @@ namespace CALUMI{ namespace SFBGS{
 
     }
 
-    UNIV::SkeletonRig* LoadSFBGSSkeletonRigFromFileC(const wchar_t* filePath, const char* errorMessage)
+    UNIV::SkeletonRig* SFBGS::LoadSFBGSSkeletonRigFromFileC(const wchar_t* filePath, const char* errorMessage)
     {
         if (!filePath)
         {
