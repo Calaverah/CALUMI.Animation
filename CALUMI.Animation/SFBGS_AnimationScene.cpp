@@ -237,7 +237,7 @@ namespace CALUMI{ namespace SFBGS{
         }
 
         outputScene.sceneName = sceneName;
-        outputScene.rig = ConvertToUniversalRig(rig);
+        outputScene.rig = SFBGS::ConvertToUniversalRig(rig);
 
         outputScene.animations.reserve(animations.size());
         for (CALUMI::SFBGS::Animation anim : animations)
@@ -600,7 +600,7 @@ namespace CALUMI{ namespace SFBGS{
         }
 
         UNIV::SkeletonRig* output = new UNIV::SkeletonRig;
-        *output = ConvertToUniversalRig(rig);
+        *output = SFBGS::ConvertToUniversalRig(rig);
         errorMessage = "[CALUMI.Animation API] Rig Loaded Successfully From File Path Provided.";
         return output;
     }

@@ -26,8 +26,8 @@ namespace CALUMI {namespace SFBGS {
 		std::memcpy(&position, &buffer.at(addressIndex), sizeof(position));
 		addressIndex += sizeof(position);
 
-		std::memcpy(&term01, &buffer.at(addressIndex), sizeof(term01));
-		addressIndex += sizeof(term01);
+		std::memcpy(&boneType, &buffer.at(addressIndex), sizeof(boneType));
+		addressIndex += sizeof(boneType);
 
 		std::memcpy(&nameOffset, &buffer.at(addressIndex), sizeof(nameOffset));
 		addressIndex += sizeof(nameOffset);
@@ -83,8 +83,8 @@ namespace CALUMI {namespace SFBGS {
 		std::memcpy( &buffer.at(addressIndex), &position, sizeof(position));
 		addressIndex += sizeof(position);
 
-		std::memcpy( &buffer.at(addressIndex), &term01, sizeof(term01));
-		addressIndex += sizeof(term01);
+		std::memcpy( &buffer.at(addressIndex), &boneType, sizeof(boneType));
+		addressIndex += sizeof(boneType);
 
 		std::memcpy( &buffer.at(addressIndex), &nameOffset, sizeof(nameOffset));
 		addressIndex += sizeof(nameOffset);
@@ -118,6 +118,33 @@ namespace CALUMI {namespace SFBGS {
 
 		std::memcpy( &buffer.at(addressIndex), &term08, sizeof(term08));
 		addressIndex += sizeof(term08);
+	}
+
+	bool SkeletonBone::SetBoneType(UNIV::BoneType uBoneType)
+	{
+		switch (uBoneType)
+		{
+			case CALUMI::UNIV::BoneType::Default:
+				boneType = SFBGS::BoneType::Default;
+				break;
+			case CALUMI::UNIV::BoneType::Twist:
+				boneType = SFBGS::BoneType::Twist;
+				break;
+			default:
+				return false;
+		}
+		return true;
+	}
+
+	UNIV::BoneType SkeletonBone::GetBoneType()
+	{
+		switch (boneType)
+		{
+			case CALUMI::SFBGS::BoneType::Twist:
+				return UNIV::BoneType::Twist;
+			default:
+				return UNIV::BoneType::Default;
+		}
 	}
 
 
@@ -156,7 +183,7 @@ namespace CALUMI {namespace SFBGS {
 	}
 
 	//Simple Rig Implementation For Now
-	SkeletonRig ConvertToSFBGSRig(const CALUMI::UNIV::SkeletonRig& inputRig, float& highPrecision, float& lowPrecision)
+	SkeletonRig ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig, float& highPrecision, float& lowPrecision)
 	{
 		SkeletonRig output;
 		auto stringResult = createStringVectorFromRig(inputRig);
@@ -182,6 +209,10 @@ namespace CALUMI {namespace SFBGS {
 			toAdd.nameOffset = stringResult.second.at(i);
 			toAdd.parentBoneIndex = inputRig.boneEntries.at(i).parentBoneIndex;
 			toAdd.mirrorBoneIndex = i;
+			if (!toAdd.SetBoneType(inputRig.boneEntries.at(i).boneType))
+			{
+				std::println("[CALUMI.Animation API] UNIV Rig: {} Bone: {} ({}) Bone Type: {} Is Not An Acceptable Type For SFBGS Skeleton Rigs! This Bone Will Remain As The Default Type", inputRig.rigName, inputRig.boneEntries.at(i).name, i, UNIV::BoneTypeToString(inputRig.boneEntries.at(i).boneType));
+			}
 			output.boneEntries.push_back(toAdd);
 		}
 		std::fill(std::begin(output.suffixArray), std::end(output.suffixArray), (int16_t)-1);
@@ -191,14 +222,15 @@ namespace CALUMI {namespace SFBGS {
 		return output;
 	}
 
-	CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(const CALUMI::SFBGS::SkeletonRig& inputRig)
+	CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(CALUMI::SFBGS::SkeletonRig& inputRig)
 	{
 		CALUMI::UNIV::SkeletonRig output;
 		
 		for (unsigned int i = 0; i < inputRig.boneEntries.size(); i++)
 		{
-			const SFBGS::SkeletonBone& bone = inputRig.boneEntries.at(i);
+			SFBGS::SkeletonBone& bone = inputRig.boneEntries.at(i);
 			output.AddBoneToRig(bone.localRotation,bone.position,inputRig.stringArray.at(i),bone.parentBoneIndex,true);
+			output.boneEntries.at(i).boneType = bone.GetBoneType();
 		}
 
 		return output;

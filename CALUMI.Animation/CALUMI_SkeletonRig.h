@@ -14,7 +14,16 @@
 
 namespace CALUMI{ namespace UNIV{
 
-	
+	enum class BoneType : uint32_t
+	{
+		Default = 0,
+		Twist	= 1
+	};
+
+	bool CALUMIANIMATION_API BoneTypeExists(uint32_t input);
+	bool CALUMIANIMATION_API BoneTypeExists(std::string boneTypeStr);
+	std::string CALUMIANIMATION_API BoneTypeToString(UNIV::BoneType boneType);
+	UNIV::BoneType CALUMIANIMATION_API BoneTypeFromString(std::string boneTypeStr);
 
 	struct CALUMIANIMATION_API SkeletonBone
 	{
@@ -22,6 +31,7 @@ namespace CALUMI{ namespace UNIV{
 		CALUMI::Math::Quaternion rootRotation;
 		CALUMI::Math::Vector3 localPosition;
 		CALUMI::Math::Vector3 rootPosition;
+		UNIV::BoneType boneType = UNIV::BoneType::Default;
 
 		std::string name;
 
@@ -83,15 +93,22 @@ namespace CALUMI{ namespace UNIV{
 			bool usingLocalValues,
 			const char* errorMessage
 		);
-		CALUMIANIMATION_API size_t GetSkeletonRigBoneCount(SkeletonRig* source);
-		CALUMIANIMATION_API const char* GetSkeletonRigName(SkeletonRig* source);
-		CALUMIANIMATION_API SkeletonBone* GetSkeletonBone(SkeletonRig* source, int index, const char* errorMessage);
-		CALUMIANIMATION_API const char* GetSkeletonBoneName(SkeletonBone* source);
-		CALUMIANIMATION_API int GetSkeletonBoneParentIndex(SkeletonBone* source);
-		CALUMIANIMATION_API CALUMI::Math::Quaternion* GetSkeletonBoneRotation(SkeletonBone* source, bool fromRoot);
-		CALUMIANIMATION_API CALUMI::Math::Vector3* GetSkeletonBoneTranslation(SkeletonBone* source, bool fromRoot);
-		CALUMIANIMATION_API bool ValidateSkeletonRigNames(SkeletonRig* source, const char* errorMessage);
-		CALUMIANIMATION_API bool ValidateSkeletonRigParentIndices(SkeletonRig* source, const char* errorMessage);
+
+		//returns true if set is successful, if there is an error, bonetype will remain the same
+		CALUMIANIMATION_API bool SetBoneTypeC(SkeletonBone* bone, uint32_t boneType);
+		CALUMIANIMATION_API bool SetBoneTypeFromStringC(SkeletonBone* bone, const char* boneStr);
+		CALUMIANIMATION_API uint32_t GetBoneTypeC(SkeletonBone* bone);
+		CALUMIANIMATION_API const char* GetBoneTypeAsStringC(SkeletonBone* bone);
+
+		CALUMIANIMATION_API size_t GetSkeletonRigBoneCountC(SkeletonRig* source);
+		CALUMIANIMATION_API const char* GetSkeletonRigNameC(SkeletonRig* source);
+		CALUMIANIMATION_API SkeletonBone* GetSkeletonBoneC(SkeletonRig* source, int index, const char* errorMessage);
+		CALUMIANIMATION_API const char* GetSkeletonBoneNameC(SkeletonBone* source);
+		CALUMIANIMATION_API int GetSkeletonBoneParentIndexC(SkeletonBone* source);
+		CALUMIANIMATION_API CALUMI::Math::Quaternion* GetSkeletonBoneRotationC(SkeletonBone* source, bool fromRoot);
+		CALUMIANIMATION_API CALUMI::Math::Vector3* GetSkeletonBoneTranslationC(SkeletonBone* source, bool fromRoot);
+		CALUMIANIMATION_API bool ValidateSkeletonRigNamesC(SkeletonRig* source, const char* errorMessage);
+		CALUMIANIMATION_API bool ValidateSkeletonRigParentIndicesC(SkeletonRig* source, const char* errorMessage);
 	}
 
 }}

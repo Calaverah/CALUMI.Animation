@@ -4,28 +4,33 @@
 
 #pragma once
 #include "CALUMI_Common.h"
-#include "FileError.h"
 #include "CALUMI_ReadWritable.h"
 #include "CALUMI_SkeletonRig.h"
+#include "FileError.h"
 #include "FileValidation.h"
+#include <algorithm>
 #include <cstdint>
 #include <expected>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <algorithm>
 
 
 
 namespace CALUMI {namespace SFBGS {
 
+	enum class BoneType : int32_t
+	{
+		Default		= -1,
+		Twist		=  1
+	};
 
 	struct CALUMIANIMATION_API SkeletonBone
 	{
 		CALUMI::Math::Quaternion localRotation;
 		CALUMI::Math::Quaternion rootRotation;
 		CALUMI::Math::Vector3 position;
-		int32_t term01 = -1; //Only +1 on twist bones?? Correlates to the unknown bone count on SFBGS::SkeletonRig
+		BoneType boneType = BoneType::Default;
 		uint64_t nameOffset = 0;
 		int32_t parentBoneIndex = -1; //-1 for the root bone
 		int32_t term02 = -1;
@@ -47,6 +52,14 @@ namespace CALUMI {namespace SFBGS {
 		/// <param name="buffer"></param>
 		/// <param name="addressIndex"></param>
 		void SerializeIntoBuffer(std::vector<char>& buffer, unsigned long long& addressIndex);
+
+		bool SetBoneType(UNIV::BoneType uBoneType);
+
+		/// <summary>
+		/// Returns the converted UNIV Bone Type
+		/// </summary>
+		/// <returns></returns>
+		UNIV::BoneType GetBoneType();
 	};
 
 
@@ -89,8 +102,8 @@ namespace CALUMI {namespace SFBGS {
 
 
 	};
-	SkeletonRig ConvertToSFBGSRig(const CALUMI::UNIV::SkeletonRig& inputRig, float& highPrecision, float& lowPrecision);
-	CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(const CALUMI::SFBGS::SkeletonRig& inputRig);
+	SkeletonRig ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig, float& highPrecision, float& lowPrecision);
+	CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(CALUMI::SFBGS::SkeletonRig& inputRig);
 
 
 }}

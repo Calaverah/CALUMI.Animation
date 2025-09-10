@@ -50,6 +50,7 @@ namespace CALUMI{ namespace UNIV{
         }
         return true;
     }
+
     bool SkeletonRig::AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, std::string boneName, std::string parentName, bool localValues)
     {
         int newParentIndex = 0;
@@ -126,6 +127,56 @@ namespace CALUMI{ namespace UNIV{
         return true;
     };
 
+    bool BoneTypeExists(uint32_t input)
+    {
+        switch (static_cast<UNIV::BoneType>(input))
+        {
+            case UNIV::BoneType::Default:
+            case UNIV::BoneType::Twist:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    bool BoneTypeExists(std::string boneTypeStr)
+    {
+        //The input is set to all lowercase for a non case-sensitive match, will likely find a better way to do this in the future
+        std::transform(boneTypeStr.begin(), boneTypeStr.end(), boneTypeStr.begin(), [](unsigned char c) {return std::tolower(c); });
+
+        if (boneTypeStr == "twist") {}
+        else if (boneTypeStr == "default") {}
+        else {return false;}
+
+        return true;
+
+    }
+
+    std::string BoneTypeToString(UNIV::BoneType boneType)
+    {
+        //Warning, try to keep strings to 15 chars or less
+        switch (boneType)
+        {
+        case CALUMI::UNIV::BoneType::Default:
+            return "Default";
+        case CALUMI::UNIV::BoneType::Twist:
+            return "Twist";
+        default:
+            return "UNKNOWNBONETYPE";
+        }
+    }
+
+    UNIV::BoneType BoneTypeFromString(std::string boneTypeStr)
+    {
+        //The input is set to all lowercase for a non case-sensitive match, will likely find a better way to do this in the future
+        std::transform(boneTypeStr.begin(), boneTypeStr.end(), boneTypeStr.begin(), [](unsigned char c) {return std::tolower(c); });
+
+        if (boneTypeStr == "twist")
+            return UNIV::BoneType::Twist;
+        else
+            return UNIV::BoneType::Default;
+    }
+
     SkeletonRig* CreateSkeletonRigC(const char* rigName)
     {
         SkeletonRig* outputSkeletonRig = new SkeletonRig(rigName);
@@ -170,15 +221,45 @@ namespace CALUMI{ namespace UNIV{
         errorMessage = buffer;
         return result;
     }
-    size_t GetSkeletonRigBoneCount(SkeletonRig* source)
+    bool SetBoneTypeC(SkeletonBone* bone, uint32_t boneType)
+    {
+        bool exists = UNIV::BoneTypeExists(boneType);
+
+        if (exists)
+        {
+            bone->boneType = static_cast<UNIV::BoneType>(boneType);
+        }
+        return exists;
+    }
+    bool SetBoneTypeFromStringC(SkeletonBone* bone, const char* boneStr)
+    {
+        if (!BoneTypeExists(boneStr))
+        {
+            return false;
+        }
+
+        bone->boneType = BoneTypeFromString(boneStr);
+        return true;
+    }
+    uint32_t GetBoneTypeC(SkeletonBone* bone)
+    {
+        return uint32_t(bone->boneType);
+    }
+    const char* GetBoneTypeAsStringC(SkeletonBone* bone)
+    {
+        char buffer[16];
+        strcpy_s(buffer, 16, BoneTypeToString(bone->boneType).c_str());
+        return buffer;
+    }
+    size_t GetSkeletonRigBoneCountC(SkeletonRig* source)
     {
         return source->boneEntries.size();
     }
-    const char* GetSkeletonRigName(SkeletonRig* source)
+    const char* GetSkeletonRigNameC(SkeletonRig* source)
     {
         return source->rigName.c_str();
     }
-    SkeletonBone* GetSkeletonBone(SkeletonRig* source, int index, const char* errorMessage)
+    SkeletonBone* GetSkeletonBoneC(SkeletonRig* source, int index, const char* errorMessage)
     {
         if(source->boneEntries.size() <= index)
         {
@@ -192,15 +273,15 @@ namespace CALUMI{ namespace UNIV{
         }
         return &source->boneEntries.at(index);
     }
-    const char* GetSkeletonBoneName(SkeletonBone* source)
+    const char* GetSkeletonBoneNameC(SkeletonBone* source)
     {
         return source->name.c_str();
     }
-    int GetSkeletonBoneParentIndex(SkeletonBone* source)
+    int GetSkeletonBoneParentIndexC(SkeletonBone* source)
     {
         return source->parentBoneIndex;
     }
-    CALUMI::Math::Quaternion* GetSkeletonBoneRotation(SkeletonBone* source, bool fromRoot)
+    CALUMI::Math::Quaternion* GetSkeletonBoneRotationC(SkeletonBone* source, bool fromRoot)
     {
         if (fromRoot)
         {
@@ -209,7 +290,7 @@ namespace CALUMI{ namespace UNIV{
         
         return &source->localRotation;
     }
-    CALUMI::Math::Vector3* GetSkeletonBoneTranslation(SkeletonBone* source, bool fromRoot)
+    CALUMI::Math::Vector3* GetSkeletonBoneTranslationC(SkeletonBone* source, bool fromRoot)
     {
         if (fromRoot)
         {
@@ -218,7 +299,7 @@ namespace CALUMI{ namespace UNIV{
 
         return &source->localPosition;
     }
-    bool ValidateSkeletonRigNames(SkeletonRig* source, const char* errorMessage)
+    bool ValidateSkeletonRigNamesC(SkeletonRig* source, const char* errorMessage)
     {
         auto result = source->ValidateNames();
         if (!result.has_value())
@@ -228,7 +309,7 @@ namespace CALUMI{ namespace UNIV{
         }
         return true;
     }
-    bool ValidateSkeletonRigParentIndices(SkeletonRig* source, const char* errorMessage)
+    bool ValidateSkeletonRigParentIndicesC(SkeletonRig* source, const char* errorMessage)
     {
         auto result = source->ValidateParentIndices();
         if (!result.has_value())
@@ -247,15 +328,24 @@ namespace CALUMI{ namespace UNIV{
     }
 
     std::string SkeletonBone::ToJSON(const int indents = 0) const {
-        std::string output = Utilities::Indent(indents) + "{\n" +  Utilities::Indent(indents+1) + "\"name\":\"" + name + "\",\n" + Utilities::Indent(indents+1) + "\"parentBoneIndex\":" + std::to_string(parentBoneIndex) + ",\n";
+        std::string output = 
+            Utilities::Indent(indents) + "{\n" +  
+            Utilities::Indent(indents+1) + "\"name\":\"" + name + "\",\n" + 
+            Utilities::Indent(indents+1) + "\"parentBoneIndex\":" + std::to_string(parentBoneIndex) + ",\n" + 
+            Utilities::Indent(indents + 1) + "\"boneType\":" + UNIV::BoneTypeToString(boneType) + ",\n";
+
         output += Utilities::Indent(indents+1) + "\"localRotation\": [";
         output += std::to_string(localRotation.x) + ", " + std::to_string(localRotation.y) + ", " + std::to_string(localRotation.z) + ", " + std::to_string(localRotation.w) + "],\n";
+        
         output += Utilities::Indent(indents+1) + "\"rootRotation\": [";
         output += std::to_string(rootRotation.x) + ", " + std::to_string(rootRotation.y) + ", " + std::to_string(rootRotation.z) + ", " + std::to_string(rootRotation.w) + "],\n";
+        
         output += Utilities::Indent(indents+1) + "\"localPosition\": [";
         output += std::to_string(localPosition.x) + ", " + std::to_string(localPosition.y) + ", " + std::to_string(localPosition.z) + "],\n";
+        
         output += Utilities::Indent(indents+1) + "\"rootPosition\": [";
         output += std::to_string(rootPosition.x) + ", " + std::to_string(rootPosition.y) + ", " + std::to_string(rootPosition.z) + "]\n";
+        
         output += Utilities::Indent(indents) + "}";
         return output;
     }

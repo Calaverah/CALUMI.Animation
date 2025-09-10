@@ -35,9 +35,9 @@ namespace CALUMI{namespace UNIV{
 		CALUMIANIMATION_API bool DeleteAnimationSceneC(AnimationScene* ptr);
 		CALUMIANIMATION_API Animation* GetAnimationC(AnimationScene* source, int index, const char* errorMessage);
 		CALUMIANIMATION_API size_t GetAnimationCountC(AnimationScene* source);
-		CALUMIANIMATION_API const char* GetAnimationSceneName(AnimationScene* source);
-		CALUMIANIMATION_API SkeletonRig* GetSkeletonRig(AnimationScene* source);
-		CALUMIANIMATION_API bool HasSkeletonRig(AnimationScene* source);
+		CALUMIANIMATION_API const char* GetAnimationSceneNameC(AnimationScene* source);
+		CALUMIANIMATION_API SkeletonRig* GetSkeletonRigC(AnimationScene* source);
+		CALUMIANIMATION_API bool HasSkeletonRigC(AnimationScene* source);
 	}
 }}
 

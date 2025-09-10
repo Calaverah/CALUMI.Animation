@@ -34,15 +34,15 @@ namespace CALUMI {
         {
             return source->animations.size();
         }
-        const char* GetAnimationSceneName(AnimationScene* source)
+        const char* GetAnimationSceneNameC(AnimationScene* source)
         {
             return source->sceneName.c_str();
         }
-        SkeletonRig* GetSkeletonRig(AnimationScene* source)
+        SkeletonRig* GetSkeletonRigC(AnimationScene* source)
         {
             return &source->rig;
         }
-        bool HasSkeletonRig(AnimationScene* source)
+        bool HasSkeletonRigC(AnimationScene* source)
         {
             return !source->rig.boneEntries.empty();
         }
