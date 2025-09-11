@@ -31,7 +31,9 @@ namespace CALUMI{ namespace UNIV{
 		CALUMI::Math::Quaternion rootRotation;
 		CALUMI::Math::Vector3 localPosition;
 		CALUMI::Math::Vector3 rootPosition;
+
 		UNIV::BoneType boneType = UNIV::BoneType::Default;
+		int mirrorBoneIndex = -1;
 
 		std::string name;
 
@@ -78,6 +80,23 @@ namespace CALUMI{ namespace UNIV{
 		/// <returns></returns>
 		bool AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, std::string boneName, int parentIndex, bool localValues = true);
 
+		/// <summary>
+		/// Returns true if both indices are within the boneEntries current list
+		/// </summary>
+		/// <param name="i1">Index 1</param>
+		/// <param name="i2">Index 2</param>
+		/// <returns></returns>
+		bool CreateBoneMirrorPair(int i1, int i2);
+
+		bool ResetAllBoneMirrors();
+		/// <summary>
+		/// Returns true if each bone mirror index is exclusive to the bone mirror index pointing at it.
+		/// True: Bone1 mirrors Bone2 and Bone2 mirrors Bone1
+		/// False: Bone1 mirrors Bone2, Bone2 mirrors Bone3, etc.
+		/// </summary>
+		/// <returns></returns>
+		bool VerifyExclusiveBoneMirrors();
+
 		std::string ToJSON(int indents) const;
 	};
 
@@ -99,6 +118,13 @@ namespace CALUMI{ namespace UNIV{
 		CALUMIANIMATION_API bool SetBoneTypeFromStringC(SkeletonBone* bone, const char* boneStr);
 		CALUMIANIMATION_API uint32_t GetBoneTypeC(SkeletonBone* bone);
 		CALUMIANIMATION_API const char* GetBoneTypeAsStringC(SkeletonBone* bone);
+
+		//Mirror setting, resetting, and getting
+		CALUMIANIMATION_API int SetMirrorIndexC(SkeletonBone* bone, int index);
+		CALUMIANIMATION_API int GetMirrorIndexC(SkeletonBone* bone);
+		CALUMIANIMATION_API bool CreateBoneMirrorPairC(SkeletonRig* rig, int index1, int index2);
+		CALUMIANIMATION_API bool ResetAllBoneMirrorsC(SkeletonRig* rig);
+		CALUMIANIMATION_API bool VerifyExclusiveBoneMirrorsC(SkeletonRig* rig);
 
 		CALUMIANIMATION_API size_t GetSkeletonRigBoneCountC(SkeletonRig* source);
 		CALUMIANIMATION_API const char* GetSkeletonRigNameC(SkeletonRig* source);

@@ -77,15 +77,6 @@ namespace CALUMI{ namespace UNIV{
         SkeletonBone input;
         input.name = boneName;
         input.parentBoneIndex = parentIndex;
-        //if (boneEntries.empty())
-        //{
-        //    input.parentBoneIndex = -1; //If this is the first entry, we set parent to -1 as none exists
-        //}
-
-        //if (input.parentBoneIndex >= boneEntries.size())
-        //{
-        //    input.parentBoneIndex = 0; //Cannot have a parent with the same index as child, default to root
-        //}
 
         CALUMI::Math::Quaternion rootRotation;
         CALUMI::Math::Quaternion localRotation;
@@ -122,10 +113,31 @@ namespace CALUMI{ namespace UNIV{
         input.localRotation = localRotation;
         input.rootRotation = rootRotation;
 
+        input.mirrorBoneIndex = boneEntries.size();
+        input.boneType = UNIV::BoneType::Default;
+
         boneEntries.push_back(input);
 
         return true;
-    };
+    }
+    bool SkeletonRig::CreateBoneMirrorPair(int i1, int i2)
+    {
+        if(i1 >= boneEntries.size() || i2 >= boneEntries.size())
+            return false;
+
+        boneEntries.at(i1).mirrorBoneIndex = i2;
+        boneEntries.at(i2).mirrorBoneIndex = i1;
+        return true;
+    }
+    bool SkeletonRig::ResetAllBoneMirrors()
+    {
+        for (unsigned int i = 0; i < boneEntries.size(); i++)
+        {
+            boneEntries.at(i).mirrorBoneIndex = i;
+        }
+        return true;
+    }
+    ;
 
     bool BoneTypeExists(uint32_t input)
     {
@@ -251,6 +263,27 @@ namespace CALUMI{ namespace UNIV{
         strcpy_s(buffer, 16, BoneTypeToString(bone->boneType).c_str());
         return buffer;
     }
+    int SetMirrorIndexC(SkeletonBone* bone, int index)
+    {
+        bone->mirrorBoneIndex = index;
+        return bone->mirrorBoneIndex;
+    }
+    int GetMirrorIndexC(SkeletonBone* bone)
+    {
+        return bone->mirrorBoneIndex;
+    }
+    bool CreateBoneMirrorPairC(SkeletonRig* rig, int index1, int index2)
+    {
+        return rig->CreateBoneMirrorPair(index1,index2);
+    }
+    bool ResetAllBoneMirrorsC(SkeletonRig* rig)
+    {
+        return rig->ResetAllBoneMirrors();
+    }
+    bool VerifyExclusiveBoneMirrorsC(SkeletonRig* rig)
+    {
+        return rig->VerifyExclusiveBoneMirrors();
+    }
     size_t GetSkeletonRigBoneCountC(SkeletonRig* source)
     {
         return source->boneEntries.size();
@@ -320,6 +353,30 @@ namespace CALUMI{ namespace UNIV{
         return true;
     }
 
+    bool SkeletonRig::VerifyExclusiveBoneMirrors()
+    {
+        for (unsigned int i = 0; i < boneEntries.size(); i++)
+        {
+            int mirror = boneEntries.at(i).mirrorBoneIndex;
+            if (mirror == -1)
+            {
+                //skip as we don't fully understand this notion yet
+            }
+            else
+            {
+                if (mirror != i && mirror >= 0)
+                {
+                    if (i != boneEntries.at(mirror).mirrorBoneIndex)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
     std::string SkeletonRig::ToJSON(const int indents = 0) const {
         std::string output = Utilities::Indent(indents) + "{\n" + Utilities::Indent(indents+1) +  "\"rigName\":\"" + rigName + "\",\n" + Utilities::Indent(indents+1) + "\"boneEntries\":";
         output += Utilities::VectorToJSON(boneEntries, indents + 1);
@@ -332,7 +389,8 @@ namespace CALUMI{ namespace UNIV{
             Utilities::Indent(indents) + "{\n" +  
             Utilities::Indent(indents+1) + "\"name\":\"" + name + "\",\n" + 
             Utilities::Indent(indents+1) + "\"parentBoneIndex\":" + std::to_string(parentBoneIndex) + ",\n" + 
-            Utilities::Indent(indents + 1) + "\"boneType\":" + UNIV::BoneTypeToString(boneType) + ",\n";
+            Utilities::Indent(indents + 1) + "\"boneType\":" + UNIV::BoneTypeToString(boneType) + ",\n" +
+            Utilities::Indent(indents + 1) + "\"mirrorBoneIndex\":" + std::to_string(mirrorBoneIndex) + ",\n";
 
         output += Utilities::Indent(indents+1) + "\"localRotation\": [";
         output += std::to_string(localRotation.x) + ", " + std::to_string(localRotation.y) + ", " + std::to_string(localRotation.z) + ", " + std::to_string(localRotation.w) + "],\n";

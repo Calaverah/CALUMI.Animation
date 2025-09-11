@@ -208,7 +208,7 @@ namespace CALUMI {namespace SFBGS {
 			toAdd.position = inputRig.boneEntries.at(i).localPosition;
 			toAdd.nameOffset = stringResult.second.at(i);
 			toAdd.parentBoneIndex = inputRig.boneEntries.at(i).parentBoneIndex;
-			toAdd.mirrorBoneIndex = i;
+			toAdd.mirrorBoneIndex = inputRig.boneEntries.at(i).mirrorBoneIndex;
 			if (!toAdd.SetBoneType(inputRig.boneEntries.at(i).boneType))
 			{
 				std::println("[CALUMI.Animation API] UNIV Rig: {} Bone: {} ({}) Bone Type: {} Is Not An Acceptable Type For SFBGS Skeleton Rigs! This Bone Will Remain As The Default Type", inputRig.rigName, inputRig.boneEntries.at(i).name, i, UNIV::BoneTypeToString(inputRig.boneEntries.at(i).boneType));
@@ -231,6 +231,7 @@ namespace CALUMI {namespace SFBGS {
 			SFBGS::SkeletonBone& bone = inputRig.boneEntries.at(i);
 			output.AddBoneToRig(bone.localRotation,bone.position,inputRig.stringArray.at(i),bone.parentBoneIndex,true);
 			output.boneEntries.at(i).boneType = bone.GetBoneType();
+			output.boneEntries.at(i).mirrorBoneIndex = bone.mirrorBoneIndex;
 		}
 
 		return output;
