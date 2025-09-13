@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="CALUMI_AnimationEntries.h" />
     <ClInclude Include="CALUMI_AnimationScene.h" />
+    <ClInclude Include="CALUMI_BoneTypes.h" />
     <ClInclude Include="CALUMI_Common.h" />
     <ClInclude Include="CALUMI_Convertible.h" />
     <ClInclude Include="CALUMI_Math.h" />

@@ -33,13 +33,13 @@ namespace CALUMI {namespace SFBGS {
 		BoneType boneType = BoneType::Default;
 		uint64_t nameOffset = 0;
 		int32_t parentBoneIndex = -1; //-1 for the root bone
-		int32_t term02 = -1;
-		int32_t term03 = -1; //Possibly a second parent or influencer?
-		int32_t term04 = -1;
+		int32_t twistDriverMqn = -1; //Twist influence override? Always points to parent on mannequin twist bones
+		int32_t twistDriver = -1; //Twist influence
+		int32_t _pad01 = -1; //Always -1
 		int32_t mirrorBoneIndex = 0; //Same as this bone's index by default
 		int32_t term05 = 0;
-		int32_t term06 = 0;
-		int32_t term07 = 0;
+		float twistDriverWeight = 0; //Negative if pointing to parent
+		int32_t _pad02 = 0; //Always 0
 		float unknownScalar = 0.0;
 		int32_t term08 = 0;
 
@@ -53,13 +53,16 @@ namespace CALUMI {namespace SFBGS {
 		/// <param name="addressIndex"></param>
 		void SerializeIntoBuffer(std::vector<char>& buffer, unsigned long long& addressIndex);
 
-		bool SetBoneType(UNIV::BoneType uBoneType);
+		
 
 		/// <summary>
 		/// Returns the converted UNIV Bone Type
 		/// </summary>
 		/// <returns></returns>
-		UNIV::BoneType GetBoneType();
+		UNIV::BoneType GetBoneTypeAsUNIVEnum();
+
+		bool SetBoneTypeFromUNIV(UNIV::SkeletonBone& univBone);
+		bool SetBoneTypeToUNIV(UNIV::SkeletonBone& univBone);
 	};
 
 
@@ -70,7 +73,7 @@ namespace CALUMI {namespace SFBGS {
 		//HEADER
 		int versionNumber = 05;
 		unsigned int fileSize = 0; //NOTE: 4th Char in Buffer
-		int headerEntry80 = 0x50;  //Currently the only value seen is 0x50 (80)
+		int headerSize = 0x50;  //Currently the only value seen is 0x50 (80)
 		unsigned int headerEmpty01 = 0; //Always empty, possibly padding
 		unsigned int suffixOffset = 0; //96* bone count + 80 bytes //NOTE: 16th Char in Buffer
 		unsigned int headerEmpty02 = 0; //Always empty, possibly padding
@@ -78,7 +81,7 @@ namespace CALUMI {namespace SFBGS {
 		float lowPrecision = 0.03125;  //default precision values. For ships use 0.25. For first person use 0.0078125 (1/128)
 		float highPrecision = 0.00025; //default precision values. For ships use 0.002. For first person use 6.25e-5 (1/16000)
 		uint16_t boneCount = 0;
-		uint16_t unknownCount = 0;
+		uint16_t boneCount_Animated = 0;
 		unsigned int headerEmpty03 = 0; //Always empty
 		double endOfHeader[2] = { 0.0,0.0 };
 

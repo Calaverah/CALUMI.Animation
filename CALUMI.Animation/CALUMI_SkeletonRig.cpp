@@ -74,6 +74,12 @@ namespace CALUMI{ namespace UNIV{
 
     bool SkeletonRig::AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, std::string boneName, int parentIndex, bool localValues)
     {
+        if (boneEntries.size() >= MaxBoneCount)
+        {
+            std::println("[CALUMI.Animation API] Bone Count Limit Reached For Rig: {}",rigName);
+            return false;
+        }
+
         SkeletonBone input;
         input.name = boneName;
         input.parentBoneIndex = parentIndex;
@@ -114,7 +120,6 @@ namespace CALUMI{ namespace UNIV{
         input.rootRotation = rootRotation;
 
         input.mirrorBoneIndex = boneEntries.size();
-        input.boneType = UNIV::BoneType::Default;
 
         boneEntries.push_back(input);
 
@@ -138,56 +143,6 @@ namespace CALUMI{ namespace UNIV{
         return true;
     }
     ;
-
-    bool BoneTypeExists(uint32_t input)
-    {
-        switch (static_cast<UNIV::BoneType>(input))
-        {
-            case UNIV::BoneType::Default:
-            case UNIV::BoneType::Twist:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    bool BoneTypeExists(std::string boneTypeStr)
-    {
-        //The input is set to all lowercase for a non case-sensitive match, will likely find a better way to do this in the future
-        std::transform(boneTypeStr.begin(), boneTypeStr.end(), boneTypeStr.begin(), [](unsigned char c) {return std::tolower(c); });
-
-        if (boneTypeStr == "twist") {}
-        else if (boneTypeStr == "default") {}
-        else {return false;}
-
-        return true;
-
-    }
-
-    std::string BoneTypeToString(UNIV::BoneType boneType)
-    {
-        //Warning, try to keep strings to 15 chars or less
-        switch (boneType)
-        {
-        case CALUMI::UNIV::BoneType::Default:
-            return "Default";
-        case CALUMI::UNIV::BoneType::Twist:
-            return "Twist";
-        default:
-            return "UNKNOWNBONETYPE";
-        }
-    }
-
-    UNIV::BoneType BoneTypeFromString(std::string boneTypeStr)
-    {
-        //The input is set to all lowercase for a non case-sensitive match, will likely find a better way to do this in the future
-        std::transform(boneTypeStr.begin(), boneTypeStr.end(), boneTypeStr.begin(), [](unsigned char c) {return std::tolower(c); });
-
-        if (boneTypeStr == "twist")
-            return UNIV::BoneType::Twist;
-        else
-            return UNIV::BoneType::Default;
-    }
 
     SkeletonRig* CreateSkeletonRigC(const char* rigName)
     {
@@ -235,33 +190,79 @@ namespace CALUMI{ namespace UNIV{
     }
     bool SetBoneTypeC(SkeletonBone* bone, uint32_t boneType)
     {
-        bool exists = UNIV::BoneTypeExists(boneType);
-
-        if (exists)
-        {
-            bone->boneType = static_cast<UNIV::BoneType>(boneType);
-        }
-        return exists;
+        return bone->SetBoneTypeProperty(static_cast<UNIV::BoneType>(boneType));
     }
     bool SetBoneTypeFromStringC(SkeletonBone* bone, const char* boneStr)
     {
-        if (!BoneTypeExists(boneStr))
-        {
-            return false;
-        }
-
-        bone->boneType = BoneTypeFromString(boneStr);
-        return true;
+        return bone->SetBoneTypeProperty(BoneTypeFromString(boneStr));
     }
     uint32_t GetBoneTypeC(SkeletonBone* bone)
     {
-        return uint32_t(bone->boneType);
+        return uint32_t(bone->GetBoneTypeProperty()->GetType());
     }
     const char* GetBoneTypeAsStringC(SkeletonBone* bone)
     {
-        char buffer[16];
-        strcpy_s(buffer, 16, BoneTypeToString(bone->boneType).c_str());
-        return buffer;
+        return bone->GetBoneTypeProperty()->GetTypeString();
+    }
+    bool SetTwistBonePropertiesC(SkeletonBone* bone, bool reassign, int32_t twistDriverIndex, float twistDriverWeight, const char* errorMessage)
+    {
+        char buffer[MAX_PATH];
+        if (bone->GetBoneTypeProperty()->GetType() != UNIV::BoneType::Twist)
+        {
+            if(!reassign)
+            {
+                snprintf(buffer, sizeof(buffer), "[CALUMI.Animation API] Bone: %s 's Type Does Not Match Desired Values, Reassigned Set To False. No changes have been made.", bone->name.c_str());
+                errorMessage = buffer;
+                return false;
+            }
+
+            if (!bone->SetBoneTypeProperty(UNIV::BoneType::Twist))
+            {
+                snprintf(buffer, sizeof(buffer), "[CALUMI.Animation API] Bone Type Could Not Be Set For Bone: %s", bone->name.c_str());
+                errorMessage = buffer;
+                return false;
+            }
+        }
+
+        if (twistDriverIndex < 0)
+        {
+            snprintf(buffer, sizeof(buffer), "[CALUMI.Animation API] Desired Twist Driver Index For Bone: %s is set to non-value or negative, did you mean to set this bone to Default?", bone->name.c_str());
+            errorMessage = buffer;
+            return false;
+        }
+        
+        TwistBoneProperties* tProp = dynamic_cast<TwistBoneProperties*>(const_cast<BoneTypeProperties*>(bone->GetBoneTypeProperty()));
+        tProp->twistDriverIndex = twistDriverIndex;
+        tProp->twistDriverWeight = twistDriverWeight;
+
+        return true;
+    }
+    CALUMIANIMATION_API int GetTwistBoneDriverIndexC(SkeletonBone* bone, const char* errorMessage)
+    {
+        char buffer[MAX_PATH];
+        if (bone->GetBoneTypeProperty()->GetType() != UNIV::BoneType::Twist)
+        {
+            snprintf(buffer, sizeof(buffer), "[CALUMI.Animation API] Bone: %s is not set to Twist Type, returning -1", bone->name.c_str());
+            errorMessage = buffer;
+            return -1;
+        }
+
+        TwistBoneProperties* tProp = dynamic_cast<TwistBoneProperties*>(const_cast<BoneTypeProperties*>(bone->GetBoneTypeProperty()));
+
+        return tProp->twistDriverIndex;
+    }
+    float GetTwistBoneDriverWeightC(SkeletonBone* bone, const char* errorMessage)
+    {
+        char buffer[MAX_PATH];
+        if (bone->GetBoneTypeProperty()->GetType() != UNIV::BoneType::Twist)
+        {
+            snprintf(buffer, sizeof(buffer), "[CALUMI.Animation API] Bone: %s is not set to Twist Type, returning NaN Float", bone->name.c_str());
+            errorMessage = buffer;
+            return std::numeric_limits<float>::quiet_NaN();
+        }
+
+        TwistBoneProperties* tProp = dynamic_cast<TwistBoneProperties*>(const_cast<BoneTypeProperties*>(bone->GetBoneTypeProperty()));
+        return tProp->twistDriverWeight;
     }
     int SetMirrorIndexC(SkeletonBone* bone, int index)
     {
@@ -284,9 +285,13 @@ namespace CALUMI{ namespace UNIV{
     {
         return rig->VerifyExclusiveBoneMirrors();
     }
-    size_t GetSkeletonRigBoneCountC(SkeletonRig* source)
+    unsigned int GetSkeletonRigBoneCountC(SkeletonRig* source)
     {
-        return source->boneEntries.size();
+        return source->GetBoneCount();
+    }
+    unsigned int GetSkeletonRigAnimatedBoneCountC(SkeletonRig* source)
+    {
+        return source->GetAnimatedBoneCount();
     }
     const char* GetSkeletonRigNameC(SkeletonRig* source)
     {
@@ -377,6 +382,26 @@ namespace CALUMI{ namespace UNIV{
         return true;
     }
 
+    unsigned int UNIV::SkeletonRig::GetAnimatedBoneCount()
+    {
+        unsigned int AnimatedBoneCount = 0;
+
+        for (UNIV::SkeletonBone bone : boneEntries)
+        {
+            if (bone.GetBoneTypeProperty()->GetType() == UNIV::BoneType::Default)
+            {
+                AnimatedBoneCount++;
+            }
+        }
+
+        return AnimatedBoneCount;
+    }
+
+    unsigned int SkeletonRig::GetBoneCount()
+    {
+        return boneEntries.size();
+    }
+
     std::string SkeletonRig::ToJSON(const int indents = 0) const {
         std::string output = Utilities::Indent(indents) + "{\n" + Utilities::Indent(indents+1) +  "\"rigName\":\"" + rigName + "\",\n" + Utilities::Indent(indents+1) + "\"boneEntries\":";
         output += Utilities::VectorToJSON(boneEntries, indents + 1);
@@ -384,12 +409,69 @@ namespace CALUMI{ namespace UNIV{
         return output;
     }
 
+    bool UNIV::SkeletonBone::SetBoneTypeProperty(UNIV::BoneType boneType, bool resetExisting)
+    {
+
+        if (boneTypeProperties != nullptr)
+        {
+            if (!resetExisting && boneType == boneTypeProperties->GetType())
+                return false;
+        }
+
+        BoneTypeProperties* property;
+
+        switch (boneType)
+        {
+        case CALUMI::UNIV::BoneType::Default:
+            property = new DefaultBoneProperties;
+            break;
+        case CALUMI::UNIV::BoneType::Twist:
+            property = new TwistBoneProperties;
+            break;
+        default:
+            return false;
+        }
+
+        if (boneTypeProperties != nullptr)
+        {
+            delete boneTypeProperties;
+            boneTypeProperties = nullptr;
+        }
+        boneTypeProperties = property;
+        return true;
+    }
+
+    const BoneTypeProperties* SkeletonBone::GetBoneTypeProperty()
+    {
+        if (boneTypeProperties != nullptr)
+        {
+            return boneTypeProperties;
+        }
+
+        ResetBoneTypeProperty();
+        return boneTypeProperties;
+    }
+
+    bool UNIV::SkeletonBone::ResetBoneTypeProperty(UNIV::BoneType boneType)
+    {
+        return this->SetBoneTypeProperty(boneType, true);
+    }
+
+    //This is not the preferred way
+    const char* SkeletonBone::_GetBoneTypeString() const
+    {
+        if (boneTypeProperties == nullptr)
+            return UNIV::DefaultBoneTypeStr;
+
+        return boneTypeProperties->GetTypeString();
+    }
     std::string SkeletonBone::ToJSON(const int indents = 0) const {
+
         std::string output = 
             Utilities::Indent(indents) + "{\n" +  
             Utilities::Indent(indents+1) + "\"name\":\"" + name + "\",\n" + 
             Utilities::Indent(indents+1) + "\"parentBoneIndex\":" + std::to_string(parentBoneIndex) + ",\n" + 
-            Utilities::Indent(indents + 1) + "\"boneType\":" + UNIV::BoneTypeToString(boneType) + ",\n" +
+            Utilities::Indent(indents + 1) + "\"boneType\":" + _GetBoneTypeString() + ",\n" +
             Utilities::Indent(indents + 1) + "\"mirrorBoneIndex\":" + std::to_string(mirrorBoneIndex) + ",\n";
 
         output += Utilities::Indent(indents+1) + "\"localRotation\": [";

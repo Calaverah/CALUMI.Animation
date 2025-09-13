@@ -35,14 +35,14 @@ namespace CALUMI {namespace SFBGS {
 		std::memcpy(&parentBoneIndex, &buffer.at(addressIndex), sizeof(parentBoneIndex));
 		addressIndex += sizeof(parentBoneIndex);
 
-		std::memcpy(&term02, &buffer.at(addressIndex), sizeof(term02));
-		addressIndex += sizeof(term02);
+		std::memcpy(&twistDriverMqn, &buffer.at(addressIndex), sizeof(twistDriverMqn));
+		addressIndex += sizeof(twistDriverMqn);
 
-		std::memcpy(&term03, &buffer.at(addressIndex), sizeof(term03));
-		addressIndex += sizeof(term03);
+		std::memcpy(&twistDriver, &buffer.at(addressIndex), sizeof(twistDriver));
+		addressIndex += sizeof(twistDriver);
 
-		std::memcpy(&term04, &buffer.at(addressIndex), sizeof(term04));
-		addressIndex += sizeof(term04);
+		std::memcpy(&_pad01, &buffer.at(addressIndex), sizeof(_pad01));
+		addressIndex += sizeof(_pad01);
 
 		std::memcpy(&mirrorBoneIndex, &buffer.at(addressIndex), sizeof(mirrorBoneIndex));
 		addressIndex += sizeof(mirrorBoneIndex);
@@ -50,11 +50,11 @@ namespace CALUMI {namespace SFBGS {
 		std::memcpy(&term05, &buffer.at(addressIndex), sizeof(term05));
 		addressIndex += sizeof(term05);
 
-		std::memcpy(&term06, &buffer.at(addressIndex), sizeof(term06));
-		addressIndex += sizeof(term06);
+		std::memcpy(&twistDriverWeight, &buffer.at(addressIndex), sizeof(twistDriverWeight));
+		addressIndex += sizeof(twistDriverWeight);
 		
-		std::memcpy(&term07, &buffer.at(addressIndex), sizeof(term07));
-		addressIndex += sizeof(term07);
+		std::memcpy(&_pad02, &buffer.at(addressIndex), sizeof(_pad02));
+		addressIndex += sizeof(_pad02);
 
 		std::memcpy(&unknownScalar, &buffer.at(addressIndex), sizeof(unknownScalar));
 		addressIndex += sizeof(unknownScalar);
@@ -92,14 +92,14 @@ namespace CALUMI {namespace SFBGS {
 		std::memcpy( &buffer.at(addressIndex), &parentBoneIndex, sizeof(parentBoneIndex));
 		addressIndex += sizeof(parentBoneIndex);
 
-		std::memcpy( &buffer.at(addressIndex), &term02, sizeof(term02));
-		addressIndex += sizeof(term02);
+		std::memcpy( &buffer.at(addressIndex), &twistDriverMqn, sizeof(twistDriverMqn));
+		addressIndex += sizeof(twistDriverMqn);
 
-		std::memcpy( &buffer.at(addressIndex), &term03, sizeof(term03));
-		addressIndex += sizeof(term03);
+		std::memcpy( &buffer.at(addressIndex), &twistDriver, sizeof(twistDriver));
+		addressIndex += sizeof(twistDriver);
 
-		std::memcpy( &buffer.at(addressIndex), &term04, sizeof(term04));
-		addressIndex += sizeof(term04);
+		std::memcpy( &buffer.at(addressIndex), &_pad01, sizeof(_pad01));
+		addressIndex += sizeof(_pad01);
 
 		std::memcpy( &buffer.at(addressIndex), &mirrorBoneIndex, sizeof(mirrorBoneIndex));
 		addressIndex += sizeof(mirrorBoneIndex);
@@ -107,11 +107,11 @@ namespace CALUMI {namespace SFBGS {
 		std::memcpy( &buffer.at(addressIndex), &term05, sizeof(term05));
 		addressIndex += sizeof(term05);
 
-		std::memcpy( &buffer.at(addressIndex), &term06, sizeof(term06));
-		addressIndex += sizeof(term06);
+		std::memcpy( &buffer.at(addressIndex), &twistDriverWeight, sizeof(twistDriverWeight));
+		addressIndex += sizeof(twistDriverWeight);
 
-		std::memcpy( &buffer.at(addressIndex), &term07, sizeof(term07));
-		addressIndex += sizeof(term07);
+		std::memcpy( &buffer.at(addressIndex), &_pad02, sizeof(_pad02));
+		addressIndex += sizeof(_pad02);
 
 		std::memcpy( &buffer.at(addressIndex), &unknownScalar, sizeof(unknownScalar));
 		addressIndex += sizeof(unknownScalar);
@@ -120,15 +120,25 @@ namespace CALUMI {namespace SFBGS {
 		addressIndex += sizeof(term08);
 	}
 
-	bool SkeletonBone::SetBoneType(UNIV::BoneType uBoneType)
+	bool SFBGS::SkeletonBone::SetBoneTypeFromUNIV(UNIV::SkeletonBone& univBone)
 	{
-		switch (uBoneType)
+		switch (univBone.GetBoneTypeProperty()->GetType())
 		{
 			case CALUMI::UNIV::BoneType::Default:
 				boneType = SFBGS::BoneType::Default;
+				//UNIV::DefaultBoneProperties* dProp = dynamic_cast<UNIV::DefaultBoneProperties*>(const_cast<UNIV::BoneTypeProperties*>(univBone.GetBoneTypeProperty()));
+				twistDriver = -1;
+				twistDriverMqn = -1;
+				twistDriverWeight = 0.0;
 				break;
 			case CALUMI::UNIV::BoneType::Twist:
+				{
 				boneType = SFBGS::BoneType::Twist;
+				//We are permitting const_casting as we are paying special attention not to delete the struct while modifying
+				UNIV::TwistBoneProperties* tProp = dynamic_cast<UNIV::TwistBoneProperties*>(const_cast<UNIV::BoneTypeProperties*>(univBone.GetBoneTypeProperty()));
+				twistDriver = tProp->twistDriverIndex;
+				twistDriverWeight = tProp->twistDriverWeight;
+				}
 				break;
 			default:
 				return false;
@@ -136,14 +146,39 @@ namespace CALUMI {namespace SFBGS {
 		return true;
 	}
 
-	UNIV::BoneType SkeletonBone::GetBoneType()
+	bool SFBGS::SkeletonBone::SetBoneTypeToUNIV(UNIV::SkeletonBone& univBone)
+	{
+		if (!univBone.SetBoneTypeProperty(GetBoneTypeAsUNIVEnum()))
+			return false;
+
+		switch (univBone.GetBoneTypeProperty()->GetType())
+		{
+		case CALUMI::UNIV::BoneType::Default:
+			break;
+		case CALUMI::UNIV::BoneType::Twist:
+			{
+			//We are permitting const_casting as we are paying special attention not to delete the struct while modifying
+			UNIV::TwistBoneProperties* tProp = dynamic_cast<UNIV::TwistBoneProperties*>(const_cast<UNIV::BoneTypeProperties*>(univBone.GetBoneTypeProperty()));
+			tProp->twistDriverIndex = twistDriver;
+			tProp->twistDriverWeight = twistDriverWeight;
+			}
+			break;
+		default:
+			break;
+		}
+		return true;
+	}
+
+	UNIV::BoneType SFBGS::SkeletonBone::GetBoneTypeAsUNIVEnum()
 	{
 		switch (boneType)
 		{
-			case CALUMI::SFBGS::BoneType::Twist:
+			case SFBGS::BoneType::Default:
+				return UNIV::BoneType::Default;
+			case SFBGS::BoneType::Twist:
 				return UNIV::BoneType::Twist;
 			default:
-				return UNIV::BoneType::Default;
+				return UNIV::BoneType::UNDEFINED;
 		}
 	}
 
@@ -197,7 +232,7 @@ namespace CALUMI {namespace SFBGS {
 		output.highPrecision = highPrecision;
 
 		output.boneCount = inputRig.boneEntries.size();
-		output.unknownCount = output.boneCount;
+		output.boneCount_Animated = output.boneCount;
 
 		output.boneEntries.reserve(output.boneCount);
 		for (unsigned int i = 0; i < output.boneCount; i++)
@@ -209,9 +244,9 @@ namespace CALUMI {namespace SFBGS {
 			toAdd.nameOffset = stringResult.second.at(i);
 			toAdd.parentBoneIndex = inputRig.boneEntries.at(i).parentBoneIndex;
 			toAdd.mirrorBoneIndex = inputRig.boneEntries.at(i).mirrorBoneIndex;
-			if (!toAdd.SetBoneType(inputRig.boneEntries.at(i).boneType))
+			if (!toAdd.SetBoneTypeFromUNIV(inputRig.boneEntries.at(i)))
 			{
-				std::println("[CALUMI.Animation API] UNIV Rig: {} Bone: {} ({}) Bone Type: {} Is Not An Acceptable Type For SFBGS Skeleton Rigs! This Bone Will Remain As The Default Type", inputRig.rigName, inputRig.boneEntries.at(i).name, i, UNIV::BoneTypeToString(inputRig.boneEntries.at(i).boneType));
+				std::println("[CALUMI.Animation API] UNIV Rig: {} Bone: {} ({}) Bone Type: {} Is Not An Acceptable Type For SFBGS Skeleton Rigs! This Bone Will Remain As The Default Type", inputRig.rigName, inputRig.boneEntries.at(i).name, i, inputRig.boneEntries.at(i).GetBoneTypeProperty()->GetTypeString());
 			}
 			output.boneEntries.push_back(toAdd);
 		}
@@ -230,7 +265,7 @@ namespace CALUMI {namespace SFBGS {
 		{
 			SFBGS::SkeletonBone& bone = inputRig.boneEntries.at(i);
 			output.AddBoneToRig(bone.localRotation,bone.position,inputRig.stringArray.at(i),bone.parentBoneIndex,true);
-			output.boneEntries.at(i).boneType = bone.GetBoneType();
+			bone.SetBoneTypeToUNIV(output.boneEntries.at(i));
 			output.boneEntries.at(i).mirrorBoneIndex = bone.mirrorBoneIndex;
 		}
 
@@ -254,8 +289,8 @@ namespace CALUMI {namespace SFBGS {
 			std::memcpy(&fileSize, &buffer.value().at(addressIndex), sizeof(fileSize));
 			addressIndex += sizeof(fileSize);
 
-			std::memcpy(&headerEntry80, &buffer.value().at(addressIndex), sizeof(headerEntry80));
-			addressIndex += sizeof(headerEntry80);
+			std::memcpy(&headerSize, &buffer.value().at(addressIndex), sizeof(headerSize));
+			addressIndex += sizeof(headerSize);
 
 			std::memcpy(&headerEmpty01, &buffer.value().at(addressIndex), sizeof(headerEmpty01));
 			addressIndex += sizeof(headerEmpty01);
@@ -278,8 +313,8 @@ namespace CALUMI {namespace SFBGS {
 			std::memcpy(&boneCount, &buffer.value().at(addressIndex), sizeof(boneCount));
 			addressIndex += sizeof(boneCount);
 
-			std::memcpy(&unknownCount, &buffer.value().at(addressIndex), sizeof(unknownCount));
-			addressIndex += sizeof(unknownCount);
+			std::memcpy(&boneCount_Animated, &buffer.value().at(addressIndex), sizeof(boneCount_Animated));
+			addressIndex += sizeof(boneCount_Animated);
 
 			std::memcpy(&headerEmpty03, &buffer.value().at(addressIndex), sizeof(headerEmpty03));
 			addressIndex += sizeof(headerEmpty03);
@@ -351,8 +386,8 @@ namespace CALUMI {namespace SFBGS {
 			std::memcpy(&buffer.at(addressIndex), &fileSize, sizeof(fileSize));
 			addressIndex += sizeof(fileSize);
 
-			std::memcpy(&buffer.at(addressIndex), &headerEntry80, sizeof(headerEntry80));
-			addressIndex += sizeof(headerEntry80);
+			std::memcpy(&buffer.at(addressIndex), &headerSize, sizeof(headerSize));
+			addressIndex += sizeof(headerSize);
 
 			std::memcpy(&buffer.at(addressIndex), &headerEmpty01, sizeof(headerEmpty01));
 			addressIndex += sizeof(headerEmpty01);
@@ -375,8 +410,8 @@ namespace CALUMI {namespace SFBGS {
 			std::memcpy(&buffer.at(addressIndex), &boneCount, sizeof(boneCount));
 			addressIndex += sizeof(boneCount);
 
-			std::memcpy(&buffer.at(addressIndex), &unknownCount, sizeof(unknownCount));
-			addressIndex += sizeof(unknownCount);
+			std::memcpy(&buffer.at(addressIndex), &boneCount_Animated, sizeof(boneCount_Animated));
+			addressIndex += sizeof(boneCount_Animated);
 
 			std::memcpy(&buffer.at(addressIndex), &headerEmpty03, sizeof(headerEmpty03));
 			addressIndex += sizeof(headerEmpty03);

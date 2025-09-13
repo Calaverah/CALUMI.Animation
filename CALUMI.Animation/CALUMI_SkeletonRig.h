@@ -5,6 +5,7 @@
 #pragma once
 #include "CALUMI_Common.h"
 #include "CALUMI_Math.h"
+#include "CALUMI_BoneTypes.h"
 #include <cstdint>
 #include <expected>
 #include <format>
@@ -14,25 +15,22 @@
 
 namespace CALUMI{ namespace UNIV{
 
-	enum class BoneType : uint32_t
-	{
-		Default = 0,
-		Twist	= 1
-	};
-
-	bool CALUMIANIMATION_API BoneTypeExists(uint32_t input);
-	bool CALUMIANIMATION_API BoneTypeExists(std::string boneTypeStr);
-	std::string CALUMIANIMATION_API BoneTypeToString(UNIV::BoneType boneType);
-	UNIV::BoneType CALUMIANIMATION_API BoneTypeFromString(std::string boneTypeStr);
-
 	struct CALUMIANIMATION_API SkeletonBone
 	{
+
+	private:
+		BoneTypeProperties* boneTypeProperties = new DefaultBoneProperties;
+
+		//We keep this private as it is not the preferred way to get this value.
+		//It should only be used on serialization functions that are constant where default resetting is not possible
+		const char* _GetBoneTypeString() const;
+
+	public:
 		CALUMI::Math::Quaternion localRotation;
 		CALUMI::Math::Quaternion rootRotation;
 		CALUMI::Math::Vector3 localPosition;
 		CALUMI::Math::Vector3 rootPosition;
 
-		UNIV::BoneType boneType = UNIV::BoneType::Default;
 		int mirrorBoneIndex = -1;
 
 		std::string name;
@@ -41,6 +39,10 @@ namespace CALUMI{ namespace UNIV{
 
 
 		SkeletonBone() = default;
+
+		bool SetBoneTypeProperty(UNIV::BoneType boneType, bool reset = false);
+		const BoneTypeProperties* GetBoneTypeProperty();
+		bool ResetBoneTypeProperty(UNIV::BoneType boneType = UNIV::BoneType::Default);
 
 		std::string ToJSON(int indents) const;
 	};
@@ -97,7 +99,12 @@ namespace CALUMI{ namespace UNIV{
 		/// <returns></returns>
 		bool VerifyExclusiveBoneMirrors();
 
+		unsigned int GetAnimatedBoneCount();
+		unsigned int GetBoneCount();
+		
+
 		std::string ToJSON(int indents) const;
+		static const unsigned int MaxBoneCount = 512;
 	};
 
 	extern  "C" {
@@ -113,11 +120,19 @@ namespace CALUMI{ namespace UNIV{
 			const char* errorMessage
 		);
 
+		//Basic Bone Type Property Setters and Getters. No data is filled here
 		//returns true if set is successful, if there is an error, bonetype will remain the same
+		//Simply set a bone type to Default if you would like to reset it, as there are no default values currently
 		CALUMIANIMATION_API bool SetBoneTypeC(SkeletonBone* bone, uint32_t boneType);
 		CALUMIANIMATION_API bool SetBoneTypeFromStringC(SkeletonBone* bone, const char* boneStr);
 		CALUMIANIMATION_API uint32_t GetBoneTypeC(SkeletonBone* bone);
 		CALUMIANIMATION_API const char* GetBoneTypeAsStringC(SkeletonBone* bone);
+
+		//Setting Bone Property Values, if reassign is set to false, then the value will return false if the bone type does not match the desired input values and it will be skipped
+		//If reassign is set to true, the the bone will be set the desired type as well it's values filled
+		CALUMIANIMATION_API bool SetTwistBonePropertiesC(SkeletonBone* bone, bool reassign, int32_t twistDriverIndex, float twistDriverWeight, const char* errorMessage);
+		CALUMIANIMATION_API int GetTwistBoneDriverIndexC(SkeletonBone* bone, const char* errorMessage);
+		CALUMIANIMATION_API float GetTwistBoneDriverWeightC(SkeletonBone* bone, const char* errorMessage);
 
 		//Mirror setting, resetting, and getting
 		CALUMIANIMATION_API int SetMirrorIndexC(SkeletonBone* bone, int index);
@@ -126,7 +141,10 @@ namespace CALUMI{ namespace UNIV{
 		CALUMIANIMATION_API bool ResetAllBoneMirrorsC(SkeletonRig* rig);
 		CALUMIANIMATION_API bool VerifyExclusiveBoneMirrorsC(SkeletonRig* rig);
 
-		CALUMIANIMATION_API size_t GetSkeletonRigBoneCountC(SkeletonRig* source);
+		//Bone Count Getters
+		CALUMIANIMATION_API unsigned int GetSkeletonRigBoneCountC(SkeletonRig* source);
+		CALUMIANIMATION_API unsigned int GetSkeletonRigAnimatedBoneCountC(SkeletonRig* source);
+
 		CALUMIANIMATION_API const char* GetSkeletonRigNameC(SkeletonRig* source);
 		CALUMIANIMATION_API SkeletonBone* GetSkeletonBoneC(SkeletonRig* source, int index, const char* errorMessage);
 		CALUMIANIMATION_API const char* GetSkeletonBoneNameC(SkeletonBone* source);
