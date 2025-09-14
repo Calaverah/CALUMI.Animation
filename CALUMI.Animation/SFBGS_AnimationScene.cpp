@@ -19,7 +19,7 @@ namespace CALUMI{ namespace SFBGS{
         for (const CALUMI::UNIV::Scalar& scalar : input)
         {
             outputBlock.scalarKeyFrames.push_back(scalar.frame);
-            outputBlock.scalarEntries.push_back((uint16_t)(scalar.scalar * 5000));
+            outputBlock.scalarEntries.push_back((int16_t)(scalar.scalar * 5000));
         }
     }
 

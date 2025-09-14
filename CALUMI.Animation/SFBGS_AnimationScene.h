@@ -35,8 +35,8 @@ namespace CALUMI {
 			float lowPrecisionValue = 0.03125;
 
 			AnimationScene() = default;
-			const char* GetSceneName() { return sceneName.c_str(); }
-			void SetSceneName(const char* name) { sceneName = name; }
+			inline const char* GetSceneName() const { return sceneName.c_str(); }
+			inline void SetSceneName(const char* name) { sceneName = name; }
 
 			// Inherited via Convertible
 			bool ConvertFromUniversalScene(UNIV::AnimationScene& input) override;
