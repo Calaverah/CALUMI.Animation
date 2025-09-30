@@ -108,6 +108,9 @@
     <ClInclude Include="CALUMI_BoneTypes.h">
       <Filter>Header Files\UNIV</Filter>
     </ClInclude>
+    <ClInclude Include="SFBGS_RigPackage.h">
+      <Filter>Header Files\SFBGS</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -151,6 +154,9 @@
     </ClCompile>
     <ClCompile Include="CALUMI_AnimationEntries.cpp">
       <Filter>Source Files\UNIV</Filter>
+    </ClCompile>
+    <ClCompile Include="SFBGS_RigPackage.cpp">
+      <Filter>Source Files\SFBGS</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

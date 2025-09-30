@@ -160,6 +160,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="SFBGS_AnimationEntries.h" />
     <ClInclude Include="SFBGS_AnimationScene.h" />
+    <ClInclude Include="SFBGS_RigPackage.h" />
     <ClInclude Include="SFBGS_SkeletonRig.h" />
     <ClInclude Include="CALUMI_Utilities.h" />
   </ItemGroup>
@@ -181,6 +182,7 @@
     </ClCompile>
     <ClCompile Include="SFBGS_AnimationEntries.cpp" />
     <ClCompile Include="SFBGS_AnimationScene.cpp" />
+    <ClCompile Include="SFBGS_RigPackage.cpp" />
     <ClCompile Include="SFBGS_SkeletonRig.cpp" />
     <ClCompile Include="CALUMI_Utilities.cpp" />
   </ItemGroup>

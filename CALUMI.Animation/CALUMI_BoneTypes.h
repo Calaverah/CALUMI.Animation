@@ -25,9 +25,9 @@ namespace CALUMI {
 		//Returns default when the switch case... defaults... 
 		inline const UNIV::BoneType CALUMIANIMATION_API BoneTypeFromString(const std::string boneTypeStr)
 		{
-			if (_stricmp(boneTypeStr.c_str(), TwistBoneTypeStr))
+			if (_stricmp(boneTypeStr.c_str(), TwistBoneTypeStr)==0)
 				return UNIV::BoneType::Twist;
-			else if (_stricmp(boneTypeStr.c_str(), DefaultBoneTypeStr))
+			else if (_stricmp(boneTypeStr.c_str(), DefaultBoneTypeStr)==0)
 				return UNIV::BoneType::Default;
 			else
 				return UNIV::BoneType::UNDEFINED;

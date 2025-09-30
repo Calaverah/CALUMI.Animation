@@ -10,3 +10,5 @@
 #else
 #define CALUMIANIMATION_API __declspec(dllimport)
 #endif
+
+#define _PRIVATE_(x) //Private placeholder for visual aid for this var

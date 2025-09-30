@@ -15,6 +15,14 @@
 
 namespace CALUMI{ namespace UNIV{
 
+	/// <summary>
+	/// Rig Packages are meant to be defined by each respective game/file type. Ideally, in the future, a rig should be able to be exported to multiple formats at the same time. If a universal rig definition has these game/format specific pieces of data ready, then the conversion may be much simpler 
+	/// </summary>
+	struct CALUMIANIMATION_API RigPackage
+	{
+		virtual const char* GetPackageType() const = 0;
+	};
+
 	struct CALUMIANIMATION_API SkeletonBone
 	{
 
@@ -27,9 +35,9 @@ namespace CALUMI{ namespace UNIV{
 
 	public:
 		CALUMI::Math::Quaternion localRotation;
-		CALUMI::Math::Quaternion rootRotation;
+		CALUMI::Math::Quaternion globalRotation;
 		CALUMI::Math::Vector3 localPosition;
-		CALUMI::Math::Vector3 rootPosition;
+		CALUMI::Math::Vector3 globalPosition;
 
 		int mirrorBoneIndex = -1;
 
@@ -149,8 +157,8 @@ namespace CALUMI{ namespace UNIV{
 		CALUMIANIMATION_API SkeletonBone* GetSkeletonBoneC(SkeletonRig* source, int index, const char* errorMessage);
 		CALUMIANIMATION_API const char* GetSkeletonBoneNameC(SkeletonBone* source);
 		CALUMIANIMATION_API int GetSkeletonBoneParentIndexC(SkeletonBone* source);
-		CALUMIANIMATION_API CALUMI::Math::Quaternion* GetSkeletonBoneRotationC(SkeletonBone* source, bool fromRoot);
-		CALUMIANIMATION_API CALUMI::Math::Vector3* GetSkeletonBoneTranslationC(SkeletonBone* source, bool fromRoot);
+		CALUMIANIMATION_API CALUMI::Math::Quaternion* GetSkeletonBoneRotationC(SkeletonBone* source, bool global);
+		CALUMIANIMATION_API CALUMI::Math::Vector3* GetSkeletonBoneTranslationC(SkeletonBone* source, bool global);
 		CALUMIANIMATION_API bool ValidateSkeletonRigNamesC(SkeletonRig* source, const char* errorMessage);
 		CALUMIANIMATION_API bool ValidateSkeletonRigParentIndicesC(SkeletonRig* source, const char* errorMessage);
 	}

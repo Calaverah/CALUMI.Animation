@@ -6,6 +6,7 @@
 #include "CALUMI_Common.h"
 #include "CALUMI_ReadWritable.h"
 #include "CALUMI_SkeletonRig.h"
+#include "SFBGS_RigPackage.h"
 #include "FileError.h"
 #include "FileValidation.h"
 #include <algorithm>
@@ -28,21 +29,39 @@ namespace CALUMI {namespace SFBGS {
 	struct CALUMIANIMATION_API SkeletonBone
 	{
 		CALUMI::Math::Quaternion localRotation;
-		CALUMI::Math::Quaternion rootRotation;
+		CALUMI::Math::Quaternion globalRotation;
 		CALUMI::Math::Vector3 position;
+
 		BoneType boneType = BoneType::Default;
 		uint64_t nameOffset = 0;
-		int32_t parentBoneIndex = -1; //-1 for the root bone
-		int32_t twistDriverMqn = -1; //Twist influence override? Always points to parent on mannequin twist bones
-		int32_t twistDriver = -1; //Twist influence
-		int32_t _pad01 = -1; //Always -1
-		int32_t mirrorBoneIndex = 0; //Same as this bone's index by default
+		/// <summary>
+		/// -1 for the root bone
+		/// </summary>
+		int32_t parentBoneIndex = -1;
+		/// <summary>
+		/// Twist influence override? Always points to parent on mannequin twist bones
+		/// </summary>
+		int32_t twistDriverMqnIndex = -1;
+		/// <summary>
+		/// Twist influence, -1 if skipped
+		/// </summary>
+		int32_t twistDriverIndex = -1;
+		_PRIVATE_(_pad01)
+		/// <summary>
+		/// Same as this bone's index by default
+		/// </summary>
+		int32_t mirrorBoneIndex = 0;
 		int32_t term05 = 0;
-		float twistDriverWeight = 0; //Negative if pointing to parent
-		int32_t _pad02 = 0; //Always 0
+		/// <summary>
+		/// Negative if pointing to parent
+		/// </summary>
+		float twistDriverWeight = 0;
+		_PRIVATE_(_pad02)
 		float unknownScalar = 0.0;
 		int32_t term08 = 0;
 
+
+		//Constructors
 		SkeletonBone() = default;
 		SkeletonBone(std::vector<char>& buffer, unsigned long long& addressIndex);
 
@@ -53,16 +72,26 @@ namespace CALUMI {namespace SFBGS {
 		/// <param name="addressIndex"></param>
 		void SerializeIntoBuffer(std::vector<char>& buffer, unsigned long long& addressIndex);
 
-		
-
 		/// <summary>
 		/// Returns the converted UNIV Bone Type
 		/// </summary>
 		/// <returns></returns>
 		UNIV::BoneType GetBoneTypeAsUNIVEnum();
+		const char* GetBoneTypeAsString();
 
+		//CONVERSION ONLY
 		bool SetBoneTypeFromUNIV(UNIV::SkeletonBone& univBone);
 		bool SetBoneTypeToUNIV(UNIV::SkeletonBone& univBone);
+
+	private:
+		/// <summary>
+		/// Always -1
+		/// </summary>
+		int32_t _pad01 = -1;
+		/// <summary>
+		/// Always 0
+		/// </summary>
+		int32_t _pad02 = 0; 
 	};
 
 
@@ -72,24 +101,44 @@ namespace CALUMI {namespace SFBGS {
 
 		//HEADER
 		int versionNumber = 05;
-		unsigned int fileSize = 0; //NOTE: 4th Char in Buffer
-		int headerSize = 0x50;  //Currently the only value seen is 0x50 (80)
-		unsigned int headerEmpty01 = 0; //Always empty, possibly padding
-		unsigned int suffixOffset = 0; //96* bone count + 80 bytes //NOTE: 16th Char in Buffer
-		unsigned int headerEmpty02 = 0; //Always empty, possibly padding
-		uint64_t matchingThree[3] = { 0,0,0 };  //No matter what, these three ALWAYS match. Could be internal number tracking for BGS and may not matter to anyone outside of the company
-		float lowPrecision = 0.03125;  //default precision values. For ships use 0.25. For first person use 0.0078125 (1/128)
-		float highPrecision = 0.00025; //default precision values. For ships use 0.002. For first person use 6.25e-5 (1/16000)
+		unsigned int fileSize = 0;
+		/// <summary>
+		/// Currently the only value seen is 0x50 (80)
+		/// </summary>
+		int headerSize = 0x50;
+		_PRIVATE_(headerEmpty01)
+		/// <summary>
+		/// 96* bone count + 80 bytes
+		/// </summary>
+		unsigned int suffixOffset = 0;
+		_PRIVATE_(headerEmpty02)
+		/// <summary>
+		/// No matter what, these three ALWAYS match. Could be internal number tracking for BGS and may not matter to anyone outside of the company
+		/// </summary>
+		uint64_t matchingThree[3] = { 0,0,0 };
+		/// <summary>
+		/// default precision values. For ships use 0.25. For first person use 0.0078125 (1/128)
+		/// </summary>
+		float lowPrecision = 0.03125;
+		/// <summary>
+		/// default precision values. For ships use 0.002. For first person use 6.25e-5 (1/16000)
+		/// </summary>
+		float highPrecision = 0.00025;
+
 		uint16_t boneCount = 0;
 		uint16_t boneCount_Animated = 0;
-		unsigned int headerEmpty03 = 0; //Always empty
-		double endOfHeader[2] = { 0.0,0.0 };
+
+		_PRIVATE_(headerEmpty03)
+		/// <summary>
+		/// ;)
+		/// </summary>
+		uint8_t endOfHeader[16] = {0x0, 0x0, 0x43, 0x41, 0x4C, 0x55, 0x4D, 0x49, 0x44, 0x56, 0x52, 0x53, 0x4A, 0x4F, 0x4A, 0x4F };
 
 
 		std::vector<SkeletonBone> boneEntries;
 
 		//Don't ask why I'm initializing like this... let's just move on.
-		int16_t suffixArray[157] = 
+		int16_t suffixArray[SFBGSMAPSIZE] = 
 		{
 			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
@@ -97,17 +146,39 @@ namespace CALUMI {namespace SFBGS {
 			-1,-1,-1,-1,-1,-1,-1
 		};
 
+		/// <summary>
+		/// String array for the bone names
+		/// </summary>
 		std::vector<std::string> stringArray;
+
+
+
+
 
 		// Inherited via ReadWritable
 		std::expected<bool, FileError> ReadFromFile(std::filesystem::path& inputFilePath) override;
 		std::expected<std::string, FileError> WriteToFile(std::filesystem::path& outputFilePath) override;
 
+	private:
+		/// <summary>
+		/// Always empty, possibly padding, see _PRIVATE_ for placement in struct
+		/// </summary>
+		unsigned int headerEmpty01 = 0;
+		/// <summary>
+		/// Always empty, possibly padding, see _PRIVATE_ for placement in struct
+		/// </summary>
+		unsigned int headerEmpty02 = 0;
+		/// <summary>
+		/// Always empty, possibly padding, see _PRIVATE_ for placement in struct
+		/// </summary>
+		unsigned int headerEmpty03 = 0;
 
+	public:
+		//DEBUG FUNCTIONS
+		uint8_t _CheckAssumedHeaderEntries();
 	};
 	SkeletonRig ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig, float& highPrecision, float& lowPrecision);
 	CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(CALUMI::SFBGS::SkeletonRig& inputRig);
-
 
 }}
 

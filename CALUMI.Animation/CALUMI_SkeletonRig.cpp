@@ -97,27 +97,27 @@ namespace CALUMI{ namespace UNIV{
         }
         else if (localValues)
         {
-            rootRotation = rotation * boneEntries.at(input.parentBoneIndex).rootRotation;
+            rootRotation = rotation * boneEntries.at(input.parentBoneIndex).globalRotation;
             localRotation = rotation;
-            rootPosition = position + boneEntries.at(input.parentBoneIndex).rootPosition;
+            rootPosition = position + boneEntries.at(input.parentBoneIndex).globalPosition;
             localPosition = position;
         }
         else
         {
             CALUMI::Math::Quaternion inverseParentRoot;
-            boneEntries.at(input.parentBoneIndex).rootRotation.Inverse(inverseParentRoot); //why did they not make this a return value.
+            boneEntries.at(input.parentBoneIndex).globalRotation.Inverse(inverseParentRoot); //why did they not make this a return value.
             localRotation = rotation * inverseParentRoot;
             rootRotation = rotation;
-            localPosition = position - boneEntries.at(input.parentBoneIndex).rootPosition;
+            localPosition = position - boneEntries.at(input.parentBoneIndex).globalPosition;
             rootPosition = position;
         }
 
         
         
         input.localPosition = localPosition;
-        input.rootPosition = rootPosition;
+        input.globalPosition = rootPosition;
         input.localRotation = localRotation;
-        input.rootRotation = rootRotation;
+        input.globalRotation = rootRotation;
 
         input.mirrorBoneIndex = boneEntries.size();
 
@@ -323,7 +323,7 @@ namespace CALUMI{ namespace UNIV{
     {
         if (fromRoot)
         {
-            return &source->rootRotation;
+            return &source->globalRotation;
         }
         
         return &source->localRotation;
@@ -332,7 +332,7 @@ namespace CALUMI{ namespace UNIV{
     {
         if (fromRoot)
         {
-            return &source->rootPosition;
+            return &source->globalPosition;
         }
 
         return &source->localPosition;
@@ -477,14 +477,14 @@ namespace CALUMI{ namespace UNIV{
         output += Utilities::Indent(indents+1) + "\"localRotation\": [";
         output += std::to_string(localRotation.x) + ", " + std::to_string(localRotation.y) + ", " + std::to_string(localRotation.z) + ", " + std::to_string(localRotation.w) + "],\n";
         
-        output += Utilities::Indent(indents+1) + "\"rootRotation\": [";
-        output += std::to_string(rootRotation.x) + ", " + std::to_string(rootRotation.y) + ", " + std::to_string(rootRotation.z) + ", " + std::to_string(rootRotation.w) + "],\n";
+        output += Utilities::Indent(indents+1) + "\"globalRotation\": [";
+        output += std::to_string(globalRotation.x) + ", " + std::to_string(globalRotation.y) + ", " + std::to_string(globalRotation.z) + ", " + std::to_string(globalRotation.w) + "],\n";
         
         output += Utilities::Indent(indents+1) + "\"localPosition\": [";
         output += std::to_string(localPosition.x) + ", " + std::to_string(localPosition.y) + ", " + std::to_string(localPosition.z) + "],\n";
         
-        output += Utilities::Indent(indents+1) + "\"rootPosition\": [";
-        output += std::to_string(rootPosition.x) + ", " + std::to_string(rootPosition.y) + ", " + std::to_string(rootPosition.z) + "]\n";
+        output += Utilities::Indent(indents+1) + "\"globalPosition\": [";
+        output += std::to_string(globalPosition.x) + ", " + std::to_string(globalPosition.y) + ", " + std::to_string(globalPosition.z) + "]\n";
         
         output += Utilities::Indent(indents) + "}";
         return output;
