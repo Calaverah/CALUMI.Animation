@@ -1,11 +1,9 @@
 #pragma once
 #include <cstdint>
-#include <string>
-#include <vector>
 #include "CALUMI_Common.h"
 #include "CALUMI_SkeletonRig.h"
 
-#define SFBGSMAPSIZE 157
+constexpr auto SFBGSMAPSIZE = 157;
 
 namespace CALUMI {
 	namespace SFBGS {
@@ -120,37 +118,40 @@ namespace CALUMI {
 			None = 0xFF
 		};
 
-		bool BoneTagExists(BoneMapKey input);
+		CALUMIANIMATION_API bool BoneTagExists(BoneMapKey input);
 
 		struct CALUMIANIMATION_API RigMap
 		{
 		private:
-			std::string boneNameList[SFBGSMAPSIZE];
+			Utilities::StringContainer boneNameList[SFBGSMAPSIZE];
 
 		public:
 			bool BoneIsMapped(const char* boneName);
 			bool KeyHasBone(BoneMapKey key);
 
-			bool AddBoneToMap(BoneMapKey key, const char* boneName, bool shouldReassign = false);
+			bool AddBoneToMap(BoneMapKey key, const char* boneName, bool overwrite = true);
 
 			bool RemoveBoneFromMap(BoneMapKey key);
 			bool RemoveBoneFromMap(const char* boneName);
 
 
 			BoneMapKey GetBoneKey(const char* boneName);
-			const char* GetBoneFromKey(BoneMapKey key);
+			Utilities::StringContainer GetBoneNameFromKey(BoneMapKey key);
 
+			RigMap() = default;
 		};
 
 
-		struct SFBGS_RigPackage : UNIV::RigPackage
+		struct CALUMIANIMATION_API SFBGS_RigPackage : UNIV::RigPackage
 		{
 			bool isMannequin = false;
 			SFBGS::RigMap rigMap;
 
 
 			// Inherited via RigPackage
-			inline const char* GetPackageType() const override{ return SFBGS_RIG_PACKAGE; }
+			const char* GetPackageType() const override;
+
+			SFBGS_RigPackage() = default;
 		};
 
 } }

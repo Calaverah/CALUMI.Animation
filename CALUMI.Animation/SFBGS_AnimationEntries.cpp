@@ -3,8 +3,12 @@
 //Contact: Calaverahmedia@gmail.com
 
 #include "pch.h"
+#include <corecrt_math_defines.h>
 #include "SFBGS_AnimationEntries.h"
 #include <print>
+#include <utility>
+#include <vector>
+#include <algorithm>
 
 
 
@@ -25,14 +29,31 @@ namespace CALUMI { namespace SFBGS{
 		this->missing = std::clamp((int)ID, 0b0, 0b11);
 	}
 
-	std::tuple<int8_t, int8_t, bool> GetSFBGSRotationComponents(const float& component)
+	bool RotationPrefix::operator==(const RotationPrefix& other) const
 	{
-		float lowPrecision = M_SQRT1_2 / 64.0; //1.0 / (sqrt(2) * 64.0);		//2^6
-		float highPrecision = M_SQRT1_2 / 16384.0; //1.0 / (sqrt(2) * 16384.0);	//2^14
+		return first == other.first && firstFlag == other.firstFlag && second == other.second && secondFlag == other.secondFlag && third == other.third && thirdFlag == other.thirdFlag && missing == other.missing;
+	}
+
+	bool RotationPrefix::operator!=(const RotationPrefix& other) const
+	{
+		return !(*this == other);
+	}
+	bool TranslationPrefix::operator!=(const TranslationPrefix& other) const
+	{
+		return !(*this == other);
+	}
+	bool TranslationPrefix::operator==(const TranslationPrefix& other) const
+	{
+		return x == other.x && y == other.y && z == other.z;
+	}
+	static std::tuple<int8_t, int8_t, bool> GetSFBGSRotationComponents(const float& component)
+	{
+		float lowPrecision = static_cast<float>(M_SQRT1_2 / 64.0); //1.0 / (sqrt(2) * 64.0);		//2^6
+		float highPrecision = static_cast<float>(M_SQRT1_2 / 16384.0); //1.0 / (sqrt(2) * 16384.0);	//2^14
 
 		float value = 0.0;
 		if(component != 0)
-			value = component + std::copysignf(highPrecision / 10.0, component); //increase the value by just enough to correct rounding errors on conversion to int
+			value = component + std::copysignf(highPrecision / 10.0f, component); //increase the value by just enough to correct rounding errors on conversion to int
 
 		int8_t sVal = 0;
 		int8_t lVal = 0;
@@ -45,18 +66,18 @@ namespace CALUMI { namespace SFBGS{
 			tempS = (value - lVal * lowPrecision) / highPrecision;
 			if (tempS < -128 || tempS > 127)
 			{
-				sVal = (value - lVal * lowPrecision) / (8 * highPrecision);
+				sVal = static_cast<int8_t>((value - lVal * lowPrecision) / (8 * highPrecision));
 				flag = true;
 			}
 			else
 			{
-				sVal = (value - lVal * lowPrecision) / highPrecision;
+				sVal = static_cast<int8_t>((value - lVal * lowPrecision) / highPrecision);
 			}
 		}
 		else
 		{
-			sVal = fmod(value, lowPrecision) / highPrecision;
-			lVal = (value - (sVal * highPrecision)) / lowPrecision;
+			sVal = static_cast<int8_t>(fmod(value, lowPrecision) / highPrecision);
+			lVal = static_cast<int8_t>((value - (sVal * highPrecision)) / lowPrecision);
 		}
 		return std::make_tuple(lVal, sVal, flag);
 	}
@@ -68,7 +89,7 @@ namespace CALUMI { namespace SFBGS{
 	/// </summary>
 	/// <param name="input"></param>
 	/// <returns></returns>
-	std::pair<RotationPrefix, RotationEntry> GetSFBGSRotationPair(const CALUMI::Math::Quaternion& input)
+	Utilities::PairContainer<RotationPrefix, RotationEntry> GetSFBGSRotationPair(const CALUMI::Math::Quaternion& input)
 	{
 		RotationPrefix prefix;
 		CALUMI::Math::Quaternion tempInput = input;
@@ -104,7 +125,10 @@ namespace CALUMI { namespace SFBGS{
 
 		RotationEntry suffix(std::get<1>(first), std::get<1>(second), std::get<1>(third) );
 
-		return std::make_pair(prefix, suffix);
+		Utilities::PairContainer<RotationPrefix, RotationEntry> outputPair;
+		outputPair.first = prefix;
+		outputPair.second = suffix;
+		return outputPair;
 	}
 
 	CALUMI::Math::Quaternion GetUniversalRotation(const CALUMI::SFBGS::RotationPrefix& prefix, const CALUMI::SFBGS::RotationEntry& suffix)
@@ -125,37 +149,40 @@ namespace CALUMI { namespace SFBGS{
 
 		switch (prefix.missing)
 		{
-		case 0:     output.x = component4; output.y = component1; output.z = component2; output.w = component3; break;
-		case 1:     output.y = component4; output.x = component1; output.z = component2; output.w = component3; break;
-		case 2:     output.z = component4; output.x = component1; output.y = component2; output.w = component3; break;
-		default:    output.w = component4; output.x = component1; output.y = component2; output.z = component3; break;
+		case 0:     output.x = static_cast<float>(component4); output.y = static_cast<float>(component1); output.z = static_cast<float>(component2); output.w = static_cast<float>(component3); break;
+		case 1:     output.y = static_cast<float>(component4); output.x = static_cast<float>(component1); output.z = static_cast<float>(component2); output.w = static_cast<float>(component3); break;
+		case 2:     output.z = static_cast<float>(component4); output.x = static_cast<float>(component1); output.y = static_cast<float>(component2); output.w = static_cast<float>(component3); break;
+		default:    output.w = static_cast<float>(component4); output.x = static_cast<float>(component1); output.y = static_cast<float>(component2); output.z = static_cast<float>(component3); break;
 		}
 
 		return output;
 	}
 
-	std::pair<int16_t, int8_t> GetSFBGSTranslationComponents(const double& component, const float& highPrecision, const float& lowPrecision)
+	static std::pair<int16_t, int8_t> GetSFBGSTranslationComponents(const double& component, const float& highPrecision, const float& lowPrecision)
 	{
 		double value = 0.0;
 		if (component != 0)
 			value = component + std::copysign(highPrecision / 3.0, component); //increase the value by just enough to correct rounding errors on conversion to int
 
-		int8_t sVal = fmod(value, lowPrecision) / highPrecision;
-		int16_t lVal = (value - sVal * highPrecision) / lowPrecision;
+		int8_t sVal = static_cast<int8_t>(fmod(value, lowPrecision) / highPrecision);
+		int16_t lVal = static_cast<int16_t>((value - sVal * highPrecision) / lowPrecision);
 
 		return std::make_pair(lVal, sVal);
 	}
 
-	std::pair<TranslationPrefix, TranslationEntry> GetSFBGSTranslationPair(const CALUMI::Math::Vector3D& input, const float& highPrecision, const float& lowPrecision)
+	Utilities::PairContainer<TranslationPrefix, TranslationEntry> GetSFBGSTranslationPair(const CALUMI::Math::Vector3D& input, const float& highPrecision, const float& lowPrecision)
 	{
 		auto x = GetSFBGSTranslationComponents(input.x, highPrecision, lowPrecision);
 		auto y = GetSFBGSTranslationComponents(input.y, highPrecision, lowPrecision);
 		auto z = GetSFBGSTranslationComponents(input.z, highPrecision, lowPrecision);
 
-		TranslationPrefix prefix(x.first, y.first, z.first, (uint16_t)1);
+		TranslationPrefix prefix(x.first, y.first, z.first, static_cast < uint16_t>(1));
 		TranslationEntry suffix(x.second, y.second, z.second);
 
-		return std::make_pair(prefix,suffix);
+		Utilities::PairContainer<TranslationPrefix, TranslationEntry> outputPair;
+		outputPair.first = prefix;
+		outputPair.second = suffix;
+		return outputPair;
 	}
 
 	CALUMI::Math::Vector3D GetUniversalTranslation(const CALUMI::SFBGS::TranslationPrefix& prefix, const CALUMI::SFBGS::TranslationEntry& suffix, const float& highPrecision, const float& lowPrecision)
@@ -166,23 +193,23 @@ namespace CALUMI { namespace SFBGS{
 		return output;
 	}
 	
-	std::vector<CALUMI::SFBGS::TranslationPrefix> UnfoldTranslationPrefixSequence(const std::vector<CALUMI::SFBGS::TranslationPrefix>& input)
+	Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> UnfoldTranslationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix>& input)
 	{
-		std::vector<CALUMI::SFBGS::TranslationPrefix> output;
+		Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> output;
 		uint16_t totalSize = 0;
-		for (const CALUMI::SFBGS::TranslationPrefix& entry : input)
+		for (int i = 0; i<input.size();i++)
 		{
 			//totalSize++;
-			totalSize += entry.count;
+			totalSize += input.at(i).count;
 		}
 		std::println("totalSize {}", totalSize);
 		output.reserve(totalSize);
 
-		for (const CALUMI::SFBGS::TranslationPrefix& entry : input)
+		for (int i = 0; i < input.size(); i++)
 		{
-			for (uint8_t i = 0; i < entry.count; i++) //Translations use classical counters
+			for (uint8_t j = 0; j < input.at(i).count; j++) //Translations use classical counters
 			{
-				CALUMI::SFBGS::TranslationPrefix newPrefix = entry;
+				CALUMI::SFBGS::TranslationPrefix newPrefix = input.at(i);
 				newPrefix.count = 1;
 				output.push_back(newPrefix);
 			}
@@ -191,11 +218,11 @@ namespace CALUMI { namespace SFBGS{
 		return output;
 	}
 
-	std::vector<CALUMI::SFBGS::TranslationPrefix> FoldTranslationPrefixSequence(const std::vector<CALUMI::SFBGS::TranslationPrefix>& input)
+	Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> FoldTranslationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix>& input)
 	{
 		if (input.size() < 2)return input;
 
-		std::vector<CALUMI::SFBGS::TranslationPrefix> outputList; outputList.reserve(input.size());
+		Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> outputList; outputList.reserve(input.size());
 		CALUMI::SFBGS::TranslationPrefix referencePrefix = input.at(0);
 		for (uint16_t i = 1; i < input.size(); i++)
 		{
@@ -214,23 +241,23 @@ namespace CALUMI { namespace SFBGS{
 		return outputList;
 	}
 
-	std::vector<CALUMI::SFBGS::RotationPrefix> UnfoldRotationPrefixSequence(const std::vector<CALUMI::SFBGS::RotationPrefix>& input)
+	Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> UnfoldRotationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& input)
 	{
-		std::vector<CALUMI::SFBGS::RotationPrefix> output;
+		Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> output;
 		uint16_t totalSize = 0;
-		for (const CALUMI::SFBGS::RotationPrefix& entry : input)
+		for (int i =0; i < input.size(); i++)
 		{
 			totalSize++;
-			totalSize += entry.count;
+			totalSize += input.at(i).count;
 		}
 
 		output.reserve(totalSize);
 
-		for (const CALUMI::SFBGS::RotationPrefix& entry : input)
+		for (int z =0; z < input.size(); z++)
 		{
-			for (uint8_t i = 0; i <= entry.count; i++) //Rotations use programming counters
+			for (uint8_t i = 0; i <= input.at(z).count; i++) //Rotations use programming counters
 			{
-				CALUMI::SFBGS::RotationPrefix newPrefix = entry;
+				CALUMI::SFBGS::RotationPrefix newPrefix = input.at(z);
 				newPrefix.count = 0;
 				output.push_back(newPrefix);
 			}
@@ -238,11 +265,11 @@ namespace CALUMI { namespace SFBGS{
 		return output;
 	}
 
-	std::vector<CALUMI::SFBGS::RotationPrefix> FoldRotationPrefixSequence(const std::vector<CALUMI::SFBGS::RotationPrefix>& input)
+	Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> FoldRotationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& input)
 	{
 		if (input.size() < 2)return input;
 		
-		std::vector<CALUMI::SFBGS::RotationPrefix> outputList; 
+		Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> outputList;
 		outputList.reserve(input.size());
 		
 		CALUMI::SFBGS::RotationPrefix referencePrefix = input.at(0);

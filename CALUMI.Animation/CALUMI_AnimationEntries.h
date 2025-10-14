@@ -5,9 +5,8 @@
 #pragma once
 #include "CALUMI_Common.h"
 #include "CALUMI_Math.h"
-#include <algorithm>
 #include <cstdint>
-#include <vector>
+#include "CALUMI_Utilities.h"
 
 namespace CALUMI {namespace UNIV {
 
@@ -24,8 +23,17 @@ namespace CALUMI {namespace UNIV {
 		{
 		}
 
-		std::string ToJSON(int indents) const;
+		UNIV::Translation& operator=(const UNIV::Translation& other);
+
+		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
 	};
+
+	bool operator<(const UNIV::Translation& A, const UNIV::Translation& B);
+	bool operator<=(const UNIV::Translation& A, const UNIV::Translation& B);
+	bool operator>(const UNIV::Translation& A, const UNIV::Translation& B);
+	bool operator>=(const UNIV::Translation& A, const UNIV::Translation& B);
+	bool operator==(const UNIV::Translation& A, const UNIV::Translation& B);
+	bool operator!=(const UNIV::Translation& A, const UNIV::Translation& B);
 
 	struct CALUMIANIMATION_API Rotation
 	{
@@ -38,8 +46,17 @@ namespace CALUMI {namespace UNIV {
 		{
 		}
 
-		std::string ToJSON(int indents) const;
+		UNIV::Rotation& operator=(const UNIV::Rotation& other);
+
+		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
 	};
+
+	bool operator<(const UNIV::Rotation& A, const UNIV::Rotation& B);
+	bool operator<=(const UNIV::Rotation& A, const UNIV::Rotation& B);
+	bool operator>(const UNIV::Rotation& A, const UNIV::Rotation& B);
+	bool operator>=(const UNIV::Rotation& A, const UNIV::Rotation& B);
+	bool operator==(const UNIV::Rotation& A, const UNIV::Rotation& B);
+	bool operator!=(const UNIV::Rotation& A, const UNIV::Rotation& B);
 
 	struct CALUMIANIMATION_API Scalar
 	{
@@ -52,21 +69,40 @@ namespace CALUMI {namespace UNIV {
 		{
 		}
 
-		std::string ToJSON(int indents) const;
+		UNIV::Scalar& operator=(const UNIV::Scalar& other);
+
+		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
 	};
+
+	bool operator<(const UNIV::Scalar& A, const UNIV::Scalar& B);
+	bool operator<=(const UNIV::Scalar& A, const UNIV::Scalar& B);
+	bool operator>(const UNIV::Scalar& A, const UNIV::Scalar& B);
+	bool operator>=(const UNIV::Scalar& A, const UNIV::Scalar& B);
+	bool operator==(const UNIV::Scalar& A, const UNIV::Scalar& B);
+	bool operator!=(const UNIV::Scalar& A, const UNIV::Scalar& B);
 
 	struct CALUMIANIMATION_API Priority
 	{
 		uint16_t frame = 0;
-		uint8_t priority;
+		uint8_t priority = 90; //Unsure what a good default is yet. 90 is the highest seen so far
 
+		Priority() = default;
 		Priority(const uint16_t& frame, const uint8_t& priority)
 			: frame(frame), priority(priority)
 		{
 		}
 
-		std::string ToJSON(int indents) const;
+		UNIV::Priority& operator=(const UNIV::Priority& other);
+
+		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
 	};
+
+	bool operator<(const UNIV::Priority& A, const UNIV::Priority& B);
+	bool operator<=(const UNIV::Priority& A, const UNIV::Priority& B);
+	bool operator>(const UNIV::Priority& A, const UNIV::Priority& B);
+	bool operator>=(const UNIV::Priority& A, const UNIV::Priority& B);
+	bool operator==(const UNIV::Priority& A, const UNIV::Priority& B);
+	bool operator!=(const UNIV::Priority& A, const UNIV::Priority& B);
 
 	extern  "C" {
 		CALUMIANIMATION_API Rotation* CreateRotationEntryC(uint16_t frame, float x, float y, float z, float w);
@@ -108,4 +144,10 @@ namespace CALUMI {namespace UNIV {
 		/// <returns></returns>
 		CALUMIANIMATION_API uint8_t GetValueFromPriorityEntryC(Priority* source);
 	}
+
 }}
+
+_VECTORTEMPLATE(CALUMI::UNIV::Rotation);
+_VECTORTEMPLATE(CALUMI::UNIV::Translation);
+_VECTORTEMPLATE(CALUMI::UNIV::Scalar);
+_VECTORTEMPLATE(CALUMI::UNIV::Priority);

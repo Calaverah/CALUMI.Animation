@@ -3,30 +3,17 @@
 //Contact: Calaverahmedia@gmail.com
 
 #pragma once
-#include "CALUMI_Common.h"
-#include <string>
-#include <filesystem>
-#include <expected>
 #include "FileError.h"
-#include <fstream>
 
 namespace CALUMI{
 
 
-	std::expected<std::vector<char>, FileError> ValidateFile(const std::filesystem::path& inputPath);
-	std::expected<std::vector<char>, FileError> ValidateFile(const std::filesystem::path& inputPath, const std::vector<std::string> fileExtensions, bool allowFiles);
-	std::expected<std::vector<char>, FileError> ValidateFile(const std::filesystem::path& inputPath, const std::vector<std::string> fileExtensions, unsigned int minFileSize, unsigned long long maxFileSize, bool allowFiles);
-	std::expected<std::vector<char>, FileError> ValidateFile(const std::filesystem::path& inputPath, unsigned int minFileSize, unsigned long long maxFileSize);
+	Utilities::ExpectedConatiner<Utilities::VectorContainer<char>, FileError> ValidateFile(const Utilities::PathContainer& inputPath);
+	Utilities::ExpectedConatiner<Utilities::VectorContainer<char>, FileError> ValidateFile(const Utilities::PathContainer& inputPath, const Utilities::VectorContainer<Utilities::StringContainer> fileExtensions, bool allowFiles = true);
+	Utilities::ExpectedConatiner<Utilities::VectorContainer<char>, FileError> ValidateFile(const Utilities::PathContainer& inputPath, const Utilities::VectorContainer<Utilities::StringContainer> fileExtensions, unsigned int minFileSize, unsigned long long maxFileSize = 0, bool allowFiles = true);
+	Utilities::ExpectedConatiner<Utilities::VectorContainer<char>, FileError> ValidateFile(const Utilities::PathContainer& inputPath, unsigned int minFileSize, unsigned long long maxFileSize = 0);
 
-	std::expected<std::string, FileError> WriteToBinaryFile(const std::filesystem::path& outputPath, std::vector<char>& buffer);
-	std::expected<std::string, FileError> WriteToBinaryFile(const std::filesystem::path& outputPath, const std::string& buffer);
+	Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToBinaryFile(const Utilities::PathContainer& outputPath, Utilities::VectorContainer<char>& buffer);
+	Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToBinaryFile(const Utilities::PathContainer& outputPath, const Utilities::StringContainer& buffer);
 
-
-	namespace priv {
-		//PRIVATE FUNCTIONS
-		std::expected<bool, FileError> _CommonValidation(const std::filesystem::path& inputPath);
-		std::expected<std::vector<char>, FileError> _GetBuffer(const std::filesystem::path& inputPath);
-		std::expected<bool, FileError> _FileExtValidation(const std::filesystem::path& inputPath, const std::vector<std::string>& fileExtensions, bool allowFiles);
-		std::expected<bool, FileError> _ValidateFileSize(const std::filesystem::path& inputPath, unsigned int& minFileSize, unsigned long long& maxFileSize);
-	}
 }

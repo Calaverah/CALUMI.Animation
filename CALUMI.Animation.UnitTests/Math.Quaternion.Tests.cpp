@@ -20,15 +20,15 @@ namespace CALUMIAnimationUnitTests
 		}
 		TEST_METHOD(AxisAngleConstruction)
 		{
-			Quaternion quaternion1(Vector3{ 1.0,2.0,3.0 }, ToRadians(50));
+			Quaternion quaternion1(Vector3{ 1.0,2.0,3.0 }, static_cast<float>(ToRadians(50.0)));
 			Quaternion quaternion2(0.1129495,0.225899,0.3388484,0.9063078);
-			Assert::IsTrue(quaternion1.AreEqual(quaternion2,0.0000001));
+			Assert::IsTrue(quaternion1.AreEqual(quaternion2,0.0000001f));
 		}
 		TEST_METHOD(DoubleAxisAngleConstruction)
 		{
-			Quaternion quaternion1(Vector3D{ 1.0,2.0,3.0 }, ToRadians(50));
+			Quaternion quaternion1(Vector3D{ 1.0,2.0,3.0 }, static_cast<float>(ToRadians(50.0)));
 			Quaternion quaternion2(0.1129495, 0.225899, 0.3388484, 0.9063078);
-			Assert::IsTrue(quaternion1.AreEqual(quaternion2, 0.0000001));
+			Assert::IsTrue(quaternion1.AreEqual(quaternion2, 0.0000001f));
 		}
 		TEST_METHOD(Identity)
 		{
@@ -54,7 +54,7 @@ namespace CALUMIAnimationUnitTests
 			Quaternion quaternion1(1.0, 1.5, 1.0, 1.0);
 			Quaternion quaternion2(1.01, 1.0, 0.0, 2.0);
 			Quaternion quaternion3(0.8480776, 1.0622199, 0.4364358, 1.2515682);
-			Assert::IsTrue(quaternion3.AreEqual(quaternion1 + quaternion2, 0.0000001));
+			Assert::IsTrue(quaternion3.AreEqual(quaternion1 + quaternion2, 0.0000001f));
 		}
 		TEST_METHOD(Addition2_N)
 		{
@@ -80,31 +80,31 @@ namespace CALUMIAnimationUnitTests
 		TEST_METHOD(Conjugate1_N)
 		{
 			Quaternion quaternion(1.0, 2.0, 3.0, 4.0);
-			Assert::IsFalse(quaternion.AreEqual(quaternion.Conjugate(), 0.0000001));
+			Assert::IsFalse(quaternion.AreEqual(quaternion.Conjugate(), 0.0000001f));
 		}
 		TEST_METHOD(Conjugate1_E)
 		{
 			Quaternion quaternion1(1.0, 2.0, 3.0, 4.0);
 			Quaternion quaternion2(-1.0, -2.0, -3.0, 4.0);
-			Assert::IsTrue(quaternion1.AreEqual(quaternion2.Conjugate(), 0.0000001));
+			Assert::IsTrue(quaternion1.AreEqual(quaternion2.Conjugate(), 0.0000001f));
 		}
 		TEST_METHOD(Conjugate2_E)
 		{
 			Quaternion quaternion1(1.0, 2.0, 3.0, 4.0);
 			Quaternion quaternion2 = quaternion1.Conjugate();
-			Assert::IsTrue(quaternion1.AreEqual(quaternion2.Conjugate(), 0.0000001));
+			Assert::IsTrue(quaternion1.AreEqual(quaternion2.Conjugate(), 0.0000001f));
 		}
 		TEST_METHOD(AreSameRotation1_E)
 		{
 			Quaternion quaternion1(1.0, 2.0, 3.0, 4.0);
 			Quaternion quaternion2 = -quaternion1;
-			Assert::IsTrue(quaternion1.AreSameRotation(quaternion2, 0.0000001));
+			Assert::IsTrue(quaternion1.AreSameRotation(quaternion2, 0.0000001f));
 		}
 		TEST_METHOD(AreSameRotation1_F)
 		{
 			Quaternion quaternion1(1.0, 2.0, 3.0, 4.0);
 			Quaternion quaternion2 = quaternion1.Conjugate();
-			Assert::IsFalse(quaternion1.AreSameRotation(quaternion2, 0.0000001));
+			Assert::IsFalse(quaternion1.AreSameRotation(quaternion2, 0.0000001f));
 		}
 		TEST_METHOD(Multiplication1_E)
 		{
@@ -116,37 +116,37 @@ namespace CALUMIAnimationUnitTests
 		{
 			Quaternion quaternion1;
 			Quaternion quaternion2(1.0,2.0,3.0,4.0);
-			Assert::IsTrue(quaternion2.AreEqual(quaternion1 * quaternion2, 0.0000001));
+			Assert::IsTrue(quaternion2.AreEqual(quaternion1 * quaternion2, 0.0000001f));
 		}
 		TEST_METHOD(Multiplication3_E)
 		{
 			Quaternion quaternion1;
 			Quaternion quaternion2(1.0, 2.0, 3.0, 4.0);
-			Assert::IsTrue(quaternion2.AreEqual(quaternion1 * quaternion2, 0.0000001));
+			Assert::IsTrue(quaternion2.AreEqual(quaternion1 * quaternion2, 0.0000001f));
 		}
 		TEST_METHOD(Multiplication4_E)
 		{
 			Quaternion quaternion1;
 			Quaternion quaternion2(1.0, 2.0, 3.0, 4.0);
-			Assert::IsTrue(quaternion2.AreSameRotation( quaternion1 * -quaternion2, 0.0000001));
+			Assert::IsTrue(quaternion2.AreSameRotation( quaternion1 * -quaternion2, 0.0000001f));
 		}
 		TEST_METHOD(Multiplication4_F)
 		{
 			Quaternion quaternion1(M_SQRT1_2,0.0,0.0,M_SQRT1_2);
 			Quaternion quaternion2(1.0, 2.0, 3.0, 4.0);
-			Assert::IsFalse(quaternion2.AreSameRotation(quaternion1 * -quaternion2, 0.0000001));
+			Assert::IsFalse(quaternion2.AreSameRotation(quaternion1 * -quaternion2, 0.0000001f));
 		}
 		TEST_METHOD(Division1_E)
 		{
 			Quaternion quaternion1;
 			Quaternion quaternion2(1.0, 2.0, 3.0, 4.0);
-			Assert::IsTrue(quaternion1.AreEqual(quaternion2 / quaternion2, 0.0000001));
+			Assert::IsTrue(quaternion1.AreEqual(quaternion2 / quaternion2, 0.0000001f));
 		}
 		TEST_METHOD(Division2_E)
 		{
 			Quaternion quaternion1;
 			Quaternion quaternion2(1.0, 2.0, 3.0, 4.0);
-			Assert::IsTrue(quaternion2.AreEqual(quaternion2 / quaternion1, 0.0000001));
+			Assert::IsTrue(quaternion2.AreEqual(quaternion2 / quaternion1, 0.0000001f));
 		}
 		TEST_METHOD(Length1_E)
 		{

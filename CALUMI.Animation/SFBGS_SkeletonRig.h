@@ -8,13 +8,7 @@
 #include "CALUMI_SkeletonRig.h"
 #include "SFBGS_RigPackage.h"
 #include "FileError.h"
-#include "FileValidation.h"
-#include <algorithm>
 #include <cstdint>
-#include <expected>
-#include <iostream>
-#include <string>
-#include <vector>
 
 
 
@@ -63,14 +57,14 @@ namespace CALUMI {namespace SFBGS {
 
 		//Constructors
 		SkeletonBone() = default;
-		SkeletonBone(std::vector<char>& buffer, unsigned long long& addressIndex);
+		SkeletonBone(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex);
 
 		/// <summary>
 		/// Fills end of buffer with 96 bytes and copies the information into the vector.
 		/// </summary>
 		/// <param name="buffer"></param>
 		/// <param name="addressIndex"></param>
-		void SerializeIntoBuffer(std::vector<char>& buffer, unsigned long long& addressIndex);
+		void SerializeIntoBuffer(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex) const;
 
 		/// <summary>
 		/// Returns the converted UNIV Bone Type
@@ -101,16 +95,20 @@ namespace CALUMI {namespace SFBGS {
 
 		//HEADER
 		int versionNumber = 05;
+
 		unsigned int fileSize = 0;
+
 		/// <summary>
 		/// Currently the only value seen is 0x50 (80)
 		/// </summary>
 		int headerSize = 0x50;
+
 		_PRIVATE_(headerEmpty01)
 		/// <summary>
 		/// 96* bone count + 80 bytes
 		/// </summary>
-		unsigned int suffixOffset = 0;
+		unsigned int boneMapOffset = 0;
+
 		_PRIVATE_(headerEmpty02)
 		/// <summary>
 		/// No matter what, these three ALWAYS match. Could be internal number tracking for BGS and may not matter to anyone outside of the company
@@ -119,15 +117,14 @@ namespace CALUMI {namespace SFBGS {
 		/// <summary>
 		/// default precision values. For ships use 0.25. For first person use 0.0078125 (1/128)
 		/// </summary>
-		float lowPrecision = 0.03125;
+		float lowPrecision = 0.03125f;
 		/// <summary>
 		/// default precision values. For ships use 0.002. For first person use 6.25e-5 (1/16000)
 		/// </summary>
-		float highPrecision = 0.00025;
+		float highPrecision = 0.00025f;
 
 		uint16_t boneCount = 0;
 		uint16_t boneCount_Animated = 0;
-
 		_PRIVATE_(headerEmpty03)
 		/// <summary>
 		/// ;)
@@ -135,10 +132,10 @@ namespace CALUMI {namespace SFBGS {
 		uint8_t endOfHeader[16] = {0x0, 0x0, 0x43, 0x41, 0x4C, 0x55, 0x4D, 0x49, 0x44, 0x56, 0x52, 0x53, 0x4A, 0x4F, 0x4A, 0x4F };
 
 
-		std::vector<SkeletonBone> boneEntries;
+		Utilities::VectorContainer<SkeletonBone> boneEntries;
 
 		//Don't ask why I'm initializing like this... let's just move on.
-		int16_t suffixArray[SFBGSMAPSIZE] = 
+		int16_t boneMapArray[SFBGSMAPSIZE] = 
 		{
 			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
@@ -149,15 +146,15 @@ namespace CALUMI {namespace SFBGS {
 		/// <summary>
 		/// String array for the bone names
 		/// </summary>
-		std::vector<std::string> stringArray;
-
-
+		Utilities::VectorContainer<Utilities::StringContainer> stringArray;
 
 
 
 		// Inherited via ReadWritable
-		std::expected<bool, FileError> ReadFromFile(std::filesystem::path& inputFilePath) override;
-		std::expected<std::string, FileError> WriteToFile(std::filesystem::path& outputFilePath) override;
+		Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
+		Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(const wchar_t* inputFilePath);
+		Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
+		Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(const wchar_t* outputFilePath);
 
 	private:
 		/// <summary>
@@ -175,11 +172,13 @@ namespace CALUMI {namespace SFBGS {
 
 	public:
 		//DEBUG FUNCTIONS
-		uint8_t _CheckAssumedHeaderEntries();
+		uint8_t DEBUG_CheckAssumedHeaderEntries();
 	};
 	SkeletonRig ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig, float& highPrecision, float& lowPrecision);
 	CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(CALUMI::SFBGS::SkeletonRig& inputRig);
 
+	template struct CALUMIANIMATION_API Utilities::VectorContainer <SkeletonBone>;
+	
 }}
 
 

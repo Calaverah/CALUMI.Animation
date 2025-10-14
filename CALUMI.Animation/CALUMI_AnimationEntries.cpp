@@ -1,10 +1,46 @@
 #include "pch.h"
 #include "CALUMI_AnimationEntries.h"
-
-#include "CALUMI_Utilities.h"
+#include <algorithm>
+#include <vector>
+#include <string>
 
 namespace CALUMI {
     namespace UNIV {
+
+        UNIV::Translation& UNIV::Translation::operator=(const UNIV::Translation& other) { frame = other.frame; translation = other.translation; return *this; }
+        UNIV::Rotation& UNIV::Rotation::operator=(const UNIV::Rotation& other) { frame = other.frame; rotation = other.rotation; return *this; }
+        UNIV::Scalar& UNIV::Scalar::operator=(const UNIV::Scalar& other) { frame = other.frame; scalar = other.scalar; return *this; }
+        UNIV::Priority& UNIV::Priority::operator=(const UNIV::Priority& other) { frame = other.frame; priority = other.priority; return *this; }
+
+
+        bool operator<(const UNIV::Translation& A, const UNIV::Translation& B) { return A.frame < B.frame; }
+        bool operator<=(const UNIV::Translation& A, const UNIV::Translation& B) { return A.frame <= B.frame; }
+        bool operator>(const UNIV::Translation& A, const UNIV::Translation& B) { return A.frame > B.frame; }
+        bool operator>=(const UNIV::Translation& A, const UNIV::Translation& B) { return A.frame >= B.frame; }
+        bool operator==(const UNIV::Translation& A, const UNIV::Translation& B) { return A.frame == B.frame; }
+        bool operator!=(const UNIV::Translation& A, const UNIV::Translation& B) { return A.frame != B.frame; }
+
+        bool operator<(const UNIV::Rotation& A, const UNIV::Rotation& B) { return A.frame < B.frame; }
+        bool operator<=(const UNIV::Rotation& A, const UNIV::Rotation& B) { return A.frame <= B.frame; }
+        bool operator>(const UNIV::Rotation& A, const UNIV::Rotation& B) { return A.frame > B.frame; }
+        bool operator>=(const UNIV::Rotation& A, const UNIV::Rotation& B) { return A.frame >= B.frame; }
+        bool operator==(const UNIV::Rotation& A, const UNIV::Rotation& B) { return A.frame == B.frame; }
+        bool operator!=(const UNIV::Rotation& A, const UNIV::Rotation& B) { return A.frame != B.frame; }
+
+        bool operator<(const UNIV::Scalar& A, const UNIV::Scalar& B) { return A.frame < B.frame; }
+        bool operator<=(const UNIV::Scalar& A, const UNIV::Scalar& B) { return A.frame <= B.frame; }
+        bool operator>(const UNIV::Scalar& A, const UNIV::Scalar& B) { return A.frame > B.frame; }
+        bool operator>=(const UNIV::Scalar& A, const UNIV::Scalar& B) { return A.frame >= B.frame; }
+        bool operator==(const UNIV::Scalar& A, const UNIV::Scalar& B) { return A.frame == B.frame; }
+        bool operator!=(const UNIV::Scalar& A, const UNIV::Scalar& B) { return A.frame != B.frame; }
+
+        bool operator<(const UNIV::Priority& A, const UNIV::Priority& B) { return A.frame < B.frame; }
+        bool operator<=(const UNIV::Priority& A, const UNIV::Priority& B) { return A.frame <= B.frame; }
+        bool operator>(const UNIV::Priority& A, const UNIV::Priority& B) { return A.frame > B.frame; }
+        bool operator>=(const UNIV::Priority& A, const UNIV::Priority& B) { return A.frame >= B.frame; }
+        bool operator==(const UNIV::Priority& A, const UNIV::Priority& B) { return A.frame == B.frame; }
+        bool operator!=(const UNIV::Priority& A, const UNIV::Priority& B) { return A.frame != B.frame; }
+
 
         //Extern C functions
         Rotation* CreateRotationEntryC(uint16_t frame, float x, float y, float z, float w)
@@ -93,20 +129,28 @@ namespace CALUMI {
             return source->priority;
         }
 
-        std::string Rotation::ToJSON(const int indents = 0) const {
-            return Utilities::Indent(indents) + "{\"frame\": " + std::to_string(frame) + ", \"value\": [" + std::to_string(rotation.w) + ", " + std::to_string(rotation.x) + ", " + std::to_string(rotation.y) + ", " + std::to_string(rotation.z) + "]}";
+        Utilities::StringContainer Rotation::ToJSON(const size_t indents) const {
+            std::string output(Utilities::Indent(indents).c_str());
+            output += ("{\"frame\": " + std::to_string(frame) + ", \"value\": [" + std::to_string(rotation.w) + ", " + std::to_string(rotation.x) + ", " + std::to_string(rotation.y) + ", " + std::to_string(rotation.z) + "]}");
+            return output.c_str();
         }
 
-        std::string Translation::ToJSON(const int indents = 0) const {
-            return Utilities::Indent(indents+1) + "{\"frame\": " + std::to_string(frame) + ", \"value\": [" + std::to_string(translation.x) + ", " + std::to_string(translation.y) + ", " + std::to_string(translation.z) + "]}";
+        Utilities::StringContainer Translation::ToJSON(const size_t indents) const {
+            std::string output(Utilities::Indent(indents + 1).c_str());
+            output += ("{\"frame\": " + std::to_string(frame) + ", \"value\": [" + std::to_string(translation.x) + ", " + std::to_string(translation.y) + ", " + std::to_string(translation.z) + "]}");
+            return output.c_str();
         }
 
-        std::string Scalar::ToJSON(const int indents = 0) const {
-            return Utilities::Indent(indents+1) + "{\"frame\": " + std::to_string(frame) + ", \"value\": " + std::to_string(scalar) + "}";
+        Utilities::StringContainer Scalar::ToJSON(const size_t indents) const {
+            std::string output(Utilities::Indent(indents + 1).c_str());
+            output += ("{\"frame\": " + std::to_string(frame) + ", \"value\": " + std::to_string(scalar) + "}").c_str();
+            return output.c_str();
         }
 
-        std::string Priority::ToJSON(const int indents = 0) const {
-            return Utilities::Indent(indents+1) + "{\"frame\": " + std::to_string(frame) + ", \"value\": " + std::to_string(priority) + "}";
+        Utilities::StringContainer Priority::ToJSON(const size_t indents) const {
+            std::string output(Utilities::Indent(indents + 1).c_str());
+            output += ("{\"frame\": " + std::to_string(frame) + ", \"value\": " + std::to_string(priority) + "}");
+            return output.c_str();
         }
 
 

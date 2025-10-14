@@ -6,9 +6,11 @@
 
 
 #ifdef CALUMIANIMATION_EXPORTS
-#define CALUMIANIMATION_API __declspec(dllexport)
-#else
-#define CALUMIANIMATION_API __declspec(dllimport)
+	#ifndef CALUMIANIMATION_API
+		#define CALUMIANIMATION_API __declspec(dllexport)
+		#else
+		#define CALUMIANIMATION_API __declspec(dllimport)
+	#endif
 #endif
 
 #define _PRIVATE_(x) //Private placeholder for visual aid for this var

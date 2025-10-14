@@ -4,6 +4,11 @@
 
 #include "pch.h"
 #include "SFBGS_Animation.h"
+#include <iostream>
+#include <print>
+#include "FileValidation.h"
+#include "CALUMI_Utilities.h"
+
 
 namespace CALUMI{
 	namespace SFBGS {
@@ -44,7 +49,7 @@ namespace CALUMI{
 
 		//Animation Block Defs
 
-		AnimationBlock::AnimationBlock(std::vector<char>& buffer, unsigned long long& addressIndex, const HeaderFlags& flags)
+		AnimationBlock::AnimationBlock(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, const HeaderFlags& flags)
 		{
 			//address index can help with alignment when working with a raw buffer of bytes
 			//eg. if the current index is at 0x07 and we have an aligned float
@@ -65,7 +70,7 @@ namespace CALUMI{
 			//Fill Keyframe arrays
 			{
 				rotationKeyFrames.resize(_rotationCount);
-				std::fill(rotationKeyFrames.begin(), rotationKeyFrames.end(), 0); //resize should be all zero by default, but just in case
+				rotationKeyFrames.fill(0); //resize should be all zero by default, but just in case
 				for (unsigned short i = 0; i < _rotationCount; i++)
 				{
 					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, kSize, kSize, &rotationKeyFrames.at(i));
@@ -73,21 +78,21 @@ namespace CALUMI{
 
 
 				translationKeyFrames.resize(_translationCount);
-				std::fill(translationKeyFrames.begin(), translationKeyFrames.end(), 0); //""
+				translationKeyFrames.fill(0); //""
 				for (unsigned short i = 0; i < _translationCount; i++)
 				{
 					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, kSize, kSize, &translationKeyFrames.at(i));
 				}
 
 				scalarKeyFrames.resize(_scalarCount);
-				std::fill(scalarKeyFrames.begin(), scalarKeyFrames.end(), 0); //""
+				scalarKeyFrames.fill(0); //""
 				for (unsigned short i = 0; i < _scalarCount; i++)
 				{
 					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, kSize, kSize, &scalarKeyFrames.at(i));
 				}
 
 				bonePriorityKeyFrames.resize(_bonePriorityCount);
-				std::fill(bonePriorityKeyFrames.begin(), bonePriorityKeyFrames.end(), 0); //""
+				bonePriorityKeyFrames.fill(0); //""
 				for (unsigned short i = 0; i < _bonePriorityCount; i++)
 				{
 					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, kSize, kSize, &bonePriorityKeyFrames.at(i));
@@ -122,14 +127,14 @@ namespace CALUMI{
 				}
 
 				scalarEntries.resize(_scalarCount);
-				std::fill(scalarEntries.begin(), scalarEntries.end(), 0);
+				scalarEntries.fill(0);
 				for (unsigned short i = 0; i < _scalarCount; i++)
 				{
 					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 2, 2, &scalarEntries.at(i));
 				}
 
 				bonePriorityEntries.resize(_bonePriorityCount);
-				std::fill(bonePriorityEntries.begin(), bonePriorityEntries.end(), 0);
+				bonePriorityEntries.fill(0);
 				for (unsigned short i = 0; i < _bonePriorityCount; i++)
 				{
 					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 1, 1, &bonePriorityEntries.at(i));
@@ -140,7 +145,7 @@ namespace CALUMI{
 
 		}
 
-		void AnimationBlock::SerializeIntoBuffer(std::vector<char>& buffer, unsigned long long& addressIndex, const HeaderFlags& flags)
+		void AnimationBlock::SerializeIntoBuffer(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, const HeaderFlags& flags)
 		{
 			uint8_t cSize = 1 + (int)flags.shortKeyCounters;
 			uint8_t kSize = 1 + (int)flags.shortKeyFrameEntries; //alignment and sizing helpers
@@ -218,13 +223,13 @@ namespace CALUMI{
 
 		//Animation Defs
 
-		unsigned short Animation::_SumIndices(std::vector<unsigned short>inputVector, indexCountingSolution type)
+		unsigned short Animation::_SumIndices(Utilities::VectorContainer<unsigned short>inputVector, indexCountingSolution type)
 		{
 			unsigned short sum = 0;
 			for (int i = 0; i < inputVector.size(); i++)
 			{
-				if (i % 2 != type) //we inverse the logic so that (i=0)%2 != 1(even) or 2(all), (i=1)%2 != 0(odd) or 2(all) 
-					sum += inputVector[i];
+				if (i % 2 != static_cast<int8_t>(type)) //we inverse the logic so that (i=0)%2 != 1(even) or 2(all), (i=1)%2 != 0(odd) or 2(all) 
+					sum += inputVector.at(i);
 			}
 			return sum;
 		}
@@ -235,13 +240,13 @@ namespace CALUMI{
 
 			if (_frameCount > 0xFF) newFlags.shortKeyFrameEntries = true;
 
-			for (AnimationBlock entry : animationBlocks)
+			for (int i = 0; i < animationBlocks.size(); i++)
 			{
-				if (entry._rotationCount > 0xFF || entry._translationCount > 0xFF || entry._scalarCount > 0xFF || entry._bonePriorityCount > 0xFF)
+				if (animationBlocks.at(i)._rotationCount > 0xFF || animationBlocks.at(i)._translationCount > 0xFF || animationBlocks.at(i)._scalarCount > 0xFF || animationBlocks.at(i)._bonePriorityCount > 0xFF)
 					newFlags.shortKeyCounters = true;
 
 
-				if (entry._scalarCount > 0)
+				if (animationBlocks.at(i)._scalarCount > 0)
 					newFlags.scalarSequenceFlag = true;
 
 				//if (_headerFlags.scalarSequenceFlag && _headerFlags.shortKeyCounters) break; //we can exit loop early as both flags are set
@@ -250,12 +255,21 @@ namespace CALUMI{
 			_headerFlags = newFlags;
 		}
 
-
-		std::expected<bool, FileError> Animation::ReadFromFile(std::filesystem::path& inputFilePath)
+		Utilities::ExpectedConatiner<bool, FileError> Animation::ReadFromFile(const wchar_t* inputFilePath)
+		{
+			Utilities::PathContainer output(inputFilePath);
+			return ReadFromFile(output);
+		}
+		Utilities::ExpectedConatiner<bool, FileError> Animation::ReadFromFile(Utilities::PathContainer& inputFilePath)
 		{
 			//Check to see if file exists and is valid
 			auto buffer = CALUMI::ValidateFile(inputFilePath, { ".af" }, 64, 0, true);
-			if (!buffer.has_value()) return std::unexpected((buffer.error()));
+			if (!buffer.has_value())
+			{
+				Utilities::ExpectedConatiner<bool, FileError> tempOutput;
+				tempOutput.SetErrorValue(buffer.error());
+				return tempOutput;
+			}
 
 			fileSize = buffer.value().size();
 
@@ -297,7 +311,7 @@ namespace CALUMI{
 			//Validate header?
 
 			//FILL PAD????
-			addressIndex += 4 * _unknownFillCount;
+			addressIndex += 4 * static_cast<unsigned long long>(_unknownFillCount);
 
 			//Evaluate Preamble
 			addressIndex += _preambleOffset;
@@ -307,7 +321,7 @@ namespace CALUMI{
 			//INDEX ATLAS
 			{
 				_indexAtlas.resize(_indexAtlasCounter);
-				std::fill(_indexAtlas.begin(), _indexAtlas.end(), 0); //resize should be all zero by default, but just in case
+				_indexAtlas.fill(0); //resize should be all zero by default, but just in case
 				int8_t atlasEntrySize = 1; //possible need to be able to switch between byte and short sizing here
 				for (int i = 0; i < _indexAtlasCounter; i++)
 				{
@@ -372,12 +386,12 @@ namespace CALUMI{
 			return true;
 		}
 
-		std::expected<std::string, FileError> Animation::WriteToFile(std::filesystem::path& outputFilePath)
+		Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> Animation::WriteToFile(Utilities::PathContainer& outputFilePath)
 		{
 			//D:/ModOrganizer/Starfield_Mod_Authoring_01/mods/ExtractedData/meshes/actors/human/animations/scenes/mq101_001_miningscene/female/animstart_lin.af has the largest size of 780896 bytes
 
 
-			std::vector<char> buffer;
+			Utilities::VectorContainer<char> buffer;
 			buffer.reserve(781000); //temp optimization based on largest BGS file size
 
 			//We write as little endian by default, can include a bswap in the future
@@ -420,7 +434,7 @@ namespace CALUMI{
 
 			//Index Atlas
 			int8_t atlasEntrySize = 1; //possible need to be able to switch between byte and short sizing here
-			buffer.insert(buffer.end(), atlasEntrySize * _indexAtlasCounter, 0);
+			buffer.insert(buffer.end(), static_cast<size_t>(atlasEntrySize * _indexAtlasCounter), 0);
 			for (int i = 0; i < _indexAtlasCounter; i++)
 			{
 				std::memcpy( &buffer.at(addressIndex), &_indexAtlas.at(i), atlasEntrySize);
@@ -457,6 +471,12 @@ namespace CALUMI{
 			
 
 			return CALUMI::WriteToBinaryFile(outputFilePath, buffer);
+		}
+
+		Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> Animation::WriteToFile(const wchar_t* outputFilePath)
+		{
+			Utilities::PathContainer output(outputFilePath);
+			return WriteToFile(output);
 		}
 
 

@@ -4,16 +4,14 @@
 
 #pragma once
 #include "CALUMI_Common.h"
-#include <string>
-#include <filesystem>
-#include <expected>
+#include "CALUMI_Utilities.h"
 #include "FileError.h"
 
 namespace CALUMI {
 	class CALUMIANIMATION_API ReadWritable
 	{
-		virtual std::expected<bool, FileError> ReadFromFile(std::filesystem::path& inputFilePath) = 0;
-		virtual std::expected<std::string, FileError> WriteToFile(std::filesystem::path& outputFilePath) = 0;
+		virtual Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) = 0;
+		virtual Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) = 0;
 	};
 }
 

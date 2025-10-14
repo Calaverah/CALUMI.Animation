@@ -1,24 +1,16 @@
 //Copyright © 2025 aka Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
-
 #include "pch.h"
 #include "CALUMI_Math.h"
+#include <cmath>
+#include <math.h>
+#include <format>
+#include <corecrt_math_defines.h>
 
 namespace CALUMI
 {
 	namespace Math{
-
-		double ToRadians(double degrees) noexcept
-		{
-			return degrees * (M_PI/180.0);
-		}
-
-		double ToDegrees(double radians) noexcept
-		{
-			return radians * (180.0/M_PI);
-		}
-
 
 		//Math::Vector3 (float)
 		const Math::Vector3 Math::Vector3::Zero = 0.0;
@@ -34,9 +26,11 @@ namespace CALUMI
 		const Math::Vector3 Math::Vector3::Forward = { 0.0, 1.0, 0.0 };
 		const Math::Vector3 Math::Vector3::Back = { 0.0, -1.0, 0.0 };
 
-		std::string Math::Vector3::ToString()
+		Utilities::StringContainer Math::Vector3::ToString()
 		{
-			return std::format("x: {}, y: {}, z: {}", x, y, z);
+			Utilities::StringContainer output;
+			output += std::format("x: {}, y: {}, z: {}", x, y, z).c_str();
+			return output;
 		}
 
 		Math::Vector3::Vector3(float input[3])
@@ -139,6 +133,10 @@ namespace CALUMI
 			*this /= this->Length();
 		}
 
+		double ToRadians(double degrees) noexcept { return degrees * (M_PI / 180.0); }
+
+		double ToDegrees(double radians) noexcept { return radians * (180.0 / M_PI); }
+
 		Math::Vector3 operator+ (const Math::Vector3& A, const Math::Vector3& B) noexcept
 		{
 			return Math::Vector3(A.x + B.x, A.y + B.y, A.z + B.z);
@@ -202,9 +200,11 @@ namespace CALUMI
 		const Math::Vector3D Math::Vector3D::Forward = { 0.0, 1.0, 0.0};
 		const Math::Vector3D Math::Vector3D::Back = { 0.0, -1.0, 0.0};
 
-		std::string Math::Vector3D::ToString()
+		Utilities::StringContainer Math::Vector3D::ToString()
 		{
-			return std::format("x: {}, y: {}, z: {}",x,y,z);
+			Utilities::StringContainer output;
+			output += std::format("x: {}, y: {}, z: {}",x,y,z).c_str();
+			return output;
 		}
 
 		Math::Vector3D::Vector3D(double input[3])
@@ -374,10 +374,10 @@ namespace CALUMI
 			Normalize();
 		};
 
-		Math::Quaternion::Quaternion(Vector3 direction, float radians, bool normalize)
+		Math::Quaternion::Quaternion(Vector3 direction, double radians, bool normalize)
 		{
 			direction.Normalize();
-			float halfTheta = radians/2.0f;
+			float halfTheta = static_cast<float>(radians)/2.0f;
 			float halfThetaSin = std::sin(halfTheta);
 			float halfThetaCos = std::cos(halfTheta);
 
@@ -390,17 +390,17 @@ namespace CALUMI
 				Normalize();
 		};
 
-		Math::Quaternion::Quaternion(Vector3D direction, float radians, bool normalize)
+		Math::Quaternion::Quaternion(Vector3D direction, double radians, bool normalize)
 		{
 			direction.Normalize();
 			double halfTheta = radians / 2.0f;
 			double halfThetaSin = std::sin(halfTheta);
 			double halfThetaCos = std::cos(halfTheta);
 
-			x = halfThetaSin * direction.x;
-			y = halfThetaSin * direction.y;
-			z = halfThetaSin * direction.z;
-			w = halfThetaCos;
+			x = static_cast<float>(halfThetaSin * direction.x);
+			y = static_cast<float>(halfThetaSin * direction.y);
+			z = static_cast<float>(halfThetaSin * direction.z);
+			w = static_cast<float>(halfThetaCos);
 			
 			if (normalize)
 				Normalize();
@@ -573,9 +573,11 @@ namespace CALUMI
 
 		const Math::Quaternion Math::Quaternion::Identity = {0.0f,0.0f,0.0f,1.0f};
 
-		std::string Math::Quaternion::ToString()
+		Utilities::StringContainer Math::Quaternion::ToString()
 		{
-			return std::format("x: {}, y: {}, z: {}, w: {}", x, y, z, w);
+			Utilities::StringContainer output;
+			output += std::format("x: {}, y: {}, z: {}, w: {}", x, y, z, w).c_str();
+			return output;
 		}
 
 		Math::Quaternion operator+ (const Math::Quaternion& A, const Math::Quaternion& B) noexcept

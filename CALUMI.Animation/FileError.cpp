@@ -4,28 +4,10 @@
 
 #include "pch.h"
 #include "FileError.h"
+#include <format>
+#include <string>
 
-std::ostream& operator<<(std::ostream& os, FileError error)
-{
-	os << "FileError[" << error.path << "]: ";
-	switch (error.fileCode) {
-	case FileErrorCode::FileNotFound:		os << "File not found. "; break;
-	case FileErrorCode::PermissionDenied:	os << "Permission denied. "; break;
-	case FileErrorCode::NotAFile:			os << "Path is not a regular file. "; break;
-	case FileErrorCode::ReadFailure:		os << "Failed to read file. "; break;
-	case FileErrorCode::IncorrectFileType:	os << "File is not expected type. "; break;
-	case FileErrorCode::FileTooLarge:		os << "File exceeds size limits. "; break;
-	case FileErrorCode::FileTooSmall:		os << "File does not meet size requirement. "; break;
-	case FileErrorCode::UnknownErrorCode:	os << "Unknown Error. "; break;
-	case FileErrorCode::WriteFailure:		os << "Failed to write to file."; break;
-	default: os << "No Error Code Found. See fileCode - FileErrorCode Enum. ";
-	}
-	if (!error.errorMessage.empty()) os << " (" << error.errorMessage << ")";
-
-	return os;
-}
-
-std::string FileError::ToString()
+CALUMI::Utilities::StringContainer FileError::ToString()
 {
 
 	std::string fileCodeString;
@@ -44,8 +26,29 @@ std::string FileError::ToString()
 	}
 
 	std::string em;
-	if (!errorMessage.empty()) em = std::format("({})", errorMessage);
+	if (!errorMessage.Empty()) em = std::format("({})", errorMessage.c_str());
 	else em = "";
 
-	return ("FILE ERROR: [" + path.string() + "]: " + fileCodeString + em);
+	CALUMI::Utilities::StringContainer output("FILE ERROR: [");
+	output += path.StringContainer();
+	output += "]: ";
+	output += fileCodeString.c_str();
+	output += em.c_str();
+	return output;
 }
+
+FileError::FileError(const FileError& source)
+{
+	fileCode = source.fileCode;
+	errorMessage = source.errorMessage;
+	path = source.path;
+}
+
+FileError& FileError::operator=(const FileError& source)
+{
+	fileCode = source.fileCode;
+	errorMessage = source.errorMessage;
+	path = source.path;
+	return *this;
+}
+

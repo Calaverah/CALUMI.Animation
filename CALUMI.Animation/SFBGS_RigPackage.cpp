@@ -130,35 +130,35 @@ namespace CALUMI {namespace SFBGS{
 
 	bool RigMap::KeyHasBone(BoneMapKey key)
 	{
-		if (!BoneTagExists(key) || !((uint8_t)key < SFBGSMAPSIZE))
+		if (!BoneTagExists(key) || static_cast<uint8_t>(key) >= SFBGSMAPSIZE)
 			return false;
 
-		return !boneNameList[(uint8_t)key].empty();
+		return !boneNameList[static_cast<uint8_t>(key)].Empty();
 	}
 
-	bool RigMap::AddBoneToMap(BoneMapKey key, const char* boneName, bool shouldReassign)
+	bool RigMap::AddBoneToMap(BoneMapKey key, const char* boneName, bool overwrite)
 	{
-		if (!BoneTagExists(key) || !((uint8_t)key < SFBGSMAPSIZE))
+		if (!BoneTagExists(key) || static_cast<uint8_t>(key) >= SFBGSMAPSIZE)
 			return false;
 
 		if (BoneIsMapped(boneName))
 		{
-			if (!shouldReassign)
+			if (!overwrite)
 				return false;
 
 			RemoveBoneFromMap(boneName);
 		}
 
-		boneNameList[(uint8_t)key] = boneName;
+		boneNameList[static_cast<uint8_t>(key)] = boneName;
 		return true;
 	}
 
 	bool RigMap::RemoveBoneFromMap(BoneMapKey key)
 	{
-		if (!BoneTagExists(key) || !((uint8_t)key < SFBGSMAPSIZE))
+		if (!BoneTagExists(key) || static_cast<uint8_t>(key) >= SFBGSMAPSIZE)
 			return false;
 
-		boneNameList[(uint8_t)key].clear();
+		boneNameList[static_cast<uint8_t>(key)].Clear();
 		return true;
 	}
 
@@ -181,13 +181,17 @@ namespace CALUMI {namespace SFBGS{
 		return BoneMapKey::None;
 	}
 
-	const char* RigMap::GetBoneFromKey(BoneMapKey key)
+	Utilities::StringContainer RigMap::GetBoneNameFromKey(BoneMapKey key)
 	{
 		if(!KeyHasBone(key))
-			return nullptr;
+			return "";
 
-		return boneNameList[(uint8_t)key].c_str();
+		return boneNameList[static_cast<uint8_t>(key)];
 	}
+
+
+	// Inherited via RigPackage
+	const char* SFBGS_RigPackage::GetPackageType() const { return SFBGS_RIG_PACKAGE; }
 
 }
 }

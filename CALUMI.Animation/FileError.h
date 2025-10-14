@@ -4,14 +4,9 @@
 
 #pragma once
 #include "CALUMI_Common.h"
-#include <string>
-#include <filesystem>
-#include <print>
-#include <format>
+#include "CALUMI_Utilities.h"
 
-
-
-enum CALUMIANIMATION_API FileErrorCode
+enum class FileErrorCode
 {
 	FileNotFound,
 	PermissionDenied,
@@ -27,12 +22,31 @@ enum CALUMIANIMATION_API FileErrorCode
 struct CALUMIANIMATION_API FileError
 {
 	FileErrorCode fileCode = FileErrorCode::UnknownErrorCode;
-	std::filesystem::path path;
-	std::string errorMessage;
+	CALUMI::Utilities::PathContainer path;
+	CALUMI::Utilities::StringContainer errorMessage;
+	
 
 	//friend std::ostream& operator<<(std::ostream& os, FileError error);
 
-	std::string ToString();
-	//FileError() = default;
+	CALUMI::Utilities::StringContainer ToString();
+	FileError() = default;
+
+
+	FileError(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const char* errorMessage) 
+		: fileCode(fileCode), path(path), errorMessage(errorMessage) {};
+	FileError(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const CALUMI::Utilities::StringContainer& errorMessage)
+		: fileCode(fileCode), path(path), errorMessage(errorMessage) {};
+	FileError(const FileError& source);
+	FileError& operator=(const FileError& source);
 };
 
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<bool, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::PathContainer, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::StringContainer, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::StringMap, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<char>, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<CALUMI::Utilities::StringContainer>, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<CALUMI::Utilities::PathContainer>, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<int>, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<float>, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<double>, FileError>;

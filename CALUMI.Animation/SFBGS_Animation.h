@@ -3,29 +3,22 @@
 //Contact: Calaverahmedia@gmail.com
 
 #pragma once
-#include "CALUMI_Common.h"
-#include "CALUMI_Math.h"
-#include "FileError.h"
-#include "FileValidation.h"
 #include "CALUMI_ReadWritable.h"
 #include "SFBGS_AnimationEntries.h"
 #include <cstdint>
-#include <expected>
-#include <iostream>
-#include <vector>
-#include "CALUMI_Utilities.h"
-#include <print>
+
 
 namespace CALUMI{
 	namespace SFBGS {
-		enum indexCountingSolution
+
+		enum class indexCountingSolution : uint8_t
 		{
 			odd, //1,3,5,etc
 			even, //0,2,4,etc
 			all
 		};
 
-		struct HeaderFlags
+		struct CALUMIANIMATION_API HeaderFlags
 		{
 			bool firstEntry : 1 = false;  //UNKNOWN: 
 
@@ -55,45 +48,46 @@ namespace CALUMI{
 
 			unsigned short _translationCount = 0;
 			unsigned short _translationPrefixCount = 0; //same as rotation prefix, however this entry is always 2 bytes each with the final 2 bytes (a ushort) being the count
+			
 
 			unsigned short _scalarCount = 0;
 			unsigned short _bonePriorityCount = 0; //Never appears to have a count of more than 1, if at all
 
-
-
-			std::vector<unsigned short> rotationKeyFrames;
-			std::vector<unsigned short> translationKeyFrames;
-			std::vector<unsigned short> scalarKeyFrames;
-			std::vector<unsigned short> bonePriorityKeyFrames; //Usually just a single entry for the 0th frame
+			Utilities::VectorContainer<unsigned short> rotationKeyFrames;
+			Utilities::VectorContainer<unsigned short> translationKeyFrames;
+			Utilities::VectorContainer<unsigned short> scalarKeyFrames;
+			Utilities::VectorContainer<unsigned short> bonePriorityKeyFrames; //Usually just a single entry for the 0th frame
 
 
 			//ROTATIONS SECTION
-			std::vector<CALUMI::SFBGS::RotationEntry> rotationEntries;
-			std::vector<CALUMI::SFBGS::RotationPrefix> rotationPrefixEntries;
+			Utilities::VectorContainer<CALUMI::SFBGS::RotationEntry> rotationEntries;
+			Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> rotationPrefixEntries;
 
 			//TRANSLATIONS SECTION
-			std::vector<CALUMI::SFBGS::TranslationEntry> translationEntries;
-			std::vector<CALUMI::SFBGS::TranslationPrefix> translationPrefixEntries;
+			Utilities::VectorContainer<CALUMI::SFBGS::TranslationEntry> translationEntries;
+			Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> translationPrefixEntries;
 
 			//ADDITIONALS SECTION
-			std::vector<short> scalarEntries;
-			std::vector<uint8_t> bonePriorityEntries; //Unsure how to process this information as of now. Appears to be in units/100 for a scalar of 0-100%
+			Utilities::VectorContainer<short> scalarEntries;
+			Utilities::VectorContainer<uint8_t> bonePriorityEntries; //Unsure how to process this information as of now. Appears to be in units/100 for a scalar of 0-100%
+
 
 			AnimationBlock() = default;
-			AnimationBlock(std::vector<char>& buffer, unsigned long long& addressIndex, const HeaderFlags& flags);
-			void SerializeIntoBuffer(std::vector<char>& buffer, unsigned long long& addressIndex, const HeaderFlags& flags);
+			AnimationBlock(Utilities::VectorContainer<char>&buffer, unsigned long long& addressIndex, const HeaderFlags & flags);
+			void SerializeIntoBuffer(Utilities::VectorContainer<char>&buffer, unsigned long long& addressIndex, const HeaderFlags & flags);
+
 
 		};
 
 
 		
-		class CALUMIANIMATION_API Animation : CALUMI::ReadWritable
+		class Animation : CALUMI::ReadWritable
 		{
 
 		public:
-			unsigned int fileSize = 0; //temp value for debugging
-			std::string animationFileName; //For file tracking. Should be unique without extension
-
+			size_t fileSize = 0; //For debugging
+			CALUMI::Utilities::StringContainer animationFileName; //For file tracking. Should be unique without extension
+		
 			float HeaderStart[9] = {}; //2 blanks, 4 Quat Components (or all zero), 3 unknown (possibly xyz values)
 
 			HeaderFlags _headerFlags; //1 byte and 3 empty bytes
@@ -108,9 +102,9 @@ namespace CALUMI{
 
 			unsigned short _preambleOffset = 0; //NOTE: this tells us how long the unknown "Preamble" section is and when the regular animation data begins
 
-			float _nZeroFloats[3] = { 0.0,-0.0,0.0 }; //UNKNOWN: Not always zero, sometimes has pi too yummy
+			float _nZeroFloats[3] = { 0.0,-0.0,0.0 }; //UNKNOWN: Not always zero, sometimes has pie too (yummy)
 
-			std::vector<float> _unknownSuffixFillFloats;
+			Utilities::VectorContainer<float> _unknownSuffixFillFloats;
 			//--------------------------------------------------The header to this point is 64 bytes. The Animation blocks begin at address = 64+preambleOffset
 
 			//preamble section goes here
@@ -119,30 +113,32 @@ namespace CALUMI{
 
 
 			//animation index atlas goes here
-			std::vector<unsigned short> _indexAtlas; //NOTE: this index is the size of the indexAtlasCounter, it is unknown if the entries are one byte only or if they can be expanded to two bytes, 
+			Utilities::VectorContainer<unsigned short> _indexAtlas; //NOTE: this index is the size of the indexAtlasCounter, it is unknown if the entries are one byte only or if they can be expanded to two bytes, 
 			//so we will keep our entries as a short (2 bytes) and cast them if they can be casted as 1 byte
 
 			//animation blocks go here
-			std::vector<AnimationBlock> animationBlocks;
-			std::vector<AnimationBlock> animationSuffixBlocks;
+			Utilities::VectorContainer<AnimationBlock> animationBlocks;
+			Utilities::VectorContainer<AnimationBlock> animationSuffixBlocks;
 
 
-			unsigned short _SumIndices(std::vector<unsigned short>inputVector, indexCountingSolution type);
+			unsigned short _SumIndices(Utilities::VectorContainer<unsigned short>inputVector, indexCountingSolution type);
 			/// <summary>
 			/// Header flags will be reset based on the values of the entries. It is not recommended to call this directly.
 			/// </summary>
 			void _evaluateHeaderFlags();
 
-
+			CALUMIANIMATION_API Animation() = default;
 
 			// Inherited via CALUMI::ReadWritable
-			std::expected<bool, FileError> ReadFromFile(std::filesystem::path& inputFilePath) override;
-			std::expected<std::string, FileError> WriteToFile(std::filesystem::path& outputFilePath) override;
-
-
-
+			CALUMIANIMATION_API Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
+			CALUMIANIMATION_API Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(const wchar_t* inputFilePath);
+			CALUMIANIMATION_API Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
+			CALUMIANIMATION_API Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(const wchar_t* outputFilePath);
 
 		};
+
+		template struct CALUMIANIMATION_API Utilities::VectorContainer<AnimationBlock>;
+		template struct CALUMIANIMATION_API Utilities::VectorContainer<Animation>;
 
 	}
 }

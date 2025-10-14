@@ -167,6 +167,7 @@
   <ItemGroup>
     <ClCompile Include="CALUMI_AnimationEntries.cpp" />
     <ClCompile Include="CALUMI_AnimationScene.cpp" />
+    <ClCompile Include="CALUMI_BoneTypes.cpp" />
     <ClCompile Include="CALUMI_Math.cpp" />
     <ClCompile Include="CALUMI_SkeletonRig.cpp" />
     <ClCompile Include="FileError.cpp" />
@@ -188,6 +189,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CALUMI.Animation.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

@@ -158,10 +158,16 @@
     <ClCompile Include="SFBGS_RigPackage.cpp">
       <Filter>Source Files\SFBGS</Filter>
     </ClCompile>
+    <ClCompile Include="CALUMI_BoneTypes.cpp">
+      <Filter>Source Files\UNIV</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CALUMI.Animation.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

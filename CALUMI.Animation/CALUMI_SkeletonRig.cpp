@@ -4,54 +4,70 @@
 
 #include "pch.h"
 #include "CALUMI_SkeletonRig.h"
-
+#include <format>
+#include <set>
+#include <print>
 #include "CALUMI_Utilities.h"
+#include <string>
 
 namespace CALUMI{ namespace UNIV{
-    SkeletonRig::SkeletonRig(std::string rigName)
+    SkeletonRig::SkeletonRig(Utilities::StringContainer& rigName)
     {
         this->rigName = rigName;
     }
 
-    std::expected< bool, std::string> SkeletonRig::ValidateNames()
+    SkeletonRig::SkeletonRig(const char* rigName)
+    {
+        this->rigName = rigName;
+    }
+
+    Utilities::ExpectedConatiner< bool, Utilities::StringContainer> SkeletonRig::ValidateNames() const
     {
         
         if (boneEntries.size() == 0)
         {
-            return std::unexpected("No Bone Entries For This Rig Have Been Found");
+            Utilities::ExpectedConatiner<bool, Utilities::StringContainer> tempOutput;
+            tempOutput.SetErrorValue("Two Bone Entries Share The Same Name In This Rig"); //Duplicate name found
+            return tempOutput;
         }
 
         std::set<std::string> uniqueNames;
-        for (SkeletonBone entry : boneEntries)
+        for (unsigned int i = 0; i < boneEntries.size(); i++)
         {
-            auto result = uniqueNames.insert(entry.name);
+            auto result = uniqueNames.insert(boneEntries.at(i).name.c_str());
             if (!result.second)
             {
-                return std::unexpected("Two Bone Entries Share The Same Name In This Rig"); //Duplicate name found
+                Utilities::ExpectedConatiner<bool, Utilities::StringContainer> tempOutput;
+                tempOutput.SetErrorValue("No Bone Entries For This Rig Have Been Found");
+                return tempOutput;
             }
         }
 
         return true;
     }
 
-    std::expected< bool, std::string> SkeletonRig::ValidateParentIndices()
+    Utilities::ExpectedConatiner< bool, Utilities::StringContainer> SkeletonRig::ValidateParentIndices()
     {
         if (boneEntries.size() < 2)
         {
-            return std::unexpected("Not Enough Bone Entries To Validate Parent Entries");
+            Utilities::ExpectedConatiner<bool, Utilities::StringContainer> tempOutput;
+            tempOutput.SetErrorValue("Not Enough Bone Entries To Validate Parent Entries");
+            return tempOutput;
         }
 
         for (int i = 0; i < boneEntries.size(); i++)
         {
             if (boneEntries.at(i).parentBoneIndex >= i)
             {
-                return std::unexpected(std::format("Bone Index: {} Has Parent Index: {}. Parent Index Cannot Be Greater Than Or Equal To Bone's Index", i, boneEntries.at(i).parentBoneIndex));
+                Utilities::ExpectedConatiner<bool, Utilities::StringContainer> tempOutput;
+                tempOutput.SetErrorValue(std::format("Bone Index: {} Has Parent Index: {}. Parent Index Cannot Be Greater Than Or Equal To Bone's Index", i, boneEntries.at(i).parentBoneIndex).c_str());
+                return tempOutput;
             }
         }
         return true;
     }
 
-    bool SkeletonRig::AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, std::string boneName, std::string parentName, bool localValues)
+    bool SkeletonRig::AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, Utilities::StringContainer boneName, Utilities::StringContainer parentName, bool localValues)
     {
         int newParentIndex = 0;
         if (boneEntries.size() == 0)
@@ -72,11 +88,11 @@ namespace CALUMI{ namespace UNIV{
         return AddBoneToRig(rotation,position,boneName,newParentIndex, localValues);
     }
 
-    bool SkeletonRig::AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, std::string boneName, int parentIndex, bool localValues)
+    bool SkeletonRig::AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, Utilities::StringContainer boneName, int parentIndex, bool localValues)
     {
         if (boneEntries.size() >= MaxBoneCount)
         {
-            std::println("[CALUMI.Animation API] Bone Count Limit Reached For Rig: {}",rigName);
+            std::println("[CALUMI.Animation API] Bone Count Limit Reached For Rig: {}",rigName.c_str());
             return false;
         }
 
@@ -119,7 +135,7 @@ namespace CALUMI{ namespace UNIV{
         input.localRotation = localRotation;
         input.globalRotation = rootRotation;
 
-        input.mirrorBoneIndex = boneEntries.size();
+        input.ResetMirrorBoneIndex(); //static_cast<int>(boneEntries.size());
 
         boneEntries.push_back(input);
 
@@ -130,15 +146,15 @@ namespace CALUMI{ namespace UNIV{
         if(i1 >= boneEntries.size() || i2 >= boneEntries.size())
             return false;
 
-        boneEntries.at(i1).mirrorBoneIndex = i2;
-        boneEntries.at(i2).mirrorBoneIndex = i1;
+        boneEntries.at(i1).SetMirrorBoneIndex(i2);
+        boneEntries.at(i2).SetMirrorBoneIndex(i1);
         return true;
     }
     bool SkeletonRig::ResetAllBoneMirrors()
     {
         for (unsigned int i = 0; i < boneEntries.size(); i++)
         {
-            boneEntries.at(i).mirrorBoneIndex = i;
+            boneEntries.at(i).ResetMirrorBoneIndex();
         }
         return true;
     }
@@ -158,11 +174,13 @@ namespace CALUMI{ namespace UNIV{
         }
         return false;
     }
-    bool AddBoneToSkeletonRigC(SkeletonRig* rig, float rotationX, float rotationY, float rotationZ, float rotationW, float positionX, float positionY, float positionZ, const char* boneName, int parentIndex, bool usingLocalValues, const char* errorMessage)
+    bool AddBoneToSkeletonRigC(SkeletonRig* rig, float rotationX, float rotationY, float rotationZ, float rotationW, float positionX, float positionY, float positionZ, const char* boneName, int parentIndex, bool usingLocalValues, Utilities::StringContainer& errorMessage)
     {
+        errorMessage.Clear();
+
         if (boneName == "")
         {
-            errorMessage = "[CALUMI.Animation API] Bone Entry Must Have Bone Name!";
+            errorMessage += "[CALUMI.Animation API] Bone Entry Must Have Bone Name!";
             return false;
         }
         float w = rotationW;
@@ -175,17 +193,11 @@ namespace CALUMI{ namespace UNIV{
         q1.Normalize();
 
         bool result = rig->AddBoneToRig(q1, { positionX,positionY,positionZ }, boneName, parentIndex, usingLocalValues);
-        char buffer[MAX_PATH];
         if (!result)
-        {
-            snprintf(buffer, sizeof(buffer), "[CALUMI.Animation API] Failure When Adding Bone: %s To Rig", boneName);
-            
-        }
+            errorMessage += std::format("[CALUMI.Animation API] Failure When Adding Bone: {} To Rig.", boneName).c_str();  
         else
-        {
-            snprintf(buffer, sizeof(buffer), "[CALUMI.Animation API] %s Added To Rig Successfully!", boneName);
-        }
-        errorMessage = buffer;
+            errorMessage += std::format("[CALUMI.Animation API] {} Added To Rig Successfully!", boneName).c_str();
+
         return result;
     }
     bool SetBoneTypeC(SkeletonBone* bone, uint32_t boneType)
@@ -204,30 +216,28 @@ namespace CALUMI{ namespace UNIV{
     {
         return bone->GetBoneTypeProperty()->GetTypeString();
     }
-    bool SetTwistBonePropertiesC(SkeletonBone* bone, bool reassign, int32_t twistDriverIndex, float twistDriverWeight, const char* errorMessage)
+    bool SetTwistBonePropertiesC(SkeletonBone* bone, bool reassign, int32_t twistDriverIndex, float twistDriverWeight, Utilities::StringContainer& errorMessage)
     {
-        char buffer[MAX_PATH];
+        errorMessage.Clear();
+
         if (bone->GetBoneTypeProperty()->GetType() != UNIV::BoneType::Twist)
         {
             if(!reassign)
             {
-                snprintf(buffer, sizeof(buffer), "[CALUMI.Animation API] Bone: %s 's Type Does Not Match Desired Values, Reassigned Set To False. No changes have been made.", bone->name.c_str());
-                errorMessage = buffer;
+                errorMessage += std::format("[CALUMI.Animation API] Bone: {}'s Type Does Not Match Desired Values, Reassigned Set To False. No changes have been made.", bone->name.c_str()).c_str();
                 return false;
             }
 
             if (!bone->SetBoneTypeProperty(UNIV::BoneType::Twist))
             {
-                snprintf(buffer, sizeof(buffer), "[CALUMI.Animation API] Bone Type Could Not Be Set For Bone: %s", bone->name.c_str());
-                errorMessage = buffer;
+                errorMessage += std::format("[CALUMI.Animation API] Bone Type Could Not Be Set For Bone: {}", bone->name.c_str()).c_str();
                 return false;
             }
         }
 
         if (twistDriverIndex < 0)
         {
-            snprintf(buffer, sizeof(buffer), "[CALUMI.Animation API] Desired Twist Driver Index For Bone: %s is set to non-value or negative, did you mean to set this bone to Default?", bone->name.c_str());
-            errorMessage = buffer;
+            errorMessage += std::format("[CALUMI.Animation API] Desired Twist Driver Index For Bone: {} is set to non-value or negative, did you mean to set this bone to Default?", bone->name.c_str()).c_str();
             return false;
         }
         
@@ -237,13 +247,13 @@ namespace CALUMI{ namespace UNIV{
 
         return true;
     }
-    CALUMIANIMATION_API int GetTwistBoneDriverIndexC(SkeletonBone* bone, const char* errorMessage)
+    int GetTwistBoneDriverIndexC(SkeletonBone* bone, Utilities::StringContainer& errorMessage)
     {
-        char buffer[MAX_PATH];
+        errorMessage.Clear();
+
         if (bone->GetBoneTypeProperty()->GetType() != UNIV::BoneType::Twist)
         {
-            snprintf(buffer, sizeof(buffer), "[CALUMI.Animation API] Bone: %s is not set to Twist Type, returning -1", bone->name.c_str());
-            errorMessage = buffer;
+            errorMessage += std::format("[CALUMI.Animation API] Bone: %s is not set to Twist Type, returning -1", bone->name.c_str()).c_str();
             return -1;
         }
 
@@ -251,13 +261,13 @@ namespace CALUMI{ namespace UNIV{
 
         return tProp->twistDriverIndex;
     }
-    float GetTwistBoneDriverWeightC(SkeletonBone* bone, const char* errorMessage)
+    float GetTwistBoneDriverWeightC(SkeletonBone* bone, Utilities::StringContainer& errorMessage)
     {
-        char buffer[MAX_PATH];
+        errorMessage.Clear();
+
         if (bone->GetBoneTypeProperty()->GetType() != UNIV::BoneType::Twist)
         {
-            snprintf(buffer, sizeof(buffer), "[CALUMI.Animation API] Bone: %s is not set to Twist Type, returning NaN Float", bone->name.c_str());
-            errorMessage = buffer;
+            errorMessage += std::format("[CALUMI.Animation API] Bone: %s is not set to Twist Type, returning NaN Float", bone->name.c_str()).c_str();
             return std::numeric_limits<float>::quiet_NaN();
         }
 
@@ -266,12 +276,12 @@ namespace CALUMI{ namespace UNIV{
     }
     int SetMirrorIndexC(SkeletonBone* bone, int index)
     {
-        bone->mirrorBoneIndex = index;
-        return bone->mirrorBoneIndex;
+        bone->SetMirrorBoneIndex(index);
+        return bone->GetMirrorBoneIndex();
     }
     int GetMirrorIndexC(SkeletonBone* bone)
     {
-        return bone->mirrorBoneIndex;
+        return bone->GetMirrorBoneIndex();
     }
     bool CreateBoneMirrorPairC(SkeletonRig* rig, int index1, int index2)
     {
@@ -285,11 +295,11 @@ namespace CALUMI{ namespace UNIV{
     {
         return rig->VerifyExclusiveBoneMirrors();
     }
-    unsigned int GetSkeletonRigBoneCountC(SkeletonRig* source)
+    size_t GetSkeletonRigBoneCountC(SkeletonRig* source)
     {
         return source->GetBoneCount();
     }
-    unsigned int GetSkeletonRigAnimatedBoneCountC(SkeletonRig* source)
+    size_t GetSkeletonRigAnimatedBoneCountC(SkeletonRig* source)
     {
         return source->GetAnimatedBoneCount();
     }
@@ -297,16 +307,18 @@ namespace CALUMI{ namespace UNIV{
     {
         return source->rigName.c_str();
     }
-    SkeletonBone* GetSkeletonBoneC(SkeletonRig* source, int index, const char* errorMessage)
+    SkeletonBone* GetSkeletonBoneC(SkeletonRig* source, int index, Utilities::StringContainer& errorMessage)
     {
+        errorMessage.Clear();
+
         if(source->boneEntries.size() <= index)
         {
-            errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+            errorMessage += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
             return nullptr;
         }
         if (index < 0)
         {
-            errorMessage = "[CALUMI.Animation API] Index Is Negative! Is This Parent Index Coming From The Root?";
+            errorMessage += "[CALUMI.Animation API] Index Is Negative! Is This Parent Index Coming From The Root?";
             return nullptr;
         }
         return &source->boneEntries.at(index);
@@ -337,22 +349,24 @@ namespace CALUMI{ namespace UNIV{
 
         return &source->localPosition;
     }
-    bool ValidateSkeletonRigNamesC(SkeletonRig* source, const char* errorMessage)
+    bool ValidateSkeletonRigNamesC(SkeletonRig* source, Utilities::StringContainer& errorMessage)
     {
+        errorMessage.Clear();
         auto result = source->ValidateNames();
         if (!result.has_value())
         {
-            errorMessage = result.error().c_str();
+            errorMessage += result.error().c_str();
             return false;
         }
         return true;
     }
-    bool ValidateSkeletonRigParentIndicesC(SkeletonRig* source, const char* errorMessage)
+    bool ValidateSkeletonRigParentIndicesC(SkeletonRig* source, Utilities::StringContainer& errorMessage)
     {
+        errorMessage.Clear();
         auto result = source->ValidateParentIndices();
         if (!result.has_value())
         {
-            errorMessage = result.error().c_str();
+            errorMessage += result.error().c_str();
             return false;
         }
         return true;
@@ -362,16 +376,16 @@ namespace CALUMI{ namespace UNIV{
     {
         for (unsigned int i = 0; i < boneEntries.size(); i++)
         {
-            int mirror = boneEntries.at(i).mirrorBoneIndex;
+            int mirror = boneEntries.at(i).GetMirrorBoneIndex();
             if (mirror == -1)
             {
-                //skip as we don't fully understand this notion yet
+                //skip as we have declared this as having no mirror
             }
             else
             {
                 if (mirror != i && mirror >= 0)
                 {
-                    if (i != boneEntries.at(mirror).mirrorBoneIndex)
+                    if (i != boneEntries.at(mirror).GetMirrorBoneIndex())
                     {
                         return false;
                     }
@@ -382,13 +396,13 @@ namespace CALUMI{ namespace UNIV{
         return true;
     }
 
-    unsigned int UNIV::SkeletonRig::GetAnimatedBoneCount()
+    size_t UNIV::SkeletonRig::GetAnimatedBoneCount()
     {
         unsigned int AnimatedBoneCount = 0;
 
-        for (UNIV::SkeletonBone bone : boneEntries)
+        for (unsigned int i = 0; i < boneEntries.size(); i++)
         {
-            if (bone.GetBoneTypeProperty()->GetType() == UNIV::BoneType::Default)
+            if (boneEntries.at(i).GetBoneTypeProperty()->GetType() == UNIV::BoneType::Default)
             {
                 AnimatedBoneCount++;
             }
@@ -397,15 +411,19 @@ namespace CALUMI{ namespace UNIV{
         return AnimatedBoneCount;
     }
 
-    unsigned int SkeletonRig::GetBoneCount()
+    size_t SkeletonRig::GetBoneCount() const
     {
         return boneEntries.size();
     }
 
-    std::string SkeletonRig::ToJSON(const int indents = 0) const {
-        std::string output = Utilities::Indent(indents) + "{\n" + Utilities::Indent(indents+1) +  "\"rigName\":\"" + rigName + "\",\n" + Utilities::Indent(indents+1) + "\"boneEntries\":";
-        output += Utilities::VectorToJSON(boneEntries, indents + 1);
-        output += "\n " + Utilities::Indent(indents) + "}";
+    Utilities::StringContainer SkeletonRig::ToJSON(const size_t indents = 0) const {
+        Utilities::StringContainer output = Utilities::Indent(indents).c_str();
+        output += "{\n";
+        output += std::format("{0}\"rigName\":\"{1}\",\n{0}\"boneEntries\":", Utilities::Indent(indents + 1).c_str(),rigName.c_str()).c_str();
+        output += Utilities::VectorToJSON(boneEntries,indents + 1);
+        output += "\n ";
+        output += Utilities::Indent(indents).c_str();
+        output += "}";
         return output;
     }
 
@@ -457,6 +475,20 @@ namespace CALUMI{ namespace UNIV{
         return this->SetBoneTypeProperty(boneType, true);
     }
 
+    void SkeletonBone::SetMirrorBoneIndex(int idx) { mirrorBoneIndex = idx; }
+
+    void SkeletonBone::ResetMirrorBoneIndex() { mirrorBoneIndex = -1; }
+
+    int SkeletonBone::GetMirrorBoneIndex() const { return mirrorBoneIndex; }
+
+    void SkeletonBone::SetParentBoneIndex(int idx) { parentBoneIndex = idx; }
+
+    void SkeletonBone::ResetParentBoneIndex() { parentBoneIndex = 0; }
+
+    void SkeletonBone::SetAsRootBone() { parentBoneIndex = -1; }
+
+    int SkeletonBone::GetParentBoneIndex() const { return parentBoneIndex; }
+
     //This is not the preferred way
     const char* SkeletonBone::_GetBoneTypeString() const
     {
@@ -465,29 +497,30 @@ namespace CALUMI{ namespace UNIV{
 
         return boneTypeProperties->GetTypeString();
     }
-    std::string SkeletonBone::ToJSON(const int indents = 0) const {
+    Utilities::StringContainer SkeletonBone::ToJSON(const size_t indents = 0) const {
 
-        std::string output = 
+        std::string output = (
             Utilities::Indent(indents) + "{\n" +  
-            Utilities::Indent(indents+1) + "\"name\":\"" + name + "\",\n" + 
-            Utilities::Indent(indents+1) + "\"parentBoneIndex\":" + std::to_string(parentBoneIndex) + ",\n" + 
-            Utilities::Indent(indents + 1) + "\"boneType\":" + _GetBoneTypeString() + ",\n" +
-            Utilities::Indent(indents + 1) + "\"mirrorBoneIndex\":" + std::to_string(mirrorBoneIndex) + ",\n";
+            Utilities::Indent(indents+1).c_str() + "\"name\":\"" + name.c_str() + "\",\n" +
+            Utilities::Indent(indents+1).c_str() + "\"parentBoneIndex\":" + std::to_string(parentBoneIndex).c_str() + ",\n" +
+            Utilities::Indent(indents + 1).c_str() + "\"boneType\":" + _GetBoneTypeString() + ",\n" +
+            Utilities::Indent(indents + 1).c_str() + "\"mirrorBoneIndex\":" + std::to_string(mirrorBoneIndex).c_str() + ",\n"
+            ).c_str();
 
-        output += Utilities::Indent(indents+1) + "\"localRotation\": [";
+        output += (Utilities::Indent(indents+1) + "\"localRotation\": [").c_str();
         output += std::to_string(localRotation.x) + ", " + std::to_string(localRotation.y) + ", " + std::to_string(localRotation.z) + ", " + std::to_string(localRotation.w) + "],\n";
         
-        output += Utilities::Indent(indents+1) + "\"globalRotation\": [";
+        output += (Utilities::Indent(indents + 1) + "\"globalRotation\": [").c_str();
         output += std::to_string(globalRotation.x) + ", " + std::to_string(globalRotation.y) + ", " + std::to_string(globalRotation.z) + ", " + std::to_string(globalRotation.w) + "],\n";
         
-        output += Utilities::Indent(indents+1) + "\"localPosition\": [";
+        output += (Utilities::Indent(indents + 1) + "\"localPosition\": [").c_str();
         output += std::to_string(localPosition.x) + ", " + std::to_string(localPosition.y) + ", " + std::to_string(localPosition.z) + "],\n";
         
-        output += Utilities::Indent(indents+1) + "\"globalPosition\": [";
+        output += (Utilities::Indent(indents + 1) + "\"globalPosition\": [").c_str();
         output += std::to_string(globalPosition.x) + ", " + std::to_string(globalPosition.y) + ", " + std::to_string(globalPosition.z) + "]\n";
         
-        output += Utilities::Indent(indents) + "}";
-        return output;
+        output += (Utilities::Indent(indents) + "}").c_str();
+        return output.c_str();
     }
 
 }

@@ -1,13 +1,10 @@
 //Copyright © 2025 aka Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
-#define _USE_MATH_DEFINES
+
 #pragma once
 #include "CALUMI_Common.h"
-#include <cmath>
-#include <string>
-#include <format>
-#include <math.h>
+#include "CALUMI_Utilities.h"
 
 
 
@@ -15,8 +12,8 @@ namespace CALUMI
 {
 	namespace Math{
 
-		double CALUMIANIMATION_API ToRadians(double degrees) noexcept;
-		double CALUMIANIMATION_API ToDegrees(double radians) noexcept;
+		CALUMIANIMATION_API double ToRadians(double degrees) noexcept;
+		CALUMIANIMATION_API double ToDegrees(double radians) noexcept;
 
 		struct CALUMIANIMATION_API Vector3
 		{
@@ -66,7 +63,7 @@ namespace CALUMI
 			static const Vector3 Forward;
 			static const Vector3 Back;
 
-			std::string ToString();
+			Utilities::StringContainer ToString();
 		};
 
 		CALUMIANIMATION_API Math::Vector3 operator+ (const Vector3& A, const Vector3& B) noexcept;
@@ -132,7 +129,7 @@ namespace CALUMI
 			static const Vector3D Forward;
 			static const Vector3D Back;
 
-			std::string ToString();
+			Utilities::StringContainer ToString();
 		};
 
 		CALUMIANIMATION_API Math::Vector3D operator+ (const Vector3D& A, const Vector3D& B) noexcept;
@@ -162,8 +159,9 @@ namespace CALUMI
 
 			Quaternion() = default;
 			Quaternion(float input[4], bool normalize = true);
-			Quaternion(Vector3 direction, float radians, bool normalize = true);
-			Quaternion(Vector3D direction, float radians, bool normalize = true);
+			Quaternion(Vector3 direction, double radians, bool normalize = true);
+			Quaternion(Vector3D direction, double radians, bool normalize = true);
+			inline Quaternion(double x, double y, double z, double w, bool normalize = true) { this->x = static_cast<float>(x); this->y = static_cast<float>(y); this->z = static_cast<float>(z); this->w = static_cast<float>(w); }
 			Quaternion(float x, float y, float z, float w, bool normalize = true)
 				: x(x), y(y), z(z), w(w)
 			{
@@ -201,7 +199,7 @@ namespace CALUMI
 
 			static const Quaternion Identity;
 
-			std::string ToString();
+			Utilities::StringContainer ToString();
 
 		};
 

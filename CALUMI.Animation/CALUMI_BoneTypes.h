@@ -5,12 +5,12 @@
 #pragma once
 #include "CALUMI_Common.h"
 #include <cstdint>
-#include <string>
+#include "CALUMI_Utilities.h"
 
 namespace CALUMI {
 	namespace UNIV {
 
-		enum class BoneType : uint32_t
+		enum class CALUMIANIMATION_API BoneType : uint32_t
 		{
 			Default = 0,
 			Twist = 1,
@@ -23,18 +23,10 @@ namespace CALUMI {
 
 
 		//Returns default when the switch case... defaults... 
-		inline const UNIV::BoneType CALUMIANIMATION_API BoneTypeFromString(const std::string boneTypeStr)
-		{
-			if (_stricmp(boneTypeStr.c_str(), TwistBoneTypeStr)==0)
-				return UNIV::BoneType::Twist;
-			else if (_stricmp(boneTypeStr.c_str(), DefaultBoneTypeStr)==0)
-				return UNIV::BoneType::Default;
-			else
-				return UNIV::BoneType::UNDEFINED;
-		}
+		CALUMIANIMATION_API const UNIV::BoneType BoneTypeFromString(const Utilities::StringContainer& boneTypeStr);
 
 		//Abstract Parent Struct for Bone Type Data. All Types will have an enum informing the user how to cast the child struct.
-		struct BoneTypeProperties
+		struct CALUMIANIMATION_API BoneTypeProperties
 		{
 			inline const UNIV::BoneType GetType() const
 			{
@@ -51,7 +43,7 @@ namespace CALUMI {
 		};
 
 		//Default Type
-		struct DefaultBoneProperties : BoneTypeProperties
+		struct CALUMIANIMATION_API DefaultBoneProperties : BoneTypeProperties
 		{
 			inline DefaultBoneProperties()
 			{
@@ -65,7 +57,7 @@ namespace CALUMI {
 		};
 
 		//Basic Twist Type                                                             (Note Manqn Override being considered currently)
-		struct TwistBoneProperties : BoneTypeProperties
+		struct CALUMIANIMATION_API TwistBoneProperties : BoneTypeProperties
 		{
 
 			int32_t twistDriverIndex = -1;

@@ -4,10 +4,8 @@
 
 #pragma once
 #include "CALUMI_Common.h"
-#include <cstdint>
-#include <algorithm>
 #include "CALUMI_Math.h"
-#include <vector>
+#include <cstdint>
 
 namespace CALUMI{ namespace SFBGS{
 
@@ -29,15 +27,9 @@ namespace CALUMI{ namespace SFBGS{
 		RotationPrefix(int8_t X, bool QX, int8_t Y, bool QY, int8_t Z, bool QZ, uint8_t C, uint8_t ID);
 
 		//Count is not considered in comparison
-		bool operator==(const RotationPrefix& other) const
-		{
-			return first == other.first && firstFlag == other.firstFlag && second == other.second && secondFlag == other.secondFlag && third == other.third && thirdFlag == other.thirdFlag && missing == other.missing;
-		}
-		
-		bool operator!=(const RotationPrefix& other) const
-		{
-			return !(*this == other);
-		}
+		bool operator==(const RotationPrefix& other) const;
+		bool operator!=(const RotationPrefix& other) const;
+
 	};
 
 	struct CALUMIANIMATION_API RotationEntry
@@ -66,14 +58,8 @@ namespace CALUMI{ namespace SFBGS{
 		{
 		}
 		//Count is not considered in comparison
-		bool operator==(const TranslationPrefix& other) const
-		{
-			return x == other.x && y == other.y && z == other.z;
-		}
-		bool operator!=(const TranslationPrefix& other) const
-		{
-			return !(*this == other);
-		}
+		bool operator==(const TranslationPrefix& other) const;
+		bool operator!=(const TranslationPrefix& other) const;
 	};
 
 	struct CALUMIANIMATION_API TranslationEntry
@@ -89,16 +75,22 @@ namespace CALUMI{ namespace SFBGS{
 		}
 	};
 
-	std::pair<RotationPrefix, RotationEntry> GetSFBGSRotationPair(const CALUMI::Math::Quaternion& input);
+	Utilities::PairContainer<RotationPrefix, RotationEntry> GetSFBGSRotationPair(const CALUMI::Math::Quaternion& input);
 	CALUMI::Math::Quaternion GetUniversalRotation(const CALUMI::SFBGS::RotationPrefix& prefix, const CALUMI::SFBGS::RotationEntry& suffix);
 
-	std::pair<TranslationPrefix, TranslationEntry> GetSFBGSTranslationPair(const CALUMI::Math::Vector3D& input, const float& highPrecision, const float& lowPrecision);
+	Utilities::PairContainer<TranslationPrefix, TranslationEntry> GetSFBGSTranslationPair(const CALUMI::Math::Vector3D& input, const float& highPrecision, const float& lowPrecision);
 	CALUMI::Math::Vector3D GetUniversalTranslation(const CALUMI::SFBGS::TranslationPrefix& prefix, const CALUMI::SFBGS::TranslationEntry& suffix, const float& highPrecision, const float& lowPrecision);
 	
-	std::vector<CALUMI::SFBGS::TranslationPrefix> UnfoldTranslationPrefixSequence(const std::vector<CALUMI::SFBGS::TranslationPrefix>& input);
-	std::vector<CALUMI::SFBGS::TranslationPrefix> FoldTranslationPrefixSequence(const std::vector<CALUMI::SFBGS::TranslationPrefix>& input);
+	Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> UnfoldTranslationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix>& input);
+	Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> FoldTranslationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix>& input);
 
-	std::vector<CALUMI::SFBGS::RotationPrefix> UnfoldRotationPrefixSequence(const std::vector<CALUMI::SFBGS::RotationPrefix>& input);
-	std::vector<CALUMI::SFBGS::RotationPrefix> FoldRotationPrefixSequence (const std::vector<CALUMI::SFBGS::RotationPrefix>& input);
+	Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> UnfoldRotationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& input);
+	Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> FoldRotationPrefixSequence (const Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& input);
+
+	template struct CALUMIANIMATION_API Utilities::VectorContainer<RotationEntry>;
+	template struct CALUMIANIMATION_API Utilities::VectorContainer<RotationPrefix>;
+	template struct CALUMIANIMATION_API Utilities::VectorContainer<TranslationEntry>;
+	template struct CALUMIANIMATION_API Utilities::VectorContainer<TranslationPrefix>;
+	
 
 	}}

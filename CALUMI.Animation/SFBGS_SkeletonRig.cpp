@@ -4,11 +4,16 @@
 
 #include "pch.h"
 #include "SFBGS_SkeletonRig.h"
+#include <print>
+#include "FileValidation.h"
+#include <algorithm>
+#include <iostream>
+#include <vector>
 
 namespace CALUMI {namespace SFBGS {
 
 
-	SkeletonBone::SkeletonBone(std::vector<char>& buffer, unsigned long long& addressIndex)
+	SkeletonBone::SkeletonBone(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex)
 	{
 		//QUAT UNITS ARE SERIALIZED AS WXYZ AND NEED TO BE READ INTO XYZW
 		std::memcpy(&localRotation.w, &buffer.at(addressIndex), sizeof(localRotation.w));
@@ -63,7 +68,7 @@ namespace CALUMI {namespace SFBGS {
 		addressIndex += sizeof(term08);
 	}
 
-	void SkeletonBone::SerializeIntoBuffer(std::vector<char>& buffer, unsigned long long& addressIndex)
+	void SkeletonBone::SerializeIntoBuffer(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex) const
 	{
 		buffer.insert(buffer.end(), 96, 0);
 
@@ -195,36 +200,31 @@ namespace CALUMI {namespace SFBGS {
 		}
 	}
 
-	std::pair<std::vector<std::string>, std::vector<unsigned int>>createStringVectorFromRig(const CALUMI::UNIV::SkeletonRig& inputRig)
-	{
-		size_t size = 0;
-		std::vector<unsigned int> nameOffsets;
-		std::vector<std::string> nameEntries;
-		nameOffsets.reserve(inputRig.boneEntries.size() + 1);
-		nameEntries.reserve(inputRig.boneEntries.size());
-		for (const auto& entry : inputRig.boneEntries)
+	static Utilities::StringMap CreateStringVectorFromRig(const CALUMI::UNIV::SkeletonRig& inputRig)
+	{	
+		Utilities::StringMap stringMap;
+		stringMap.Reserve(inputRig.boneEntries.size());
+		size_t iOffset = 0;
+		for (int i = 0; i < inputRig.boneEntries.size(); i++)
 		{
-			nameEntries.push_back(entry.name);
-			nameOffsets.push_back(size);
-			size += entry.name.length() + 1;
+			stringMap.push_back(inputRig.boneEntries.at(i).name.c_str(), iOffset);
+			iOffset += inputRig.boneEntries.at(i).name.Length(true);
 		}
-		nameOffsets.push_back(size); //final value can assist with determining SFBGS File Size Entry
-
-
-		return std::make_pair(nameEntries, nameOffsets);
+		stringMap.SetFinalOffset(iOffset);
+		return stringMap;
 	}
 
-	std::vector<unsigned int> _getSFBGSRigStringOffsets(const std::vector<std::string>& stringEntries)
+	static std::vector<unsigned int> _getSFBGSRigStringOffsets(const Utilities::VectorContainer<Utilities::StringContainer>& stringEntries)
 	{
 		std::vector<unsigned int> output;
-		//offset should be 80 + 96+boneCount + 314
-		unsigned int offset = 80 + 314 + 96 * stringEntries.size();
+		//offset should be 80 + 96+boneCount + 314... Yes we are static casting twice, it's just to prevent an overflow message and clean up compiler messages
+		unsigned int offset = static_cast<unsigned int>(static_cast<size_t>(80) + 314 + 96 * stringEntries.size());
 
 		output.reserve(stringEntries.size());
 		for (unsigned int i = 0; i < stringEntries.size(); i++)
 		{
 			output.push_back(offset);
-			offset += (stringEntries.at(i).length() + 1);
+			offset += static_cast<unsigned int>(stringEntries.at(i).Length(true));
 		}
 		return output;
 	}
@@ -233,17 +233,17 @@ namespace CALUMI {namespace SFBGS {
 	SkeletonRig ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig, float& highPrecision, float& lowPrecision)
 	{
 		SkeletonRig output;
-		auto stringResult = createStringVectorFromRig(inputRig);
+		auto stringResult = CreateStringVectorFromRig(inputRig);
 
 
-		output.fileSize += stringResult.second.at(stringResult.first.size()); //The size of the string array should be one less than the offset array. This will give us the total char array size including null terms
-		output.suffixOffset += 80 + 96 * inputRig.boneEntries.size();
-		output.fileSize += output.suffixOffset + sizeof(output.suffixArray);
+		output.fileSize += static_cast<unsigned int>(stringResult.GetFinalOffset());
+		output.boneMapOffset += static_cast<unsigned int>(80 + 96 * inputRig.boneEntries.size());
+		output.fileSize += output.boneMapOffset + sizeof(output.boneMapArray);
 
 		output.lowPrecision = lowPrecision;
 		output.highPrecision = highPrecision;
 
-		output.boneCount = inputRig.boneEntries.size();
+		output.boneCount = static_cast<uint16_t>(inputRig.boneEntries.size());
 		output.boneCount_Animated = output.boneCount;
 
 		output.boneEntries.reserve(output.boneCount);
@@ -253,18 +253,25 @@ namespace CALUMI {namespace SFBGS {
 			toAdd.localRotation = inputRig.boneEntries.at(i).localRotation;
 			toAdd.globalRotation = inputRig.boneEntries.at(i).globalRotation;
 			toAdd.position = inputRig.boneEntries.at(i).localPosition;
-			toAdd.nameOffset = stringResult.second.at(i);
+			toAdd.nameOffset = static_cast<uint64_t>(stringResult.GetOffset(i));
 			toAdd.parentBoneIndex = inputRig.boneEntries.at(i).parentBoneIndex;
-			toAdd.mirrorBoneIndex = inputRig.boneEntries.at(i).mirrorBoneIndex;
+
+			toAdd.mirrorBoneIndex = (toAdd.mirrorBoneIndex < 0 || toAdd.mirrorBoneIndex >= inputRig.boneEntries.size()) ? i : inputRig.boneEntries.at(i).GetMirrorBoneIndex();
+
 			if (!toAdd.SetBoneTypeFromUNIV(inputRig.boneEntries.at(i)))
 			{
-				std::println("[CALUMI.Animation API] UNIV Rig: {} Bone: {} ({}) Bone Type: {} Is Not An Acceptable Type For SFBGS Skeleton Rigs! This Bone Will Remain As The Default Type", inputRig.rigName, inputRig.boneEntries.at(i).name, i, inputRig.boneEntries.at(i).GetBoneTypeProperty()->GetTypeString());
+				std::println("[CALUMI.Animation API] UNIV Rig: {} Bone: {} ({}) Bone Type: {} Is Not An Acceptable Type For SFBGS Skeleton Rigs! This Bone Will Remain As The Default Type", inputRig.rigName.c_str(), inputRig.boneEntries.at(i).name.c_str(), i, inputRig.boneEntries.at(i).GetBoneTypeProperty()->GetTypeString());
 			}
 			output.boneEntries.push_back(toAdd);
 		}
-		std::fill(std::begin(output.suffixArray), std::end(output.suffixArray), (int16_t)-1);
+		std::fill(std::begin(output.boneMapArray), std::end(output.boneMapArray), static_cast<int16_t>( - 1));
 
-		output.stringArray = stringResult.first;
+		//output.stringArray = stringResult.first;
+		output.stringArray.reserve(stringResult.Size());
+		for (int j = 0; j < stringResult.Size(); j++)
+		{
+			output.stringArray.push_back(stringResult.GetString(j));
+		}
 
 		return output;
 	}
@@ -276,19 +283,28 @@ namespace CALUMI {namespace SFBGS {
 		for (unsigned int i = 0; i < inputRig.boneEntries.size(); i++)
 		{
 			SFBGS::SkeletonBone& bone = inputRig.boneEntries.at(i);
-			output.AddBoneToRig(bone.localRotation,bone.position,inputRig.stringArray.at(i),bone.parentBoneIndex,true);
+			output.AddBoneToRig(bone.localRotation,bone.position,inputRig.stringArray.at(i).c_str(), bone.parentBoneIndex, true);
 			bone.SetBoneTypeToUNIV(output.boneEntries.at(i));
-			output.boneEntries.at(i).mirrorBoneIndex = bone.mirrorBoneIndex;
+			int setter = bone.mirrorBoneIndex == i ? -1 : bone.mirrorBoneIndex;
+			output.boneEntries.at(i).SetMirrorBoneIndex(setter);
 		}
 
 		return output;
 	}
-
-
-	std::expected<bool, FileError> SkeletonRig::ReadFromFile(std::filesystem::path& inputFilePath)
+	Utilities::ExpectedConatiner<bool, FileError> SkeletonRig::ReadFromFile(const wchar_t* inputFilePath)
+	{
+		Utilities::PathContainer output(inputFilePath);
+		return ReadFromFile(output);
+	}
+	Utilities::ExpectedConatiner<bool, FileError> SkeletonRig::ReadFromFile(Utilities::PathContainer& inputFilePath)
 	{
 		auto buffer = CALUMI::ValidateFile(inputFilePath, { ".rig" }, 80, 0, true);
-		if (!buffer.has_value()) return std::unexpected((buffer.error()));
+		if (!buffer.has_value())
+		{
+			Utilities::ExpectedConatiner<bool, FileError> tempOutput;
+			tempOutput.SetErrorValue(buffer.error());
+			return tempOutput;
+		}
 
 		//iterator tracking
 		unsigned long long addressIndex = 0;
@@ -307,8 +323,8 @@ namespace CALUMI {namespace SFBGS {
 			std::memcpy(&headerEmpty01, &buffer.value().at(addressIndex), sizeof(headerEmpty01));
 			addressIndex += sizeof(headerEmpty01);
 
-			std::memcpy(&suffixOffset, &buffer.value().at(addressIndex), sizeof(suffixOffset));
-			addressIndex += sizeof(suffixOffset);
+			std::memcpy(&boneMapOffset, &buffer.value().at(addressIndex), sizeof(boneMapOffset));
+			addressIndex += sizeof(boneMapOffset);
 
 			std::memcpy(&headerEmpty02, &buffer.value().at(addressIndex), sizeof(headerEmpty02));
 			addressIndex += sizeof(headerEmpty02);
@@ -349,15 +365,15 @@ namespace CALUMI {namespace SFBGS {
 
 
 		//READ SUFFIX
-		std::memcpy(&suffixArray, &buffer.value().at(addressIndex), sizeof(suffixArray));
-		addressIndex += sizeof(suffixArray);
+		std::memcpy(&boneMapArray, &buffer.value().at(addressIndex), sizeof(boneMapArray));
+		addressIndex += sizeof(boneMapArray);
 
 		//READ STRINGS
 		stringArray.reserve(boneCount);
 		for (uint16_t i = 0; i < boneCount; i++)
 		{
-			stringArray.push_back(std::string(&buffer.value().at(boneEntries.at(i).nameOffset)));
-			addressIndex += (stringArray.at(i).length() + 1); //accounting for null terminator
+			stringArray.push_back(&buffer.value().at(boneEntries.at(i).nameOffset));
+			addressIndex += (stringArray.at(i).Length(true));
 		}
 
 		if (buffer.value().size() != addressIndex)
@@ -377,13 +393,18 @@ namespace CALUMI {namespace SFBGS {
 		}
 		return true;
 	}
+	
+	Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> SkeletonRig::WriteToFile(const wchar_t* outputFilePath)
+	{
+		Utilities::PathContainer output(outputFilePath);
+		return WriteToFile(output);
+	}
 
-
-	std::expected<std::string, FileError> SkeletonRig::WriteToFile(std::filesystem::path& outputFilePath)
+	Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> SkeletonRig::WriteToFile(Utilities::PathContainer& outputFilePath)
 	{
 		//LARGEST FILE: "D:/ModOrganizer/Starfield_Mod_Authoring_01/mods/ExtractedData/meshes/furniture/armillary/characterassets/skeleton.rig" at 18301 bytes
 
-		std::vector<char> buffer;
+		Utilities::VectorContainer<char> buffer;
 		buffer.reserve(18500);
 
 		unsigned long long addressIndex = 0;
@@ -404,8 +425,8 @@ namespace CALUMI {namespace SFBGS {
 			std::memcpy(&buffer.at(addressIndex), &headerEmpty01, sizeof(headerEmpty01));
 			addressIndex += sizeof(headerEmpty01);
 
-			std::memcpy(&buffer.at(addressIndex), &suffixOffset, sizeof(suffixOffset));
-			addressIndex += sizeof(suffixOffset);
+			std::memcpy(&buffer.at(addressIndex), &boneMapOffset, sizeof(boneMapOffset));
+			addressIndex += sizeof(boneMapOffset);
 
 			std::memcpy(&buffer.at(addressIndex), &headerEmpty02, sizeof(headerEmpty02));
 			addressIndex += sizeof(headerEmpty02);
@@ -443,24 +464,26 @@ namespace CALUMI {namespace SFBGS {
 
 		//SUFFIX (PI SIZED SECTION)
 		{
-			buffer.insert(buffer.end(), sizeof(suffixArray), -1);
+			buffer.insert(buffer.end(), sizeof(boneMapArray), -1);
 
 			//Setting header value to confirm offset. In case the SFBGS Rig Values were changed incorrectly by the user
-			suffixOffset = addressIndex;
-			std::memcpy(&buffer.at(16), &suffixOffset, sizeof(suffixOffset));
+			boneMapOffset = static_cast<unsigned int>(addressIndex);
+			std::memcpy(&buffer.at(16), &boneMapOffset, sizeof(boneMapOffset));
 
-			std::memcpy(&buffer.at(addressIndex), &suffixArray, sizeof(suffixArray));
-			addressIndex += sizeof(suffixArray);
+			std::memcpy(&buffer.at(addressIndex), &boneMapArray, sizeof(boneMapArray));
+			addressIndex += sizeof(boneMapArray);
 		}
 
 		//STRING ARRAY
 		{
 			for (uint16_t i = 0; i < stringArray.size(); i++)
 			{
-				buffer.insert(buffer.end(), stringArray.at(i).begin(), stringArray.at(i).end());
+				for (int j = 0; j < stringArray.at(i).Length(); j++)
+				{
+					buffer.push_back(stringArray.at(i).at(j));
+				}
 				buffer.push_back('\0');
-				addressIndex += stringArray.at(i).length();
-				addressIndex++; //accounting for null term
+				addressIndex += stringArray.at(i).Length(true);
 			}
 		}
 
@@ -479,13 +502,13 @@ namespace CALUMI {namespace SFBGS {
 			std::println("===========================================================");
 		}
 
-		fileSize = buffer.size();
+		fileSize = static_cast<unsigned int>(buffer.size());
 		std::memcpy(&buffer.at(4), &fileSize, sizeof(fileSize));
 
 		return CALUMI::WriteToBinaryFile(outputFilePath,buffer);
 	}
 
-	uint8_t SkeletonRig::_CheckAssumedHeaderEntries()
+	uint8_t SkeletonRig::DEBUG_CheckAssumedHeaderEntries()
 	{
 		uint8_t output = 0;
 
@@ -506,9 +529,9 @@ namespace CALUMI {namespace SFBGS {
 			output += 0b100000;
 
 		int aCount = 0;
-		for (const SFBGS::SkeletonBone &bone : boneEntries)
+		for (size_t i = 0; i < boneEntries.size(); i++)
 		{
-			if (bone.boneType == SFBGS::BoneType::Default)
+			if (boneEntries.at(i).boneType == SFBGS::BoneType::Default)
 			{
 				aCount++;
 			}

@@ -4,8 +4,8 @@
 
 #include "pch.h"
 #include "CALUMI_AnimationScene.h"
-
 #include "CALUMI_Utilities.h"
+#include <string>
 
 
 namespace CALUMI {
@@ -65,19 +65,28 @@ namespace CALUMI {
             errorMessage = "[CALUMI.Animation API] Rig Data Transferred Successfully. Original Ptr Set To Null!";
             return true;
         }
-        bool UNIV::AddAnimationToAnimationSceneC(AnimationScene* scene, Animation* animation, const char* errorMessage)
+        bool UNIV::AddAnimationToAnimationSceneC(AnimationScene* scene, Animation* animation, bool overwrite, const char* errorMessage)
         {
             if (animation->animationTitle == "")
             {
                 errorMessage = "[CALUMI.Animation API] Must Have Animation Title!";
                 return false;
             }
-            for (Animation entry : scene->animations)
+            for (unsigned int i =0; i<scene->animations.size(); i++)
             {
-                if (animation->animationTitle == entry.animationTitle)
+                if (animation->animationTitle == scene->animations.at(i).animationTitle)
                 {
-                    errorMessage = "[CALUMI.Animation API] Animation Titles Must Be Unique!";
-                    return false;
+                    if(!overwrite)
+                    {
+                        errorMessage = "[CALUMI.Animation API] Animation Titles Must Be Unique!";
+                        return false;
+                    }
+                    else
+                    {
+                        scene->animations.erase(i);
+                        break;
+                    }
+                    
                 }
             }
             scene->animations.push_back(*animation);
@@ -87,22 +96,62 @@ namespace CALUMI {
             return true;
         }
         
-        std::expected<std::vector<std::filesystem::path>, std::string> AnimationScene::GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension)
+        bool AnimationScene::AddAnimationToScene(UNIV::Animation& animation, bool overwrite)
         {
-            std::vector<std::filesystem::path> animationFilePaths;
-            std::string errorMessage;
-            animationFilePaths.reserve(animations.size());
-            for (UNIV::Animation entry : animations)
+            for (unsigned int i = 0; i < animations.size(); i++)
             {
-                if (entry.animationTitle.empty())
+                if (animations.at(i).animationTitle == animation.animationTitle)
                 {
-                    errorMessage = "[CALUMI.Animation API] Empty string found for Animation Title";
-                    return std::unexpected(errorMessage);
+                    if(!overwrite)
+                    return false;
+                    else
+                    {
+                        animations.erase(i);
+                        break;
+                    }
                 }
-                std::filesystem::path pathToAdd(directoryPath);
+            }
+            animations.push_back(animation);
+            return true;
+        }
+
+        bool AnimationScene::RemoveAnimationFromScene(Utilities::StringContainer& sceneToRemove)
+        {
+            for (unsigned int i = 0; i < animations.size(); i++)
+            {
+                if (animations.at(i).animationTitle == sceneToRemove)
+                {
+                    animations.erase(i);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        bool AnimationScene::RemoveAnimationFromScene(unsigned int idx)
+        {
+            if (idx >= animations.size() || idx < 0 ) return false;
+
+            animations.erase(idx);
+            return true;
+        }
+
+        Utilities::ExpectedConatiner<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> AnimationScene::GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension)
+        {
+            Utilities::VectorContainer<Utilities::PathContainer> animationFilePaths;
+            animationFilePaths.reserve(animations.size());
+            for (unsigned int i = 0; i < animations.size(); i++)
+            {
+                if (animations.at(i).animationTitle.Empty())
+                {
+                    Utilities::ExpectedConatiner<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> tempOutput;
+                    tempOutput.SetErrorValue("[CALUMI.Animation API] Empty string found for Animation Title");
+                    return tempOutput;
+                }
+                Utilities::PathContainer pathToAdd(directoryPath);
                 pathToAdd /= "animations";
-                pathToAdd /= sceneName;
-                pathToAdd /= entry.animationTitle;
+                pathToAdd /= sceneName.c_str();
+                pathToAdd /= animations.at(i).animationTitle;
                 pathToAdd.replace_extension(extension);
                 animationFilePaths.push_back(pathToAdd);
             }
@@ -110,12 +159,23 @@ namespace CALUMI {
             return animationFilePaths;
         }
 
-        std::string AnimationScene::ToJSON(const int indents = 0) const {
-            std::string output = Utilities::Indent(indents) + "{\n" + Utilities::Indent(indents+1) + "\"sceneName\":\"" + sceneName + "\",\n" + Utilities::Indent(indents+1) + "\"animations\":";
+        Utilities::StringContainer AnimationScene::ToJSON(const size_t indents = 0) const {
+            Utilities::StringContainer output;
+            output += Utilities::Indent(indents).c_str();
+            output += "{\n"; 
+            output += Utilities::Indent(indents + 1).c_str();
+            output += "\"sceneName\":\"";
+            output += sceneName.c_str();
+            output += "\",\n";
+            output += Utilities::Indent(indents + 1).c_str();
+            output += "\"animations\":";
             output += Utilities::VectorToJSON(animations);
-            output += ",\n" + Utilities::Indent(indents+1) + "\"rig\":\n";
-            output += rig.ToJSON(indents + 1);
-            output += Utilities::Indent(indents+1) + "\n}";
+            output += ",\n";
+            output += Utilities::Indent(indents + 1).c_str();
+            output += "\"rig\":\n";
+            output += rig.ToJSON(indents + 1).c_str();
+            output += Utilities::Indent(indents + 1).c_str();
+            output += "\n}";
             return output;
         }
 
