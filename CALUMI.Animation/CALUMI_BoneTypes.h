@@ -28,10 +28,7 @@ namespace CALUMI {
 		//Abstract Parent Struct for Bone Type Data. All Types will have an enum informing the user how to cast the child struct.
 		struct CALUMIANIMATION_API BoneTypeProperties
 		{
-			inline const UNIV::BoneType GetType() const
-			{
-				return boneType;
-			}
+			const UNIV::BoneType GetType() const;
 
 			virtual const char* GetTypeString() const = 0;
 
@@ -45,18 +42,12 @@ namespace CALUMI {
 		//Default Type
 		struct CALUMIANIMATION_API DefaultBoneProperties : BoneTypeProperties
 		{
-			inline DefaultBoneProperties()
-			{
-				boneType = UNIV::BoneType::Default;
-			}
+			DefaultBoneProperties();
 
-			inline const char* GetTypeString() const override
-			{
-				return DefaultBoneTypeStr;
-			}
+			const char* GetTypeString() const override;
 		};
 
-		//Basic Twist Type                                                             (Note Manqn Override being considered currently)
+		//Basic Twist Type
 		struct CALUMIANIMATION_API TwistBoneProperties : BoneTypeProperties
 		{
 
@@ -64,15 +55,9 @@ namespace CALUMI {
 			float twistDriverWeight = 0.0;
 
 
-			inline TwistBoneProperties()
-			{
-				boneType = UNIV::BoneType::Twist;
-			}
+			TwistBoneProperties();
 
-			inline const char* GetTypeString() const override
-			{
-				return TwistBoneTypeStr;
-			}
+			const char* GetTypeString() const override;
 		};
 
 }}

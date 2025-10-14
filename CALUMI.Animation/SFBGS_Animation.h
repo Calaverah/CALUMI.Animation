@@ -81,7 +81,7 @@ namespace CALUMI{
 
 
 		
-		class Animation : CALUMI::ReadWritable
+		class CALUMIANIMATION_API Animation : CALUMI::ReadWritable
 		{
 
 		public:
@@ -127,13 +127,13 @@ namespace CALUMI{
 			/// </summary>
 			void _evaluateHeaderFlags();
 
-			CALUMIANIMATION_API Animation() = default;
+			Animation() = default;
 
 			// Inherited via CALUMI::ReadWritable
-			CALUMIANIMATION_API Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
-			CALUMIANIMATION_API Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(const wchar_t* inputFilePath);
-			CALUMIANIMATION_API Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
-			CALUMIANIMATION_API Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(const wchar_t* outputFilePath);
+			Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
+			Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(const wchar_t* inputFilePath);
+			Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
+			Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(const wchar_t* outputFilePath);
 
 		};
 

@@ -4,6 +4,12 @@
 
 namespace CALUMI {
 	namespace UNIV {
+
+		const UNIV::BoneType BoneTypeProperties::GetType() const
+		{
+			return boneType;
+		}
+
 		//Returns default when the switch case... defaults... 
 		const UNIV::BoneType BoneTypeFromString(const Utilities::StringContainer& boneTypeStr)
 		{
@@ -13,6 +19,22 @@ namespace CALUMI {
 				return UNIV::BoneType::Default;
 			else
 				return UNIV::BoneType::UNDEFINED;
+		}
+		DefaultBoneProperties::DefaultBoneProperties()
+		{
+			boneType = UNIV::BoneType::Default;
+		}
+		const char* DefaultBoneProperties::GetTypeString() const
+		{
+			return DefaultBoneTypeStr;
+		}
+		TwistBoneProperties::TwistBoneProperties()
+		{
+			boneType = UNIV::BoneType::Twist;
+		}
+		const char* TwistBoneProperties::GetTypeString() const
+		{
+			return TwistBoneTypeStr;
 		}
 	}
 }

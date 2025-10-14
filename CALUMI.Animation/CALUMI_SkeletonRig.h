@@ -24,6 +24,7 @@ namespace CALUMI{ namespace UNIV{
 	private:
 		BoneTypeProperties* boneTypeProperties = new DefaultBoneProperties;
 		int mirrorBoneIndex = -1;
+		int parentBoneIndex = -1;
 		//We keep this private as it is not the preferred way to get this value.
 		//It should only be used on serialization functions that are constant where default resetting is not possible
 		const char* _GetBoneTypeString() const;
@@ -37,8 +38,6 @@ namespace CALUMI{ namespace UNIV{
 		
 
 		Utilities::StringContainer name;
-
-		int parentBoneIndex = -1;
 
 
 		SkeletonBone() = default;

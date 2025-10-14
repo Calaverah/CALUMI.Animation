@@ -57,10 +57,10 @@ namespace CALUMI{ namespace UNIV{
 
         for (int i = 0; i < boneEntries.size(); i++)
         {
-            if (boneEntries.at(i).parentBoneIndex >= i)
+            if (boneEntries.at(i).GetParentBoneIndex() >= i)
             {
                 Utilities::ExpectedConatiner<bool, Utilities::StringContainer> tempOutput;
-                tempOutput.SetErrorValue(std::format("Bone Index: {} Has Parent Index: {}. Parent Index Cannot Be Greater Than Or Equal To Bone's Index", i, boneEntries.at(i).parentBoneIndex).c_str());
+                tempOutput.SetErrorValue(std::format("Bone Index: {} Has Parent Index: {}. Parent Index Cannot Be Greater Than Or Equal To Bone's Index", i, boneEntries.at(i).GetParentBoneIndex()).c_str());
                 return tempOutput;
             }
         }
@@ -98,7 +98,7 @@ namespace CALUMI{ namespace UNIV{
 
         SkeletonBone input;
         input.name = boneName;
-        input.parentBoneIndex = parentIndex;
+        input.SetParentBoneIndex(parentIndex);
 
         CALUMI::Math::Quaternion rootRotation;
         CALUMI::Math::Quaternion localRotation;
@@ -113,18 +113,18 @@ namespace CALUMI{ namespace UNIV{
         }
         else if (localValues)
         {
-            rootRotation = rotation * boneEntries.at(input.parentBoneIndex).globalRotation;
+            rootRotation = rotation * boneEntries.at(input.GetParentBoneIndex()).globalRotation;
             localRotation = rotation;
-            rootPosition = position + boneEntries.at(input.parentBoneIndex).globalPosition;
+            rootPosition = position + boneEntries.at(input.GetParentBoneIndex()).globalPosition;
             localPosition = position;
         }
         else
         {
             CALUMI::Math::Quaternion inverseParentRoot;
-            boneEntries.at(input.parentBoneIndex).globalRotation.Inverse(inverseParentRoot); //why did they not make this a return value.
+            boneEntries.at(input.GetParentBoneIndex()).globalRotation.Inverse(inverseParentRoot); //why did they not make this a return value.
             localRotation = rotation * inverseParentRoot;
             rootRotation = rotation;
-            localPosition = position - boneEntries.at(input.parentBoneIndex).globalPosition;
+            localPosition = position - boneEntries.at(input.GetParentBoneIndex()).globalPosition;
             rootPosition = position;
         }
 
@@ -329,7 +329,7 @@ namespace CALUMI{ namespace UNIV{
     }
     int GetSkeletonBoneParentIndexC(SkeletonBone* source)
     {
-        return source->parentBoneIndex;
+        return source->GetParentBoneIndex();
     }
     CALUMI::Math::Quaternion* GetSkeletonBoneRotationC(SkeletonBone* source, bool fromRoot)
     {

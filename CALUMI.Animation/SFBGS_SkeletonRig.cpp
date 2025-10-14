@@ -254,7 +254,7 @@ namespace CALUMI {namespace SFBGS {
 			toAdd.globalRotation = inputRig.boneEntries.at(i).globalRotation;
 			toAdd.position = inputRig.boneEntries.at(i).localPosition;
 			toAdd.nameOffset = static_cast<uint64_t>(stringResult.GetOffset(i));
-			toAdd.parentBoneIndex = inputRig.boneEntries.at(i).parentBoneIndex;
+			toAdd.parentBoneIndex = inputRig.boneEntries.at(i).GetParentBoneIndex();
 
 			toAdd.mirrorBoneIndex = (toAdd.mirrorBoneIndex < 0 || toAdd.mirrorBoneIndex >= inputRig.boneEntries.size()) ? i : inputRig.boneEntries.at(i).GetMirrorBoneIndex();
 
