@@ -3,14 +3,15 @@
 //Contact: Calaverahmedia@gmail.com
 
 #include "pch.h"
-#include "CALUMI_Utilities.h"
 #include <cstring>
 #include <filesystem>
-#include "CALUMI_AnimationScene.h"
-#include "SFBGS_AnimationScene.h"
 #include <expected>
 #include <string>
 #include <vector>
+#include <concepts>
+#include "CALUMI_AnimationScene.h"
+#include "SFBGS_AnimationScene.h"
+#include "CALUMI_Utilities.h"
 
 namespace CALUMI {
 	namespace Utilities {
@@ -41,7 +42,12 @@ namespace CALUMI {
 
 			Utilities::StringContainer output = "[\n";
 			for (size_t i = 0; i < vec.size(); i++) {
-				output += vec.at(i).ToJSON(indents + 1).c_str();
+
+				if constexpr (std::is_pointer_v<T>) 
+				{ output += vec.at(i)->ToJSON(indents + 1).c_str(); }
+				else
+				{ output += vec.at(i).ToJSON(indents + 1).c_str(); }
+				
 				if (i < vec.size() - 1) {
 					output += ",\n";
 				}
@@ -290,8 +296,13 @@ namespace CALUMI {
 			output += pImpl->string.length();
 			return output;
 		}
-		int StringContainer::compare(const StringContainer& other) const noexcept
+		int StringContainer::compare(const StringContainer& other, bool caseSensitive) const noexcept
 		{
+			if (!caseSensitive)
+			{
+				return _stricmp(c_str(), other.c_str());
+			}
+
 			return pImpl->string.compare(other.pImpl->string);
 		}
 		int StringContainer::compare(size_t pos, size_t len, const StringContainer& other) const
@@ -361,6 +372,12 @@ namespace CALUMI {
 		}
 #pragma endregion
 
+
+		template<typename T>
+		concept HasLessThan = requires(T t, T other)
+		{
+			{ t < other } -> std::same_as<bool>;
+		};
 
 #pragma region Vectors
 
@@ -702,6 +719,11 @@ namespace CALUMI {
 		void ExpectedConatiner<T, U>::SetErrorValue(U uValue)
 		{
 			pImpl->expected = std::unexpected(uValue);
+		}
+		template<typename T, typename U>
+		void ExpectedConatiner<T, U>::SetValue(T tValue)
+		{
+			pImpl->expected = tValue;
 		}
 #pragma endregion
 

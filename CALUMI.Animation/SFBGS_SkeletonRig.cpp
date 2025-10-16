@@ -235,6 +235,13 @@ namespace CALUMI {namespace SFBGS {
 		SkeletonRig output;
 		auto stringResult = CreateStringVectorFromRig(inputRig);
 
+		auto sfbgsRigPackage = dynamic_cast<SFBGS_RigPackage*>(inputRig.rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+		bool isMarkedMannequin = false;
+		if (sfbgsRigPackage)
+		{
+			if (sfbgsRigPackage->isMannequin)
+				isMarkedMannequin = true;
+		}
 
 		output.fileSize += static_cast<unsigned int>(stringResult.GetFinalOffset());
 		output.boneMapOffset += static_cast<unsigned int>(80 + 96 * inputRig.boneEntries.size());
@@ -262,11 +269,19 @@ namespace CALUMI {namespace SFBGS {
 			{
 				std::println("[CALUMI.Animation API] UNIV Rig: {} Bone: {} ({}) Bone Type: {} Is Not An Acceptable Type For SFBGS Skeleton Rigs! This Bone Will Remain As The Default Type", inputRig.rigName.c_str(), inputRig.boneEntries.at(i).name.c_str(), i, inputRig.boneEntries.at(i).GetBoneTypeProperty()->GetTypeString());
 			}
+			if (isMarkedMannequin && toAdd.boneType == BoneType::Twist)
+			{
+				toAdd.twistDriverMqnIndex = toAdd.parentBoneIndex;
+			}
 			output.boneEntries.push_back(toAdd);
 		}
-		std::fill(std::begin(output.boneMapArray), std::end(output.boneMapArray), static_cast<int16_t>( - 1));
 
-		//output.stringArray = stringResult.first;
+		auto vecResult = ConvertSFBGSRigPackage(inputRig);
+		for (int8_t j = 0; j < vecResult.size(); j++)
+		{
+			output.boneMapArray[j] = vecResult.at(j);
+		}
+
 		output.stringArray.reserve(stringResult.Size());
 		for (int j = 0; j < stringResult.Size(); j++)
 		{
@@ -288,6 +303,19 @@ namespace CALUMI {namespace SFBGS {
 			int setter = bone.mirrorBoneIndex == i ? -1 : bone.mirrorBoneIndex;
 			output.boneEntries.at(i).SetMirrorBoneIndex(setter);
 		}
+		auto sfbgsRigPackage = CreateNewSFBGSRigPackage(output);
+		if (sfbgsRigPackage)
+		{
+			for (int key = 0; key < SFBGSMAPSIZE; key++)
+			{
+				if (inputRig.boneMapArray[key] >= 0)
+				{
+					sfbgsRigPackage->AddBoneToMap(static_cast<BoneMapKey>(key), output.boneEntries.at(inputRig.boneMapArray[key]).name.c_str(), true);
+				}
+			}
+			if (inputRig.IsMarkedMannequin())
+				sfbgsRigPackage->isMannequin = true;
+		}
 
 		return output;
 	}
@@ -295,6 +323,15 @@ namespace CALUMI {namespace SFBGS {
 	{
 		Utilities::PathContainer output(inputFilePath);
 		return ReadFromFile(output);
+	}
+	bool SkeletonRig::IsMarkedMannequin() const
+	{
+		for (size_t i = 0; i < boneEntries.size(); i++)
+		{
+			if (boneEntries.at(i).twistDriverMqnIndex > 0)
+				return true;
+		}
+		return false;
 	}
 	Utilities::ExpectedConatiner<bool, FileError> SkeletonRig::ReadFromFile(Utilities::PathContainer& inputFilePath)
 	{

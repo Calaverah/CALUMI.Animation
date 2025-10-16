@@ -4,7 +4,6 @@
 
 #pragma once
 #include "CALUMI_Common.h"
-#include <cstdint>
 #include "CALUMI_Utilities.h"
 
 namespace CALUMI {
@@ -32,7 +31,7 @@ namespace CALUMI {
 
 			virtual const char* GetTypeString() const = 0;
 
-			virtual ~BoneTypeProperties() = default;
+			virtual ~BoneTypeProperties() {};
 
 		protected:
 			UNIV::BoneType boneType = UNIV:: BoneType::Default;
@@ -43,7 +42,7 @@ namespace CALUMI {
 		struct CALUMIANIMATION_API DefaultBoneProperties : BoneTypeProperties
 		{
 			DefaultBoneProperties();
-
+			~DefaultBoneProperties() override {};
 			const char* GetTypeString() const override;
 		};
 
@@ -56,6 +55,7 @@ namespace CALUMI {
 
 
 			TwistBoneProperties();
+			~TwistBoneProperties() override {};
 
 			const char* GetTypeString() const override;
 		};

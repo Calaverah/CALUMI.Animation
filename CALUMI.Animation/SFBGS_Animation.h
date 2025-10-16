@@ -5,7 +5,7 @@
 #pragma once
 #include "CALUMI_ReadWritable.h"
 #include "SFBGS_AnimationEntries.h"
-#include <cstdint>
+
 
 
 namespace CALUMI{
@@ -136,10 +136,10 @@ namespace CALUMI{
 			Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(const wchar_t* outputFilePath);
 
 		};
-
+#pragma warning(disable: 4661)
 		template struct CALUMIANIMATION_API Utilities::VectorContainer<AnimationBlock>;
 		template struct CALUMIANIMATION_API Utilities::VectorContainer<Animation>;
-
+#pragma warning(default: 4661)
 	}
 }
 

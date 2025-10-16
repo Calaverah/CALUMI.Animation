@@ -8,7 +8,7 @@
 #include "CALUMI_SkeletonRig.h"
 #include "SFBGS_RigPackage.h"
 #include "FileError.h"
-#include <cstdint>
+
 
 
 
@@ -148,7 +148,7 @@ namespace CALUMI {namespace SFBGS {
 		/// </summary>
 		Utilities::VectorContainer<Utilities::StringContainer> stringArray;
 
-
+		bool IsMarkedMannequin() const;
 
 		// Inherited via ReadWritable
 		Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
@@ -177,8 +177,9 @@ namespace CALUMI {namespace SFBGS {
 	SkeletonRig ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig, float& highPrecision, float& lowPrecision);
 	CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(CALUMI::SFBGS::SkeletonRig& inputRig);
 
+#pragma warning(disable: 4661)
 	template struct CALUMIANIMATION_API Utilities::VectorContainer <SkeletonBone>;
-	
+#pragma warning(default: 4661)
 }}
 
 

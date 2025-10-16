@@ -3,9 +3,7 @@
 //Contact: Calaverahmedia@gmail.com
 
 #pragma once
-#pragma warning(disable: 4661)
 #include "CALUMI_Common.h"
-#include <concepts>
 
 #define _VECTORTEMPLATE(T)	template struct CALUMIANIMATION_API CALUMI::Utilities::VectorContainer<T>; \
 							template CALUMI::Utilities::StringContainer CALUMI::Utilities::VectorToJSON(const CALUMI::Utilities::VectorContainer<T>& vec, size_t indents);
@@ -21,8 +19,8 @@ namespace CALUMI { namespace Utilities {
 		ExpectedConatiner(T&& expectedValue) noexcept;
 		ExpectedConatiner() = default;
 		~ExpectedConatiner();
-		//void SetErrorValue_R(const U& uValue);
 		void SetErrorValue(U uValue);
+		void SetValue(T tValue);
 
 		bool has_value() const noexcept;
 		U& error() const;
@@ -49,7 +47,7 @@ namespace CALUMI { namespace Utilities {
 		bool Empty();
 		size_t Length(bool includeNull = false) const;
 
-		int compare(const StringContainer& other) const noexcept;
+		int compare(const StringContainer& other, bool caseSensitive = true) const noexcept;
 		int compare(size_t pos, size_t len, const StringContainer& other) const;
 		int compare(size_t pos, size_t len, const StringContainer& other, size_t subpos, size_t sublen) const;
 
@@ -74,12 +72,6 @@ namespace CALUMI { namespace Utilities {
 
 	//String Stuff
 	Utilities::StringContainer Indent(const size_t indents);
-
-	template<typename T>
-	concept HasLessThan = requires(T t, T other)
-	{
-		{ t < other } -> std::same_as<bool>;
-	};
 
 	struct CALUMIANIMATION_API PathContainer
 	{
@@ -198,6 +190,7 @@ namespace CALUMI { namespace Utilities {
 
 
 #pragma region TemplateExplicits
+#pragma warning(disable: 4661)
 	template struct CALUMIANIMATION_API VectorContainer<unsigned short>;
 	template struct CALUMIANIMATION_API VectorContainer<short>;
 	template struct CALUMIANIMATION_API VectorContainer<unsigned long>;
@@ -215,13 +208,14 @@ namespace CALUMI { namespace Utilities {
 	template struct CALUMIANIMATION_API VectorContainer<PathContainer>;
 
 	template struct CALUMIANIMATION_API ExpectedConatiner<bool, StringContainer>;
+	template struct CALUMIANIMATION_API ExpectedConatiner<size_t, StringContainer>;
 	template struct CALUMIANIMATION_API ExpectedConatiner<bool, PathContainer>;
 	template struct CALUMIANIMATION_API ExpectedConatiner<PathContainer, bool>;
 	template struct CALUMIANIMATION_API ExpectedConatiner<PathContainer, StringContainer>;
 	template struct CALUMIANIMATION_API ExpectedConatiner<VectorContainer<PathContainer>, StringContainer>;
 	template struct CALUMIANIMATION_API ExpectedConatiner<StringContainer, StringContainer>;
 	template struct CALUMIANIMATION_API ExpectedConatiner<StringContainer, bool>;
-
+#pragma warning(default: 4661)
 #pragma endregion
 
 	

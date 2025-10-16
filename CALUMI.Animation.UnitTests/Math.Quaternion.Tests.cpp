@@ -2,6 +2,7 @@
 #include "CppUnitTest.h"
 #include "..\CALUMI.Animation\CALUMI_Math.h"
 #include <iostream>
+#include "corecrt_math_defines.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace CALUMI::Math;
@@ -37,9 +38,10 @@ namespace CALUMIAnimationUnitTests
 		}
 		TEST_METHOD(Addition1_E)
 		{
-			Quaternion quaternion1(1.0, 1.0, 1.0, 1.0);
-			Quaternion quaternion2(1.0, 1.0, 1.0, 1.0);
-			Quaternion quaternion3(2.0, 2.0, 2.0, 2.0);
+			Quaternion quaternion1(1.0f, 1.0f, 1.0f, 1.0f);
+			Quaternion quaternion2(1.0f, 1.0f, 1.0f, 1.0f);
+			Quaternion quaternion3(2.0f, 2.0f, 2.0f, 2.0f);
+			
 			Assert::IsTrue(quaternion3 == quaternion1 + quaternion2);
 		}
 		TEST_METHOD(Addition1_N)
@@ -192,19 +194,19 @@ namespace CALUMIAnimationUnitTests
 		}
 		TEST_METHOD(AxisAngleMultiplication1_E)
 		{
-			Quaternion quaternion1(Vector3(0.0, 0.0, 1.0), ToRadians(180.0)); //0,0,1,0
-			Quaternion quaternion2(Vector3(0.0, 1.0, 0.0), ToRadians(30.0)); //0,0.258819,0,0.9659258
+			Quaternion quaternion1(Vector3D(0.0, 0.0, 1.0), ToRadians(180.0)); //0,0,1,0
+			Quaternion quaternion2(Vector3D(0.0, 1.0, 0.0), ToRadians(30.0)); //0,0.258819,0,0.9659258
 			Quaternion expectedOut(-0.258819,0.0,0.965926,0.0); //180 on Z axis
 			//std::cout << (quaternion1 * quaternion2).ToString() << std::endl;
 			Assert::IsTrue(expectedOut.AreSameRotation(quaternion1 * quaternion2, 0.0000001f));
 		}
 		TEST_METHOD(AxisAngleMultiplication2_E)
 		{
-			Quaternion quaternion1(Vector3(0.0, 0.0, 1.0), ToRadians(180.0)); //0,0,1,0
-			Quaternion quaternion2(Vector3(0.0, 1.0, 0.0), ToRadians(30.0)); //0,0.258819,0,0.9659258
+			Quaternion quaternion1(Vector3D(0.0, 0.0, 1.0), ToRadians(180.0)); //0,0,1,0
+			Quaternion quaternion2(Vector3D(0.0, 1.0, 0.0), ToRadians(30.0)); //0,0.258819,0,0.9659258
 			Quaternion expectedOut = quaternion1 * quaternion2;
 			Quaternion result;
-			RotateQuaternionByAxisAngleC(&quaternion2, &result, 0.0, 0.0, 1.0, ToRadians(180.0));
+			RotateQuaternionByAxisAngleC(&quaternion2, &result, 0.0, 0.0, 1.0, static_cast<float>(ToRadians(180.0)));
 			Assert::IsTrue(expectedOut.AreSameRotation(result, 0.0000001f));
 		}
 

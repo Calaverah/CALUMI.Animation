@@ -3,10 +3,10 @@
 //Contact: Calaverahmedia@gmail.com
 
 #pragma once
-#include "CALUMI_Math.h"
 #include "CALUMI_BoneTypes.h"
+#include "CALUMI_Math.h"
 #include "CALUMI_Utilities.h"
-#include <cstdint>
+
 
 namespace CALUMI{ namespace UNIV{
 
@@ -16,6 +16,23 @@ namespace CALUMI{ namespace UNIV{
 	struct CALUMIANIMATION_API RigPackage
 	{
 		virtual const char* GetPackageType() const = 0;
+		virtual bool HandleBoneRename(const char* oldBone, const char* newName, size_t idx) = 0;
+		virtual Utilities::StringContainer ToJSON(size_t indents) const = 0;
+	};
+
+	struct CALUMIANIMATION_API RigPackageManager
+	{
+	private:
+		Utilities::VectorContainer<RigPackage*> packages;
+	public:
+
+		RigPackageManager() = default;
+
+		RigPackage* GetPackage(const char* packageName);
+		bool RemovePackage(const char* packageName);
+		bool AddPackage(RigPackage* package, bool overwrite = true);
+
+		Utilities::StringContainer ToJSON(size_t indents) const;
 	};
 
 	struct CALUMIANIMATION_API SkeletonBone
@@ -41,6 +58,7 @@ namespace CALUMI{ namespace UNIV{
 
 
 		SkeletonBone() = default;
+		~SkeletonBone();
 
 		bool SetBoneTypeProperty(UNIV::BoneType boneType, bool reset = false);
 		const BoneTypeProperties* GetBoneTypeProperty();
@@ -65,6 +83,8 @@ namespace CALUMI{ namespace UNIV{
 		/// </summary>
 		Utilities::StringContainer rigName = "MySkeletonRig";
 		Utilities::VectorContainer<SkeletonBone> boneEntries;
+
+		RigPackageManager rigPackageManager;
 
 		SkeletonRig() = default;
 		SkeletonRig(const char* rigName);
@@ -94,6 +114,9 @@ namespace CALUMI{ namespace UNIV{
 		/// <returns></returns>
 		bool AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, Utilities::StringContainer boneName, int parentIndex, bool localValues = true);
 
+		bool RenameBone(const char* oldBoneName, const char* newBoneName);
+		bool RenameBone(size_t boneIndex, const char* newBoneName);
+
 		/// <summary>
 		/// Returns true if both indices are within the boneEntries current list
 		/// </summary>
@@ -114,6 +137,7 @@ namespace CALUMI{ namespace UNIV{
 		size_t GetAnimatedBoneCount();
 		size_t GetBoneCount() const;
 		
+		Utilities::ExpectedConatiner<size_t, Utilities::StringContainer> GetBoneIndex(Utilities::StringContainer boneName);
 
 		Utilities::StringContainer ToJSON(size_t indents) const;
 		static const unsigned int MaxBoneCount = 512;
@@ -129,7 +153,7 @@ namespace CALUMI{ namespace UNIV{
 			const char* boneName,
 			int parentIndex,
 			bool usingLocalValues,
-			Utilities::StringContainer& errorMessage
+			Utilities::StringContainer* errorMessage
 		);
 
 		//Basic Bone Type Property Setters and Getters. No data is filled here
@@ -142,9 +166,9 @@ namespace CALUMI{ namespace UNIV{
 
 		//Setting Bone Property Values, if reassign is set to false, then the value will return false if the bone type does not match the desired input values and it will be skipped
 		//If reassign is set to true, the the bone will be set the desired type as well it's values filled
-		CALUMIANIMATION_API bool SetTwistBonePropertiesC(SkeletonBone* bone, bool reassign, int32_t twistDriverIndex, float twistDriverWeight, Utilities::StringContainer& errorMessage);
-		CALUMIANIMATION_API int GetTwistBoneDriverIndexC(SkeletonBone* bone, Utilities::StringContainer& errorMessage);
-		CALUMIANIMATION_API float GetTwistBoneDriverWeightC(SkeletonBone* bone, Utilities::StringContainer& errorMessage);
+		CALUMIANIMATION_API bool SetTwistBonePropertiesC(SkeletonBone* bone, bool reassign, int32_t twistDriverIndex, float twistDriverWeight, Utilities::StringContainer* errorMessage);
+		CALUMIANIMATION_API int GetTwistBoneDriverIndexC(SkeletonBone* bone, Utilities::StringContainer* errorMessage);
+		CALUMIANIMATION_API float GetTwistBoneDriverWeightC(SkeletonBone* bone, Utilities::StringContainer* errorMessage);
 
 		//Mirror setting, resetting, and getting
 		CALUMIANIMATION_API int SetMirrorIndexC(SkeletonBone* bone, int index);
@@ -158,15 +182,18 @@ namespace CALUMI{ namespace UNIV{
 		CALUMIANIMATION_API size_t GetSkeletonRigAnimatedBoneCountC(SkeletonRig* source);
 
 		CALUMIANIMATION_API const char* GetSkeletonRigNameC(SkeletonRig* source);
-		CALUMIANIMATION_API SkeletonBone* GetSkeletonBoneC(SkeletonRig* source, int index, Utilities::StringContainer& errorMessage);
+		CALUMIANIMATION_API SkeletonBone* GetSkeletonBoneC(SkeletonRig* source, int index, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API const char* GetSkeletonBoneNameC(SkeletonBone* source);
 		CALUMIANIMATION_API int GetSkeletonBoneParentIndexC(SkeletonBone* source);
 		CALUMIANIMATION_API CALUMI::Math::Quaternion* GetSkeletonBoneRotationC(SkeletonBone* source, bool global);
 		CALUMIANIMATION_API CALUMI::Math::Vector3* GetSkeletonBoneTranslationC(SkeletonBone* source, bool global);
-		CALUMIANIMATION_API bool ValidateSkeletonRigNamesC(SkeletonRig* source, Utilities::StringContainer& errorMessage);
-		CALUMIANIMATION_API bool ValidateSkeletonRigParentIndicesC(SkeletonRig* source, Utilities::StringContainer& errorMessage);
+		CALUMIANIMATION_API bool ValidateSkeletonRigNamesC(SkeletonRig* source, Utilities::StringContainer* errorMessage);
+		CALUMIANIMATION_API bool ValidateSkeletonRigParentIndicesC(SkeletonRig* source, Utilities::StringContainer* errorMessage);
 	}
 
 }}
 
+#pragma warning(disable: 4661)
 _VECTORTEMPLATE(CALUMI::UNIV::SkeletonBone);
+_VECTORTEMPLATE(CALUMI::UNIV::RigPackage*);
+#pragma warning(default: 4661)

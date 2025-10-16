@@ -78,37 +78,39 @@ namespace CALUMI {namespace UNIV {
 	//For programs like Blender, this should be sufficient as a user can create and push data into the universal format and call for a write to file function with the preferred file type
 	extern  "C" {
 		CALUMIANIMATION_API Animation* CreateAnimationC(const char* animationTitle, int rigBoneCount);
-		CALUMIANIMATION_API AnimationBlock* GetAnimationBlockC(Animation* source, int index, const char* errorMessage);
+		CALUMIANIMATION_API AnimationBlock* GetAnimationBlockC(Animation* source, int index, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API size_t GetAnimationBlockCountC(Animation* source);
 		CALUMIANIMATION_API const char* GetAnimationTitleC(Animation* source);
 		CALUMIANIMATION_API size_t GetAnimationBoneCountC(Animation* source);
 		CALUMIANIMATION_API size_t GetFrameCountC(Animation* source);
 		CALUMIANIMATION_API bool DeleteAnimationC(Animation* ptr);
-		CALUMIANIMATION_API bool AddAnimBlockToAnimationC(Animation* anim, AnimationBlock* blockToAdd, bool overwrite, const char* errorMessage);
+		CALUMIANIMATION_API bool AddAnimBlockToAnimationC(Animation* anim, AnimationBlock* blockToAdd, bool overwrite, Utilities::StringContainer* errorMessage);
 
-		CALUMIANIMATION_API AnimationBlock* CreateAnimBlockC(const char* boneName, int boneIndex, const char* errorMessage);
+		CALUMIANIMATION_API AnimationBlock* CreateAnimBlockC(const char* boneName, int boneIndex, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API bool DeleteAnimationBlockC(AnimationBlock* ptr);
 		CALUMIANIMATION_API const char* GetAnimBlockBoneNameC(AnimationBlock* source);
 		CALUMIANIMATION_API int GetAnimBlockBoneIndexC(AnimationBlock* source);
 		CALUMIANIMATION_API unsigned int GetLastFrameInAnimBlockC(AnimationBlock* source);
 		CALUMIANIMATION_API bool AddRotationSqToAnimBlockC(AnimationBlock* block, Rotation* rotSq, int size, bool overwrite);
 		CALUMIANIMATION_API Rotation* GetRotationSqArrayC(AnimationBlock* source);
-		CALUMIANIMATION_API Rotation* GetRotationFromSqC(AnimationBlock* source, int index, const char* errorMessage);
+		CALUMIANIMATION_API Rotation* GetRotationFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API size_t GetRotationSqSizeC(AnimationBlock* source);
 		CALUMIANIMATION_API bool AddTranslationSqToAnimBlockC(AnimationBlock* block, Translation* trnSq, int size, bool overwrite);
 		CALUMIANIMATION_API Translation* GetTranslationSqArrayC(AnimationBlock* source);
-		CALUMIANIMATION_API Translation* GetTranslationFromSqC(AnimationBlock* source, int index, const char* errorMessage);
+		CALUMIANIMATION_API Translation* GetTranslationFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API size_t GetTranslationSqSizeC(AnimationBlock* source);
 		CALUMIANIMATION_API bool AddScalarSqToAnimBlockC(AnimationBlock* block, Scalar* sclrSq, int size, bool overwrite);
 		CALUMIANIMATION_API Scalar* GetScalarSqArrayC(AnimationBlock* source);
-		CALUMIANIMATION_API Scalar* GetScalarFromSqC(AnimationBlock* source, int index, const char* errorMessage);
+		CALUMIANIMATION_API Scalar* GetScalarFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API size_t GetScalarSqSizeC(AnimationBlock* source);
 		CALUMIANIMATION_API bool AddPrioritySqToAnimBlockC(AnimationBlock* block, Priority* prtySq, int size, bool overwrite);
 		CALUMIANIMATION_API Priority* GetPrioritySqArrayC(AnimationBlock* source);
-		CALUMIANIMATION_API Priority* GetPriorityFromSqC(AnimationBlock* source, int index, const char* errorMessage);
+		CALUMIANIMATION_API Priority* GetPriorityFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API size_t GetPrioritySqSizeC(AnimationBlock* source);
 	}
 }}
 
+#pragma warning(disable: 4661)
 _VECTORTEMPLATE(CALUMI::UNIV::Animation);
 _VECTORTEMPLATE(CALUMI::UNIV::AnimationBlock);
+#pragma warning(default: 4661)

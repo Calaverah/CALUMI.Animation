@@ -390,6 +390,16 @@ namespace CALUMI
 				Normalize();
 		};
 
+		Math::Quaternion::Quaternion(double x, double y, double z, double w, bool normalize)
+		{ 
+			this->x = static_cast<float>(x); 
+			this->y = static_cast<float>(y); 
+			this->z = static_cast<float>(z); 
+			this->w = static_cast<float>(w);
+			if (normalize)
+				Normalize();
+		}
+
 		Math::Quaternion::Quaternion(Vector3D direction, double radians, bool normalize)
 		{
 			direction.Normalize();

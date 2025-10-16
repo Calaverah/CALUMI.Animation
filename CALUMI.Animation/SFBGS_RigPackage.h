@@ -1,5 +1,4 @@
 #pragma once
-#include <cstdint>
 #include "CALUMI_Common.h"
 #include "CALUMI_SkeletonRig.h"
 
@@ -10,7 +9,7 @@ namespace CALUMI {
 
 		inline static const char* SFBGS_RIG_PACKAGE = "SFBGS_RIG_PACKAGE";
 
-		enum class BoneMapKey : uint8_t
+		enum class CALUMIANIMATION_API BoneMapKey : uint8_t
 		{
 			Root = 0,
 			AnimObjectA = 1,
@@ -126,17 +125,8 @@ namespace CALUMI {
 			Utilities::StringContainer boneNameList[SFBGSMAPSIZE];
 
 		public:
-			bool BoneIsMapped(const char* boneName);
-			bool KeyHasBone(BoneMapKey key);
 
-			bool AddBoneToMap(BoneMapKey key, const char* boneName, bool overwrite = true);
-
-			bool RemoveBoneFromMap(BoneMapKey key);
-			bool RemoveBoneFromMap(const char* boneName);
-
-
-			BoneMapKey GetBoneKey(const char* boneName);
-			Utilities::StringContainer GetBoneNameFromKey(BoneMapKey key);
+			friend struct SFBGS_RigPackage;
 
 			RigMap() = default;
 		};
@@ -152,6 +142,58 @@ namespace CALUMI {
 			const char* GetPackageType() const override;
 
 			SFBGS_RigPackage() = default;
+
+			bool BoneIsMapped(const char* boneName) const;
+			bool KeyIsMapped(BoneMapKey key);
+
+			bool AddBoneToMap(BoneMapKey key, const char* boneName, bool overwrite = true);
+			bool AddBoneToMap(BoneMapKey key, UNIV::SkeletonBone& bone, bool overwrite = true);
+
+			bool RemoveBoneFromMap(BoneMapKey key);
+			bool RemoveBoneFromMap(const char* boneName);
+
+
+			BoneMapKey GetBoneKey(const char* boneName) const;
+			Utilities::StringContainer GetBoneNameFromKey(BoneMapKey key);
+
+
+			// Inherited via RigPackage
+			Utilities::StringContainer ToJSON(size_t indents) const override;
+
+			// Inherited via RigPackage
+			bool HandleBoneRename(const char* oldBone, const char* newName, size_t idx) override;
 		};
 
+		SFBGS_RigPackage* CreateNewSFBGSRigPackage(UNIV::SkeletonRig& rig, bool overwrite = true);
+		bool RemoveSFBGSRigPackage(UNIV::SkeletonRig& rig);
+
+		Utilities::VectorContainer<int16_t> ConvertSFBGSRigPackage(UNIV::SkeletonRig& rig);
+
+
+
+
+		extern "C"
+		{
+			CALUMIANIMATION_API bool SFBGSRigPackage_AddPackageToSkeletonRigC(UNIV::SkeletonRig* rig, Utilities::StringContainer* errorMessage, bool overwrite);
+			CALUMIANIMATION_API bool SFBGSRigPackage_RemoveRigPackageFromSkeletonRigC(UNIV::SkeletonRig* rig, Utilities::StringContainer* errorMessage);
+
+			CALUMIANIMATION_API bool SFBGSRigPackage_BoneIsMappedC(UNIV::SkeletonRig* rig, const char* boneName);
+			CALUMIANIMATION_API bool SFBGSRigPackage_KeyIsMappedC(UNIV::SkeletonRig* rig, uint8_t key);
+
+			CALUMIANIMATION_API bool SFBGSRigPackage_AddBoneNameToMapC(UNIV::SkeletonRig* rig, uint8_t key, const char* boneName, Utilities::StringContainer* errorMessage, bool overwrite);
+			CALUMIANIMATION_API bool SFBGSRigPackage_AddBoneToMapC(UNIV::SkeletonRig* rig, uint8_t key, UNIV::SkeletonBone* bone, Utilities::StringContainer* errorMessage, bool overwrite);
+
+			CALUMIANIMATION_API bool SFBGSRigPackage_RemoveBoneFromMapUsingKeyC(UNIV::SkeletonRig* rig, uint8_t key);
+			CALUMIANIMATION_API bool SFBGSRigPackage_RemoveBoneFromMapUsingNameC(UNIV::SkeletonRig* rig, const char* boneName);
+
+			CALUMIANIMATION_API uint8_t SFBGSRigPackage_GetBoneKeyC(UNIV::SkeletonRig* rig, const char* boneName);
+			CALUMIANIMATION_API const char* SFBGSRigPackage_GetBoneNameFromKeyC(UNIV::SkeletonRig* rig, uint8_t key);
+
+			CALUMIANIMATION_API bool SFBGSRigPackage_SetMannequinC(UNIV::SkeletonRig* rig, bool isMannequin);
+
+		}
+
 } }
+#pragma warning(disable: 4661)
+_VECTORTEMPLATE(CALUMI::SFBGS::SFBGS_RigPackage);
+#pragma warning(default: 4661)

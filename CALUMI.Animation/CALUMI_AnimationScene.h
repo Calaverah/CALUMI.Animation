@@ -30,12 +30,12 @@ namespace CALUMI{namespace UNIV{
 
 	
 
-	extern  "C" {
+	extern "C" {
 		CALUMIANIMATION_API AnimationScene* CreateAnimationSceneC(const char* sceneName);
-		CALUMIANIMATION_API bool AddRigToAnimationSceneC(AnimationScene* scene, SkeletonRig* rig, const char* errorMessage);
-		CALUMIANIMATION_API bool AddAnimationToAnimationSceneC(AnimationScene* scene, Animation* animation, bool overwrite, const char* errorMessage);
+		CALUMIANIMATION_API bool AddRigToAnimationSceneC(AnimationScene* scene, SkeletonRig* rig, Utilities::StringContainer* errorMessage);
+		CALUMIANIMATION_API bool AddAnimationToAnimationSceneC(AnimationScene* scene, Animation* animation, bool overwrite, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API bool DeleteAnimationSceneC(AnimationScene* ptr);
-		CALUMIANIMATION_API Animation* GetAnimationC(AnimationScene* source, int index, const char* errorMessage);
+		CALUMIANIMATION_API Animation* GetAnimationC(AnimationScene* source, int index, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API size_t GetAnimationCountC(AnimationScene* source);
 		CALUMIANIMATION_API const char* GetAnimationSceneNameC(AnimationScene* source);
 		CALUMIANIMATION_API SkeletonRig* GetSkeletonRigC(AnimationScene* source);

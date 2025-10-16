@@ -5,7 +5,6 @@
 #pragma once
 #include "CALUMI_Common.h"
 #include "CALUMI_Math.h"
-#include <cstdint>
 #include "CALUMI_Utilities.h"
 
 namespace CALUMI {namespace UNIV {
@@ -147,7 +146,9 @@ namespace CALUMI {namespace UNIV {
 
 }}
 
+#pragma warning(disable: 4661)
 _VECTORTEMPLATE(CALUMI::UNIV::Rotation);
 _VECTORTEMPLATE(CALUMI::UNIV::Translation);
 _VECTORTEMPLATE(CALUMI::UNIV::Scalar);
 _VECTORTEMPLATE(CALUMI::UNIV::Priority);
+#pragma warning(default: 4661)

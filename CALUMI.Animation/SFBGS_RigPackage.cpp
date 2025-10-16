@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "SFBGS_RigPackage.h"
+#include <format>
 
 namespace CALUMI {namespace SFBGS{
 
@@ -116,11 +117,47 @@ namespace CALUMI {namespace SFBGS{
 		}
 	}
 
-	bool RigMap::BoneIsMapped(const char* boneName)
+	SFBGS_RigPackage* CreateNewSFBGSRigPackage(UNIV::SkeletonRig& rig, bool overwrite)
+	{
+		SFBGS_RigPackage* newRigPackage = new SFBGS_RigPackage;
+		if (!rig.rigPackageManager.AddPackage(newRigPackage, overwrite))
+		{
+			if (newRigPackage)
+				delete newRigPackage;
+			return nullptr;
+		}
+		return newRigPackage;
+	}
+
+	bool RemoveSFBGSRigPackage(UNIV::SkeletonRig& rig)
+	{
+		return rig.rigPackageManager.RemovePackage(SFBGS_RIG_PACKAGE);
+	}
+
+	Utilities::VectorContainer<int16_t> ConvertSFBGSRigPackage(UNIV::SkeletonRig& rig)
+	{
+		Utilities::VectorContainer<int16_t> output(SFBGSMAPSIZE);
+		output.fill(-1);
+		auto rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig.rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+		if (rigPackage == nullptr) { return output; }
+
+		for (int i = 0; i < output.size(); i++)
+		{
+			auto result = rig.GetBoneIndex(rigPackage->GetBoneNameFromKey(static_cast<BoneMapKey>(i)));
+			if (result.has_value())
+			{
+				output.at(i) = static_cast<int16_t>(result.value());
+			}
+		}
+
+		return output;
+	}
+
+	bool SFBGS_RigPackage::BoneIsMapped(const char* boneName) const
 	{
 		for (int i = 0; i < SFBGSMAPSIZE; i++)
 		{
-			if (strcmp(boneNameList[i].c_str(), boneName))
+			if (strcmp(rigMap.boneNameList[i].c_str(), boneName))
 			{
 				return true;
 			}
@@ -128,15 +165,15 @@ namespace CALUMI {namespace SFBGS{
 		return false;
 	}
 
-	bool RigMap::KeyHasBone(BoneMapKey key)
+	bool SFBGS_RigPackage::KeyIsMapped(BoneMapKey key)
 	{
 		if (!BoneTagExists(key) || static_cast<uint8_t>(key) >= SFBGSMAPSIZE)
 			return false;
 
-		return !boneNameList[static_cast<uint8_t>(key)].Empty();
+		return !rigMap.boneNameList[static_cast<uint8_t>(key)].Empty();
 	}
 
-	bool RigMap::AddBoneToMap(BoneMapKey key, const char* boneName, bool overwrite)
+	bool SFBGS_RigPackage::AddBoneToMap(BoneMapKey key, const char* boneName, bool overwrite)
 	{
 		if (!BoneTagExists(key) || static_cast<uint8_t>(key) >= SFBGSMAPSIZE)
 			return false;
@@ -149,29 +186,34 @@ namespace CALUMI {namespace SFBGS{
 			RemoveBoneFromMap(boneName);
 		}
 
-		boneNameList[static_cast<uint8_t>(key)] = boneName;
+		rigMap.boneNameList[static_cast<uint8_t>(key)] = boneName;
 		return true;
 	}
 
-	bool RigMap::RemoveBoneFromMap(BoneMapKey key)
+	bool SFBGS_RigPackage::AddBoneToMap(BoneMapKey key, UNIV::SkeletonBone& bone, bool overwrite)
+	{
+		return AddBoneToMap(key, bone.name.c_str(), overwrite);
+	}
+
+	bool SFBGS_RigPackage::RemoveBoneFromMap(BoneMapKey key)
 	{
 		if (!BoneTagExists(key) || static_cast<uint8_t>(key) >= SFBGSMAPSIZE)
 			return false;
 
-		boneNameList[static_cast<uint8_t>(key)].Clear();
+		rigMap.boneNameList[static_cast<uint8_t>(key)].Clear();
 		return true;
 	}
 
-	bool RigMap::RemoveBoneFromMap(const char* boneName)
+	bool SFBGS_RigPackage::RemoveBoneFromMap(const char* boneName)
 	{
 		return	RemoveBoneFromMap(GetBoneKey(boneName));
 	}
 
-	BoneMapKey RigMap::GetBoneKey(const char* boneName)
+	BoneMapKey SFBGS_RigPackage::GetBoneKey(const char* boneName) const
 	{
 		for (int i = 0; i < SFBGSMAPSIZE; i++)
 		{
-			if (strcmp(boneNameList[i].c_str(), boneName))
+			if (strcmp(rigMap.boneNameList[i].c_str(), boneName))
 			{
 				return (BoneMapKey)i;
 			}
@@ -181,17 +223,168 @@ namespace CALUMI {namespace SFBGS{
 		return BoneMapKey::None;
 	}
 
-	Utilities::StringContainer RigMap::GetBoneNameFromKey(BoneMapKey key)
+	Utilities::StringContainer SFBGS_RigPackage::GetBoneNameFromKey(BoneMapKey key)
 	{
-		if(!KeyHasBone(key))
+		if(!KeyIsMapped(key))
 			return "";
 
-		return boneNameList[static_cast<uint8_t>(key)];
+		return rigMap.boneNameList[static_cast<uint8_t>(key)];
 	}
 
 
 	// Inherited via RigPackage
 	const char* SFBGS_RigPackage::GetPackageType() const { return SFBGS_RIG_PACKAGE; }
+
+	Utilities::StringContainer SFBGS_RigPackage::ToJSON(size_t indents) const
+	{
+		return Utilities::StringContainer();
+	}
+
+	bool SFBGS_RigPackage::HandleBoneRename(const char* oldBone, const char* newName, size_t idx)
+	{
+		for (int i = 0; i < SFBGSMAPSIZE; i++)
+		{
+			if (rigMap.boneNameList[i].compare(oldBone), false)
+			{
+				rigMap.boneNameList[i] = newName;
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
+
+#pragma region ExternC
+	bool SFBGSRigPackage_AddPackageToSkeletonRigC(UNIV::SkeletonRig* rig, Utilities::StringContainer* errorMessage, bool overwrite)
+	{
+		errorMessage->Clear();
+
+		if (CreateNewSFBGSRigPackage(*rig, overwrite))
+		{
+			*errorMessage += "[CALUMI.Animation API] ";
+			*errorMessage += SFBGS_RIG_PACKAGE;
+			*errorMessage += " Successfully Added To";
+			*errorMessage += rig->rigName;
+			return true;
+		}
+		{
+			*errorMessage += "[CALUMI.Animation API] ";
+			*errorMessage += SFBGS_RIG_PACKAGE;
+			*errorMessage += " Was Not Added To ";
+			*errorMessage += rig->rigName;
+			*errorMessage += ", It May Already Exist And Was Not Set To Overwrite";
+		}
+		return false;
+
+	}
+	bool SFBGSRigPackage_RemoveRigPackageFromSkeletonRigC(UNIV::SkeletonRig* rig, Utilities::StringContainer* errorMessage)
+	{
+		if (RemoveSFBGSRigPackage(*rig))
+		{
+			*errorMessage += "[CALUMI.Animation API] ";
+			*errorMessage += SFBGS_RIG_PACKAGE;
+			*errorMessage += " Successfully Removed From ";
+			*errorMessage += rig->rigName;
+			return true;
+		}
+
+		{
+			*errorMessage += "[CALUMI.Animation API] ";
+			*errorMessage += SFBGS_RIG_PACKAGE;
+			*errorMessage += " Was Not Removed From ";
+			*errorMessage += rig->rigName;
+			*errorMessage += ", It Either Does Not Exist Or Is Mislabeled";
+		}
+		return false;
+	}
+
+	bool CALUMIANIMATION_API SFBGSRigPackage_BoneIsMappedC(UNIV::SkeletonRig* rig, const char* boneName)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+
+		if (!rigPackage) return false;
+
+		return rigPackage->BoneIsMapped(boneName);
+	}
+
+	bool SFBGSRigPackage_KeyIsMappedC(UNIV::SkeletonRig* rig, uint8_t key)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+
+		if (!rigPackage) return false;
+
+		return rigPackage->KeyIsMapped(static_cast<BoneMapKey>(key));
+	}
+
+	CALUMIANIMATION_API bool SFBGSRigPackage_AddBoneNameToMapC(UNIV::SkeletonRig* rig, uint8_t key, const char* boneName, Utilities::StringContainer* errorMessage, bool overwrite)
+	{
+		errorMessage->Clear();
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+		
+		if (!rigPackage->AddBoneToMap(static_cast<BoneMapKey>(key), boneName, overwrite))
+		{
+			*errorMessage += std::format("[CALUMI.Animation API] Bone: {} Could Not Be Added To SFBGS Rigmap On Rig: {}",boneName,rig->rigName.c_str()).c_str();
+			return false;
+		}
+
+		return true;
+	}
+
+	bool SFBGSRigPackage_AddBoneToMapC(UNIV::SkeletonRig* rig, uint8_t key, UNIV::SkeletonBone* bone, Utilities::StringContainer* errorMessage, bool overwrite)
+	{
+		return SFBGSRigPackage_AddBoneNameToMapC(rig,key, bone->name.c_str(),errorMessage, overwrite);
+	}
+
+	bool SFBGSRigPackage_RemoveBoneFromMapUsingKeyC(UNIV::SkeletonRig* rig, uint8_t key)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+
+		if (!rigPackage) return false;
+
+		return rigPackage->RemoveBoneFromMap(static_cast<BoneMapKey>(key));
+	}
+
+	bool SFBGSRigPackage_RemoveBoneFromMapUsingNameC(UNIV::SkeletonRig* rig, const char* boneName)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+
+		if (!rigPackage) return false;
+
+		return rigPackage->RemoveBoneFromMap(boneName);
+	}
+
+	uint8_t SFBGSRigPackage_GetBoneKeyC(UNIV::SkeletonRig* rig, const char* boneName)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+
+		if (!rigPackage) return -1;
+
+		return static_cast<uint8_t>(rigPackage->GetBoneKey(boneName));
+	}
+
+	const char* SFBGSRigPackage_GetBoneNameFromKeyC(UNIV::SkeletonRig* rig, uint8_t key)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+
+		if (!rigPackage) return "";
+
+		return (rigPackage->GetBoneNameFromKey(static_cast<BoneMapKey>(key)).c_str());
+	}
+
+	bool SFBGSRigPackage_SetMannequinC(UNIV::SkeletonRig* rig, bool isMannequin)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+
+		if (!rigPackage) return false;
+
+		rigPackage->isMannequin = isMannequin;
+
+		return true;
+	}
+
+#pragma endregion
 
 }
 }

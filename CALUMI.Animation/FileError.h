@@ -40,6 +40,7 @@ struct CALUMIANIMATION_API FileError
 	FileError& operator=(const FileError& source);
 };
 
+#pragma warning(disable: 4661)
 template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<bool, FileError>;
 template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::PathContainer, FileError>;
 template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::StringContainer, FileError>;
@@ -50,3 +51,4 @@ template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI:
 template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<int>, FileError>;
 template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<float>, FileError>;
 template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<double>, FileError>;
+#pragma warning(default: 4661)

@@ -5,7 +5,7 @@
 #pragma once
 #include "CALUMI_Common.h"
 #include "CALUMI_Math.h"
-#include <cstdint>
+
 
 namespace CALUMI{ namespace SFBGS{
 
@@ -87,10 +87,11 @@ namespace CALUMI{ namespace SFBGS{
 	Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> UnfoldRotationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& input);
 	Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> FoldRotationPrefixSequence (const Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& input);
 
+#pragma warning(disable: 4661)
 	template struct CALUMIANIMATION_API Utilities::VectorContainer<RotationEntry>;
 	template struct CALUMIANIMATION_API Utilities::VectorContainer<RotationPrefix>;
 	template struct CALUMIANIMATION_API Utilities::VectorContainer<TranslationEntry>;
 	template struct CALUMIANIMATION_API Utilities::VectorContainer<TranslationPrefix>;
-	
+#pragma warning(default: 4661)	
 
 	}}

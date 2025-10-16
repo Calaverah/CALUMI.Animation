@@ -161,7 +161,7 @@ namespace CALUMI
 			Quaternion(float input[4], bool normalize = true);
 			Quaternion(Vector3 direction, double radians, bool normalize = true);
 			Quaternion(Vector3D direction, double radians, bool normalize = true);
-			inline Quaternion(double x, double y, double z, double w, bool normalize = true) { this->x = static_cast<float>(x); this->y = static_cast<float>(y); this->z = static_cast<float>(z); this->w = static_cast<float>(w); }
+			Quaternion(double x, double y, double z, double w, bool normalize = true);
 			Quaternion(float x, float y, float z, float w, bool normalize = true)
 				: x(x), y(y), z(z), w(w)
 			{

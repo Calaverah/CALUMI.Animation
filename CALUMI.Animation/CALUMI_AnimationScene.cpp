@@ -21,11 +21,13 @@ namespace CALUMI {
             }
             return false;
         }
-        Animation* GetAnimationC(AnimationScene* source, int index, const char* errorMessage)
+        Animation* GetAnimationC(AnimationScene* source, int index, Utilities::StringContainer* errorMessage)
         {
+            errorMessage->Clear();
+
             if(source->animations.size()<=index)
             {
-                errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+                *errorMessage += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
                 return nullptr;
             }
             return &source->animations.at(index);
@@ -53,23 +55,27 @@ namespace CALUMI {
 
             return univAnimationScene;
         }
-        bool UNIV::AddRigToAnimationSceneC(AnimationScene* scene, SkeletonRig* rig, const char* errorMessage)
+        bool UNIV::AddRigToAnimationSceneC(AnimationScene* scene, SkeletonRig* rig, Utilities::StringContainer* errorMessage)
         {
+            errorMessage->Clear();
+
             if (rig->boneEntries.empty())
             {
-                errorMessage = "[CALUMI.Animation API] No Bone Entries Found In Rig!";
+                *errorMessage += "[CALUMI.Animation API] No Bone Entries Found In Rig!";
                 return false;
             }
             scene->rig = *rig;
             rig = nullptr;
-            errorMessage = "[CALUMI.Animation API] Rig Data Transferred Successfully. Original Ptr Set To Null!";
+            *errorMessage += "[CALUMI.Animation API] Rig Data Transferred Successfully. Original Ptr Set To Null!";
             return true;
         }
-        bool UNIV::AddAnimationToAnimationSceneC(AnimationScene* scene, Animation* animation, bool overwrite, const char* errorMessage)
+        bool UNIV::AddAnimationToAnimationSceneC(AnimationScene* scene, Animation* animation, bool overwrite, Utilities::StringContainer* errorMessage)
         {
+            errorMessage->Clear();
+
             if (animation->animationTitle == "")
             {
-                errorMessage = "[CALUMI.Animation API] Must Have Animation Title!";
+                *errorMessage += "[CALUMI.Animation API] Must Have Animation Title!";
                 return false;
             }
             for (unsigned int i =0; i<scene->animations.size(); i++)
@@ -78,7 +84,7 @@ namespace CALUMI {
                 {
                     if(!overwrite)
                     {
-                        errorMessage = "[CALUMI.Animation API] Animation Titles Must Be Unique!";
+                        *errorMessage += "[CALUMI.Animation API] Animation Titles Must Be Unique!";
                         return false;
                     }
                     else
@@ -92,7 +98,7 @@ namespace CALUMI {
             scene->animations.push_back(*animation);
             delete animation;
 
-            errorMessage = "[CALUMI.Animation API] Animation Data Copied Into Animation Vector Successfully. Original Ptr Has Been Deleted!";
+            *errorMessage += "[CALUMI.Animation API] Animation Data Copied Into Animation Vector Successfully. Original Ptr Has Been Deleted!";
             return true;
         }
         

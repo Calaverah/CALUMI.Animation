@@ -322,11 +322,13 @@ namespace CALUMI {
 			Animation* outputAnimation = new Animation(animationTitle, rigBoneCount);
 			return outputAnimation;
 		}
-		AnimationBlock* GetAnimationBlockC(Animation* source, int index, const char* errorMessage)
+		AnimationBlock* GetAnimationBlockC(Animation* source, int index, Utilities::StringContainer* errorMessage)
 		{
+			errorMessage->Clear();
+
 			if (source->animationBlocks.size() <= index || index < 0)
 			{
-				errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+				*errorMessage += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
 				return nullptr;
 			}
 			return &source->animationBlocks.at(index);
@@ -356,33 +358,37 @@ namespace CALUMI {
 			}
 			return false;
 		}
-		bool AddAnimBlockToAnimationC(Animation* anim, AnimationBlock* blockToAdd, bool overwrite, const char* errorMessage)
+		bool AddAnimBlockToAnimationC(Animation* anim, AnimationBlock* blockToAdd, bool overwrite, Utilities::StringContainer* errorMessage)
 		{
+			errorMessage->Clear();
+
 			if (!anim->AddAnimationBlock(*blockToAdd, overwrite))
 			{
-				errorMessage = "[CALUMI.Animation API] Existing Animation Block Found and Not Overwritten!";
+				*errorMessage += "[CALUMI.Animation API] Existing Animation Block Found and Not Overwritten!";
 				return false;
 			}
 			delete blockToAdd;
-			errorMessage = "[CALUMI.Animation API] Animation Block Copied Into Animation Successfully. Original Block Deleted!";
+			*errorMessage += "[CALUMI.Animation API] Animation Block Copied Into Animation Successfully. Original Block Deleted!";
 			return true;
 		}
-		AnimationBlock* CreateAnimBlockC(const char* boneName, int boneIndex, const char* errorMessage)
+		AnimationBlock* CreateAnimBlockC(const char* boneName, int boneIndex, Utilities::StringContainer* errorMessage)
 		{
+			errorMessage->Clear();
+
 			if (boneName == "")
 			{
-				errorMessage = "[CALUMI.Animation API] Animation Block Must Have Bone Name!";
+				*errorMessage += "[CALUMI.Animation API] Animation Block Must Have Bone Name!";
 				return nullptr;
 			}
 			if (boneIndex < 0)
 			{
-				errorMessage = "[CALUMI.Animation API] Animation Block Must Have Valid Bone Index! (ix > -1)";
+				*errorMessage += "[CALUMI.Animation API] Animation Block Must Have Valid Bone Index! (ix > -1)";
 				return nullptr;
 			}
 			AnimationBlock* outputAnimationBlock = new AnimationBlock;
 			outputAnimationBlock->boneIndex = boneIndex;
 			outputAnimationBlock->boneName = boneName;
-			errorMessage = "[CALUMI.Animation API] Animation Block Created!";
+			*errorMessage += "[CALUMI.Animation API] Animation Block Created!";
 			return outputAnimationBlock;
 		}
 		bool DeleteAnimationBlockC(AnimationBlock* ptr)
@@ -421,11 +427,13 @@ namespace CALUMI {
 
 			return source->_rotationSequence.data();
 		}
-		Rotation* GetRotationFromSqC(AnimationBlock* source, int index, const char* errorMessage)
+		Rotation* GetRotationFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage)
 		{
+			errorMessage->Clear();
+
 			if (index >= source->_rotationSequence.size() || index < 0)
 			{
-				errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+				*errorMessage += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
 				return nullptr;
 			}
 			return &source->_rotationSequence.at(index);
@@ -449,11 +457,13 @@ namespace CALUMI {
 
 			return source->_translationSequence.data();
 		}
-		Translation* GetTranslationFromSqC(AnimationBlock* source, int index, const char* errorMessage)
+		Translation* GetTranslationFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage)
 		{
+			errorMessage->Clear();
+
 			if (index >= source->_translationSequence.size() || index < 0)
 			{
-				errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+				*errorMessage += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
 				return nullptr;
 			}
 			return &source->_translationSequence.at(index);
@@ -477,11 +487,13 @@ namespace CALUMI {
 
 			return source->_scalarSequence.data();
 		}
-		Scalar* GetScalarFromSqC(AnimationBlock* source, int index, const char* errorMessage)
+		Scalar* GetScalarFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage)
 		{
+			errorMessage->Clear();
+
 			if (index >= source->_scalarSequence.size() || index < 0)
 			{
-				errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+				*errorMessage += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
 				return nullptr;
 			}
 			return &source->_scalarSequence.at(index);
@@ -505,11 +517,13 @@ namespace CALUMI {
 
 			return source->_prioritySequence.data();
 		}
-		Priority* GetPriorityFromSqC(AnimationBlock* source, int index, const char* errorMessage)
+		Priority* GetPriorityFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage)
 		{
+			errorMessage->Clear();
+
 			if (index >= source->_prioritySequence.size() || index < 0)
 			{
-				errorMessage = "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+				*errorMessage += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
 				return nullptr;
 			}
 			return &source->_prioritySequence.at(index);
