@@ -88,7 +88,7 @@ namespace CALUMI{
 			size_t fileSize = 0; //For debugging
 			CALUMI::Utilities::StringContainer animationFileName; //For file tracking. Should be unique without extension
 		
-			float _headerStart[9] = {}; //2 blanks, 4 Quat Components (or all zero), 3 unknown (possibly xyz values)
+			float _headerStart[9] = {}; //2 blanks (CONFIRMED), 4 Quat Components (or all zero), 3 unknown (possibly xyz values)
 
 			HeaderFlags _headerFlags; //1 byte and 3 empty bytes
 

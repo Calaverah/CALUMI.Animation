@@ -187,9 +187,9 @@ namespace CALUMI { namespace SFBGS{
 
 	CALUMI::Math::Vector3D GetUniversalTranslation(const CALUMI::SFBGS::TranslationPrefix& prefix, const CALUMI::SFBGS::TranslationEntry& suffix, const float& highPrecision, const float& lowPrecision)
 	{
-		std::println("PRE AND SUFF {} {} {} & {} {} {}", prefix.x, prefix.y, prefix.z, suffix.x, suffix.y, suffix.z);
+		//std::println("PRE AND SUFF {} {} {} & {} {} {}", prefix.x, prefix.y, prefix.z, suffix.x, suffix.y, suffix.z);
 		CALUMI::Math::Vector3D output((prefix.x * lowPrecision + suffix.x * highPrecision), (prefix.y * lowPrecision + suffix.y * highPrecision), (prefix.z * lowPrecision + suffix.z * highPrecision));
-		std::println("Output {} {} {}", output.x, output.y, output.z);
+		//std::println("Output {} {} {}", output.x, output.y, output.z);
 		return output;
 	}
 	
@@ -202,7 +202,7 @@ namespace CALUMI { namespace SFBGS{
 			//totalSize++;
 			totalSize += input.at(i).count;
 		}
-		std::println("totalSize {}", totalSize);
+		//std::println("totalSize {}", totalSize);
 		output.reserve(totalSize);
 
 		for (int i = 0; i < input.size(); i++)
@@ -214,7 +214,7 @@ namespace CALUMI { namespace SFBGS{
 				output.push_back(newPrefix);
 			}
 		}
-		std::println("UNFOLD LENGTH {}", output.size());
+		//std::println("UNFOLD LENGTH {}", output.size());
 		return output;
 	}
 

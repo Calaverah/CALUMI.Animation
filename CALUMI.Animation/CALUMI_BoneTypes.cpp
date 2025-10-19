@@ -5,10 +5,10 @@
 namespace CALUMI {
 	namespace UNIV {
 
-		const UNIV::BoneType BoneTypeProperties::GetType() const
+		/*const UNIV::BoneType BoneTypeProperties::GetType() const
 		{
 			return boneType;
-		}
+		}*/
 
 		//Returns default when the switch case... defaults... 
 		const UNIV::BoneType BoneTypeFromString(const Utilities::StringContainer& boneTypeStr)
@@ -20,21 +20,37 @@ namespace CALUMI {
 			else
 				return UNIV::BoneType::UNDEFINED;
 		}
-		DefaultBoneProperties::DefaultBoneProperties()
+		/*DefaultBoneProperties::DefaultBoneProperties()
 		{
 			boneType = UNIV::BoneType::Default;
-		}
+		}*/
 		const char* DefaultBoneProperties::GetTypeString() const
 		{
 			return DefaultBoneTypeStr;
 		}
-		TwistBoneProperties::TwistBoneProperties()
+		UNIV::BoneType DefaultBoneProperties::GetType() const
+		{
+			return UNIV::BoneType::Default;
+		}
+		BoneTypeProperties* DefaultBoneProperties::Clone()
+		{
+			return new DefaultBoneProperties(*this);
+		}
+		/*TwistBoneProperties::TwistBoneProperties()
 		{
 			boneType = UNIV::BoneType::Twist;
-		}
+		}*/
 		const char* TwistBoneProperties::GetTypeString() const
 		{
 			return TwistBoneTypeStr;
+		}
+		UNIV::BoneType TwistBoneProperties::GetType() const
+		{
+			return UNIV::BoneType::Twist;
+		}
+		BoneTypeProperties* TwistBoneProperties::Clone()
+		{
+			return new TwistBoneProperties(*this);
 		}
 	}
 }

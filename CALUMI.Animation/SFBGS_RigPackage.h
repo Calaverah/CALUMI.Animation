@@ -148,6 +148,7 @@ namespace CALUMI {
 			SFBGS_RigPackage() = default;
 			SFBGS_RigPackage(const SFBGS_RigPackage& source);
 			SFBGS_RigPackage(const SFBGS_RigPackage&& source) noexcept;
+			~SFBGS_RigPackage() override;
 
 			bool BoneIsMapped(const char* boneName) const;
 			bool KeyIsMapped(BoneMapKey key);

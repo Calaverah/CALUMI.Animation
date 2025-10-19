@@ -263,7 +263,8 @@ namespace CALUMI{
 		Utilities::ExpectedContainer<bool, FileError> Animation::ReadFromFile(Utilities::PathContainer& inputFilePath)
 		{
 			//Check to see if file exists and is valid
-			auto buffer = CALUMI::ValidateFile(inputFilePath, { ".af" }, 64, 0, true);
+			Utilities::VectorContainer<Utilities::StringContainer>vec; vec.push_back(".af");
+			auto buffer = CALUMI::ValidateFile(inputFilePath, vec, 64, 0, true);
 			if (!buffer.has_value())
 			{
 				Utilities::ExpectedContainer<bool, FileError> tempOutput;
@@ -272,7 +273,7 @@ namespace CALUMI{
 			}
 
 			fileSize = buffer.value().size();
-
+			animationFileName = inputFilePath.stem().c_str();
 			//iterator tracking
 			//char* currentAddress = buffer.value().data();
 			unsigned long long addressIndex = 0;

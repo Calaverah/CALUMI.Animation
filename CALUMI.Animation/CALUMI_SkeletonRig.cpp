@@ -498,16 +498,52 @@ namespace CALUMI{ namespace UNIV{
         return *this;
     }
 
+    /*SkeletonBone::SkeletonBone()
+    {
+
+        boneTypeProperties = new DefaultBoneProperties; 
+
+    }*/
+    SkeletonBone::SkeletonBone(const SkeletonBone& other)
+    {
+        mirrorBoneIndex = other.mirrorBoneIndex;
+        parentBoneIndex = other.parentBoneIndex;
+        localRotation = other.localRotation;
+        globalRotation = other.globalRotation;
+        localPosition = other.localPosition;
+        globalPosition = other.globalPosition;
+        if (other.boneTypeProperties)
+            boneTypeProperties = other.boneTypeProperties->Clone();
+        else
+            boneTypeProperties = new DefaultBoneProperties;
+
+    }
+    SkeletonBone::SkeletonBone(const SkeletonBone&& other) noexcept
+    {
+        mirrorBoneIndex = other.mirrorBoneIndex;
+        parentBoneIndex = other.parentBoneIndex;
+        localRotation = other.localRotation;
+        globalRotation = other.globalRotation;
+        localPosition = other.localPosition;
+        globalPosition = other.globalPosition;
+        if (other.boneTypeProperties)
+            boneTypeProperties = other.boneTypeProperties->Clone();
+        else
+            boneTypeProperties = new DefaultBoneProperties;
+    }
     SkeletonBone::~SkeletonBone()
     {
         if (boneTypeProperties)
+        {
             delete boneTypeProperties;
+            boneTypeProperties = nullptr;
+        }
     }
 
     bool UNIV::SkeletonBone::SetBoneTypeProperty(UNIV::BoneType boneType, bool resetExisting)
     {
 
-        if (boneTypeProperties != nullptr)
+        if (boneTypeProperties)
         {
             if (!resetExisting && boneType == boneTypeProperties->GetType())
                 return false;
@@ -527,7 +563,7 @@ namespace CALUMI{ namespace UNIV{
             return false;
         }
 
-        if (boneTypeProperties != nullptr)
+        if (boneTypeProperties)
         {
             delete boneTypeProperties;
             boneTypeProperties = nullptr;
@@ -538,7 +574,7 @@ namespace CALUMI{ namespace UNIV{
 
     const BoneTypeProperties* SkeletonBone::GetBoneTypeProperty()
     {
-        if (boneTypeProperties != nullptr)
+        if (boneTypeProperties)
         {
             return boneTypeProperties;
         }
@@ -600,6 +636,26 @@ namespace CALUMI{ namespace UNIV{
         return output.c_str();
     }
 
+    UNIV::SkeletonBone& UNIV::SkeletonBone::operator=(const UNIV::SkeletonBone& other)
+    {
+        mirrorBoneIndex = other.mirrorBoneIndex;
+        parentBoneIndex = other.parentBoneIndex;
+        localRotation = other.localRotation;
+        globalRotation = other.globalRotation;
+        localPosition = other.localPosition;
+        globalPosition = other.globalPosition;
+        if (other.boneTypeProperties)
+            boneTypeProperties = other.boneTypeProperties->Clone();
+        else
+            boneTypeProperties = new DefaultBoneProperties;
+
+        return *this;
+    }
+
+    CALUMI::UNIV::RigPackage::~RigPackage()
+    {
+    }
+
     RigPackage* RigPackageManager::GetPackage(const char* packageName)
     {
         for (int i = 0; i < packages.size(); i++)
@@ -622,6 +678,7 @@ namespace CALUMI{ namespace UNIV{
                 if (packages.at(i))
                 {
                     delete packages.at(i);
+                    packages.at(i) = nullptr;
                     packages.erase(i);
                     return true;
                 }
@@ -669,7 +726,10 @@ namespace CALUMI{ namespace UNIV{
         for (size_t i = 0; i < packages.size(); i++)
         {
             if(packages.at(i))
+            {
                 delete packages.at(i);
+                packages.at(i) = nullptr;
+            }
         }
 
         packages.clear();

@@ -119,6 +119,14 @@ namespace CALUMI {
 		{
 			return pImpl->path.has_filename();
 		}
+		PathContainer PathContainer::filename() const
+		{
+			return pImpl->path.filename().c_str();
+		}
+		PathContainer PathContainer::stem() const
+		{
+			return pImpl->path.stem().c_str();
+		}
 		bool PathContainer::has_relativepath() const
 		{
 			return pImpl->path.has_relative_path();
@@ -296,6 +304,10 @@ namespace CALUMI {
 			output += pImpl->string.length();
 			return output;
 		}
+		size_t StringContainer::find(const char* s, size_t pos) const
+		{
+			return pImpl->string.find(s,pos);
+		}
 		int StringContainer::compare(const StringContainer& other, bool caseSensitive) const noexcept
 		{
 			if (!caseSensitive)
@@ -421,12 +433,24 @@ namespace CALUMI {
 			pImpl->vector = source.pImpl->vector;
 		}
 		template<typename T>
+		VectorContainer<T>::VectorContainer(const T* dataBegin, const T* dataEnd)
+		{
+			size_t size = dataEnd - dataBegin + 1;
+			if (size > 0)
+				reserve(size);
+
+			for (size_t i = 0; i < size; i++)
+			{
+				push_back(dataBegin[i]);
+			}
+		}
+		/*template<typename T>
 		VectorContainer<T>::VectorContainer(const StringContainer& source, bool includeNull) noexcept
 		{
 			pImpl = new Impl;
 			pImpl->vector.resize(source.Length(includeNull));
 			std::memcpy(pImpl->vector.data(), source.data(), source.Length());
-		}
+		}*/
 		template<typename T>
 		VectorContainer<T>& VectorContainer<T>::operator=(const VectorContainer<T>& other)
 		{
@@ -669,9 +693,10 @@ namespace CALUMI {
 		struct ExpectedContainer<T, U>::Impl
 		{
 			std::expected<T, U> expected;
+			Impl() = default;
 			Impl(T& tValue)
 			{
-				expected = tValue;
+				expected = std::expected<T,U>(tValue);
 			}
 		};
 
@@ -686,6 +711,12 @@ namespace CALUMI {
 		ExpectedContainer<T, U>::ExpectedContainer(T&& expectedValue) noexcept
 		{
 			pImpl = new Impl(expectedValue);
+		}
+
+		template<typename T, typename U>
+		ExpectedContainer<T, U>::ExpectedContainer()
+		{
+			pImpl = new Impl;
 		}
 
 		template<typename T, typename U>

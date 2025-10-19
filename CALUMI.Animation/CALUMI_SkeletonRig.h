@@ -19,6 +19,9 @@ namespace CALUMI{ namespace UNIV{
 		virtual bool HandleBoneRename(const char* oldBone, const char* newName, size_t idx) = 0;
 		virtual RigPackage* Clone() = 0;
 		virtual Utilities::StringContainer ToJSON(size_t indents) const = 0;
+
+		RigPackage() = default;
+		virtual ~RigPackage();
 	};
 
 	struct CALUMIANIMATION_API RigPackageManager
@@ -61,6 +64,8 @@ namespace CALUMI{ namespace UNIV{
 
 
 		SkeletonBone() = default;
+		SkeletonBone(const SkeletonBone& other);
+		SkeletonBone(const SkeletonBone&& other) noexcept;
 		~SkeletonBone();
 
 		bool SetBoneTypeProperty(UNIV::BoneType boneType, bool resetExisting = false);
@@ -77,6 +82,8 @@ namespace CALUMI{ namespace UNIV{
 		int GetParentBoneIndex() const;
 
 		Utilities::StringContainer ToJSON(size_t indents) const;
+
+		SkeletonBone& operator=(const SkeletonBone& other);
 	};
 
 	struct CALUMIANIMATION_API SkeletonRig

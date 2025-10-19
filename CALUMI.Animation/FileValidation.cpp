@@ -59,9 +59,9 @@ namespace CALUMI {
 
 		//additional common file checks go here
 
-
+		output.SetValue(true);
 		//finally we return that the check was a success
-		return true;
+		return output;
 	}
 
 	/// <summary>
@@ -83,8 +83,8 @@ namespace CALUMI {
 			tempOutput.SetErrorValue(FileError{ FileErrorCode::ReadFailure, inputPath.w_str(), ec.message().c_str() });
 			return tempOutput;
 		}
-
-		return buffer;
+		
+		return Utilities::ExpectedContainer<Utilities::VectorContainer<char>,FileError>(buffer);
 	}
 
 	static std::expected<bool, FileError> _FileExtValidation(const Utilities::PathContainer& inputPath, const Utilities::VectorContainer<Utilities::StringContainer>& fileExtensions, bool allowFiles)
@@ -296,12 +296,13 @@ namespace CALUMI {
 			return tempOutput;
 		}
 		file.close();
-		return Utilities::StringContainer(std::format("Output successful, written to {}", outputPath.c_str()).c_str());
+		return Utilities::ExpectedContainer<Utilities::StringContainer, FileError>(Utilities::StringContainer(std::format("Output successful, written to {}", outputPath.c_str()).c_str()));
 	}
 
 	Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToBinaryFile(const Utilities::PathContainer& outputPath, const Utilities::StringContainer& buffer)
 	{
-		Utilities::VectorContainer<char> vBuffer(buffer, true);
+		Utilities::VectorContainer<char> vBuffer(buffer.data(),buffer.data()+buffer.Length()+1);
+		//vBuffer.push_back('\0');
 
 		return WriteToBinaryFile(outputPath, vBuffer);
 	}

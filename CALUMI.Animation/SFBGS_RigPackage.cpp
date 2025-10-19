@@ -178,6 +178,11 @@ namespace CALUMI {namespace SFBGS{
 		}
 	}
 
+	SFBGS_RigPackage::~SFBGS_RigPackage()
+	{
+
+	}
+
 	bool SFBGS_RigPackage::BoneIsMapped(const char* boneName) const
 	{
 		for (int i = 0; i < SFBGSMAPSIZE; i++)

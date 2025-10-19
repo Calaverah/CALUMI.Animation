@@ -17,7 +17,7 @@ namespace CALUMI { namespace Utilities {
 	{
 		ExpectedContainer(T& expectedValue);
 		ExpectedContainer(T&& expectedValue) noexcept;
-		ExpectedContainer() = default;
+		ExpectedContainer();
 		~ExpectedContainer();
 		void SetErrorValue(U uValue);
 		void SetValue(T tValue);
@@ -46,6 +46,8 @@ namespace CALUMI { namespace Utilities {
 		void Clear();
 		bool Empty();
 		size_t Length(bool includeNull = false) const;
+
+		size_t find(const char* s, size_t pos = 0) const;
 
 		int compare(const StringContainer& other, bool caseSensitive = true) const noexcept;
 		int compare(size_t pos, size_t len, const StringContainer& other) const;
@@ -90,6 +92,8 @@ namespace CALUMI { namespace Utilities {
 
 		bool has_extension() const;
 		bool has_filename() const;
+		PathContainer filename() const;
+		PathContainer stem() const;
 		bool has_relativepath() const;
 		bool has_parentpath() const;
 		PathContainer extension() const;
@@ -142,7 +146,8 @@ namespace CALUMI { namespace Utilities {
 		VectorContainer(const size_t count);
 		VectorContainer(const VectorContainer& source) noexcept;
 		VectorContainer(const VectorContainer&& source) noexcept;
-		VectorContainer(const StringContainer& source, bool inclundeNull = false) noexcept;
+		VectorContainer(const T* dataBegin, const T* dataEnd);
+		//VectorContainer(const StringContainer& source, bool inclundeNull = false) noexcept;
 		VectorContainer& operator= (const VectorContainer& other);
 		void push_back(const T& input);
 		void push_back(const T&& input);

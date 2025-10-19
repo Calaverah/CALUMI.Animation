@@ -338,7 +338,8 @@ namespace CALUMI {namespace SFBGS {
 	}
 	Utilities::ExpectedContainer<bool, FileError> SkeletonRig::ReadFromFile(Utilities::PathContainer& inputFilePath)
 	{
-		auto buffer = CALUMI::ValidateFile(inputFilePath, { ".rig" }, 80, 0, true);
+		Utilities::VectorContainer<Utilities::StringContainer>vec; vec.push_back(".rig");
+		auto buffer = CALUMI::ValidateFile(inputFilePath, vec, 80, 0, true);
 		if (!buffer.has_value())
 		{
 			Utilities::ExpectedContainer<bool, FileError> tempOutput;

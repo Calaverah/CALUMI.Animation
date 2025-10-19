@@ -27,23 +27,33 @@ namespace CALUMI {
 		//Abstract Parent Struct for Bone Type Data. All Types will have an enum informing the user how to cast the child struct.
 		struct CALUMIANIMATION_API BoneTypeProperties
 		{
-			const UNIV::BoneType GetType() const;
+			virtual UNIV::BoneType GetType() const = 0;
 
 			virtual const char* GetTypeString() const = 0;
-
+			BoneTypeProperties() = default;
 			virtual ~BoneTypeProperties() {};
 
-		protected:
-			UNIV::BoneType boneType = UNIV:: BoneType::Default;
+			virtual BoneTypeProperties* Clone() = 0;
+
+		/*protected:
+			UNIV::BoneType boneType = UNIV:: BoneType::Default;*/
 
 		};
 
 		//Default Type
 		struct CALUMIANIMATION_API DefaultBoneProperties : BoneTypeProperties
 		{
-			DefaultBoneProperties();
+			DefaultBoneProperties() = default;
 			~DefaultBoneProperties() override {};
 			const char* GetTypeString() const override;
+
+			// Inherited via BoneTypeProperties
+			UNIV::BoneType GetType() const override;
+			
+
+			// Inherited via BoneTypeProperties
+			BoneTypeProperties* Clone() override;
+
 		};
 
 		//Basic Twist Type
@@ -54,10 +64,16 @@ namespace CALUMI {
 			float twistDriverWeight = 0.0f;
 
 
-			TwistBoneProperties();
+			TwistBoneProperties() = default;
 			~TwistBoneProperties() override {};
 
 			const char* GetTypeString() const override;
+
+			// Inherited via BoneTypeProperties
+			UNIV::BoneType GetType() const override;
+
+			// Inherited via BoneTypeProperties
+			BoneTypeProperties* Clone() override;
 		};
 
 }}
