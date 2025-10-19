@@ -24,8 +24,15 @@ namespace CALUMI{namespace UNIV{
 		bool RemoveAnimationFromScene(Utilities::StringContainer& sceneToRemove);
 		bool RemoveAnimationFromScene(unsigned int idx);
 		
-		Utilities::ExpectedConatiner<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension);
+		Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension);
 		Utilities::StringContainer ToJSON(size_t indents) const;
+
+		AnimationScene() = default;
+		AnimationScene(const Utilities::StringContainer& sceneName)
+			: sceneName(sceneName) {}
+		AnimationScene(const char* sceneName)
+			: sceneName(sceneName) {
+		}
 	};
 
 	

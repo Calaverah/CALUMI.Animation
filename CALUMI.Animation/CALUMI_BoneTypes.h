@@ -51,7 +51,7 @@ namespace CALUMI {
 		{
 
 			int32_t twistDriverIndex = -1;
-			float twistDriverWeight = 0.0;
+			float twistDriverWeight = 0.0f;
 
 
 			TwistBoneProperties();

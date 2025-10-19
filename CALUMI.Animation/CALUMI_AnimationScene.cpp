@@ -23,11 +23,13 @@ namespace CALUMI {
         }
         Animation* GetAnimationC(AnimationScene* source, int index, Utilities::StringContainer* errorMessage)
         {
-            errorMessage->Clear();
+            Utilities::StringContainer tempErrorMessage;
+            Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+            errorMessageHolder->Clear();
 
             if(source->animations.size()<=index)
             {
-                *errorMessage += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
+                *errorMessageHolder += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
                 return nullptr;
             }
             return &source->animations.at(index);
@@ -57,25 +59,32 @@ namespace CALUMI {
         }
         bool UNIV::AddRigToAnimationSceneC(AnimationScene* scene, SkeletonRig* rig, Utilities::StringContainer* errorMessage)
         {
-            errorMessage->Clear();
+            Utilities::StringContainer tempErrorMessage;
+            Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+            errorMessageHolder->Clear();
 
             if (rig->boneEntries.empty())
             {
-                *errorMessage += "[CALUMI.Animation API] No Bone Entries Found In Rig!";
+                *errorMessageHolder += "[CALUMI.Animation API] No Bone Entries Found In Rig!";
                 return false;
             }
             scene->rig = *rig;
-            rig = nullptr;
-            *errorMessage += "[CALUMI.Animation API] Rig Data Transferred Successfully. Original Ptr Set To Null!";
+            
+            if (rig)
+                delete rig;
+
+            *errorMessageHolder += "[CALUMI.Animation API] Rig Data Copied Successfully. Original Rig Has Been Deleted!";
             return true;
         }
         bool UNIV::AddAnimationToAnimationSceneC(AnimationScene* scene, Animation* animation, bool overwrite, Utilities::StringContainer* errorMessage)
         {
-            errorMessage->Clear();
+            Utilities::StringContainer tempErrorMessage;
+            Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+            errorMessageHolder->Clear();
 
             if (animation->animationTitle == "")
             {
-                *errorMessage += "[CALUMI.Animation API] Must Have Animation Title!";
+                *errorMessageHolder += "[CALUMI.Animation API] Must Have Animation Title!";
                 return false;
             }
             for (unsigned int i =0; i<scene->animations.size(); i++)
@@ -84,7 +93,7 @@ namespace CALUMI {
                 {
                     if(!overwrite)
                     {
-                        *errorMessage += "[CALUMI.Animation API] Animation Titles Must Be Unique!";
+                        *errorMessageHolder += "[CALUMI.Animation API] Animation Titles Must Be Unique!";
                         return false;
                     }
                     else
@@ -96,9 +105,10 @@ namespace CALUMI {
                 }
             }
             scene->animations.push_back(*animation);
-            delete animation;
+            if(animation)
+                delete animation;
 
-            *errorMessage += "[CALUMI.Animation API] Animation Data Copied Into Animation Vector Successfully. Original Ptr Has Been Deleted!";
+            *errorMessageHolder += "[CALUMI.Animation API] Animation Data Copied Into Animation Vector Successfully. Original Ptr Has Been Deleted!";
             return true;
         }
         
@@ -142,7 +152,7 @@ namespace CALUMI {
             return true;
         }
 
-        Utilities::ExpectedConatiner<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> AnimationScene::GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension)
+        Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> AnimationScene::GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension)
         {
             Utilities::VectorContainer<Utilities::PathContainer> animationFilePaths;
             animationFilePaths.reserve(animations.size());
@@ -150,7 +160,7 @@ namespace CALUMI {
             {
                 if (animations.at(i).animationTitle.Empty())
                 {
-                    Utilities::ExpectedConatiner<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> tempOutput;
+                    Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> tempOutput;
                     tempOutput.SetErrorValue("[CALUMI.Animation API] Empty string found for Animation Title");
                     return tempOutput;
                 }
@@ -188,4 +198,3 @@ namespace CALUMI {
 
     }
 }
-

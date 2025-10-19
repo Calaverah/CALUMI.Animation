@@ -223,7 +223,7 @@ namespace CALUMI{
 
 		//Animation Defs
 
-		unsigned short Animation::_SumIndices(Utilities::VectorContainer<unsigned short>inputVector, indexCountingSolution type)
+		unsigned short Animation::_SumIndices(Utilities::VectorContainer<unsigned short>inputVector, IndexCountingSolution type)
 		{
 			unsigned short sum = 0;
 			for (int i = 0; i < inputVector.size(); i++)
@@ -255,18 +255,18 @@ namespace CALUMI{
 			_headerFlags = newFlags;
 		}
 
-		Utilities::ExpectedConatiner<bool, FileError> Animation::ReadFromFile(const wchar_t* inputFilePath)
+		Utilities::ExpectedContainer<bool, FileError> Animation::ReadFromFile(const wchar_t* inputFilePath)
 		{
 			Utilities::PathContainer output(inputFilePath);
 			return ReadFromFile(output);
 		}
-		Utilities::ExpectedConatiner<bool, FileError> Animation::ReadFromFile(Utilities::PathContainer& inputFilePath)
+		Utilities::ExpectedContainer<bool, FileError> Animation::ReadFromFile(Utilities::PathContainer& inputFilePath)
 		{
 			//Check to see if file exists and is valid
 			auto buffer = CALUMI::ValidateFile(inputFilePath, { ".af" }, 64, 0, true);
 			if (!buffer.has_value())
 			{
-				Utilities::ExpectedConatiner<bool, FileError> tempOutput;
+				Utilities::ExpectedContainer<bool, FileError> tempOutput;
 				tempOutput.SetErrorValue(buffer.error());
 				return tempOutput;
 			}
@@ -279,8 +279,8 @@ namespace CALUMI{
 
 			//Evaluate header
 			{
-				std::memcpy(&HeaderStart, &buffer.value().at(addressIndex), sizeof(HeaderStart));
-				addressIndex += sizeof(HeaderStart);
+				std::memcpy(&_headerStart, &buffer.value().at(addressIndex), sizeof(_headerStart));
+				addressIndex += sizeof(_headerStart);
 
 				char flagBuff[4] = {};
 				std::memcpy(&flagBuff, &buffer.value().at(addressIndex), sizeof(flagBuff));
@@ -331,14 +331,14 @@ namespace CALUMI{
 			}
 
 			//Animation Blocks
-			/*unsigned short animationBlockCount = _SumIndices(_indexAtlas, indexCountingSolution::odd);
+			/*unsigned short animationBlockCount = _SumIndices(_indexAtlas, IndexCountingSolution::odd);
 			animationBlocks.reserve(animationBlockCount);
 			for (unsigned short i = 0; i < animationBlockCount; i++)
 			{
 				animationBlocks.push_back(AnimationBlock(buffer.value(), addressIndex, _headerFlags));
 			}*/
 			unsigned short j = 0; unsigned short k = 0;
-			for (unsigned short i = 0; i < _SumIndices(_indexAtlas, indexCountingSolution::all); i++)
+			for (unsigned short i = 0; i < _SumIndices(_indexAtlas, IndexCountingSolution::all); i++)
 			{
 				if (k >= _indexAtlas.at(j))
 				{
@@ -386,7 +386,7 @@ namespace CALUMI{
 			return true;
 		}
 
-		Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> Animation::WriteToFile(Utilities::PathContainer& outputFilePath)
+		Utilities::ExpectedContainer<Utilities::StringContainer, FileError> Animation::WriteToFile(Utilities::PathContainer& outputFilePath)
 		{
 			//D:/ModOrganizer/Starfield_Mod_Authoring_01/mods/ExtractedData/meshes/actors/human/animations/scenes/mq101_001_miningscene/female/animstart_lin.af has the largest size of 780896 bytes
 
@@ -401,8 +401,8 @@ namespace CALUMI{
 			//Header Section
 			{
 				buffer.insert(buffer.end(), 64, 0); //Prepares empty entries for the header. Header is always 64 bytes long as of file version 05
-				std::memcpy(&buffer.at(addressIndex), &HeaderStart, sizeof(HeaderStart));
-				addressIndex += sizeof(HeaderStart);
+				std::memcpy(&buffer.at(addressIndex), &_headerStart, sizeof(_headerStart));
+				addressIndex += sizeof(_headerStart);
 				
 				std::memcpy(&buffer.at(addressIndex),&_headerFlags, sizeof(_headerFlags));
 				addressIndex += sizeof(_headerFlags);
@@ -442,7 +442,7 @@ namespace CALUMI{
 			}
 
 			//Animation Blocks
-			unsigned short animationBlockCount = _SumIndices(_indexAtlas, indexCountingSolution::odd);
+			unsigned short animationBlockCount = _SumIndices(_indexAtlas, IndexCountingSolution::odd);
 			for (unsigned short i = 0; i < animationBlockCount; i++)
 			{
 				animationBlocks.at(i).SerializeIntoBuffer(buffer,addressIndex,_headerFlags);
@@ -473,7 +473,7 @@ namespace CALUMI{
 			return CALUMI::WriteToBinaryFile(outputFilePath, buffer);
 		}
 
-		Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> Animation::WriteToFile(const wchar_t* outputFilePath)
+		Utilities::ExpectedContainer<Utilities::StringContainer, FileError> Animation::WriteToFile(const wchar_t* outputFilePath)
 		{
 			Utilities::PathContainer output(outputFilePath);
 			return WriteToFile(output);

@@ -17,6 +17,7 @@ namespace CALUMI{ namespace UNIV{
 	{
 		virtual const char* GetPackageType() const = 0;
 		virtual bool HandleBoneRename(const char* oldBone, const char* newName, size_t idx) = 0;
+		virtual RigPackage* Clone() = 0;
 		virtual Utilities::StringContainer ToJSON(size_t indents) const = 0;
 	};
 
@@ -33,6 +34,8 @@ namespace CALUMI{ namespace UNIV{
 		bool AddPackage(RigPackage* package, bool overwrite = true);
 
 		Utilities::StringContainer ToJSON(size_t indents) const;
+		bool HandleBoneRename(const char* oldBone, const char* newName, size_t idx);
+		RigPackageManager& operator=(const RigPackageManager& other);
 	};
 
 	struct CALUMIANIMATION_API SkeletonBone
@@ -60,7 +63,7 @@ namespace CALUMI{ namespace UNIV{
 		SkeletonBone() = default;
 		~SkeletonBone();
 
-		bool SetBoneTypeProperty(UNIV::BoneType boneType, bool reset = false);
+		bool SetBoneTypeProperty(UNIV::BoneType boneType, bool resetExisting = false);
 		const BoneTypeProperties* GetBoneTypeProperty();
 		bool ResetBoneTypeProperty(UNIV::BoneType boneType = UNIV::BoneType::Default);
 
@@ -89,8 +92,8 @@ namespace CALUMI{ namespace UNIV{
 		SkeletonRig() = default;
 		SkeletonRig(const char* rigName);
 		SkeletonRig(Utilities::StringContainer& rigName);
-		Utilities::ExpectedConatiner< bool, Utilities::StringContainer> ValidateNames() const;
-		Utilities::ExpectedConatiner< bool, Utilities::StringContainer> ValidateParentIndices();
+		Utilities::ExpectedContainer< bool, Utilities::StringContainer> ValidateNames() const;
+		Utilities::ExpectedContainer< bool, Utilities::StringContainer> ValidateParentIndices();
 
 		/// <summary>
 		/// The proper way to add bones to a universal rig definition.
@@ -137,10 +140,12 @@ namespace CALUMI{ namespace UNIV{
 		size_t GetAnimatedBoneCount();
 		size_t GetBoneCount() const;
 		
-		Utilities::ExpectedConatiner<size_t, Utilities::StringContainer> GetBoneIndex(Utilities::StringContainer boneName);
+		Utilities::ExpectedContainer<size_t, Utilities::StringContainer> GetBoneIndex(Utilities::StringContainer boneName);
 
 		Utilities::StringContainer ToJSON(size_t indents) const;
 		static const unsigned int MaxBoneCount = 512;
+
+		SkeletonRig& operator=(const SkeletonRig& other);
 	};
 
 	extern  "C" {
@@ -186,7 +191,7 @@ namespace CALUMI{ namespace UNIV{
 		CALUMIANIMATION_API const char* GetSkeletonBoneNameC(SkeletonBone* source);
 		CALUMIANIMATION_API int GetSkeletonBoneParentIndexC(SkeletonBone* source);
 		CALUMIANIMATION_API CALUMI::Math::Quaternion* GetSkeletonBoneRotationC(SkeletonBone* source, bool global);
-		CALUMIANIMATION_API CALUMI::Math::Vector3* GetSkeletonBoneTranslationC(SkeletonBone* source, bool global);
+		CALUMIANIMATION_API CALUMI::Math::Vector3* GetSkeletonBonePositionC(SkeletonBone* source, bool global);
 		CALUMIANIMATION_API bool ValidateSkeletonRigNamesC(SkeletonRig* source, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API bool ValidateSkeletonRigParentIndicesC(SkeletonRig* source, Utilities::StringContainer* errorMessage);
 	}

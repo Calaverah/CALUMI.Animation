@@ -153,11 +153,36 @@ namespace CALUMI {namespace SFBGS{
 		return output;
 	}
 
+	SFBGS_RigPackage::SFBGS_RigPackage(const SFBGS_RigPackage& source)
+	{
+		highPrecisionValue = source.highPrecisionValue;
+		lowPrecisionValue = source.lowPrecisionValue;
+		isMannequin = source.isMannequin;
+
+		for (size_t i = 0; i < SFBGSMAPSIZE; i++)
+		{
+			rigMap[i] = source.rigMap[i];
+		}
+
+	}
+
+	SFBGS_RigPackage::SFBGS_RigPackage(const SFBGS_RigPackage&& source) noexcept
+	{
+		highPrecisionValue = source.highPrecisionValue;
+		lowPrecisionValue = source.lowPrecisionValue;
+		isMannequin = source.isMannequin;
+
+		for (size_t i = 0; i < SFBGSMAPSIZE; i++)
+		{
+			rigMap[i] = source.rigMap[i];
+		}
+	}
+
 	bool SFBGS_RigPackage::BoneIsMapped(const char* boneName) const
 	{
 		for (int i = 0; i < SFBGSMAPSIZE; i++)
 		{
-			if (strcmp(rigMap.boneNameList[i].c_str(), boneName))
+			if (strcmp(rigMap[i].c_str(), boneName))
 			{
 				return true;
 			}
@@ -170,7 +195,7 @@ namespace CALUMI {namespace SFBGS{
 		if (!BoneTagExists(key) || static_cast<uint8_t>(key) >= SFBGSMAPSIZE)
 			return false;
 
-		return !rigMap.boneNameList[static_cast<uint8_t>(key)].Empty();
+		return !rigMap[static_cast<uint8_t>(key)].Empty();
 	}
 
 	bool SFBGS_RigPackage::AddBoneToMap(BoneMapKey key, const char* boneName, bool overwrite)
@@ -178,7 +203,7 @@ namespace CALUMI {namespace SFBGS{
 		if (!BoneTagExists(key) || static_cast<uint8_t>(key) >= SFBGSMAPSIZE)
 			return false;
 
-		if (BoneIsMapped(boneName))
+		if (BoneIsMapped(boneName) || KeyIsMapped(key))
 		{
 			if (!overwrite)
 				return false;
@@ -186,7 +211,7 @@ namespace CALUMI {namespace SFBGS{
 			RemoveBoneFromMap(boneName);
 		}
 
-		rigMap.boneNameList[static_cast<uint8_t>(key)] = boneName;
+		rigMap[static_cast<uint8_t>(key)] = boneName;
 		return true;
 	}
 
@@ -200,7 +225,7 @@ namespace CALUMI {namespace SFBGS{
 		if (!BoneTagExists(key) || static_cast<uint8_t>(key) >= SFBGSMAPSIZE)
 			return false;
 
-		rigMap.boneNameList[static_cast<uint8_t>(key)].Clear();
+		rigMap[static_cast<uint8_t>(key)].Clear();
 		return true;
 	}
 
@@ -209,11 +234,25 @@ namespace CALUMI {namespace SFBGS{
 		return	RemoveBoneFromMap(GetBoneKey(boneName));
 	}
 
+	SFBGS_RigPackage& SFBGS_RigPackage::operator=(const SFBGS_RigPackage& other)
+	{
+		lowPrecisionValue = other.lowPrecisionValue;
+		highPrecisionValue = other.highPrecisionValue;
+		
+		for (int i = 0; i < SFBGSMAPSIZE; i++)
+		{
+			rigMap[i] = other.rigMap[i];
+		}
+
+		isMannequin = other.isMannequin;
+		return *this;
+	}
+
 	BoneMapKey SFBGS_RigPackage::GetBoneKey(const char* boneName) const
 	{
 		for (int i = 0; i < SFBGSMAPSIZE; i++)
 		{
-			if (strcmp(rigMap.boneNameList[i].c_str(), boneName))
+			if (strcmp(rigMap[i].c_str(), boneName))
 			{
 				return (BoneMapKey)i;
 			}
@@ -223,12 +262,38 @@ namespace CALUMI {namespace SFBGS{
 		return BoneMapKey::None;
 	}
 
-	Utilities::StringContainer SFBGS_RigPackage::GetBoneNameFromKey(BoneMapKey key)
+	const char* SFBGS_RigPackage::GetBoneNameFromKey(BoneMapKey key)
 	{
 		if(!KeyIsMapped(key))
 			return "";
 
-		return rigMap.boneNameList[static_cast<uint8_t>(key)];
+		return rigMap[static_cast<uint8_t>(key)].c_str();
+	}
+
+	void SFBGS_RigPackage::SetPrecisionValues(PrecisionSet setting, float custom1, float custom2)
+	{
+		switch (setting)
+		{
+		case CALUMI::SFBGS::PrecisionSet::Default:
+			highPrecisionValue = SFBGSDefaultPrecision.first;
+			lowPrecisionValue = SFBGSDefaultPrecision.second;
+			break;
+		case CALUMI::SFBGS::PrecisionSet::FirstPerson:
+			highPrecisionValue = SFBGSFirstPersonPrecision.first;
+			lowPrecisionValue = SFBGSFirstPersonPrecision.second;
+			break;
+		case CALUMI::SFBGS::PrecisionSet::Ship:
+			highPrecisionValue = SFBGSShipPrecision.first;
+			lowPrecisionValue = SFBGSShipPrecision.second;
+			break;
+		case CALUMI::SFBGS::PrecisionSet::Custom:
+			highPrecisionValue = custom1 < custom2 ? custom1 : custom2;
+			lowPrecisionValue = highPrecisionValue == custom1 ? custom2 : custom1;
+			break;
+		default:
+			break;
+		}
+
 	}
 
 
@@ -244,9 +309,9 @@ namespace CALUMI {namespace SFBGS{
 	{
 		for (int i = 0; i < SFBGSMAPSIZE; i++)
 		{
-			if (rigMap.boneNameList[i].compare(oldBone), false)
+			if (rigMap[i].compare(oldBone), false)
 			{
-				rigMap.boneNameList[i] = newName;
+				rigMap[i] = newName;
 				return true;
 			}
 		}
@@ -254,48 +319,58 @@ namespace CALUMI {namespace SFBGS{
 		return false;
 	}
 
+	UNIV::RigPackage* SFBGS_RigPackage::Clone()
+	{
+		return new SFBGS_RigPackage(*this);
+	}
+
 
 
 #pragma region ExternC
 	bool SFBGSRigPackage_AddPackageToSkeletonRigC(UNIV::SkeletonRig* rig, Utilities::StringContainer* errorMessage, bool overwrite)
 	{
-		errorMessage->Clear();
+		Utilities::StringContainer tempErrorMessage;
+		Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+		errorMessageHolder->Clear();
+
+		*errorMessageHolder += "[CALUMI.Animation API] ";
+		*errorMessageHolder += SFBGS_RIG_PACKAGE;
 
 		if (CreateNewSFBGSRigPackage(*rig, overwrite))
 		{
-			*errorMessage += "[CALUMI.Animation API] ";
-			*errorMessage += SFBGS_RIG_PACKAGE;
-			*errorMessage += " Successfully Added To";
-			*errorMessage += rig->rigName;
+			*errorMessageHolder += " Successfully Added To";
+			*errorMessageHolder += rig->rigName;
 			return true;
 		}
+		else
 		{
-			*errorMessage += "[CALUMI.Animation API] ";
-			*errorMessage += SFBGS_RIG_PACKAGE;
-			*errorMessage += " Was Not Added To ";
-			*errorMessage += rig->rigName;
-			*errorMessage += ", It May Already Exist And Was Not Set To Overwrite";
+			*errorMessageHolder += " Was Not Added To ";
+			*errorMessageHolder += rig->rigName;
+			*errorMessageHolder += ", It May Already Exist And Was Not Set To Overwrite";
 		}
 		return false;
 
 	}
 	bool SFBGSRigPackage_RemoveRigPackageFromSkeletonRigC(UNIV::SkeletonRig* rig, Utilities::StringContainer* errorMessage)
 	{
+		Utilities::StringContainer tempErrorMessage;
+		Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+		errorMessageHolder->Clear();
+
+		*errorMessageHolder += "[CALUMI.Animation API] ";
+		*errorMessageHolder += SFBGS_RIG_PACKAGE;
+
 		if (RemoveSFBGSRigPackage(*rig))
-		{
-			*errorMessage += "[CALUMI.Animation API] ";
-			*errorMessage += SFBGS_RIG_PACKAGE;
-			*errorMessage += " Successfully Removed From ";
-			*errorMessage += rig->rigName;
+		{	
+			*errorMessageHolder += " Successfully Removed From ";
+			*errorMessageHolder += rig->rigName;
 			return true;
 		}
-
+		else
 		{
-			*errorMessage += "[CALUMI.Animation API] ";
-			*errorMessage += SFBGS_RIG_PACKAGE;
-			*errorMessage += " Was Not Removed From ";
-			*errorMessage += rig->rigName;
-			*errorMessage += ", It Either Does Not Exist Or Is Mislabeled";
+			*errorMessageHolder += " Was Not Removed From ";
+			*errorMessageHolder += rig->rigName;
+			*errorMessageHolder += ", It Either Does Not Exist Or Is Mislabeled";
 		}
 		return false;
 	}
@@ -320,12 +395,14 @@ namespace CALUMI {namespace SFBGS{
 
 	CALUMIANIMATION_API bool SFBGSRigPackage_AddBoneNameToMapC(UNIV::SkeletonRig* rig, uint8_t key, const char* boneName, Utilities::StringContainer* errorMessage, bool overwrite)
 	{
-		errorMessage->Clear();
+		Utilities::StringContainer tempErrorMessage;
+		Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+		errorMessageHolder->Clear();
 		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
 		
 		if (!rigPackage->AddBoneToMap(static_cast<BoneMapKey>(key), boneName, overwrite))
 		{
-			*errorMessage += std::format("[CALUMI.Animation API] Bone: {} Could Not Be Added To SFBGS Rigmap On Rig: {}",boneName,rig->rigName.c_str()).c_str();
+			*errorMessageHolder += std::format("[CALUMI.Animation API] Bone: {} Could Not Be Added To SFBGS Rigmap On Rig: {}",boneName,rig->rigName.c_str()).c_str();
 			return false;
 		}
 
@@ -370,7 +447,7 @@ namespace CALUMI {namespace SFBGS{
 
 		if (!rigPackage) return "";
 
-		return (rigPackage->GetBoneNameFromKey(static_cast<BoneMapKey>(key)).c_str());
+		return rigPackage->GetBoneNameFromKey(static_cast<BoneMapKey>(key));
 	}
 
 	bool SFBGSRigPackage_SetMannequinC(UNIV::SkeletonRig* rig, bool isMannequin)
@@ -382,6 +459,39 @@ namespace CALUMI {namespace SFBGS{
 		rigPackage->isMannequin = isMannequin;
 
 		return true;
+	}
+
+	size_t SFBGSRigPackage_GetRigMapSize()
+	{
+		return SFBGSMAPSIZE;
+	}
+
+	void SFBGSRigPackage_SetPrecisionToDefaultC(UNIV::SkeletonRig* rig)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+		if (rigPackage)
+			rigPackage->SetPrecisionValues(PrecisionSet::Default);
+	}
+
+	void SFBGSRigPackage_SetPrecisionToFirstPersonC(UNIV::SkeletonRig* rig)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+		if (rigPackage) 
+			rigPackage->SetPrecisionValues(PrecisionSet::FirstPerson);
+	}
+
+	void SFBGSRigPackage_SetPrecisionToShipValuesC(UNIV::SkeletonRig* rig)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+		if (rigPackage)
+			rigPackage->SetPrecisionValues(PrecisionSet::Ship);
+	}
+
+	void SFBGSRigPackage_SetPrecisionToCustomC(UNIV::SkeletonRig* rig, float custom1, float custom2)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+		if (rigPackage)
+			rigPackage->SetPrecisionValues(PrecisionSet::Custom, custom1, custom2);
 	}
 
 #pragma endregion

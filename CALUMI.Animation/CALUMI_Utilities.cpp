@@ -666,7 +666,7 @@ namespace CALUMI {
 #pragma region ExpectedContainer
 
 		template<typename T, typename U>
-		struct ExpectedConatiner<T, U>::Impl
+		struct ExpectedContainer<T, U>::Impl
 		{
 			std::expected<T, U> expected;
 			Impl(T& tValue)
@@ -677,51 +677,51 @@ namespace CALUMI {
 
 
 		template<typename T, typename U>
-		ExpectedConatiner<T, U>::ExpectedConatiner(T& expectedValue)
+		ExpectedContainer<T, U>::ExpectedContainer(T& expectedValue)
 		{
 			pImpl = new Impl(expectedValue);
 		}
 
 		template<typename T, typename U>
-		ExpectedConatiner<T, U>::ExpectedConatiner(T&& expectedValue) noexcept
+		ExpectedContainer<T, U>::ExpectedContainer(T&& expectedValue) noexcept
 		{
 			pImpl = new Impl(expectedValue);
 		}
 
 		template<typename T, typename U>
-		bool ExpectedConatiner<T, U>::has_value() const noexcept
+		bool ExpectedContainer<T, U>::has_value() const noexcept
 		{
 			return pImpl->expected.has_value();
 		}
 		template<typename T, typename U>
-		U& ExpectedConatiner<T, U>::error() const
+		U& ExpectedContainer<T, U>::error() const
 		{
 			return pImpl->expected.error();
 		}
 		template<typename T, typename U>
-		T& ExpectedConatiner<T, U>::value() const
+		T& ExpectedContainer<T, U>::value() const
 		{
 			return pImpl->expected.value();
 		}
 
 		template<typename T, typename U>
-		ExpectedConatiner<T, U>::~ExpectedConatiner()
+		ExpectedContainer<T, U>::~ExpectedContainer()
 		{
 			if (pImpl)
 				delete pImpl;
 		}
 		/*template<typename T, typename U>
-		void ExpectedConatiner<T, U>::SetErrorValue_R(const U& uValue)
+		void ExpectedContainer<T, U>::SetErrorValue_R(const U& uValue)
 		{
 			pImpl->expected = std::unexpected(uValue);
 		}*/
 		template<typename T, typename U>
-		void ExpectedConatiner<T, U>::SetErrorValue(U uValue)
+		void ExpectedContainer<T, U>::SetErrorValue(U uValue)
 		{
 			pImpl->expected = std::unexpected(uValue);
 		}
 		template<typename T, typename U>
-		void ExpectedConatiner<T, U>::SetValue(T tValue)
+		void ExpectedContainer<T, U>::SetValue(T tValue)
 		{
 			pImpl->expected = tValue;
 		}

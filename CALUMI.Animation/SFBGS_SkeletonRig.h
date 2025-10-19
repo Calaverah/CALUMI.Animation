@@ -14,6 +14,11 @@
 
 namespace CALUMI {namespace SFBGS {
 
+	//Fwd Declaring for friend function
+	struct SkeletonRig;
+	SkeletonRig ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig);
+	CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(CALUMI::SFBGS::SkeletonRig& inputRig);
+
 	enum class BoneType : int32_t
 	{
 		Default		= -1,
@@ -73,11 +78,13 @@ namespace CALUMI {namespace SFBGS {
 		UNIV::BoneType GetBoneTypeAsUNIVEnum();
 		const char* GetBoneTypeAsString();
 
-		//CONVERSION ONLY
+		
+		
+	private:
+		//CONVERSION ONLY, DOES NOT ADD MQN TWIST INDEX
 		bool SetBoneTypeFromUNIV(UNIV::SkeletonBone& univBone);
 		bool SetBoneTypeToUNIV(UNIV::SkeletonBone& univBone);
-
-	private:
+		
 		/// <summary>
 		/// Always -1
 		/// </summary>
@@ -86,6 +93,9 @@ namespace CALUMI {namespace SFBGS {
 		/// Always 0
 		/// </summary>
 		int32_t _pad02 = 0; 
+
+		friend SkeletonRig CALUMI::SFBGS::ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig);
+		friend CALUMI::UNIV::SkeletonRig CALUMI::SFBGS::ConvertToUniversalRig(CALUMI::SFBGS::SkeletonRig& inputRig);
 	};
 
 
@@ -101,7 +111,7 @@ namespace CALUMI {namespace SFBGS {
 		/// <summary>
 		/// Currently the only value seen is 0x50 (80)
 		/// </summary>
-		int headerSize = 0x50;
+		unsigned int headerSize = 0x50;
 
 		_PRIVATE_(headerEmpty01)
 		/// <summary>
@@ -151,10 +161,10 @@ namespace CALUMI {namespace SFBGS {
 		bool IsMarkedMannequin() const;
 
 		// Inherited via ReadWritable
-		Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
-		Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(const wchar_t* inputFilePath);
-		Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
-		Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(const wchar_t* outputFilePath);
+		Utilities::ExpectedContainer<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
+		Utilities::ExpectedContainer<bool, FileError> ReadFromFile(const wchar_t* inputFilePath);
+		Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
+		Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToFile(const wchar_t* outputFilePath);
 
 	private:
 		/// <summary>
@@ -174,8 +184,7 @@ namespace CALUMI {namespace SFBGS {
 		//DEBUG FUNCTIONS
 		uint8_t DEBUG_CheckAssumedHeaderEntries();
 	};
-	SkeletonRig ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig, float& highPrecision, float& lowPrecision);
-	CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(CALUMI::SFBGS::SkeletonRig& inputRig);
+	
 
 #pragma warning(disable: 4661)
 	template struct CALUMIANIMATION_API Utilities::VectorContainer <SkeletonBone>;

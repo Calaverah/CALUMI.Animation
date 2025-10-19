@@ -229,26 +229,26 @@ namespace CALUMI {namespace SFBGS {
 		return output;
 	}
 
-	//Simple Rig Implementation For Now
-	SkeletonRig ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig, float& highPrecision, float& lowPrecision)
+	SkeletonRig ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig)
 	{
 		SkeletonRig output;
 		auto stringResult = CreateStringVectorFromRig(inputRig);
 
-		auto sfbgsRigPackage = dynamic_cast<SFBGS_RigPackage*>(inputRig.rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+		auto sfbgsRigPackagePtr = dynamic_cast<SFBGS_RigPackage*>(inputRig.rigPackageManager.GetPackage(SFBGS_RIG_PACKAGE));
+		SFBGS_RigPackage sfbgsRigPackage;
 		bool isMarkedMannequin = false;
-		if (sfbgsRigPackage)
+		if (sfbgsRigPackagePtr)
 		{
-			if (sfbgsRigPackage->isMannequin)
-				isMarkedMannequin = true;
+			sfbgsRigPackage = *sfbgsRigPackagePtr;
 		}
+
+		isMarkedMannequin = sfbgsRigPackage.isMannequin;
+		output.lowPrecision = sfbgsRigPackage.lowPrecisionValue;
+		output.highPrecision = sfbgsRigPackage.highPrecisionValue;
 
 		output.fileSize += static_cast<unsigned int>(stringResult.GetFinalOffset());
 		output.boneMapOffset += static_cast<unsigned int>(80 + 96 * inputRig.boneEntries.size());
 		output.fileSize += output.boneMapOffset + sizeof(output.boneMapArray);
-
-		output.lowPrecision = lowPrecision;
-		output.highPrecision = highPrecision;
 
 		output.boneCount = static_cast<uint16_t>(inputRig.boneEntries.size());
 		output.boneCount_Animated = output.boneCount;
@@ -315,11 +315,14 @@ namespace CALUMI {namespace SFBGS {
 			}
 			if (inputRig.IsMarkedMannequin())
 				sfbgsRigPackage->isMannequin = true;
+
+			sfbgsRigPackage->highPrecisionValue = inputRig.highPrecision;
+			sfbgsRigPackage->lowPrecisionValue = inputRig.lowPrecision;
 		}
 
 		return output;
 	}
-	Utilities::ExpectedConatiner<bool, FileError> SkeletonRig::ReadFromFile(const wchar_t* inputFilePath)
+	Utilities::ExpectedContainer<bool, FileError> SkeletonRig::ReadFromFile(const wchar_t* inputFilePath)
 	{
 		Utilities::PathContainer output(inputFilePath);
 		return ReadFromFile(output);
@@ -333,12 +336,12 @@ namespace CALUMI {namespace SFBGS {
 		}
 		return false;
 	}
-	Utilities::ExpectedConatiner<bool, FileError> SkeletonRig::ReadFromFile(Utilities::PathContainer& inputFilePath)
+	Utilities::ExpectedContainer<bool, FileError> SkeletonRig::ReadFromFile(Utilities::PathContainer& inputFilePath)
 	{
 		auto buffer = CALUMI::ValidateFile(inputFilePath, { ".rig" }, 80, 0, true);
 		if (!buffer.has_value())
 		{
-			Utilities::ExpectedConatiner<bool, FileError> tempOutput;
+			Utilities::ExpectedContainer<bool, FileError> tempOutput;
 			tempOutput.SetErrorValue(buffer.error());
 			return tempOutput;
 		}
@@ -431,13 +434,13 @@ namespace CALUMI {namespace SFBGS {
 		return true;
 	}
 	
-	Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> SkeletonRig::WriteToFile(const wchar_t* outputFilePath)
+	Utilities::ExpectedContainer<Utilities::StringContainer, FileError> SkeletonRig::WriteToFile(const wchar_t* outputFilePath)
 	{
 		Utilities::PathContainer output(outputFilePath);
 		return WriteToFile(output);
 	}
 
-	Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> SkeletonRig::WriteToFile(Utilities::PathContainer& outputFilePath)
+	Utilities::ExpectedContainer<Utilities::StringContainer, FileError> SkeletonRig::WriteToFile(Utilities::PathContainer& outputFilePath)
 	{
 		//LARGEST FILE: "D:/ModOrganizer/Starfield_Mod_Authoring_01/mods/ExtractedData/meshes/furniture/armillary/characterassets/skeleton.rig" at 18301 bytes
 

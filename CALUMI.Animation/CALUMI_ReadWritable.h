@@ -10,8 +10,8 @@
 namespace CALUMI {
 	class CALUMIANIMATION_API ReadWritable
 	{
-		virtual Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) = 0;
-		virtual Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) = 0;
+		virtual Utilities::ExpectedContainer<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) = 0;
+		virtual Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) = 0;
 	};
 }
 

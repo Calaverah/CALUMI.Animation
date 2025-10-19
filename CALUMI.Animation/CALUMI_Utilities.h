@@ -13,12 +13,12 @@ namespace CALUMI { namespace Utilities {
 	
 
 	template<typename T, typename U>
-	struct CALUMIANIMATION_API ExpectedConatiner
+	struct CALUMIANIMATION_API ExpectedContainer
 	{
-		ExpectedConatiner(T& expectedValue);
-		ExpectedConatiner(T&& expectedValue) noexcept;
-		ExpectedConatiner() = default;
-		~ExpectedConatiner();
+		ExpectedContainer(T& expectedValue);
+		ExpectedContainer(T&& expectedValue) noexcept;
+		ExpectedContainer() = default;
+		~ExpectedContainer();
 		void SetErrorValue(U uValue);
 		void SetValue(T tValue);
 
@@ -207,14 +207,14 @@ namespace CALUMI { namespace Utilities {
 	template struct CALUMIANIMATION_API VectorContainer<StringContainer>;
 	template struct CALUMIANIMATION_API VectorContainer<PathContainer>;
 
-	template struct CALUMIANIMATION_API ExpectedConatiner<bool, StringContainer>;
-	template struct CALUMIANIMATION_API ExpectedConatiner<size_t, StringContainer>;
-	template struct CALUMIANIMATION_API ExpectedConatiner<bool, PathContainer>;
-	template struct CALUMIANIMATION_API ExpectedConatiner<PathContainer, bool>;
-	template struct CALUMIANIMATION_API ExpectedConatiner<PathContainer, StringContainer>;
-	template struct CALUMIANIMATION_API ExpectedConatiner<VectorContainer<PathContainer>, StringContainer>;
-	template struct CALUMIANIMATION_API ExpectedConatiner<StringContainer, StringContainer>;
-	template struct CALUMIANIMATION_API ExpectedConatiner<StringContainer, bool>;
+	template struct CALUMIANIMATION_API ExpectedContainer<bool, StringContainer>;
+	template struct CALUMIANIMATION_API ExpectedContainer<size_t, StringContainer>;
+	template struct CALUMIANIMATION_API ExpectedContainer<bool, PathContainer>;
+	template struct CALUMIANIMATION_API ExpectedContainer<PathContainer, bool>;
+	template struct CALUMIANIMATION_API ExpectedContainer<PathContainer, StringContainer>;
+	template struct CALUMIANIMATION_API ExpectedContainer<VectorContainer<PathContainer>, StringContainer>;
+	template struct CALUMIANIMATION_API ExpectedContainer<StringContainer, StringContainer>;
+	template struct CALUMIANIMATION_API ExpectedContainer<StringContainer, bool>;
 #pragma warning(default: 4661)
 #pragma endregion
 

@@ -11,7 +11,7 @@
 namespace CALUMI{
 	namespace SFBGS {
 
-		enum class indexCountingSolution : uint8_t
+		enum class CALUMIANIMATION_API IndexCountingSolution : uint8_t
 		{
 			odd, //1,3,5,etc
 			even, //0,2,4,etc
@@ -88,7 +88,7 @@ namespace CALUMI{
 			size_t fileSize = 0; //For debugging
 			CALUMI::Utilities::StringContainer animationFileName; //For file tracking. Should be unique without extension
 		
-			float HeaderStart[9] = {}; //2 blanks, 4 Quat Components (or all zero), 3 unknown (possibly xyz values)
+			float _headerStart[9] = {}; //2 blanks, 4 Quat Components (or all zero), 3 unknown (possibly xyz values)
 
 			HeaderFlags _headerFlags; //1 byte and 3 empty bytes
 
@@ -121,7 +121,7 @@ namespace CALUMI{
 			Utilities::VectorContainer<AnimationBlock> animationSuffixBlocks;
 
 
-			unsigned short _SumIndices(Utilities::VectorContainer<unsigned short>inputVector, indexCountingSolution type);
+			unsigned short _SumIndices(Utilities::VectorContainer<unsigned short>inputVector, IndexCountingSolution type);
 			/// <summary>
 			/// Header flags will be reset based on the values of the entries. It is not recommended to call this directly.
 			/// </summary>
@@ -130,10 +130,10 @@ namespace CALUMI{
 			Animation() = default;
 
 			// Inherited via CALUMI::ReadWritable
-			Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
-			Utilities::ExpectedConatiner<bool, FileError> ReadFromFile(const wchar_t* inputFilePath);
-			Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
-			Utilities::ExpectedConatiner<Utilities::StringContainer, FileError> WriteToFile(const wchar_t* outputFilePath);
+			Utilities::ExpectedContainer<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
+			Utilities::ExpectedContainer<bool, FileError> ReadFromFile(const wchar_t* inputFilePath);
+			Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
+			Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToFile(const wchar_t* outputFilePath);
 
 		};
 #pragma warning(disable: 4661)

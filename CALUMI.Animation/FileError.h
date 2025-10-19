@@ -41,14 +41,14 @@ struct CALUMIANIMATION_API FileError
 };
 
 #pragma warning(disable: 4661)
-template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<bool, FileError>;
-template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::PathContainer, FileError>;
-template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::StringContainer, FileError>;
-template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::StringMap, FileError>;
-template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<char>, FileError>;
-template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<CALUMI::Utilities::StringContainer>, FileError>;
-template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<CALUMI::Utilities::PathContainer>, FileError>;
-template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<int>, FileError>;
-template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<float>, FileError>;
-template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedConatiner<CALUMI::Utilities::VectorContainer<double>, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedContainer<bool, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedContainer<CALUMI::Utilities::PathContainer, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedContainer<CALUMI::Utilities::StringContainer, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedContainer<CALUMI::Utilities::StringMap, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedContainer<CALUMI::Utilities::VectorContainer<char>, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedContainer<CALUMI::Utilities::VectorContainer<CALUMI::Utilities::StringContainer>, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedContainer<CALUMI::Utilities::VectorContainer<CALUMI::Utilities::PathContainer>, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedContainer<CALUMI::Utilities::VectorContainer<int>, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedContainer<CALUMI::Utilities::VectorContainer<float>, FileError>;
+template struct CALUMIANIMATION_API CALUMI::Utilities::ExpectedContainer<CALUMI::Utilities::VectorContainer<double>, FileError>;
 #pragma warning(default: 4661)
