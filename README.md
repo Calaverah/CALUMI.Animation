@@ -27,8 +27,8 @@ This library is used by the following projects:
 
 ## Documentation
 
-[Documentation](https://linktodocumentationusers)  
-[Contributors](htts://linktodocumentationcontributors)
+[Documentation]("https://github.com/Calaverah/CALUMI.Animation/blob/master/Documentation/Prelim_CALUMI_ANIMATION_User_Documentation.pdf")  
+[Contributors]("https://github.com/Calaverah/CALUMI.Animation/blob/master/Documentation/Prelim_CALUMI_ANIMATION_User_Documentation.pdf")
 
 
 ## Credits
@@ -45,8 +45,11 @@ Contributions are always welcome!
 
 Check out our Contributors Documentation above for ways to get started.
 
-Please adhere to this project's [Code of Conduct]("").
+Please adhere to this project's [Code of Conduct]("https://github.com/Calaverah/CALUMI.Animation/blob/master/Documentation/Prelim_CALUMI_ANIMATION_User_Documentation.pdf").
 
+## Disclaimer
+
+No AI was used in writing the code featured in this library.
 
 ## License
 
