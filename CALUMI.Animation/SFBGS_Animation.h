@@ -79,6 +79,20 @@ namespace CALUMI{
 
 		};
 
+		struct CALUMIANIMATION_API Preamble
+		{
+			uint16_t count = 0;
+			Utilities::VectorContainer<float> preSet;
+			Utilities::VectorContainer<float> mainSet;
+			Utilities::VectorContainer<int16_t> footer1;
+			Utilities::VectorContainer<int8_t> footer2;
+
+
+			Preamble() = default;
+			Preamble(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, size_t frameCount);
+			Preamble& operator=(const Preamble& other);
+			Preamble(const Preamble& other);
+		};
 
 		
 		class CALUMIANIMATION_API Animation : CALUMI::ReadWritable
@@ -109,8 +123,10 @@ namespace CALUMI{
 
 			//preamble section goes here
 				//NOTE: Preamble begins after the nZeroFloat array and is [preambleOffset] bytes long.
+			uint32_t preambleCount = 0;
+			Utilities::VectorContainer<Preamble> preamble;
 
-
+			Utilities::VectorContainer<float> _suffixFillerValues;
 
 			//animation index atlas goes here
 			Utilities::VectorContainer<unsigned short> _indexAtlas; //NOTE: this index is the size of the indexAtlasCounter, it is unknown if the entries are one byte only or if they can be expanded to two bytes, 
@@ -139,6 +155,7 @@ namespace CALUMI{
 #pragma warning(disable: 4661)
 		template struct CALUMIANIMATION_API Utilities::VectorContainer<AnimationBlock>;
 		template struct CALUMIANIMATION_API Utilities::VectorContainer<Animation>;
+		template struct CALUMIANIMATION_API Utilities::VectorContainer<Preamble>;
 #pragma warning(default: 4661)
 	}
 }

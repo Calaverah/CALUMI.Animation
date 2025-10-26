@@ -16,7 +16,7 @@
 namespace CALUMI {
 	namespace Utilities {
 
-		static void _AlignBuffer(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize)
+		void AlignBuffer(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize)
 		{
 			if (alignmentSize < 1) return; //if alignment size is for some reason 0, we skip this output and move on
 			if (currentIndex % alignmentSize < 1) return; //we are aligned, move on
@@ -29,7 +29,7 @@ namespace CALUMI {
 		static void _AlignFillBuffer(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize)
 		{
 			unsigned long long startingIndex = currentIndex;
-			_AlignBuffer(buffer, currentIndex, alignmentSize);
+			AlignBuffer(buffer, currentIndex, alignmentSize);
 			buffer.insert(buffer.end(), (currentIndex - startingIndex), 0);
 		}
 
@@ -67,7 +67,7 @@ namespace CALUMI {
 		/// <param name="Destination"></param>
 		void AlignBufferAndRead(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, void* Destination)
 		{
-			_AlignBuffer(buffer, currentIndex, alignmentSize);
+			AlignBuffer(buffer, currentIndex, alignmentSize);
 			std::memcpy(Destination, &buffer.at(currentIndex), variableSize);
 
 			currentIndex += variableSize;

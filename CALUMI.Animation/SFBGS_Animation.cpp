@@ -47,8 +47,57 @@ namespace CALUMI{
 			this->c3 = input[3];
 		}
 
-		//Animation Block Defs
+		//Preamble Defs
+		Preamble::Preamble(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, size_t frameCount)
+		{
+			CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 2, 2, &count);
+			
 
+			preSet.resize(static_cast<size_t>(count) * 2);
+			for (int i = 0; i < (static_cast<size_t>(count) * 2); i++)
+			{
+				CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 4, 4, &preSet.at(i));
+			}
+			mainSet.resize(frameCount);
+			for (int i = 0; i < frameCount; i++)
+			{
+				CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 4, 4, &mainSet.at(i));
+			}
+			//int nCount = count == 1 ? 2 : count;
+			footer1.resize(count);
+			for (int i = 0; i < count; i++)
+			{
+				CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 2, 2, &footer1.at(i));
+			}
+
+			footer2.resize(count);
+			for (int i = 0; i < count; i++)
+			{
+				CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 1, 1, &footer2.at(i));
+			}
+
+		}
+
+		Preamble& Preamble::operator=(const Preamble& other)
+		{
+			count = other.count;
+			preSet = other.preSet;
+			mainSet = other.mainSet;
+			footer1 = other.footer1;
+			footer2 = other.footer2;
+			return *this;
+		}
+
+		Preamble::Preamble(const Preamble& other)
+		{
+			count = other.count;
+			preSet = other.preSet;
+			mainSet = other.mainSet;
+			footer1 = other.footer1;
+			footer2 = other.footer2;
+		}
+
+		//Animation Block Defs
 		AnimationBlock::AnimationBlock(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, const HeaderFlags& flags)
 		{
 			//address index can help with alignment when working with a raw buffer of bytes
@@ -311,12 +360,32 @@ namespace CALUMI{
 			}
 			//Validate header?
 
-			//FILL PAD????
-			addressIndex += 4 * static_cast<unsigned long long>(_unknownFillCount);
+			
 
 			//Evaluate Preamble
-			addressIndex += _preambleOffset;
+			size_t newOffset = addressIndex + _preambleOffset;
+			if (_preambleOffset > 0)
+			{
+				CALUMI::Utilities::AlignBufferAndRead(buffer.value(), addressIndex, 4, 4, &preambleCount);
+				preamble.reserve(preambleCount);
+				for (size_t i = 0; i < preambleCount; i++)
+				{
 
+					preamble.push_back(Preamble(buffer.value(), addressIndex, _frameCount));
+
+				}
+			}
+
+			//FILL PAD????
+			//addressIndex += 4 * static_cast<unsigned long long>(_unknownFillCount);
+			_suffixFillerValues.resize(_unknownFillCount);
+			for (size_t i = 0; i < _unknownFillCount; i++)
+			{
+				CALUMI::Utilities::AlignBufferAndRead(buffer.value(), addressIndex, 4, 4, &_suffixFillerValues.at(i));
+			}
+
+			//Aligning To 4 before hitting the Animation Block Evalutation
+			CALUMI::Utilities::AlignBuffer(buffer.value(), addressIndex, 4);
 
 			//Evaluate Animation Blocks
 			//INDEX ATLAS
@@ -332,12 +401,6 @@ namespace CALUMI{
 			}
 
 			//Animation Blocks
-			/*unsigned short animationBlockCount = _SumIndices(_indexAtlas, IndexCountingSolution::odd);
-			animationBlocks.reserve(animationBlockCount);
-			for (unsigned short i = 0; i < animationBlockCount; i++)
-			{
-				animationBlocks.push_back(AnimationBlock(buffer.value(), addressIndex, _headerFlags));
-			}*/
 			unsigned short j = 0; unsigned short k = 0;
 			for (unsigned short i = 0; i < _SumIndices(_indexAtlas, IndexCountingSolution::all); i++)
 			{
@@ -480,6 +543,5 @@ namespace CALUMI{
 			return WriteToFile(output);
 		}
 
-
-	}
+}
 }

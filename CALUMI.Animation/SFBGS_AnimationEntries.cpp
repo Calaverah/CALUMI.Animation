@@ -207,7 +207,7 @@ namespace CALUMI { namespace SFBGS{
 
 		for (int i = 0; i < input.size(); i++)
 		{
-			for (uint8_t j = 0; j < input.at(i).count; j++) //Translations use classical counters
+			for (uint32_t j = 0; j < input.at(i).count; j++) //Translations use classical counters
 			{
 				CALUMI::SFBGS::TranslationPrefix newPrefix = input.at(i);
 				newPrefix.count = 1;
