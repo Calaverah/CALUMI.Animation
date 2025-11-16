@@ -7,46 +7,188 @@
 namespace CALUMI {
     namespace UNIV {
 
-        UNIV::Translation& UNIV::Translation::operator=(const UNIV::Translation& other) { frame = other.frame; translation = other.translation; return *this; }
-        UNIV::Rotation& UNIV::Rotation::operator=(const UNIV::Rotation& other) { frame = other.frame; rotation = other.rotation; return *this; }
-        UNIV::Scalar& UNIV::Scalar::operator=(const UNIV::Scalar& other) { frame = other.frame; scalar = other.scalar; return *this; }
-        UNIV::Priority& UNIV::Priority::operator=(const UNIV::Priority& other) { frame = other.frame; priority = other.priority; return *this; }
+#pragma region TRANSLATION
+        struct Translation::Impl
+        {
+            uint16_t frame = 0;
+            CALUMI::Math::Vector3D translation;
+        };
+        uint16_t UNIV::Translation::Frame() const
+        {
+            return pImpl->frame;
+        }
+        void UNIV::Translation::Frame(uint16_t frame)
+        {
+            pImpl->frame = frame;
+        }
+        Math::Vector3D& UNIV::Translation::TranslationVector() const
+        {
+            return pImpl->translation;
+        }
+        UNIV::Translation::~Translation()
+        {
+            if (pImpl) delete pImpl;
+        }
+        UNIV::Translation::Translation()
+        {
+            pImpl = new Impl;
+        }
+        UNIV::Translation::Translation(const uint16_t& frame, const CALUMI::Math::Vector3D& translation) : Translation()
+        {
+            pImpl->frame = frame;
+            pImpl->translation = translation;
+        }
+        UNIV::Translation::Translation(const Translation& input) : Translation()
+        {
+            *pImpl = *(input.pImpl);
+        }
+        UNIV::Translation& UNIV::Translation::operator=(const UNIV::Translation& other) { *pImpl = *(other.pImpl); return *this; }
 
+        bool operator<(const UNIV::Translation& A, const UNIV::Translation& B) { return A.Frame() < B.Frame(); }
+        bool operator<=(const UNIV::Translation& A, const UNIV::Translation& B) { return A.Frame() <= B.Frame(); }
+        bool operator>(const UNIV::Translation& A, const UNIV::Translation& B) { return A.Frame() > B.Frame(); }
+        bool operator>=(const UNIV::Translation& A, const UNIV::Translation& B) { return A.Frame() >= B.Frame(); }
+        bool operator==(const UNIV::Translation& A, const UNIV::Translation& B) { return A.Frame() == B.Frame(); }
+        bool operator!=(const UNIV::Translation& A, const UNIV::Translation& B) { return A.Frame() != B.Frame(); }
 
-        bool operator<(const UNIV::Translation& A, const UNIV::Translation& B) { return A.frame < B.frame; }
-        bool operator<=(const UNIV::Translation& A, const UNIV::Translation& B) { return A.frame <= B.frame; }
-        bool operator>(const UNIV::Translation& A, const UNIV::Translation& B) { return A.frame > B.frame; }
-        bool operator>=(const UNIV::Translation& A, const UNIV::Translation& B) { return A.frame >= B.frame; }
-        bool operator==(const UNIV::Translation& A, const UNIV::Translation& B) { return A.frame == B.frame; }
-        bool operator!=(const UNIV::Translation& A, const UNIV::Translation& B) { return A.frame != B.frame; }
+        Utilities::StringContainer Translation::ToJSON(const size_t indents) const {
+            std::string output(Utilities::Indent(indents + 1).c_str());
+            output += ("{\"frame\": " + std::to_string(Frame()) + ", \"value\": [" + std::to_string(TranslationVector().getX()) + ", " + std::to_string(TranslationVector().getY()) + ", " + std::to_string(TranslationVector().getZ()) + "]}");
+            return output.c_str();
+        }
+#pragma endregion
 
-        bool operator<(const UNIV::Rotation& A, const UNIV::Rotation& B) { return A.frame < B.frame; }
-        bool operator<=(const UNIV::Rotation& A, const UNIV::Rotation& B) { return A.frame <= B.frame; }
-        bool operator>(const UNIV::Rotation& A, const UNIV::Rotation& B) { return A.frame > B.frame; }
-        bool operator>=(const UNIV::Rotation& A, const UNIV::Rotation& B) { return A.frame >= B.frame; }
-        bool operator==(const UNIV::Rotation& A, const UNIV::Rotation& B) { return A.frame == B.frame; }
-        bool operator!=(const UNIV::Rotation& A, const UNIV::Rotation& B) { return A.frame != B.frame; }
+#pragma region ROTATION
+        struct Rotation::Impl
+        {
+            uint16_t frame = 0;
+            CALUMI::Math::Quaternion rotation;
+            Impl() = default;
+        };
 
-        bool operator<(const UNIV::Scalar& A, const UNIV::Scalar& B) { return A.frame < B.frame; }
-        bool operator<=(const UNIV::Scalar& A, const UNIV::Scalar& B) { return A.frame <= B.frame; }
-        bool operator>(const UNIV::Scalar& A, const UNIV::Scalar& B) { return A.frame > B.frame; }
-        bool operator>=(const UNIV::Scalar& A, const UNIV::Scalar& B) { return A.frame >= B.frame; }
-        bool operator==(const UNIV::Scalar& A, const UNIV::Scalar& B) { return A.frame == B.frame; }
-        bool operator!=(const UNIV::Scalar& A, const UNIV::Scalar& B) { return A.frame != B.frame; }
+        uint16_t Rotation::Frame() const
+        {
+            return pImpl->frame;
+        }
+        void Rotation::Frame(uint16_t frame)
+        {
+            pImpl->frame = frame;
+        }
+        Math::Quaternion& Rotation::RotationQuaternion() const
+        {
+            return pImpl->rotation;
+        }
+        Rotation::Rotation()
+        {
+            pImpl = new Impl;
+        }
+        Rotation::Rotation(const uint16_t& frame, const CALUMI::Math::Quaternion& rotation) : Rotation()
+        {
+            pImpl->frame = frame; 
+            pImpl->rotation = rotation;
+        }
+        Rotation::Rotation(const Rotation& input) : Rotation()
+        {
+            *pImpl = *(input.pImpl);
+        }
+        Rotation::~Rotation()
+        {
+            if (pImpl) delete pImpl;
+        }
 
-        bool operator<(const UNIV::Priority& A, const UNIV::Priority& B) { return A.frame < B.frame; }
-        bool operator<=(const UNIV::Priority& A, const UNIV::Priority& B) { return A.frame <= B.frame; }
-        bool operator>(const UNIV::Priority& A, const UNIV::Priority& B) { return A.frame > B.frame; }
-        bool operator>=(const UNIV::Priority& A, const UNIV::Priority& B) { return A.frame >= B.frame; }
-        bool operator==(const UNIV::Priority& A, const UNIV::Priority& B) { return A.frame == B.frame; }
-        bool operator!=(const UNIV::Priority& A, const UNIV::Priority& B) { return A.frame != B.frame; }
+        UNIV::Rotation& UNIV::Rotation::operator=(const UNIV::Rotation& other) { *pImpl = *(other.pImpl); return *this; }
 
+        bool operator<(const UNIV::Rotation& A, const UNIV::Rotation& B)    { return A.Frame() < B.Frame(); }
+        bool operator<=(const UNIV::Rotation& A, const UNIV::Rotation& B)   { return A.Frame() <= B.Frame();}
+        bool operator>(const UNIV::Rotation& A, const UNIV::Rotation& B)    { return A.Frame() > B.Frame(); }
+        bool operator>=(const UNIV::Rotation& A, const UNIV::Rotation& B)   { return A.Frame() >= B.Frame();}
+        bool operator==(const UNIV::Rotation& A, const UNIV::Rotation& B)   { return A.Frame() == B.Frame();}
+        bool operator!=(const UNIV::Rotation& A, const UNIV::Rotation& B)   { return A.Frame() != B.Frame();}
 
-        //Extern C functions
+        Utilities::StringContainer Rotation::ToJSON(const size_t indents) const {
+            std::string output(Utilities::Indent(indents).c_str());
+            output += ("{\"frame\": " + std::to_string(pImpl->frame) + ", \"value\": [" + std::to_string(pImpl->rotation.getW()) + ", " + std::to_string(pImpl->rotation.getX()) + ", " + std::to_string(pImpl->rotation.getY()) + ", " + std::to_string(pImpl->rotation.getZ()) + "]}");
+            return output.c_str();
+        }
+#pragma endregion
+
+#pragma region SCALAR
+        struct Scalar::Impl 
+        {
+            uint16_t frame = 0;
+            float scalar = 1.0;
+            Impl() = default;
+        };
+        uint16_t Scalar::Frame() const { return pImpl->frame; }
+        void Scalar::Frame(uint16_t frame) { pImpl->frame = frame; }
+        float Scalar::ScalarValue() const { return pImpl->scalar; }
+        void Scalar::ScalarValue(float value) { pImpl->scalar = value; }
+
+        Scalar::Scalar() { pImpl = new Impl; }
+        Scalar::~Scalar() { if (pImpl) delete pImpl; }
+
+        Scalar::Scalar(const uint16_t& frame, float scalar) : Scalar()
+        {
+            pImpl->frame = frame;
+            pImpl->scalar = scalar;
+        }
+        Scalar::Scalar(const Scalar& input) : Scalar() { *pImpl = *(input.pImpl); }
+
+        UNIV::Scalar& UNIV::Scalar::operator=(const UNIV::Scalar& other) { *pImpl = *(other.pImpl); return *this; }
+
+        bool operator<(const UNIV::Scalar& A, const UNIV::Scalar& B)    { return A.Frame()<  B.Frame(); }
+        bool operator<=(const UNIV::Scalar& A, const UNIV::Scalar& B)   { return A.Frame()<= B.Frame(); }
+        bool operator>(const UNIV::Scalar& A, const UNIV::Scalar& B)    { return A.Frame()>  B.Frame(); }
+        bool operator>=(const UNIV::Scalar& A, const UNIV::Scalar& B)   { return A.Frame()>= B.Frame(); }
+        bool operator==(const UNIV::Scalar& A, const UNIV::Scalar& B)   { return A.Frame()== B.Frame(); }
+        bool operator!=(const UNIV::Scalar& A, const UNIV::Scalar& B)   { return A.Frame()!= B.Frame(); }
+
+        Utilities::StringContainer Scalar::ToJSON(const size_t indents) const {
+            std::string output(Utilities::Indent(indents + 1).c_str());
+            output += ("{\"frame\": " + std::to_string(pImpl->frame) + ", \"value\": " + std::to_string(pImpl->scalar) + "}").c_str();
+            return output.c_str();
+        }
+#pragma endregion
+
+#pragma region PRIORITY
+        struct Priority::Impl
+        {
+            uint16_t frame = 0;
+            uint8_t priority = 90; //Unsure what a good default is yet. 90 is the highest seen so far
+            Impl() = default;
+        };
+        uint16_t Priority::Frame() const { return pImpl->frame; }
+        void Priority::Frame(uint16_t frame) { pImpl->frame = frame; }
+        uint8_t Priority::PriorityValue() const { return pImpl->priority; }
+        void Priority::PriorityValue(uint8_t value) { pImpl->priority = value; }
+
+        Priority::Priority() { pImpl = new Impl; }
+        Priority::~Priority() { if (pImpl) delete pImpl; }
+        Priority::Priority(const uint16_t& frame, const uint8_t& priority) : Priority() { pImpl->frame = frame; pImpl->priority = priority; }
+        Priority::Priority(const Priority& input) : Priority() { *pImpl = *(input.pImpl);  }
+
+        UNIV::Priority& UNIV::Priority::operator=(const UNIV::Priority& other) { pImpl->frame = other.pImpl->frame; pImpl->priority = other.pImpl->priority; return *this; }
+
+        bool operator<(const UNIV::Priority& A, const UNIV::Priority& B)    { return A.Frame() <  B.Frame(); }
+        bool operator<=(const UNIV::Priority& A, const UNIV::Priority& B)   { return A.Frame() <= B.Frame(); }
+        bool operator>(const UNIV::Priority& A, const UNIV::Priority& B)    { return A.Frame() >  B.Frame(); }
+        bool operator>=(const UNIV::Priority& A, const UNIV::Priority& B)   { return A.Frame() >= B.Frame(); }
+        bool operator==(const UNIV::Priority& A, const UNIV::Priority& B)   { return A.Frame() == B.Frame(); }
+        bool operator!=(const UNIV::Priority& A, const UNIV::Priority& B)   { return A.Frame() != B.Frame(); }
+
+        Utilities::StringContainer Priority::ToJSON(const size_t indents) const {
+            std::string output(Utilities::Indent(indents + 1).c_str());
+            output += ("{\"frame\": " + std::to_string(pImpl->frame) + ", \"value\": " + std::to_string(pImpl->priority) + "}");
+            return output.c_str();
+        }
+#pragma endregion
+
+#pragma region EXTERN"C"
+
         Rotation* CreateRotationEntryC(uint16_t frame, float x, float y, float z, float w)
         {
             Rotation* outputRotation = new Rotation(frame, {x,y,z,w});
-            outputRotation->rotation.Normalize();
+            outputRotation->RotationQuaternion().Normalize();
             return outputRotation;
         }
         bool DeleteRotationEntryC(Rotation* ptr)
@@ -111,52 +253,27 @@ namespace CALUMI {
 
         Math::Quaternion* GetValueFromRotationEntryC(Rotation* source)
         {
-            return &source->rotation;
+            return &source->RotationQuaternion();
         }
 
         Math::Vector3D* GetValueFromTranslationEntryC(Translation* source)
         {
-            return &source->translation;
+            return &source->TranslationVector();
         }
 
         float GetValueFromScalarEntryC(Scalar* source)
         {
-            return source->scalar;
+            return source->ScalarValue();
         }
 
         uint8_t GetValueFromPriorityEntryC(Priority* source)
         {
-            return source->priority;
+            return source->PriorityValue();
         }
+#pragma endregion        
 
-        Utilities::StringContainer Rotation::ToJSON(const size_t indents) const {
-            std::string output(Utilities::Indent(indents).c_str());
-            output += ("{\"frame\": " + std::to_string(frame) + ", \"value\": [" + std::to_string(rotation.w) + ", " + std::to_string(rotation.x) + ", " + std::to_string(rotation.y) + ", " + std::to_string(rotation.z) + "]}");
-            return output.c_str();
-        }
-
-        Utilities::StringContainer Translation::ToJSON(const size_t indents) const {
-            std::string output(Utilities::Indent(indents + 1).c_str());
-            output += ("{\"frame\": " + std::to_string(frame) + ", \"value\": [" + std::to_string(translation.x) + ", " + std::to_string(translation.y) + ", " + std::to_string(translation.z) + "]}");
-            return output.c_str();
-        }
-
-        Utilities::StringContainer Scalar::ToJSON(const size_t indents) const {
-            std::string output(Utilities::Indent(indents + 1).c_str());
-            output += ("{\"frame\": " + std::to_string(frame) + ", \"value\": " + std::to_string(scalar) + "}").c_str();
-            return output.c_str();
-        }
-
-        Utilities::StringContainer Priority::ToJSON(const size_t indents) const {
-            std::string output(Utilities::Indent(indents + 1).c_str());
-            output += ("{\"frame\": " + std::to_string(frame) + ", \"value\": " + std::to_string(priority) + "}");
-            return output.c_str();
-        }
-
-
-        
-
-} }
+}
+}
 
 
 

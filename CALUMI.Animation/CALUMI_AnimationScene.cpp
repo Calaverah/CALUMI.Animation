@@ -11,6 +11,115 @@
 namespace CALUMI {
     namespace UNIV {
 
+#pragma region ANIMATIONSCENE
+        struct AnimationScene::Impl
+        {
+            Utilities::StringContainer sceneName = "MyAnimationScene";
+            Utilities::VectorContainer<Animation> animations;
+            SkeletonRig rig;
+            Impl() = default;
+        };
+
+        AnimationScene::AnimationScene() { pImpl = new Impl; }
+        AnimationScene::~AnimationScene() { if (pImpl) delete pImpl; }
+        AnimationScene::AnimationScene(const AnimationScene& input) : AnimationScene() { *pImpl = *(input.pImpl); }
+        AnimationScene::AnimationScene(const Utilities::StringContainer& sceneName) : AnimationScene() { pImpl->sceneName = sceneName; }
+        AnimationScene::AnimationScene(const char* sceneName) : AnimationScene() { pImpl->sceneName = sceneName; }
+
+        AnimationScene& AnimationScene::operator=(const AnimationScene& input) { *pImpl = *(input.pImpl); return *this; }
+
+        SkeletonRig& AnimationScene::Rig() const { return pImpl->rig; }
+        Utilities::VectorContainer<Animation>& AnimationScene::Animations() const { return pImpl->animations; }
+        const char* AnimationScene::SceneName() const { return pImpl->sceneName.c_str(); }
+        void AnimationScene::SceneName(const char* name) { pImpl->sceneName = name; }
+        void AnimationScene::SceneName(const Utilities::StringContainer& input) { pImpl->sceneName = input; }
+
+        bool AnimationScene::AddAnimationToScene(UNIV::Animation& animation, bool overwrite)
+        {
+            for (unsigned int i = 0; i < Animations().size(); i++)
+            {
+                if (_stricmp(pImpl->animations.at(i).AnimationTitle(), animation.AnimationTitle()) == 0)
+                {
+                    if (!overwrite)
+                        return false;
+                    else
+                    {
+                        pImpl->animations.erase(i);
+                        break;
+                    }
+                }
+            }
+            pImpl->animations.push_back(animation);
+            return true;
+        }
+
+        bool AnimationScene::RemoveAnimationFromScene(Utilities::StringContainer& sceneToRemove)
+        {
+            for (unsigned int i = 0; i < pImpl->animations.size(); i++)
+            {
+                if (_stricmp(pImpl->animations.at(i).AnimationTitle(), sceneToRemove.c_str()) == 0)
+                {
+                    pImpl->animations.erase(i);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        bool AnimationScene::RemoveAnimationFromScene(unsigned int idx)
+        {
+            if (idx >= pImpl->animations.size() || idx < 0) return false;
+
+            pImpl->animations.erase(idx);
+            return true;
+        }
+
+        Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> AnimationScene::GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension)
+        {
+            Utilities::VectorContainer<Utilities::PathContainer> animationFilePaths;
+            animationFilePaths.reserve(pImpl->animations.size());
+            for (unsigned int i = 0; i < pImpl->animations.size(); i++)
+            {
+                if (_stricmp(pImpl->animations.at(i).AnimationTitle(), "") == 0)
+                {
+                    Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> tempOutput;
+                    tempOutput.SetErrorValue("[CALUMI.Animation API] Empty string found for Animation Title");
+                    return tempOutput;
+                }
+                Utilities::PathContainer pathToAdd(directoryPath);
+                //pathToAdd /= "animations";
+                //pathToAdd /= pImpl->sceneName.c_str();
+                pathToAdd /= pImpl->animations.at(i).AnimationTitle();
+                pathToAdd.replace_extension(extension);
+                animationFilePaths.push_back(pathToAdd);
+            }
+
+            return animationFilePaths;
+        }
+
+        Utilities::StringContainer AnimationScene::ToJSON(const size_t indents = 0) const {
+            Utilities::StringContainer output;
+            output += Utilities::Indent(indents).c_str();
+            output += "{\n";
+            output += Utilities::Indent(indents + 1).c_str();
+            output += "\"sceneName\":\"";
+            output += pImpl->sceneName.c_str();
+            output += "\",\n";
+            output += Utilities::Indent(indents + 1).c_str();
+            output += "\"animations\":";
+            output += Utilities::VectorToJSON(pImpl->animations);
+            output += ",\n";
+            output += Utilities::Indent(indents + 1).c_str();
+            output += "\"rig\":\n";
+            output += pImpl->rig.ToJSON(indents + 1).c_str();
+            output += Utilities::Indent(indents + 1).c_str();
+            output += "\n}";
+            return output;
+        }
+
+#pragma endregion
+
+#pragma region EXTERN"C"
         //Extern C Functions
         bool DeleteAnimationSceneC(AnimationScene* ptr)
         {
@@ -27,33 +136,33 @@ namespace CALUMI {
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
             errorMessageHolder->Clear();
 
-            if(source->animations.size()<=index)
+            if (source->Animations().size() <= index)
             {
                 *errorMessageHolder += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
                 return nullptr;
             }
-            return &source->animations.at(index);
+            return &source->Animations().at(index);
         }
         size_t GetAnimationCountC(AnimationScene* source)
         {
-            return source->animations.size();
+            return source->Animations().size();
         }
         const char* GetAnimationSceneNameC(AnimationScene* source)
         {
-            return source->sceneName.c_str();
+            return source->SceneName();
         }
         SkeletonRig* GetSkeletonRigC(AnimationScene* source)
         {
-            return &source->rig;
+            return &source->Rig();
         }
         bool HasSkeletonRigC(AnimationScene* source)
         {
-            return !source->rig.boneEntries.empty();
+            return !source->Rig().BoneEntries().empty();
         }
         AnimationScene* UNIV::CreateAnimationSceneC(const char* sceneName)
         {
             UNIV::AnimationScene* univAnimationScene = new UNIV::AnimationScene;
-            univAnimationScene->sceneName = sceneName;
+            univAnimationScene->SceneName(sceneName);
 
             return univAnimationScene;
         }
@@ -63,13 +172,13 @@ namespace CALUMI {
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
             errorMessageHolder->Clear();
 
-            if (rig->boneEntries.empty())
+            if (rig->BoneEntries().empty())
             {
                 *errorMessageHolder += "[CALUMI.Animation API] No Bone Entries Found In Rig!";
                 return false;
             }
-            scene->rig = *rig;
-            
+            scene->Rig() = *rig;
+
             if (rig)
                 delete rig;
 
@@ -82,118 +191,37 @@ namespace CALUMI {
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
             errorMessageHolder->Clear();
 
-            if (animation->animationTitle == "")
+            if (_stricmp(animation->AnimationTitle(), "") == 0)
             {
                 *errorMessageHolder += "[CALUMI.Animation API] Must Have Animation Title!";
                 return false;
             }
-            for (unsigned int i =0; i<scene->animations.size(); i++)
+            for (unsigned int i = 0; i < scene->Animations().size(); i++)
             {
-                if (animation->animationTitle == scene->animations.at(i).animationTitle)
+                if (_stricmp(animation->AnimationTitle(), scene->Animations().at(i).AnimationTitle()) == 0)
                 {
-                    if(!overwrite)
+                    if (!overwrite)
                     {
                         *errorMessageHolder += "[CALUMI.Animation API] Animation Titles Must Be Unique!";
                         return false;
                     }
                     else
                     {
-                        scene->animations.erase(i);
+                        scene->Animations().erase(i);
                         break;
                     }
-                    
+
                 }
             }
-            scene->animations.push_back(*animation);
-            if(animation)
+            scene->Animations().push_back(*animation);
+            if (animation)
                 delete animation;
 
             *errorMessageHolder += "[CALUMI.Animation API] Animation Data Copied Into Animation Vector Successfully. Original Ptr Has Been Deleted!";
             return true;
         }
-        
-        bool AnimationScene::AddAnimationToScene(UNIV::Animation& animation, bool overwrite)
-        {
-            for (unsigned int i = 0; i < animations.size(); i++)
-            {
-                if (animations.at(i).animationTitle == animation.animationTitle)
-                {
-                    if(!overwrite)
-                    return false;
-                    else
-                    {
-                        animations.erase(i);
-                        break;
-                    }
-                }
-            }
-            animations.push_back(animation);
-            return true;
-        }
+#pragma endregion
 
-        bool AnimationScene::RemoveAnimationFromScene(Utilities::StringContainer& sceneToRemove)
-        {
-            for (unsigned int i = 0; i < animations.size(); i++)
-            {
-                if (animations.at(i).animationTitle == sceneToRemove)
-                {
-                    animations.erase(i);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        bool AnimationScene::RemoveAnimationFromScene(unsigned int idx)
-        {
-            if (idx >= animations.size() || idx < 0 ) return false;
-
-            animations.erase(idx);
-            return true;
-        }
-
-        Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> AnimationScene::GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension)
-        {
-            Utilities::VectorContainer<Utilities::PathContainer> animationFilePaths;
-            animationFilePaths.reserve(animations.size());
-            for (unsigned int i = 0; i < animations.size(); i++)
-            {
-                if (animations.at(i).animationTitle.Empty())
-                {
-                    Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> tempOutput;
-                    tempOutput.SetErrorValue("[CALUMI.Animation API] Empty string found for Animation Title");
-                    return tempOutput;
-                }
-                Utilities::PathContainer pathToAdd(directoryPath);
-                pathToAdd /= "animations";
-                pathToAdd /= sceneName.c_str();
-                pathToAdd /= animations.at(i).animationTitle;
-                pathToAdd.replace_extension(extension);
-                animationFilePaths.push_back(pathToAdd);
-            }
-
-            return animationFilePaths;
-        }
-
-        Utilities::StringContainer AnimationScene::ToJSON(const size_t indents = 0) const {
-            Utilities::StringContainer output;
-            output += Utilities::Indent(indents).c_str();
-            output += "{\n"; 
-            output += Utilities::Indent(indents + 1).c_str();
-            output += "\"sceneName\":\"";
-            output += sceneName.c_str();
-            output += "\",\n";
-            output += Utilities::Indent(indents + 1).c_str();
-            output += "\"animations\":";
-            output += Utilities::VectorToJSON(animations);
-            output += ",\n";
-            output += Utilities::Indent(indents + 1).c_str();
-            output += "\"rig\":\n";
-            output += rig.ToJSON(indents + 1).c_str();
-            output += Utilities::Indent(indents + 1).c_str();
-            output += "\n}";
-            return output;
-        }
 
 
     }

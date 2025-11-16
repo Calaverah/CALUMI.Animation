@@ -3,9 +3,9 @@
 #include "CALUMI_SkeletonRig.h"
 
 constexpr int SFBGSMAPSIZE = 157;
-constexpr CALUMI::Utilities::PairContainer<float, float> SFBGSDefaultPrecision = { 0.00025f , 0.03125f }; // 1/4000 and 1/32
-constexpr CALUMI::Utilities::PairContainer<float, float> SFBGSFirstPersonPrecision = { 0.0000625f , 0.0078125f }; // 1/16000 and 1/128
-constexpr CALUMI::Utilities::PairContainer<float, float> SFBGSShipPrecision = { 0.002f , 0.25f }; // 1/500 and 1/4
+static const CALUMI::Utilities::PairContainer<float, float> SFBGSDefaultPrecision = { 0.00025f , 0.03125f }; // 1/4000 and 1/32
+static const CALUMI::Utilities::PairContainer<float, float> SFBGSFirstPersonPrecision = { 0.0000625f , 0.0078125f }; // 1/16000 and 1/128
+static const CALUMI::Utilities::PairContainer<float, float> SFBGSShipPrecision = { 0.002f , 0.25f }; // 1/500 and 1/4
 
 namespace CALUMI {
 	namespace SFBGS {
@@ -133,21 +133,16 @@ namespace CALUMI {
 
 		struct CALUMIANIMATION_API SFBGS_RigPackage : UNIV::RigPackage
 		{
-			float highPrecisionValue = SFBGSDefaultPrecision.first;
-			float lowPrecisionValue = SFBGSDefaultPrecision.second;
-			bool isMannequin = false;
-
-		private:
-			Utilities::StringContainer rigMap[SFBGSMAPSIZE];
-
 		public:
+
+			bool IsMannequin() const;
+			void IsMannequin(bool mqn);
 
 			// Inherited via RigPackage
 			const char* GetPackageType() const override;
 
-			SFBGS_RigPackage() = default;
+			SFBGS_RigPackage();
 			SFBGS_RigPackage(const SFBGS_RigPackage& source);
-			SFBGS_RigPackage(const SFBGS_RigPackage&& source) noexcept;
 			~SFBGS_RigPackage() override;
 
 			bool BoneIsMapped(const char* boneName) const;
@@ -164,15 +159,18 @@ namespace CALUMI {
 			BoneMapKey GetBoneKey(const char* boneName) const;
 			const char* GetBoneNameFromKey(BoneMapKey key);
 
-			void SetPrecisionValues(PrecisionSet setting, float custom1 = SFBGSDefaultPrecision.first, float custom2 = SFBGSDefaultPrecision.second);
-
+			void SetPrecisionValues(PrecisionSet setting, float custom1 = SFBGSDefaultPrecision.getFirst(), float custom2 = SFBGSDefaultPrecision.getSecond());
+			float LowPrecisionValue() const;
+			float HighPrecisionValue() const;
 
 			// Inherited via RigPackage
 			Utilities::StringContainer ToJSON(size_t indents) const override;
 
 			// Inherited via RigPackage
 			bool HandleBoneRename(const char* oldBone, const char* newName, size_t idx) override;
-			UNIV::RigPackage* Clone() override;
+		private:
+			struct Impl;
+			Impl* pImpl;
 		};
 
 		SFBGS_RigPackage* CreateNewSFBGSRigPackage(UNIV::SkeletonRig& rig, bool overwrite = true);

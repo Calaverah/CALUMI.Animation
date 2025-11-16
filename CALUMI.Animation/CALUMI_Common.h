@@ -14,7 +14,7 @@
 #define _PRIVATE_(x) //Private placeholder for visual aid for this var
 
 namespace CALUMI {
-	enum class CALUMIANIMATION_API SupportedGames
+	enum class CALUMIANIMATION_API SupportedGames : uint8_t
 	{
 		Starfield
 	};

@@ -257,9 +257,14 @@ namespace CALUMI {
 		std::ofstream file;
 		std::error_code ec;
 
+		std::filesystem::path parentPath = std::filesystem::path(outputPath.w_str()).parent_path();
+		if (!std::filesystem::exists(parentPath))
+		{
+			std::filesystem::create_directories(parentPath);
+		}
+
 		if (std::filesystem::exists(outputPath.w_str()))
 		{
-			
 
 			if (!std::filesystem::is_regular_file(outputPath.w_str(), ec))
 			{
@@ -301,8 +306,13 @@ namespace CALUMI {
 
 	Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToBinaryFile(const Utilities::PathContainer& outputPath, const Utilities::StringContainer& buffer)
 	{
-		Utilities::VectorContainer<char> vBuffer(buffer.data(),buffer.data()+buffer.Length()+1);
-		//vBuffer.push_back('\0');
+		Utilities::VectorContainer<char> vBuffer;
+		vBuffer.reserve(buffer.Length(true));
+		for (size_t i = 0; i < buffer.Length(); i++)
+		{
+			vBuffer.push_back(buffer.at(i));
+		}
+		vBuffer.push_back('\0');
 
 		return WriteToBinaryFile(outputPath, vBuffer);
 	}

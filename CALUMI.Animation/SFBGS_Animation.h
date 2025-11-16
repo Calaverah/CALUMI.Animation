@@ -20,78 +20,113 @@ namespace CALUMI{
 
 		struct CALUMIANIMATION_API HeaderFlags
 		{
-			bool firstEntry : 1 = false;  //UNKNOWN: 
+			bool getFirstEntry() const;
+			void setFirstEntry(bool input);
+			bool areKeyCounters2Byte() const;
+			void setKeyCountersFlag(bool input);
+			bool areKeyFrameEntries2Byte() const;
+			void setKeyFrameEntriesFlag(bool input);
+			bool hasScalarSequence() const;
+			void setScalarSequenceFlag(bool input);
 
-			bool shortKeyCounters : 1 = false; //Flags if the animation block counters should be read/written as shorts (2 bytes)
-			bool shortKeyFrameEntries : 1 = false; //Flags if animation block keyframe entries are extended from a byte to a short (2 bytes)
-			bool scalarSequenceFlag : 1 = false;  //Must be marked true if scalar is present. If false, file will be read incorrectly if scalars are present
+			bool getU1() const;
+			bool getU2() const;
+			bool getU3() const;
+			bool getU4() const;
+			void setU1(bool input);
+			void setU2(bool input);
+			void setU3(bool input);
+			void setU4(bool input);
 
-			bool u1 : 1 = false;  //UNKNOWN: Appears Blank
-			bool u2 : 1 = false;  //UNKNOWN: Appears Blank
-			bool u3 : 1 = false;  //UNKNOWN: Appears Blank
-			bool u4 : 1 = false;  //UNKNOWN: Appears Blank
+			char getData() const;
+			char getC1() const;
+			char getC2() const;
+			char getC3() const;
+			void setC1(char input);
+			void setC2(char input);
+			void setC3(char input);
 
-
-			char c1 = 0x0;  //UNKNOWN: Appears Blank
-			char c2 = 0x0;  //UNKNOWN: Appears Blank
-			char c3 = 0x0;  //UNKNOWN: Appears Blank
-
-			HeaderFlags() = default;
+			HeaderFlags();
+			~HeaderFlags();
 			HeaderFlags(char c0, char c1, char c2, char c3);
 			HeaderFlags(char input[4]);
+			HeaderFlags(const HeaderFlags& input);
+
+			HeaderFlags& operator=(const HeaderFlags& input);
+
+		private:
+			struct Impl;
+			Impl* pImpl;
 		};
 
 		struct CALUMIANIMATION_API AnimationBlock
 		{
-			unsigned short _rotationCount = 0;
-			unsigned short _rotationPrefixCount = 0; //rotation prefix contains the first half of the rotations in a total of 4 bytes, x,y,z, and a count/identifier such that the prefix can be reused on multiple keyframes to save space
-
-			unsigned short _translationCount = 0;
-			unsigned short _translationPrefixCount = 0; //same as rotation prefix, however this entry is always 2 bytes each with the final 2 bytes (a ushort) being the count
 			
+			uint16_t getRotationCount() const;
+			uint16_t getRotationPrefixCount() const;
+			uint16_t getTranslationCount() const;
+			uint16_t getTranslationPrefixCount() const;
+			uint16_t getScalarCount() const;
+			uint16_t getPriorityCount() const;
 
-			unsigned short _scalarCount = 0;
-			unsigned short _bonePriorityCount = 0; //Never appears to have a count of more than 1, if at all
+			void setRotationCount(uint16_t input);
+			void setRotationPrefixCount(uint16_t input);
+			void setTranslationCount(uint16_t input);
+			void setTranslationPrefixCount(uint16_t input);
+			void setScalarCount(uint16_t input);
+			void setPriorityCount(uint16_t input);
 
-			Utilities::VectorContainer<unsigned short> rotationKeyFrames;
-			Utilities::VectorContainer<unsigned short> translationKeyFrames;
-			Utilities::VectorContainer<unsigned short> scalarKeyFrames;
-			Utilities::VectorContainer<unsigned short> bonePriorityKeyFrames; //Usually just a single entry for the 0th frame
+			Utilities::VectorContainer<uint16_t>& RotationKeyFrames() const;
+			Utilities::VectorContainer<uint16_t>& TranslationKeyFrames() const;
+			Utilities::VectorContainer<uint16_t>& ScalarKeyFrames() const;
+			Utilities::VectorContainer<uint16_t>& BonePriorityKeyFrames() const;
+
+			Utilities::VectorContainer<CALUMI::SFBGS::RotationEntry>& RotationEntries() const;
+			Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& RotationPrefixEntries() const;
+			Utilities::VectorContainer<CALUMI::SFBGS::TranslationEntry>& TranslationEntries() const;
+			Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix>& TranslationPrefixEntries() const;
+
+			Utilities::VectorContainer<int16_t>& ScalarEntries() const;
+			Utilities::VectorContainer<uint8_t>& BonePriorityEntries() const;
 
 
-			//ROTATIONS SECTION
-			Utilities::VectorContainer<CALUMI::SFBGS::RotationEntry> rotationEntries;
-			Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> rotationPrefixEntries;
-
-			//TRANSLATIONS SECTION
-			Utilities::VectorContainer<CALUMI::SFBGS::TranslationEntry> translationEntries;
-			Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> translationPrefixEntries;
-
-			//ADDITIONALS SECTION
-			Utilities::VectorContainer<short> scalarEntries;
-			Utilities::VectorContainer<uint8_t> bonePriorityEntries; //Unsure how to process this information as of now. Appears to be in units/100 for a scalar of 0-100%
-
-
-			AnimationBlock() = default;
+			AnimationBlock();
+			AnimationBlock(const AnimationBlock& input);
+			~AnimationBlock();
 			AnimationBlock(Utilities::VectorContainer<char>&buffer, unsigned long long& addressIndex, const HeaderFlags & flags);
 			void SerializeIntoBuffer(Utilities::VectorContainer<char>&buffer, unsigned long long& addressIndex, const HeaderFlags & flags);
 
+			AnimationBlock& operator=(const AnimationBlock& input);
 
+		private:
+			struct Impl;
+			Impl* pImpl;
 		};
 
 		struct CALUMIANIMATION_API Preamble
 		{
-			uint16_t count = 0;
-			Utilities::VectorContainer<float> preSet;
-			Utilities::VectorContainer<float> mainSet;
-			Utilities::VectorContainer<int16_t> footer1;
-			Utilities::VectorContainer<int8_t> footer2;
+			uint16_t getCount() const;
+			void setCount(uint16_t sz);
+
+			Utilities::VectorContainer<float>& getPreSet() const;
+			void setPreSet(const Utilities::VectorContainer<float>& input);
+			Utilities::VectorContainer<float>& getMainSet() const;
+			void setMainSet(const Utilities::VectorContainer<float>& input);
+			Utilities::VectorContainer<int16_t>& getFooter1() const;
+			void setFooter1(const Utilities::VectorContainer<int16_t>& input);
+			Utilities::VectorContainer<int8_t>& getFooter2() const;
+			void setFooter2(const Utilities::VectorContainer<int8_t>& input);
 
 
-			Preamble() = default;
+			Preamble();
+			~Preamble();
 			Preamble(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, size_t frameCount);
 			Preamble& operator=(const Preamble& other);
 			Preamble(const Preamble& other);
+
+		private:
+			struct Impl;
+			Impl* pImpl;
 		};
 
 		
@@ -99,43 +134,64 @@ namespace CALUMI{
 		{
 
 		public:
-			size_t fileSize = 0; //For debugging
-			CALUMI::Utilities::StringContainer animationFileName; //For file tracking. Should be unique without extension
+			size_t getSourceFileSize() const;
+			
+			CALUMI::Utilities::StringContainer& getAnimationFileName() const;
+			void setAnimationFileName(const CALUMI::Utilities::StringContainer& input);
 		
-			float _headerStart[9] = {}; //2 blanks (CONFIRMED), 4 Quat Components (or all zero), 3 unknown (possibly xyz values)
+			uint64_t getMagicNumber() const;
+			void setMagicNumber(uint64_t input);
 
-			HeaderFlags _headerFlags; //1 byte and 3 empty bytes
+			Math::Quaternion& getHeaderRotation() const;
+			void setHeaderRotation(const Math::Quaternion& input);
 
-			short _versionNumber = 0x05; //Always 05
+			Math::Vector3& getHeaderTranslation() const;
+			void setHeaderTranslation(const Math::Vector3& input);
 
-			unsigned short _boneCount = 0;
-			unsigned short _frameCount = 0;
-			unsigned short _indexAtlasCounter = 0x02; //At least 2, unless bones are zero (special case where addition bones are filled in at the bottom but they may not be from the main rig)
+			HeaderFlags& getHeaderFlags() const;
+			void setHeaderFlags(const HeaderFlags& input);
 
-			unsigned short _unknownFillCount = 0; //UNKNOWN: 
+			short getVersionNumber() const;
+			void setVersionNumber(short v);
 
-			unsigned short _preambleOffset = 0; //NOTE: this tells us how long the unknown "Preamble" section is and when the regular animation data begins
 
-			float _nZeroFloats[3] = { 0.0,-0.0,0.0 }; //UNKNOWN: Not always zero, sometimes has pie too (yummy)
+			uint16_t getBoneCount() const;
+			void setBoneCount(uint16_t input);
+			uint16_t getFrameCount() const;
+			void setFrameCount(uint16_t input);
+			uint16_t getIndexAtlasCount() const;
+			void setIndexAtlasCount(uint16_t input);
 
-			Utilities::VectorContainer<float> _unknownSuffixFillFloats;
+			uint16_t getUnknownFillCount() const;
+			void setUnknownFillCount(uint16_t input);
+
+			uint16_t getPreambleOffset() const;
+			void setPreambleOffset(uint16_t input);
+
+			CALUMI::Utilities::VectorContainer<float> getNZeroFloats() const;
+			void setNZeroFloats(float input[3]);
+
+			Utilities::VectorContainer<float>& getUnknownSuffixFillFloats() const;
+			void setUnknownSuffixFillFloats(const Utilities::VectorContainer<float>& input);
 			//--------------------------------------------------The header to this point is 64 bytes. The Animation blocks begin at address = 64+preambleOffset
 
 			//preamble section goes here
 				//NOTE: Preamble begins after the nZeroFloat array and is [preambleOffset] bytes long.
-			uint32_t preambleCount = 0;
-			Utilities::VectorContainer<Preamble> preamble;
+			uint32_t getPreambleCount() const;
+			void setPreambleCount(uint32_t input);
+			Utilities::VectorContainer<Preamble>& getPreamble() const;
+			void setPreamble(const Utilities::VectorContainer<Preamble>& input);
 
-			Utilities::VectorContainer<float> _suffixFillerValues;
+			Utilities::VectorContainer<float>& getSuffixFillerValues() const;
+			void getSuffixFillerValues(const Utilities::VectorContainer<float>& input);
 
-			//animation index atlas goes here
-			Utilities::VectorContainer<unsigned short> _indexAtlas; //NOTE: this index is the size of the indexAtlasCounter, it is unknown if the entries are one byte only or if they can be expanded to two bytes, 
-			//so we will keep our entries as a short (2 bytes) and cast them if they can be casted as 1 byte
+			Utilities::VectorContainer<uint16_t>& getIndexAtlas() const;
+			void setIndexAtlast(const Utilities::VectorContainer<uint16_t>& input);
 
-			//animation blocks go here
-			Utilities::VectorContainer<AnimationBlock> animationBlocks;
-			Utilities::VectorContainer<AnimationBlock> animationSuffixBlocks;
-
+			Utilities::VectorContainer<AnimationBlock>& getAnimationBlocks() const;
+			Utilities::VectorContainer<AnimationBlock>& getAnimationSuffixBlocks() const;
+			void setAnimationBlocks(const Utilities::VectorContainer<AnimationBlock>& input);
+			void setAnimationSuffixBlocks(const Utilities::VectorContainer<AnimationBlock>& input);
 
 			unsigned short _SumIndices(Utilities::VectorContainer<unsigned short>inputVector, IndexCountingSolution type);
 			/// <summary>
@@ -143,7 +199,11 @@ namespace CALUMI{
 			/// </summary>
 			void _evaluateHeaderFlags();
 
-			Animation() = default;
+			Animation();
+			Animation(const Animation& input);
+			~Animation();
+
+			Animation& operator=(const Animation& input);
 
 			// Inherited via CALUMI::ReadWritable
 			Utilities::ExpectedContainer<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
@@ -151,6 +211,9 @@ namespace CALUMI{
 			Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
 			Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToFile(const wchar_t* outputFilePath);
 
+		private:
+			struct Impl;
+			Impl* pImpl;
 		};
 #pragma warning(disable: 4661)
 		template struct CALUMIANIMATION_API Utilities::VectorContainer<AnimationBlock>;

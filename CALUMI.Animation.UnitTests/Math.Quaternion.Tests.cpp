@@ -17,12 +17,12 @@ namespace CALUMIAnimationUnitTests
 		TEST_METHOD(DefaultConstruction)
 		{
 			Quaternion quaternion;
-			Assert::IsTrue(quaternion.x == 0 && quaternion.y == 0 && quaternion.z == 0 && quaternion.w == 1.0);
+			Assert::IsTrue(quaternion.getX() == 0 && quaternion.getY() == 0 && quaternion.getZ() == 0 && quaternion.getW() == 1.0);
 		}
 		TEST_METHOD(AxisAngleConstruction)
 		{
 			Quaternion quaternion1(Vector3{ 1.0,2.0,3.0 }, static_cast<float>(ToRadians(50.0)));
-			Quaternion quaternion2(0.1129495,0.225899,0.3388484,0.9063078);
+			Quaternion quaternion2(0.1129495, 0.225899, 0.3388484, 0.9063078);
 			Assert::IsTrue(quaternion1.AreEqual(quaternion2,0.0000001f));
 		}
 		TEST_METHOD(DoubleAxisAngleConstruction)
@@ -117,7 +117,7 @@ namespace CALUMIAnimationUnitTests
 		TEST_METHOD(Multiplication2_E)
 		{
 			Quaternion quaternion1;
-			Quaternion quaternion2(1.0,2.0,3.0,4.0);
+			Quaternion quaternion2(1.0, 2.0, 3.0, 4.0);
 			Assert::IsTrue(quaternion2.AreEqual(quaternion1 * quaternion2, 0.0000001f));
 		}
 		TEST_METHOD(Multiplication3_E)
@@ -134,7 +134,7 @@ namespace CALUMIAnimationUnitTests
 		}
 		TEST_METHOD(Multiplication4_F)
 		{
-			Quaternion quaternion1(M_SQRT1_2,0.0,0.0,M_SQRT1_2);
+			Quaternion quaternion1(M_SQRT1_2, 0.0, 0.0, M_SQRT1_2);
 			Quaternion quaternion2(1.0, 2.0, 3.0, 4.0);
 			Assert::IsFalse(quaternion2.AreSameRotation(quaternion1 * -quaternion2, 0.0000001f));
 		}
@@ -196,7 +196,7 @@ namespace CALUMIAnimationUnitTests
 		{
 			Quaternion quaternion1(Vector3D(0.0, 0.0, 1.0), ToRadians(180.0)); //0,0,1,0
 			Quaternion quaternion2(Vector3D(0.0, 1.0, 0.0), ToRadians(30.0)); //0,0.258819,0,0.9659258
-			Quaternion expectedOut(-0.258819,0.0,0.965926,0.0); //180 on Z axis
+			Quaternion expectedOut(-0.258819, 0.0, 0.965926, 0.0); //180 on Z axis
 			//std::cout << (quaternion1 * quaternion2).ToString() << std::endl;
 			Assert::IsTrue(expectedOut.AreSameRotation(quaternion1 * quaternion2, 0.0000001f));
 		}
@@ -212,7 +212,33 @@ namespace CALUMIAnimationUnitTests
 
 	};
 
+	TEST_CLASS(CALUMI_MathVector3)
+	{
+	public:
 
+		TEST_METHOD(DefaultConstruction)
+		{
+			Vector3 vec;
+			Assert::IsTrue(vec.getX() == 0 && vec.getY() == 0 && vec.getZ() == 0);
+		}
+		TEST_METHOD(FloatConstruction)
+		{
+			Vector3 vec(1.0f,1.0f,1.0f);
+			Assert::IsTrue(vec.getX() == 1.0f && vec.getY() == 1.0f && vec.getZ() == 1.0f);
+		}
+		TEST_METHOD(FloatConstruction_2)
+		{
+			Vector3 vec(1.0f, 1.0f, 1.0f);
+			Assert::IsTrue(vec.getX() == 1.0 && vec.getY() == 1.0 && vec.getZ() == 1.0);
+		}
+		TEST_METHOD(FloatConstruction_3)
+		{
+			Vector3 vec(1.0f, 1.0f, 1.0f);
+			Quaternion quaternion1(vec, static_cast<float>(ToRadians(50.0)));
+			Assert::IsTrue(vec.getX() == 1.0 && vec.getY() == 1.0 && vec.getZ() == 1.0);
+			
+		}
+	};
 
 
 

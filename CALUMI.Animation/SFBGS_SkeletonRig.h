@@ -19,7 +19,7 @@ namespace CALUMI {namespace SFBGS {
 	SkeletonRig ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig);
 	CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(CALUMI::SFBGS::SkeletonRig& inputRig);
 
-	enum class BoneType : int32_t
+	enum class CALUMIANIMATION_API BoneType : int32_t
 	{
 		Default		= -1,
 		Twist		=  1
@@ -27,42 +27,47 @@ namespace CALUMI {namespace SFBGS {
 
 	struct CALUMIANIMATION_API SkeletonBone
 	{
-		CALUMI::Math::Quaternion localRotation;
-		CALUMI::Math::Quaternion globalRotation;
-		CALUMI::Math::Vector3 position;
+		
+		CALUMI::Math::Quaternion& LocalRotation() const;
+		
+		CALUMI::Math::Quaternion& GlobalRotation() const;
+		
+		CALUMI::Math::Vector3& Position() const;
 
-		BoneType boneType = BoneType::Default;
-		uint64_t nameOffset = 0;
-		/// <summary>
-		/// -1 for the root bone
-		/// </summary>
-		int32_t parentBoneIndex = -1;
-		/// <summary>
-		/// Twist influence override? Always points to parent on mannequin twist bones
-		/// </summary>
-		int32_t twistDriverMqnIndex = -1;
-		/// <summary>
-		/// Twist influence, -1 if skipped
-		/// </summary>
-		int32_t twistDriverIndex = -1;
-		_PRIVATE_(_pad01)
-		/// <summary>
-		/// Same as this bone's index by default
-		/// </summary>
-		int32_t mirrorBoneIndex = 0;
-		int32_t term05 = 0;
-		/// <summary>
-		/// Negative if pointing to parent
-		/// </summary>
-		float twistDriverWeight = 0;
-		_PRIVATE_(_pad02)
-		float unknownScalar = 0.0;
-		int32_t term08 = 0;
+		BoneType getBoneType() const;
+		void setBoneType(BoneType t);
+		
+		uint64_t getNameOffset() const;
+		void setNameOffset(uint64_t offset);
+		int32_t getParentBoneIndex() const;
+		void setParentBoneIndex(int32_t idx);
+		int32_t getTwistDriverMqnIndex() const;
+		void setTwistDriverMqnIndex(int32_t idx);
+		int32_t getTwistDriverIndex() const;
+		void setTwistDriverIndex(int32_t idx);
+		int32_t getMirrorBoneIndex() const;
+		void setMirrorBoneIndex(int32_t idx);
+		int32_t getTerm05() const;
+		void setTerm05(int32_t value);
+		float getTwistDriverWeight() const;
+		void setTwistDriverWeight(float weight);
+		float getUnknownScalar() const;
+		void setUnknownScalar(float value);
+		int32_t getTerm08() const;
+		void setTerm08(int32_t value);
 
+#ifdef _DEBUG
+		int32_t getPad01() const;
+		int32_t getPad02() const;
+#endif
 
 		//Constructors
-		SkeletonBone() = default;
+		SkeletonBone();
+		SkeletonBone(const SkeletonBone& input);
+		~SkeletonBone();
 		SkeletonBone(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex);
+
+		SkeletonBone& operator=(const SkeletonBone& input);
 
 		/// <summary>
 		/// Fills end of buffer with 96 bytes and copies the information into the vector.
@@ -77,86 +82,47 @@ namespace CALUMI {namespace SFBGS {
 		/// <returns></returns>
 		UNIV::BoneType GetBoneTypeAsUNIVEnum();
 		const char* GetBoneTypeAsString();
-
-		
 		
 	private:
 		//CONVERSION ONLY, DOES NOT ADD MQN TWIST INDEX
 		bool SetBoneTypeFromUNIV(UNIV::SkeletonBone& univBone);
 		bool SetBoneTypeToUNIV(UNIV::SkeletonBone& univBone);
-		
-		/// <summary>
-		/// Always -1
-		/// </summary>
-		int32_t _pad01 = -1;
-		/// <summary>
-		/// Always 0
-		/// </summary>
-		int32_t _pad02 = 0; 
 
 		friend SkeletonRig CALUMI::SFBGS::ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig);
 		friend CALUMI::UNIV::SkeletonRig CALUMI::SFBGS::ConvertToUniversalRig(CALUMI::SFBGS::SkeletonRig& inputRig);
+
+	private:
+		struct Impl;
+		Impl* pImpl;
 	};
-
-
 
 	struct CALUMIANIMATION_API SkeletonRig : CALUMI::ReadWritable
 	{
-
-		//HEADER
-		int versionNumber = 05;
-
-		unsigned int fileSize = 0;
-
-		/// <summary>
-		/// Currently the only value seen is 0x50 (80)
-		/// </summary>
-		unsigned int headerSize = 0x50;
-
-		_PRIVATE_(headerEmpty01)
-		/// <summary>
-		/// 96* bone count + 80 bytes
-		/// </summary>
-		unsigned int boneMapOffset = 0;
-
-		_PRIVATE_(headerEmpty02)
-		/// <summary>
-		/// No matter what, these three ALWAYS match. Could be internal number tracking for BGS and may not matter to anyone outside of the company
-		/// </summary>
-		uint64_t matchingThree[3] = { 0,0,0 };
-		/// <summary>
-		/// default precision values. For ships use 0.25. For first person use 0.0078125 (1/128)
-		/// </summary>
-		float lowPrecision = 0.03125f;
-		/// <summary>
-		/// default precision values. For ships use 0.002. For first person use 6.25e-5 (1/16000)
-		/// </summary>
-		float highPrecision = 0.00025f;
-
-		uint16_t boneCount = 0;
-		uint16_t boneCount_Animated = 0;
-		_PRIVATE_(headerEmpty03)
-		/// <summary>
-		/// ;)
-		/// </summary>
-		uint8_t endOfHeader[16] = {0x0, 0x0, 0x43, 0x41, 0x4C, 0x55, 0x4D, 0x49, 0x44, 0x56, 0x52, 0x53, 0x4A, 0x4F, 0x4A, 0x4F };
-
-
-		Utilities::VectorContainer<SkeletonBone> boneEntries;
-
-		//Don't ask why I'm initializing like this... let's just move on.
-		int16_t boneMapArray[SFBGSMAPSIZE] = 
-		{
-			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-			-1,-1,-1,-1,-1,-1,-1
-		};
-
-		/// <summary>
-		/// String array for the bone names
-		/// </summary>
-		Utilities::VectorContainer<Utilities::StringContainer> stringArray;
+		int VersionNumber() const;
+		void VersionNumber(int v);
+		uint32_t FileSize() const;
+		void FileSize(uint32_t size);
+		uint32_t HeaderSize() const;
+		void HeaderSize(uint32_t size);
+		uint32_t BoneMapOffset() const;
+		void BoneMapOffset(uint32_t offset);
+		Utilities::VectorContainer<uint64_t> getMatchingThree() const;
+		void setMatchingThree(uint64_t m1, uint64_t m2, uint64_t m3);
+		float LowPrecision() const;
+		void LowPrecision(float value);
+		float HighPrecision() const;
+		void HighPrecision(float value);
+		uint16_t BoneCount() const;
+		void BoneCount(uint16_t count);
+		uint16_t BoneCountAnimated() const;
+		void BoneCountAnimated(uint16_t count);
+		Utilities::VectorContainer<SkeletonBone>& BoneEntries() const;
+		Utilities::VectorContainer<int16_t> BoneMapArray() const;
+		void BoneMapArray(Utilities::VectorContainer<int16_t>& input);
+		Utilities::VectorContainer<Utilities::StringContainer>& StringArray() const;
+#ifdef _DEBUG
+		Utilities::VectorContainer<char> EndOfHeader() const;
+#endif
 
 		bool IsMarkedMannequin() const;
 
@@ -166,23 +132,18 @@ namespace CALUMI {namespace SFBGS {
 		Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
 		Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToFile(const wchar_t* outputFilePath);
 
-	private:
-		/// <summary>
-		/// Always empty, possibly padding, see _PRIVATE_ for placement in struct
-		/// </summary>
-		unsigned int headerEmpty01 = 0;
-		/// <summary>
-		/// Always empty, possibly padding, see _PRIVATE_ for placement in struct
-		/// </summary>
-		unsigned int headerEmpty02 = 0;
-		/// <summary>
-		/// Always empty, possibly padding, see _PRIVATE_ for placement in struct
-		/// </summary>
-		unsigned int headerEmpty03 = 0;
+		~SkeletonRig();
+		SkeletonRig();
+		SkeletonRig(const SkeletonRig& input);
+
+		SkeletonRig& operator=(const SkeletonRig& input);
 
 	public:
 		//DEBUG FUNCTIONS
 		uint8_t DEBUG_CheckAssumedHeaderEntries();
+	private:
+		struct Impl;
+		Impl* pImpl;
 	};
 	
 

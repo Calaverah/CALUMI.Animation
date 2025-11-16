@@ -13,18 +13,22 @@ namespace CALUMI {namespace UNIV {
 
 	struct CALUMIANIMATION_API Translation
 	{
-		uint16_t frame = 0;
-		CALUMI::Math::Vector3D translation;
+		uint16_t Frame() const;
+		void Frame(uint16_t frame);
+		Math::Vector3D& TranslationVector() const;
 
-		Translation() = default;
-		Translation(const uint16_t& frame, const CALUMI::Math::Vector3D& translation)
-			: frame(frame), translation(translation)
-		{
-		}
+		~Translation();
+		Translation();
+		Translation(const uint16_t& frame, const CALUMI::Math::Vector3D& translation);
+		Translation(const Translation& input);
 
 		UNIV::Translation& operator=(const UNIV::Translation& other);
 
 		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
+
+	private:
+		struct Impl;
+		Impl* pImpl;
 	};
 
 	bool operator<(const UNIV::Translation& A, const UNIV::Translation& B);
@@ -36,18 +40,21 @@ namespace CALUMI {namespace UNIV {
 
 	struct CALUMIANIMATION_API Rotation
 	{
-		uint16_t frame = 0;
-		CALUMI::Math::Quaternion rotation;
+		uint16_t Frame() const;
+		void Frame(uint16_t frame);
+		Math::Quaternion& RotationQuaternion() const;
 
-		Rotation() = default;
-		Rotation(const uint16_t& frame, const CALUMI::Math::Quaternion& rotation)
-			: frame(frame), rotation(rotation)
-		{
-		}
+		Rotation();
+		Rotation(const uint16_t& frame, const CALUMI::Math::Quaternion& rotation);
+		Rotation(const Rotation& input);
+		~Rotation();
 
 		UNIV::Rotation& operator=(const UNIV::Rotation& other);
 
 		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
+	private:
+		struct Impl;
+		Impl* pImpl;
 	};
 
 	bool operator<(const UNIV::Rotation& A, const UNIV::Rotation& B);
@@ -59,18 +66,22 @@ namespace CALUMI {namespace UNIV {
 
 	struct CALUMIANIMATION_API Scalar
 	{
-		uint16_t frame = 0;
-		float scalar = 1.0;
+		uint16_t Frame() const;
+		void Frame(uint16_t frame);
+		float ScalarValue() const;
+		void ScalarValue(float value);
 
-		Scalar() = default;
-		Scalar(const uint16_t& frame, float scalar)
-			: frame(frame), scalar(scalar)
-		{
-		}
+		Scalar();
+		~Scalar();
+		Scalar(const uint16_t& frame, float scalar);
+		Scalar(const Scalar& input);
 
 		UNIV::Scalar& operator=(const UNIV::Scalar& other);
 
 		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
+	private:
+		struct Impl;
+		Impl* pImpl;
 	};
 
 	bool operator<(const UNIV::Scalar& A, const UNIV::Scalar& B);
@@ -82,18 +93,23 @@ namespace CALUMI {namespace UNIV {
 
 	struct CALUMIANIMATION_API Priority
 	{
-		uint16_t frame = 0;
-		uint8_t priority = 90; //Unsure what a good default is yet. 90 is the highest seen so far
+		uint16_t Frame() const;
+		void Frame(uint16_t frame);
+		uint8_t PriorityValue() const;
+		void PriorityValue(uint8_t value);
 
-		Priority() = default;
-		Priority(const uint16_t& frame, const uint8_t& priority)
-			: frame(frame), priority(priority)
-		{
-		}
+		Priority();
+		~Priority();
+		Priority(const uint16_t& frame, const uint8_t& priority);
+		Priority(const Priority& input);
 
 		UNIV::Priority& operator=(const UNIV::Priority& other);
 
 		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
+
+	private:
+		struct Impl;
+		Impl* pImpl;
 	};
 
 	bool operator<(const UNIV::Priority& A, const UNIV::Priority& B);

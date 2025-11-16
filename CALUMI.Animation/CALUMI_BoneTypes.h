@@ -32,12 +32,6 @@ namespace CALUMI {
 			virtual const char* GetTypeString() const = 0;
 			BoneTypeProperties() = default;
 			virtual ~BoneTypeProperties() {};
-
-			virtual BoneTypeProperties* Clone() = 0;
-
-		/*protected:
-			UNIV::BoneType boneType = UNIV:: BoneType::Default;*/
-
 		};
 
 		//Default Type
@@ -49,31 +43,30 @@ namespace CALUMI {
 
 			// Inherited via BoneTypeProperties
 			UNIV::BoneType GetType() const override;
-			
-
-			// Inherited via BoneTypeProperties
-			BoneTypeProperties* Clone() override;
-
 		};
 
 		//Basic Twist Type
 		struct CALUMIANIMATION_API TwistBoneProperties : BoneTypeProperties
 		{
+			int32_t TwistDriverIndex() const;
+			void TwistDriverIndex(int32_t idx);
+			float TwistDriverWeight() const;
+			void TwistDriverWeight(float wgt);
 
-			int32_t twistDriverIndex = -1;
-			float twistDriverWeight = 0.0f;
-
-
-			TwistBoneProperties() = default;
-			~TwistBoneProperties() override {};
+			TwistBoneProperties();
+			~TwistBoneProperties() override;
+			TwistBoneProperties(const TwistBoneProperties* input);
 
 			const char* GetTypeString() const override;
 
 			// Inherited via BoneTypeProperties
 			UNIV::BoneType GetType() const override;
 
-			// Inherited via BoneTypeProperties
-			BoneTypeProperties* Clone() override;
+			TwistBoneProperties& operator=(const TwistBoneProperties& input);
+
+		private:
+			struct Impl;
+			Impl* pImpl;
 		};
 
 }}

@@ -6,7 +6,7 @@
 #include "CALUMI_Common.h"
 #include "CALUMI_Utilities.h"
 
-enum class FileErrorCode
+enum class CALUMIANIMATION_API FileErrorCode : uint8_t
 {
 	FileNotFound,
 	PermissionDenied,
@@ -21,23 +21,22 @@ enum class FileErrorCode
 
 struct CALUMIANIMATION_API FileError
 {
-	FileErrorCode fileCode = FileErrorCode::UnknownErrorCode;
-	CALUMI::Utilities::PathContainer path;
-	CALUMI::Utilities::StringContainer errorMessage;
-	
-
-	//friend std::ostream& operator<<(std::ostream& os, FileError error);
+	FileErrorCode GetFileErrorCode() const;
+	CALUMI::Utilities::PathContainer GetFilePath() const;
+	const char* GetErrorMessage() const;
 
 	CALUMI::Utilities::StringContainer ToString();
-	FileError() = default;
-
-
-	FileError(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const char* errorMessage) 
-		: fileCode(fileCode), path(path), errorMessage(errorMessage) {};
-	FileError(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const CALUMI::Utilities::StringContainer& errorMessage)
-		: fileCode(fileCode), path(path), errorMessage(errorMessage) {};
+	FileError();
+	~FileError();
+	FileError(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const char* errorMessage);
+	FileError(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const CALUMI::Utilities::StringContainer& errorMessage);
 	FileError(const FileError& source);
+
 	FileError& operator=(const FileError& source);
+
+private:
+	struct Impl;
+	Impl* pImpl;
 };
 
 #pragma warning(disable: 4661)

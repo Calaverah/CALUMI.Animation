@@ -5,11 +5,6 @@
 namespace CALUMI {
 	namespace UNIV {
 
-		/*const UNIV::BoneType BoneTypeProperties::GetType() const
-		{
-			return boneType;
-		}*/
-
 		//Returns default when the switch case... defaults... 
 		const UNIV::BoneType BoneTypeFromString(const Utilities::StringContainer& boneTypeStr)
 		{
@@ -20,10 +15,6 @@ namespace CALUMI {
 			else
 				return UNIV::BoneType::UNDEFINED;
 		}
-		/*DefaultBoneProperties::DefaultBoneProperties()
-		{
-			boneType = UNIV::BoneType::Default;
-		}*/
 		const char* DefaultBoneProperties::GetTypeString() const
 		{
 			return DefaultBoneTypeStr;
@@ -32,14 +23,42 @@ namespace CALUMI {
 		{
 			return UNIV::BoneType::Default;
 		}
-		BoneTypeProperties* DefaultBoneProperties::Clone()
+
+
+		struct TwistBoneProperties::Impl 
 		{
-			return new DefaultBoneProperties(*this);
+			int32_t twistDriverIndex = -1;
+			float twistDriverWeight = 0.0f;
+			Impl() = default;
+		};
+		int32_t TwistBoneProperties::TwistDriverIndex() const
+		{
+			return pImpl->twistDriverIndex;
 		}
-		/*TwistBoneProperties::TwistBoneProperties()
+		void TwistBoneProperties::TwistDriverIndex(int32_t idx)
 		{
-			boneType = UNIV::BoneType::Twist;
-		}*/
+			pImpl->twistDriverIndex = idx;
+		}
+		float TwistBoneProperties::TwistDriverWeight() const
+		{
+			return pImpl->twistDriverWeight;
+		}
+		void TwistBoneProperties::TwistDriverWeight(float wgt)
+		{
+			pImpl->twistDriverWeight = wgt;
+		}
+		TwistBoneProperties::TwistBoneProperties()
+		{
+			pImpl = new Impl;
+		}
+		TwistBoneProperties::~TwistBoneProperties()
+		{
+			if (pImpl) delete pImpl;
+		}
+		TwistBoneProperties::TwistBoneProperties(const TwistBoneProperties* input) : TwistBoneProperties()
+		{
+			*pImpl = *(input->pImpl);
+		}
 		const char* TwistBoneProperties::GetTypeString() const
 		{
 			return TwistBoneTypeStr;
@@ -48,9 +67,10 @@ namespace CALUMI {
 		{
 			return UNIV::BoneType::Twist;
 		}
-		BoneTypeProperties* TwistBoneProperties::Clone()
+		TwistBoneProperties& TwistBoneProperties::operator=(const TwistBoneProperties& input)
 		{
-			return new TwistBoneProperties(*this);
+			*pImpl = *(input.pImpl);
+			return *this;
 		}
 	}
 }

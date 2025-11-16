@@ -18,19 +18,15 @@ namespace CALUMI {
 		class CALUMIANIMATION_API AnimationScene : UNIV::Convertible
 		{
 		public:
-			Utilities::StringContainer sceneName = "MyStarfieldAnimationScene";
-			Utilities::VectorContainer<Animation> animations;
-			SkeletonRig rig;
+			Utilities::StringContainer& SceneName() const;
+			Utilities::VectorContainer<Animation>& Animations() const;
+			SkeletonRig& Rig() const;
 
-			AnimationScene() = default;
-			AnimationScene(const char* sceneName)
-				: sceneName(sceneName)
-			{
-			}
-			AnimationScene(Utilities::StringContainer sceneName)
-				: sceneName(sceneName)
-			{
-			}
+			AnimationScene();
+			~AnimationScene();
+			AnimationScene(const char* sceneName);
+			AnimationScene(const Utilities::StringContainer& sceneName);
+			AnimationScene(const AnimationScene& input);
 
 			bool AddAnimationToScene(SFBGS::Animation& animation, bool overwrite = true);
 			bool RemoveAnimationFromScene(Utilities::StringContainer& sceneToRemove);
@@ -42,7 +38,11 @@ namespace CALUMI {
 			bool ConvertFromUniversalScene(CALUMI::UNIV::AnimationScene& input, SFBGS::SkeletonRig& rigReference);
 			UNIV::AnimationScene ConvertToUniversalScene() override;
 
-			
+			AnimationScene& operator=(const AnimationScene& input);
+
+		private:
+			struct Impl;
+			Impl* pImpl;
 		};
 
 

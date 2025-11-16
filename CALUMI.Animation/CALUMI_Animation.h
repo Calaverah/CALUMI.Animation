@@ -11,58 +11,68 @@ namespace CALUMI {namespace UNIV {
 
 	struct CALUMIANIMATION_API AnimationBlock
 	{
-		int boneIndex = -2;
-		Utilities::StringContainer boneName = "UNNAMED";
-		Utilities::VectorContainer<CALUMI::UNIV::Rotation> _rotationSequence;
-		Utilities::VectorContainer<CALUMI::UNIV::Translation> _translationSequence;
-		Utilities::VectorContainer<CALUMI::UNIV::Scalar> _scalarSequence;
-		Utilities::VectorContainer<CALUMI::UNIV::Priority> _prioritySequence;
+		AnimationBlock();
+		~AnimationBlock();
+		AnimationBlock(const AnimationBlock& input);
 
-		AnimationBlock() = default;
+		AnimationBlock& operator=(const AnimationBlock& input);
 
 		//This will get the final frame entry, not the total number of frames in the sequence
 		unsigned int GetLastFrameInBlock();
 
+		int BoneIndex() const;
+		void BoneIndex(int idx);
+
+		const char* BoneName() const;
+		void BoneName(const char* name);
+
+		Utilities::VectorContainer<CALUMI::UNIV::Rotation>& RotationSequence() const;
 		bool AddRotationEntry(CALUMI::UNIV::Rotation& input, bool overwrite = true);
 		bool RemoveRotationEntry(unsigned int frame);
 		void ClearRotationEntries();
 		size_t GetRotationEntryCount() const;
 
+		Utilities::VectorContainer<CALUMI::UNIV::Translation>& TranslationSequence() const;
 		bool AddTranslationEntry(CALUMI::UNIV::Translation& input, bool overwrite = true);
 		bool RemoveTranslationEntry(unsigned int frame);
 		void ClearTranslationEntries();
 		size_t GetTranslationEntryCount() const;
 
+		Utilities::VectorContainer<CALUMI::UNIV::Scalar>& ScalarSequence() const;
 		bool AddScalarEntry(CALUMI::UNIV::Scalar& input, bool overwrite = true);
 		bool RemoveScalarEntry(unsigned int frame);
 		void ClearScalarEntries();
 		size_t GetScalarEntryCount() const;
 
-
+		Utilities::VectorContainer<CALUMI::UNIV::Priority>& PrioritySequence();
 		bool AddPriorityEntry(CALUMI::UNIV::Priority& input, bool overwrite = true);
 		bool RemovePriorityEntry(unsigned int frame);
 		void ClearPriorityEntries();
 		size_t GetPriorityEntryCount() const;
 
-		
-		UNIV::AnimationBlock& operator=(const AnimationBlock& other);
-
 		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
 
 		bool operator<(const AnimationBlock& other) const;
 		bool operator>(const AnimationBlock& other) const;
+	private:
+		struct Impl;
+		Impl* pImpl;
 	};
 
 	class CALUMIANIMATION_API Animation
 	{
 	public:
-		Utilities::StringContainer animationTitle = "NO TITLE";
-		//int boneCount = 0;
 
-		Utilities::VectorContainer<AnimationBlock> animationBlocks;
+		Utilities::VectorContainer<AnimationBlock>& AnimationBlocks() const;
+		const char* AnimationTitle() const;
+		void AnimationTitle(const char* title);
+		void AnimationTitle(const Utilities::StringContainer& title);
 
 		Animation(const Utilities::StringContainer& title, unsigned int initialBlockCount);
-		Animation() = default;
+		Animation(const Animation& input);
+		Animation();
+		~Animation();
+		Animation& operator=(const Animation& input);
 
 		bool AddAnimationBlock(AnimationBlock& blockToAdd, bool overwrite = true);
 		void ClearAnimationBlocks();
@@ -71,7 +81,9 @@ namespace CALUMI {namespace UNIV {
 		unsigned int GetFrameCount();
 
 		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
-
+	private:
+		struct Impl;
+		Impl* pImpl;
 	};
 
 	//Ctype accessible, due to namespace being ignored in demangling, it is important to remember that only universal animation structs are exposed
@@ -81,7 +93,6 @@ namespace CALUMI {namespace UNIV {
 		CALUMIANIMATION_API AnimationBlock* GetAnimationBlockC(Animation* source, int index, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API size_t GetAnimationBlockCountC(Animation* source);
 		CALUMIANIMATION_API const char* GetAnimationTitleC(Animation* source);
-		//CALUMIANIMATION_API size_t GetAnimationBoneCountC(Animation* source);
 		CALUMIANIMATION_API size_t GetFrameCountC(Animation* source);
 		CALUMIANIMATION_API bool DeleteAnimationC(Animation* ptr);
 		CALUMIANIMATION_API bool AddAnimBlockToAnimationC(Animation* anim, AnimationBlock* blockToAdd, bool overwrite, Utilities::StringContainer* errorMessage);

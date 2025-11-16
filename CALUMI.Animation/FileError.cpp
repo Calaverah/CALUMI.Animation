@@ -7,12 +7,22 @@
 #include <format>
 #include <string>
 
+struct FileError::Impl
+{
+	FileErrorCode fileCode = FileErrorCode::UnknownErrorCode;
+	CALUMI::Utilities::PathContainer path;
+	CALUMI::Utilities::StringContainer errorMessage;
+	Impl() = default;
+	Impl(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const char* errorMessage) : fileCode(fileCode), path(path), errorMessage(errorMessage) {}
+	Impl(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const CALUMI::Utilities::StringContainer& errorMessage) : fileCode(fileCode), path(path), errorMessage(errorMessage) {}
+};
+
 CALUMI::Utilities::StringContainer FileError::ToString()
 {
 
 	std::string fileCodeString;
 
-	switch (fileCode) {
+	switch (pImpl->fileCode) {
 	case FileErrorCode::FileNotFound:		fileCodeString = "File not found. "; break;
 	case FileErrorCode::PermissionDenied:	fileCodeString = "Permission denied. "; break;
 	case FileErrorCode::NotAFile:			fileCodeString = "Path is not a regular file. "; break;
@@ -26,29 +36,66 @@ CALUMI::Utilities::StringContainer FileError::ToString()
 	}
 
 	std::string em;
-	if (!errorMessage.Empty()) em = std::format("({})", errorMessage.c_str());
+	if (!pImpl->errorMessage.Empty()) em = std::format("({})", pImpl->errorMessage.c_str());
 	else em = "";
 
 	CALUMI::Utilities::StringContainer output("FILE ERROR: [");
-	output += path.StringContainer();
+	output += pImpl->path.StringContainer();
 	output += "]: ";
 	output += fileCodeString.c_str();
 	output += em.c_str();
 	return output;
 }
 
+FileErrorCode FileError::GetFileErrorCode() const
+{
+	return pImpl->fileCode;
+}
+
+CALUMI::Utilities::PathContainer FileError::GetFilePath() const
+{
+	return pImpl->path;
+}
+
+const char* FileError::GetErrorMessage() const
+{
+	return pImpl->errorMessage.c_str();
+}
+
+FileError::~FileError()
+{
+	if (pImpl)
+		delete pImpl;
+}
+
+FileError::FileError()
+{
+	pImpl = new Impl;
+}
+
+FileError::FileError(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const char* errorMessage)
+{
+	pImpl = new Impl(fileCode, path, errorMessage);
+}
+
+FileError::FileError(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const CALUMI::Utilities::StringContainer& errorMessage)
+{
+	pImpl = new Impl(fileCode, path, errorMessage);
+}
+
 FileError::FileError(const FileError& source)
 {
-	fileCode = source.fileCode;
-	errorMessage = source.errorMessage;
-	path = source.path;
+	pImpl = new Impl;
+	pImpl->fileCode = source.pImpl->fileCode;
+	pImpl->errorMessage = source.pImpl->errorMessage;
+	pImpl->path = source.pImpl->path;
 }
 
 FileError& FileError::operator=(const FileError& source)
 {
-	fileCode = source.fileCode;
-	errorMessage = source.errorMessage;
-	path = source.path;
+	pImpl->fileCode = source.pImpl->fileCode;
+	pImpl->errorMessage = source.pImpl->errorMessage;
+	pImpl->path = source.pImpl->path;
 	return *this;
 }
 

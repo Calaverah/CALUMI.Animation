@@ -11,7 +11,14 @@
 #include <concepts>
 #include "CALUMI_AnimationScene.h"
 #include "SFBGS_AnimationScene.h"
+#include "FileError.h"
 #include "CALUMI_Utilities.h"
+#include "SFBGS/AnimationGraph/SFBGS_AnimationGraph.h"
+#include <objbase.h>
+
+#pragma warning(disable: 4661)
+template struct CALUMI::Utilities::VectorContainer<std::shared_ptr<CALUMI::UNIV::RigPackage>>;
+#pragma warning(default: 4661)
 
 namespace CALUMI {
 	namespace Utilities {
@@ -82,7 +89,7 @@ namespace CALUMI {
 		/// <param name="currentIndex"></param>
 		/// <param name="alignmentSize"></param>
 		/// <param name="Destination"></param>
-		void AlignFillBufferAndWrite(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, void* Source)
+		void AlignFillBufferAndWrite(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, const void* Source)
 		{
 			_AlignFillBuffer(buffer, currentIndex, alignmentSize);
 			//if source is a short but needs to be a byte, the variableSize will take only the first byte which in Little Endian, is any value under 255
@@ -94,6 +101,16 @@ namespace CALUMI {
 
 		Utilities::StringContainer Indent(const size_t indents) {
 			return Utilities::StringContainer(indents * 2, ' ');
+		}
+
+		bool IsNumeric(const Utilities::StringContainer& str)
+		{
+			for (size_t i = 0; i < str.Length(); i++)
+			{
+				char _char = str.at(i);
+				if (_char != '-' && _char != '.' && !std::isdigit(_char)) return false;
+			}
+			return true;
 		}
 
 #pragma region PathContainer
@@ -325,6 +342,10 @@ namespace CALUMI {
 		{
 			return pImpl->string.compare(pos,len,other.pImpl->string,subpos,sublen);
 		}
+		void StringContainer::assign(const char* str)
+		{
+			pImpl->string.assign(str);
+		}
 		StringContainer& StringContainer::operator=(const char* other)
 		{
 			pImpl->string = other;
@@ -345,7 +366,7 @@ namespace CALUMI {
 			pImpl = new Impl;
 			pImpl->string = source.pImpl->string;
 		}
-		StringContainer::StringContainer(const StringContainer&& source) noexcept
+		StringContainer::StringContainer(StringContainer&& source) noexcept
 		{
 			pImpl = new Impl;
 			pImpl->string = source.pImpl->string;
@@ -393,127 +414,123 @@ namespace CALUMI {
 
 #pragma region Vectors
 
-		template<typename T>
+		template<class T>
 		struct VectorContainer<T>::Impl
 		{
 			std::vector<T> vector;
-			Impl() = default;
-			Impl(const size_t count)
+			constexpr Impl() noexcept = default;
+			explicit Impl(size_t count)
 			{
 				std::vector<T> temp(count);
 				vector = temp;
 			}
+			constexpr Impl(size_t count, const T& value) { std::vector<T> temp(count, value); vector = temp; }
+			constexpr Impl(std::vector<T>&& source) noexcept { std::vector<T> temp(source); vector = temp; }
+			constexpr Impl(const std::vector<T>& source) noexcept { std::vector<T> temp(source); vector = temp; }
+			template<class InputIt>
+			Impl(InputIt f, InputIt l) { std::vector<T> temp(f, l); vector = temp; }
 		};
-		template<typename T>
-		VectorContainer<T>::VectorContainer() noexcept
+		template<class T>
+		constexpr VectorContainer<T>::VectorContainer() noexcept
 		{
 			pImpl = new Impl;
 		}
-		template<typename T>
-		VectorContainer<T>::~VectorContainer()
+		template<class T>
+		constexpr VectorContainer<T>::~VectorContainer()
 		{
 			if (pImpl)
 				delete pImpl;
 		}
-		template<typename T>
-		VectorContainer<T>::VectorContainer(const size_t count)
+		template<class T>
+		VectorContainer<T>::VectorContainer(size_t count)
 		{
 			pImpl = new Impl(count);
 		}
-		template<typename T>
-		VectorContainer<T>::VectorContainer(const VectorContainer<T>& source) noexcept
+		template<class T>
+		constexpr VectorContainer<T>::VectorContainer(size_t count, const T& value)
 		{
-			pImpl = new Impl;
-			pImpl->vector = source.pImpl->vector;
+			pImpl = new Impl(count, value);
 		}
-		template<typename T>
-		VectorContainer<T>::VectorContainer(const VectorContainer&& source) noexcept
+		template<class T>
+		constexpr VectorContainer<T>::VectorContainer(const VectorContainer<T>& source)
 		{
-			pImpl = new Impl;
-			pImpl->vector = source.pImpl->vector;
+			pImpl = new Impl(source.pImpl->vector);
 		}
-		template<typename T>
-		VectorContainer<T>::VectorContainer(const T* dataBegin, const T* dataEnd)
+		template<class T>
+		constexpr VectorContainer<T>::VectorContainer(VectorContainer&& source) noexcept
 		{
-			size_t size = dataEnd - dataBegin + 1;
-			if (size > 0)
-				reserve(size);
-
-			for (size_t i = 0; i < size; i++)
-			{
-				push_back(dataBegin[i]);
-			}
+			pImpl = new Impl(source.pImpl->vector);
 		}
-		/*template<typename T>
-		VectorContainer<T>::VectorContainer(const StringContainer& source, bool includeNull) noexcept
+		/*template<class T>
+		template<class InputIt>
+		constexpr VectorContainer<T>::VectorContainer(InputIt first, InputIt last)
 		{
-			pImpl = new Impl;
-			pImpl->vector.resize(source.Length(includeNull));
-			std::memcpy(pImpl->vector.data(), source.data(), source.Length());
+			pImpl = new Impl(first, last);
 		}*/
-		template<typename T>
-		VectorContainer<T>& VectorContainer<T>::operator=(const VectorContainer<T>& other)
+		template<class T>
+		constexpr VectorContainer<T>& VectorContainer<T>::operator=(const VectorContainer<T>& other)
 		{
 			pImpl->vector = other.pImpl->vector;
 			return *this;
 		}
-		template<typename T>
+		template<class T>
+		constexpr VectorContainer<T>& VectorContainer<T>::operator=(VectorContainer&& other) noexcept
+		{
+			pImpl->vector = other.pImpl->vector;
+			return *this;
+		}
+		template<class T>
 		void VectorContainer<T>::resize(size_t n)
 		{
 			pImpl->vector.resize(n);
 		}
-		template<typename T>
+		template<class T>
 		void VectorContainer<T>::reserve(size_t n)
 		{
 			pImpl->vector.reserve(n);
 		}
-		template<typename T>
+		template<class T>
 		void VectorContainer<T>::shrink_to_fit()
 		{
 			pImpl->vector.shrink_to_fit();
 		}
-		template<typename T>
-		void VectorContainer<T>::fill(T fillValue)
-		{
-			std::fill(pImpl->vector.begin(), pImpl->vector.end(), fillValue);
-		}
-		template<typename T>
+		template<class T>
 		const T& VectorContainer<T>::at(size_t i) const
 		{
 			return pImpl->vector.at(i);
 		}
-		template<typename T>
+		template<class T>
 		T& VectorContainer<T>::at(size_t i)
 		{
 			return pImpl->vector.at(i);
 		}
-		template<typename T>
+		template<class T>
 		void VectorContainer<T>::push_back(const T& input)
 		{
 			pImpl->vector.push_back(input);
 		}
-		template<typename T>
+		template<class T>
 		void VectorContainer<T>::push_back(const T&& input)
 		{
 			pImpl->vector.push_back(input);
 		}
-		template<typename T>
+		template<class T>
 		void VectorContainer<T>::clear()
 		{
 			pImpl->vector.clear();
 		}
-		template<typename T>
+		template<class T>
 		size_t VectorContainer<T>::size() const
 		{
 			return pImpl->vector.size();
 		}
-		template<typename T>
+		template<class T>
 		bool VectorContainer<T>::empty() const
 		{
 			return pImpl->vector.empty();
 		}
 
-		template<typename T>
+		template<class T>
 		void VectorContainer<T>::erase(size_t pos)
 		{
 			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) < pImpl->vector.end())
@@ -522,7 +539,7 @@ namespace CALUMI {
 			}
 		}
 
-		template<typename T>
+		template<class T>
 		void VectorContainer<T>::insert_r(size_t pos, T& item)
 		{
 			if ((pImpl->vector.begin()+pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end())
@@ -531,7 +548,7 @@ namespace CALUMI {
 			}
 		}
 
-		template<typename T>
+		template<class T>
 		void VectorContainer<T>::insert(size_t pos, T item)
 		{
 			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end())
@@ -540,7 +557,7 @@ namespace CALUMI {
 			}
 		}
 
-		template<typename T>
+		template<class T>
 		void VectorContainer<T>::insert(size_t pos, size_t count, T& item)
 		{
 			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end())
@@ -549,7 +566,7 @@ namespace CALUMI {
 			}
 		}
 
-		template<typename T>
+		template<class T>
 		void VectorContainer<T>::insert(size_t pos, size_t count, T item)
 		{
 			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end())
@@ -558,25 +575,25 @@ namespace CALUMI {
 			}
 		}
 
-		template<typename T>
+		template<class T>
 		size_t VectorContainer<T>::end() const
 		{
 			return (pImpl->vector.end() - pImpl->vector.begin());
 		}
 
-		template<typename T>
+		template<class T>
 		T* VectorContainer<T>::data() noexcept
 		{
 			return pImpl->vector.data();
 		}
 
-		template<typename T>
+		template<class T>
 		const T* VectorContainer<T>::data() const noexcept
 		{
 			return pImpl->vector.data();
 		}
 
-		template<typename T>
+		template<class T>
 		void VectorContainer<T>::sort(bool highToLow)
 		{
 			if constexpr (HasLessThan<T>)
@@ -758,7 +775,588 @@ namespace CALUMI {
 		}
 #pragma endregion
 
-		
+#pragma region SharedPtr
+		template<class T>
+		struct SharedPtrContainer<T>::Impl
+		{
+			std::shared_ptr<T> shared_ptr;
+			Impl() = default;
+			//template<class Y>
+			Impl(T* ptr) { std::shared_ptr<T> temp(ptr); shared_ptr = temp; }
+			//template<class Y>
+			//Impl(const SharedPtrContainer<Y>& r) { std::shared_ptr<T> temp(r.pImpl->shared_ptr); shared_ptr = temp; }
+			Impl(const SharedPtrContainer& r) { std::shared_ptr<T> temp(r.pImpl->shared_ptr); shared_ptr = temp; }
+			//template<class Y>
+			//Impl(SharedPtrContainer<Y>&& r) { std::shared_ptr<T> temp(r.pImpl->shared_ptr); shared_ptr = temp; }
+			//template<class Y>
+			Impl(WeakPtrContainer<T>&& r) { std::shared_ptr<T> temp(r.pImpl->weak_ptr); shared_ptr = temp; }
+			//template<class Y>
+			Impl(const WeakPtrContainer<T>& r) { std::shared_ptr<T> temp(r.pImpl->weak_ptr); shared_ptr = temp; }
+			/*Impl(SharedPtrContainer&& r) { std::shared_ptr<T> temp(r.pImpl->shared_ptr); shared_ptr = temp; }
+			template<class Y, class Deleter>
+			Impl(Y* ptr, Deleter d) { std::shared_ptr<T> temp(ptr,d); shared_ptr = temp; }
+			template<class Y, class Deleter, class Alloc>
+			Impl(Y* ptr, Deleter d, Alloc alloc) { std::shared_ptr<T> temp(ptr, d, alloc); shared_ptr = temp; }*/
+		};
+
+		template<class T>
+		constexpr SharedPtrContainer<T>::SharedPtrContainer() noexcept
+		{
+			pImpl = new Impl;
+		}
+
+		template<class T>
+		SharedPtrContainer<T>::SharedPtrContainer(const SharedPtrContainer& r) noexcept
+		{
+			pImpl = new Impl(r);
+		}
+
+		template<class T>
+		SharedPtrContainer<T>::SharedPtrContainer(SharedPtrContainer&& r) noexcept
+		{
+			pImpl = new Impl(r);
+		}
+
+		/*template<class T>
+		template<class Y>
+		SharedPtrContainer<T>::SharedPtrContainer(const SharedPtrContainer<Y>& r) noexcept
+		{
+			pImpl = new Impl(r);
+		}*/
+
+		template<class T>
+		//template<class Y>
+		SharedPtrContainer<T>::SharedPtrContainer(const WeakPtrContainer<T>& r) noexcept
+		{
+			pImpl = new Impl(r);
+		}
+
+		/*template<class T>
+		template<class Y>
+		SharedPtrContainer<T>::SharedPtrContainer(SharedPtrContainer<Y>&& r) noexcept
+		{
+			pImpl = new Impl(r);
+		}*/
+
+		template<class T>
+		//template<class Y>
+		SharedPtrContainer<T>::SharedPtrContainer(WeakPtrContainer<T>&& r) noexcept
+		{
+			pImpl = new Impl(r);
+		}
+
+		template<class T>
+		//template<class Y>
+		SharedPtrContainer<T>::SharedPtrContainer(T* ptr) noexcept
+		{
+			pImpl = new Impl(ptr);
+		}
+
+		/*template<class T>
+		template<class Y, class Deleter>
+		SharedPtrContainer<T>::SharedPtrContainer(Y* ptr, Deleter d) noexcept
+		{
+			pImpl = new Impl(ptr, d);
+		}
+
+		template<class T>
+		template<class Y, class Deleter, class Alloc>
+		SharedPtrContainer<T>::SharedPtrContainer(Y* ptr, Deleter d, Alloc alloc)
+		{
+			pImpl = new Impl(ptr, d, alloc);
+		}*/
+
+		template<class T>
+		SharedPtrContainer<T>::~SharedPtrContainer()
+		{
+			if (pImpl)
+				delete pImpl;
+		}
+
+		template<class T>
+		SharedPtrContainer<T>& SharedPtrContainer<T>::operator=(SharedPtrContainer&& r) noexcept
+		{
+			pImpl->shared_ptr = r.pImpl->shared_ptr;
+			return *this;
+		}
+
+		template<class T>
+		SharedPtrContainer<T>& SharedPtrContainer<T>::operator=(const SharedPtrContainer& r) noexcept
+		{
+			pImpl->shared_ptr = r.pImpl->shared_ptr;
+			return *this;
+		}
+
+		template<class T>
+		template<class Y>
+		SharedPtrContainer<T>& SharedPtrContainer<T>::operator=(SharedPtrContainer<Y>&& r) noexcept
+		{
+			pImpl->shared_ptr = r.pImpl->shared_ptr;
+			return *this;
+		}
+
+		template<class T>
+		void SharedPtrContainer<T>::reset() noexcept
+		{
+			pImpl->shared_ptr.reset();
+		}
+
+		template<class T>
+		void SharedPtrContainer<T>::swap(SharedPtrContainer& r) noexcept
+		{
+			pImpl->shared_ptr.swap(r.pImpl->shared_ptr);
+		}
+
+		template<class T>
+		T* SharedPtrContainer<T>::get() const noexcept
+		{
+			return pImpl->shared_ptr.get();
+		}
+
+		template<class T>
+		template<class Y>
+		void SharedPtrContainer<T>::reset(Y* ptr)
+		{
+			pImpl->shared_ptr.reset(ptr);
+		}
+
+		template<class T>
+		template<class Y, class Deleter>
+		void SharedPtrContainer<T>::reset(Y* ptr, Deleter d)
+		{
+			pImpl->shared_ptr.reset(ptr, d);
+		}
+
+		template<class T>
+		template<class Y, class Deleter, class Alloc>
+		void SharedPtrContainer<T>::reset(Y* ptr, Deleter d, Alloc alloc)
+		{
+			pImpl->shared_ptr.reset(ptr, d, alloc);
+		}
+
+		template<class T>
+		template<class Y>
+		SharedPtrContainer<T>& SharedPtrContainer<T>::operator=(const SharedPtrContainer<Y>& r) noexcept
+		{
+			pImpl->shared_ptr = r.pImpl->shared_ptr;
+			return *this;
+		}
+
+		template<class T>
+		T& SharedPtrContainer<T>::operator*() const noexcept
+		{
+			return *(pImpl->shared_ptr.get());
+		}
+
+		template<class T>
+		T* SharedPtrContainer<T>::operator->() const noexcept
+		{
+			return pImpl->shared_ptr.get();
+		}
+
+		/*template<class T>
+		T& SharedPtrContainer<T>::operator[](size_t idx) const
+		{
+			return pImpl->shared_ptr[idx];
+		}*/
+
+		template<class T>
+		long SharedPtrContainer<T>::use_count() const noexcept
+		{
+			return pImpl->shared_ptr.use_count();
+		}
+
+		template<class T>
+		SharedPtrContainer<T>::operator bool() const noexcept
+		{
+			return pImpl->shared_ptr.get() != nullptr;
+		}
+
+		template<class T>
+		template<class Y>
+		bool SharedPtrContainer<T>::owner_before(const SharedPtrContainer<Y>& other) const noexcept
+		{
+			return pImpl->shared_ptr.owner_before(other.pImpl->shared_ptr);
+		}
+
+#pragma endregion
+
+
+#pragma region WeakPtr
+
+		template<class T>
+		struct WeakPtrContainer<T>::Impl
+		{
+			std::weak_ptr<T> weak_ptr;
+			Impl() = default;
+			Impl(const WeakPtrContainer& r) noexcept
+			{
+				std::weak_ptr<T> temp(r.pImpl->weak_ptr);
+				weak_ptr = temp;
+			}
+			Impl(WeakPtrContainer&& r) noexcept
+			{
+				std::weak_ptr<T> temp(r.pImpl->weak_ptr);
+				weak_ptr = temp;
+			}
+			//template<class Y>
+			/*Impl(WeakPtrContainer<Y>&& r) noexcept
+			{
+				std::weak_ptr<T> temp(r.pImpl->weak_ptr);
+				weak_ptr = temp;
+			}*/
+			/*template<class Y>
+			Impl(const WeakPtrContainer<Y>& r) noexcept
+			{
+				std::weak_ptr<T> temp(r.pImpl->weak_ptr);
+				weak_ptr = temp;
+			}*/
+			//template<class Y>
+			Impl(const SharedPtrContainer<T>& r) noexcept
+			{
+				std::weak_ptr<T> temp(r.pImpl->shared_ptr);
+				weak_ptr = temp;
+			}
+			Impl(SharedPtrContainer<T>&& r) noexcept
+			{
+				std::weak_ptr<T> temp(r.pImpl->shared_ptr);
+				weak_ptr = temp;
+			}
+
+		};
+
+		template<class T>
+		WeakPtrContainer<T>::WeakPtrContainer() noexcept
+		{
+			pImpl = new Impl;
+		}
+
+		template<class T>
+		WeakPtrContainer<T>::WeakPtrContainer(const WeakPtrContainer& r) noexcept
+		{
+			pImpl = new Impl(r);
+		}
+
+		template<class T>
+		//template<class Y>
+		WeakPtrContainer<T>::WeakPtrContainer(const SharedPtrContainer<T>& r) noexcept
+		{
+			pImpl = new Impl(r);
+		}
+
+		template<class T>
+		WeakPtrContainer<T>::WeakPtrContainer(SharedPtrContainer<T>&& r) noexcept
+		{
+			pImpl = new Impl(r);
+		}
+
+		/*template<class T>
+		template<class Y>
+		WeakPtrContainer<T>::WeakPtrContainer(const WeakPtrContainer<Y>& r) noexcept
+		{
+			pImpl = new Impl(r);
+		}*/
+
+		//template<class T>
+		////template<class Y>
+		//WeakPtrContainer<T>::WeakPtrContainer(WeakPtrContainer<T>&& r) noexcept
+		//{
+		//	pImpl = new Impl(r);
+		//}
+
+		template<class T>
+		WeakPtrContainer<T>::WeakPtrContainer(WeakPtrContainer&& r) noexcept
+		{
+			pImpl = new Impl(r);
+		}
+
+		template<class T>
+		WeakPtrContainer<T>::~WeakPtrContainer()
+		{
+			if(pImpl)
+				delete pImpl;
+		}
+
+		template<class T>
+		WeakPtrContainer<T>& WeakPtrContainer<T>::operator=(const WeakPtrContainer& r) noexcept
+		{
+			pImpl->weak_ptr = r.pImpl->weak_ptr;
+			return *this;
+		}
+
+		template<class T>
+		WeakPtrContainer<T>& WeakPtrContainer<T>::operator=(WeakPtrContainer&& r) noexcept
+		{
+			pImpl->weak_ptr = r.pImpl->weak_ptr;
+			return *this;
+		}
+
+		/*template<class T>
+		template<class Y>
+		WeakPtrContainer<T>& WeakPtrContainer<T>::operator=(WeakPtrContainer<Y>&& r) noexcept
+		{
+			pImpl->weak_ptr = r.pImpl->weak_ptr;
+			return *this;
+		}
+
+		template<class T>
+		template<class Y>
+		WeakPtrContainer<T>& WeakPtrContainer<T>::operator=(const WeakPtrContainer<Y>& r) noexcept
+		{
+			pImpl->weak_ptr = r.pImpl->weak_ptr;
+			return *this;
+		}*/
+
+		template<class T>
+		//template<class Y>
+		WeakPtrContainer<T>& WeakPtrContainer<T>::operator=(const SharedPtrContainer<T>& r) noexcept
+		{
+			pImpl->weak_ptr = r.pImpl->shared_ptr;
+			return *this;
+		}
+
+		template<class T>
+		void WeakPtrContainer<T>::reset() noexcept
+		{
+			pImpl->weak_ptr.reset();
+		}
+
+		template<class T>
+		void WeakPtrContainer<T>::swap(WeakPtrContainer& r) noexcept
+		{
+			pImpl->weak_ptr.swap(r.pImpl->weak_ptr);
+		}
+		template<class T>
+		long WeakPtrContainer<T>::use_count() const noexcept
+		{
+			return pImpl->weak_ptr.use_count();
+		}
+		template<class T>
+		bool WeakPtrContainer<T>::expired() const noexcept
+		{
+			return pImpl->weak_ptr.expired();
+		}
+		template<class T>
+		SharedPtrContainer<T> WeakPtrContainer<T>::lock() const noexcept
+		{
+			SharedPtrContainer<T> out;
+			out.pImpl->shared_ptr = pImpl->weak_ptr.lock();
+			return out;
+		}
+		template<class T>
+		//template<class Y>
+		bool WeakPtrContainer<T>::owner_before(const WeakPtrContainer<T>& other) const noexcept
+		{
+			return pImpl->weak_ptr.owner_before(other.pImpl->weak_ptr);
+		}
+		template<class T>
+		//template<class Y>
+		bool WeakPtrContainer<T>::owner_before(const SharedPtrContainer<T>& other) const noexcept
+		{
+			return pImpl->weak_ptr.owner_before(other.pImpl->shared_ptr);
+		}
+
+#pragma endregion
+
+#pragma region UniquePtr
+		template<class T>
+		struct UniquePtrContainer<T>::Impl
+		{
+			std::unique_ptr<T> unique_ptr;
+			Impl() = default;
+			explicit Impl(T* p) noexcept { std::unique_ptr<T> temp(p); unique_ptr = std::move(temp); }
+			template<class U>
+			Impl(UniquePtrContainer<U>&& u) noexcept { std::unique_ptr<T> temp(u.pImpl->unique_ptr); unique_ptr = std::move(temp); }
+			//Impl(UniquePtrContainer<T>&& u) noexcept { std::unique_ptr<T> temp(u.pImpl->unique_ptr); unique_ptr = temp; }
+		};
+
+		template<class T>
+		constexpr UniquePtrContainer<T>::UniquePtrContainer() noexcept
+		{
+			pImpl = new Impl;
+		}
+
+		template<class T>
+		UniquePtrContainer<T>::UniquePtrContainer(T* p) noexcept
+		{
+			pImpl = new Impl(p);
+		}
+
+		template<class T>
+		template<class U>
+		UniquePtrContainer<T>::UniquePtrContainer(UniquePtrContainer<U>&& u) noexcept
+		{
+			pImpl = new Impl;
+			pImpl->unique_ptr = std::move(u.pImpl->unique_ptr);
+		}
+
+		/*template<class T>
+		UniquePtrContainer<T>::UniquePtrContainer(UniquePtrContainer&& u) noexcept
+		{
+			pImpl = new Impl(u);
+		}*/
+
+		template<class T>
+		UniquePtrContainer<T>::UniquePtrContainer(const UniquePtrContainer& u)
+		{
+			pImpl = new Impl;
+			pImpl->unique_ptr = std::move(u.pImpl->unique_ptr);
+		}
+
+		template<class T>
+		UniquePtrContainer<T>& UniquePtrContainer<T>::operator=(UniquePtrContainer&& other) noexcept
+		{
+			pImpl->unique_ptr = std::move(other.pImpl->unique_ptr);
+			return *this;
+		}
+
+		template<class T>
+		template<class U>
+		UniquePtrContainer<T>& UniquePtrContainer<T>::operator=(UniquePtrContainer<U>&& other) noexcept
+		{
+			pImpl->unique_ptr = std::move(other.pImpl->unique_ptr);
+			return *this;
+		}
+
+		template<class T>
+		UniquePtrContainer<T>::~UniquePtrContainer()
+		{
+			if (pImpl)
+				delete pImpl;
+		}
+
+		template<class T>
+		UniquePtrContainer<T>& UniquePtrContainer<T>::operator=(const UniquePtrContainer& other)
+		{
+			pImpl->unique_ptr = std::move(other.pImpl->unique_ptr);
+			return *this;
+		}
+
+		template<class T>
+		constexpr T* UniquePtrContainer<T>::release() noexcept
+		{
+			return pImpl->unique_ptr.release();
+		}
+
+		template<class T>
+		constexpr void UniquePtrContainer<T>::reset(T* ptr)
+		{
+			if (ptr)
+				pImpl->unique_ptr.reset(ptr);
+			else
+				pImpl->unique_ptr.reset();
+		}
+
+		template<class T>
+		void UniquePtrContainer<T>::swap(UniquePtrContainer& other) noexcept
+		{
+			pImpl->unique_ptr.swap(other.pImpl->unique_ptr);
+		}
+		template<class T>
+		constexpr T* UniquePtrContainer<T>::get() const noexcept
+		{
+			return pImpl->unique_ptr.get();
+		}
+
+		template<class T>
+		UniquePtrContainer<T>::operator bool() const noexcept
+		{
+			return pImpl->unique_ptr.get() != nullptr;
+		}
+
+		template<class T>
+		T& UniquePtrContainer<T>::operator*() const noexcept
+		{
+			return *(pImpl->unique_ptr.get());
+		}
+
+		template<class T>
+		T* UniquePtrContainer<T>::operator->() const noexcept
+		{
+			return pImpl->unique_ptr.get();
+		}
+
+#pragma endregion
+
+#pragma region PAIR
+	template<typename A, typename B>
+	struct PairContainer<A, B>::Impl
+	{
+		A first;
+		B second;
+	};
+
+	template<typename A, typename B>
+	PairContainer<A, B>::PairContainer()
+	{
+		pImpl = new Impl;
+	}
+
+	template<typename A, typename B>
+	PairContainer<A, B>::PairContainer(A a, B b)
+	{
+		pImpl = new Impl;
+		pImpl->first = a;
+		pImpl->second = b;
+	}
+
+	template<typename A, typename B>
+	PairContainer<A, B>::PairContainer(const PairContainer& input)
+	{
+		pImpl = new Impl;
+		pImpl->first = input.pImpl->first;
+		pImpl->second = input.pImpl->second;
+	}
+
+	template<typename A, typename B>
+	PairContainer<A, B>::PairContainer(PairContainer&& input) noexcept
+	{
+		pImpl = new Impl;
+		pImpl->first = input.pImpl->first;
+		pImpl->second = input.pImpl->second;
+	}
+
+	template<typename A, typename B>
+	PairContainer<A, B>::~PairContainer()
+	{
+		if (pImpl)
+			delete pImpl;
+	}
+
+	template<typename A, typename B>
+	PairContainer<A, B>& PairContainer<A, B>::operator=(const PairContainer& input)
+	{
+		pImpl->first = input.pImpl->first;
+		pImpl->second = input.pImpl->second;
+		return *this;
+	}
+
+	template<typename A, typename B>
+	A PairContainer<A, B>::getFirst() const
+	{
+		return pImpl->first;
+	}
+
+	template<typename A, typename B>
+	B PairContainer<A, B>::getSecond() const
+	{
+		return pImpl->second;
+	}
+
+	template<typename A, typename B>
+	void PairContainer<A, B>::setFirst(const A& a)
+	{
+		pImpl->first = a;
+	}
+
+	template<typename A, typename B>
+	void PairContainer<A, B>::setSecond(const B& b)
+	{
+		pImpl->second = b;
+	}
+
+#pragma endregion
+
 }
 
 }

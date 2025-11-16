@@ -7,7 +7,6 @@
 #include "CALUMI_Math.h"
 #include "CALUMI_Utilities.h"
 
-
 namespace CALUMI{ namespace UNIV{
 
 	/// <summary>
@@ -17,20 +16,19 @@ namespace CALUMI{ namespace UNIV{
 	{
 		virtual const char* GetPackageType() const = 0;
 		virtual bool HandleBoneRename(const char* oldBone, const char* newName, size_t idx) = 0;
-		virtual RigPackage* Clone() = 0;
 		virtual Utilities::StringContainer ToJSON(size_t indents) const = 0;
 
 		RigPackage() = default;
-		virtual ~RigPackage();
+		virtual ~RigPackage() = default;
 	};
 
 	struct CALUMIANIMATION_API RigPackageManager
 	{
-	private:
-		Utilities::VectorContainer<RigPackage*> packages;
 	public:
 
-		RigPackageManager() = default;
+		RigPackageManager();
+		~RigPackageManager();
+		RigPackageManager(const RigPackageManager& input);
 
 		RigPackage* GetPackage(const char* packageName);
 		bool RemovePackage(const char* packageName);
@@ -39,33 +37,22 @@ namespace CALUMI{ namespace UNIV{
 		Utilities::StringContainer ToJSON(size_t indents) const;
 		bool HandleBoneRename(const char* oldBone, const char* newName, size_t idx);
 		RigPackageManager& operator=(const RigPackageManager& other);
+	private:
+		struct Impl;
+		Impl* pImpl;
 	};
 
 	struct CALUMIANIMATION_API SkeletonBone
 	{
-
-	private:
-		BoneTypeProperties* boneTypeProperties = new DefaultBoneProperties;
-		int mirrorBoneIndex = -1;
-		int parentBoneIndex = -1;
-		//We keep this private as it is not the preferred way to get this value.
-		//It should only be used on serialization functions that are constant where default resetting is not possible
-		const char* _GetBoneTypeString() const;
-
-	public:
-		CALUMI::Math::Quaternion localRotation;
-		CALUMI::Math::Quaternion globalRotation;
-		CALUMI::Math::Vector3 localPosition;
-		CALUMI::Math::Vector3 globalPosition;
-
-		
-
-		Utilities::StringContainer name;
+		Math::Quaternion& LocalRotation() const;
+		Math::Quaternion& GlobalRotation() const;
+		Math::Vector3& LocalPosition() const;
+		Math::Vector3& GlobalPosition() const;
+		Utilities::StringContainer& Name() const;
 
 
-		SkeletonBone() = default;
+		SkeletonBone();
 		SkeletonBone(const SkeletonBone& other);
-		SkeletonBone(const SkeletonBone&& other) noexcept;
 		~SkeletonBone();
 
 		bool SetBoneTypeProperty(UNIV::BoneType boneType, bool resetExisting = false);
@@ -83,22 +70,24 @@ namespace CALUMI{ namespace UNIV{
 
 		Utilities::StringContainer ToJSON(size_t indents) const;
 
-		SkeletonBone& operator=(const SkeletonBone& other);
+		SkeletonBone& operator=(const UNIV::SkeletonBone& other);
+	private:
+		struct Impl;
+		Impl* pImpl;
 	};
 
 	struct CALUMIANIMATION_API SkeletonRig
 	{
-		/// <summary>
-		/// Optional name for your skeleton rig.
-		/// </summary>
-		Utilities::StringContainer rigName = "MySkeletonRig";
-		Utilities::VectorContainer<SkeletonBone> boneEntries;
+		Utilities::StringContainer& RigName() const;
+		Utilities::VectorContainer<SkeletonBone>& BoneEntries() const;
+		RigPackageManager& getRigPackageManager() const;
 
-		RigPackageManager rigPackageManager;
-
-		SkeletonRig() = default;
+		SkeletonRig();
 		SkeletonRig(const char* rigName);
 		SkeletonRig(Utilities::StringContainer& rigName);
+		SkeletonRig(const SkeletonRig& input);
+		~SkeletonRig();
+
 		Utilities::ExpectedContainer< bool, Utilities::StringContainer> ValidateNames() const;
 		Utilities::ExpectedContainer< bool, Utilities::StringContainer> ValidateParentIndices();
 
@@ -153,6 +142,10 @@ namespace CALUMI{ namespace UNIV{
 		static const unsigned int MaxBoneCount = 512;
 
 		SkeletonRig& operator=(const SkeletonRig& other);
+
+	private:
+		struct Impl;
+		Impl* pImpl;
 	};
 
 	extern  "C" {

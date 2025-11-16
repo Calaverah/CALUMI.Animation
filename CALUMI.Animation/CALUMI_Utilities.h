@@ -8,6 +8,8 @@
 #define _VECTORTEMPLATE(T)	template struct CALUMIANIMATION_API CALUMI::Utilities::VectorContainer<T>; \
 							template CALUMI::Utilities::StringContainer CALUMI::Utilities::VectorToJSON(const CALUMI::Utilities::VectorContainer<T>& vec, size_t indents);
 
+
+
 namespace CALUMI { namespace Utilities {
 
 	
@@ -31,13 +33,154 @@ namespace CALUMI { namespace Utilities {
 		Impl* pImpl;
 
 	};
+
+	template<class T> struct WeakPtrContainer;
+	template<class T> struct SharedPtrContainer;
+	template<class T> struct UniquePtrContainer;
+
+	template<class T>
+	struct CALUMIANIMATION_API SharedPtrContainer
+	{
+		constexpr SharedPtrContainer() noexcept;
+		//template<class Y>
+		SharedPtrContainer(T* ptr) noexcept;
+		/*template<class Y, class Deleter>
+		SharedPtrContainer(Y* ptr, Deleter d) noexcept;
+		template<class Y, class Deleter, class Alloc>
+		SharedPtrContainer(Y* ptr, Deleter d, Alloc alloc);*/
+
+		SharedPtrContainer(const SharedPtrContainer& r) noexcept;
+		//template<class Y>
+		//SharedPtrContainer(const SharedPtrContainer<Y>& r) noexcept;
+		//template<class Y>
+		SharedPtrContainer(const WeakPtrContainer<T>& r) noexcept;
+		SharedPtrContainer(SharedPtrContainer&& r) noexcept;
+		//template<class Y>
+		//SharedPtrContainer(SharedPtrContainer<Y>&& r) noexcept;
+		//template<class Y>
+		SharedPtrContainer(WeakPtrContainer<T>&& r) noexcept;
+
+
+		~SharedPtrContainer();
+
+		SharedPtrContainer& operator=(const SharedPtrContainer& r) noexcept;
+		template<class Y>
+		SharedPtrContainer& operator=(const SharedPtrContainer<Y>& r) noexcept;
+		SharedPtrContainer& operator=(SharedPtrContainer&& r) noexcept;
+		template<class Y>
+		SharedPtrContainer& operator=(SharedPtrContainer<Y>&& r) noexcept;
+
+		void reset() noexcept;
+		template<class Y>
+		void reset(Y* ptr);
+		template<class Y, class Deleter>
+		void reset(Y* ptr, Deleter d);
+		template<class Y, class Deleter, class Alloc>
+		void reset(Y* ptr, Deleter d, Alloc alloc);
+
+		void swap(SharedPtrContainer& r) noexcept;
+
+		T* get() const noexcept;
+
+		T& operator*() const noexcept;
+		T* operator->() const noexcept;
+
+		//T& operator[](size_t idx) const;
+
+		long use_count() const noexcept;
+
+		explicit operator bool() const noexcept;
+
+		template<class Y>
+		bool owner_before(const SharedPtrContainer<Y>& other) const noexcept;
+
+		friend struct WeakPtrContainer<T>;
+
+	private:
+		struct Impl;
+		Impl* pImpl;
+	};
+
+	template<class T>
+	struct CALUMIANIMATION_API WeakPtrContainer
+	{
+		WeakPtrContainer() noexcept;
+		WeakPtrContainer(const WeakPtrContainer& r) noexcept;
+		WeakPtrContainer(WeakPtrContainer&& r) noexcept;
+		/*template<class Y>
+		WeakPtrContainer(const WeakPtrContainer<Y>& r) noexcept;*/
+		//template<class Y>
+		WeakPtrContainer(const SharedPtrContainer<T>& r) noexcept;
+		WeakPtrContainer(SharedPtrContainer<T>&& r) noexcept;
+		//template<class Y>
+		//WeakPtrContainer(WeakPtrContainer<T>&& r) noexcept;
+		~WeakPtrContainer();
+
+		WeakPtrContainer& operator=(const WeakPtrContainer& r) noexcept;
+		WeakPtrContainer& operator=(WeakPtrContainer&& r) noexcept;
+		//template<class Y>
+		//WeakPtrContainer& operator=(const WeakPtrContainer<T>& r) noexcept;
+		//template<class Y>
+		WeakPtrContainer& operator=(const SharedPtrContainer<T>& r) noexcept;
+		//template<class Y>
+		//WeakPtrContainer& operator=(WeakPtrContainer<T>&& r) noexcept;
+
+		void reset() noexcept;
+		void swap(WeakPtrContainer& r) noexcept;
+
+		long use_count() const noexcept;
+		bool expired() const noexcept;
+		SharedPtrContainer<T> lock() const noexcept;
+		//template<class Y>
+		bool owner_before(const WeakPtrContainer<T>& other) const noexcept;
+		//template<class Y>
+		bool owner_before(const SharedPtrContainer<T>& other) const noexcept;
+
+		friend struct SharedPtrContainer<T>;
+
+	private:
+		struct Impl;
+		Impl* pImpl;
+	};
+
+	template<class T>
+	struct CALUMIANIMATION_API UniquePtrContainer
+	{
+		constexpr UniquePtrContainer() noexcept;
+		explicit UniquePtrContainer(T* p) noexcept;
+		template<class U>
+		UniquePtrContainer(UniquePtrContainer<U>&& u) noexcept;
+		//UniquePtrContainer(UniquePtrContainer&& u) noexcept;
+		UniquePtrContainer(const UniquePtrContainer& u);
+		
+		UniquePtrContainer& operator=(UniquePtrContainer&& other) noexcept;
+		template<class U>
+		UniquePtrContainer& operator=(UniquePtrContainer<U>&& other) noexcept;
+		UniquePtrContainer& operator=(const UniquePtrContainer& other);
+
+		constexpr T* release() noexcept;
+		constexpr void reset(T* ptr = nullptr);
+		void swap(UniquePtrContainer& other) noexcept;
+
+		constexpr T* get() const noexcept;
+
+		explicit operator bool() const noexcept;
+
+		T& operator*() const noexcept;
+		T* operator->() const noexcept;
+
+		~UniquePtrContainer();
+	private:
+		struct Impl;
+		Impl* pImpl;
+	};
 	
 	struct CALUMIANIMATION_API StringContainer
 	{
 		StringContainer(const char* cString);
 		StringContainer(size_t count, char c);
 		StringContainer(const StringContainer& source);
-		StringContainer(const StringContainer&& source) noexcept;
+		StringContainer(StringContainer&& source) noexcept;
 		StringContainer();
 		~StringContainer();
 		
@@ -53,6 +196,8 @@ namespace CALUMI { namespace Utilities {
 		int compare(size_t pos, size_t len, const StringContainer& other) const;
 		int compare(size_t pos, size_t len, const StringContainer& other, size_t subpos, size_t sublen) const;
 
+		void assign(const char* str);
+
 		char at(size_t idx) const;
 		StringContainer& operator+=(const char* other);
 		StringContainer& operator+=(const StringContainer& other);
@@ -67,13 +212,15 @@ namespace CALUMI { namespace Utilities {
 		bool operator<(const StringContainer& other) const;
 		bool operator>(const StringContainer& other) const;
 
-	private:
+
+	protected:
 		struct Impl;
 		Impl* pImpl;
 	};
 
 	//String Stuff
 	Utilities::StringContainer Indent(const size_t indents);
+	bool IsNumeric(const Utilities::StringContainer& str);
 
 	struct CALUMIANIMATION_API PathContainer
 	{
@@ -138,23 +285,27 @@ namespace CALUMI { namespace Utilities {
 		Impl* pImpl;
 	};
 
-	template<typename T>
+
+	template<class T>
 	struct CALUMIANIMATION_API VectorContainer
 	{
-		VectorContainer() noexcept;
-		~VectorContainer();
-		VectorContainer(const size_t count);
-		VectorContainer(const VectorContainer& source) noexcept;
-		VectorContainer(const VectorContainer&& source) noexcept;
-		VectorContainer(const T* dataBegin, const T* dataEnd);
-		//VectorContainer(const StringContainer& source, bool inclundeNull = false) noexcept;
-		VectorContainer& operator= (const VectorContainer& other);
+		constexpr VectorContainer() noexcept;
+		constexpr ~VectorContainer();
+		explicit VectorContainer(size_t count);
+		constexpr VectorContainer(size_t count, const T& value);
+		constexpr VectorContainer(const VectorContainer& source);
+		constexpr VectorContainer(VectorContainer&& source) noexcept;
+
+
+		constexpr VectorContainer& operator= (const VectorContainer& other);
+		constexpr VectorContainer& operator= (VectorContainer&& other) noexcept;
+
+
 		void push_back(const T& input);
 		void push_back(const T&& input);
 		void resize(size_t n);
 		void reserve(size_t n);
 		void shrink_to_fit();
-		void fill(T fillValue);
 		const T& at(size_t i) const;
 		T& at(size_t i);
 		void clear();
@@ -172,6 +323,8 @@ namespace CALUMI { namespace Utilities {
 
 		size_t end() const;
 		
+		/*template<typename T>
+		friend void fill(VectorContainer<T>& vector, T fillValue);*/
 
 	private:
 		struct Impl;
@@ -181,34 +334,51 @@ namespace CALUMI { namespace Utilities {
 	template<typename A, typename B>
 	struct CALUMIANIMATION_API PairContainer
 	{
-		A first;
-		B second;
+		PairContainer();
+		PairContainer(A a, B b);
+		PairContainer(const PairContainer& input);
+		PairContainer(PairContainer&& input) noexcept;
+		~PairContainer();
+
+		PairContainer& operator=(const PairContainer& input);
+
+		A getFirst() const;
+		void setFirst(const A& input);
+		B getSecond() const;
+		void setSecond(const B& input);
+
+	private:
+		struct Impl;
+		Impl* pImpl;
 	};
 
 	void AlignBuffer(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize);
 
 	//Buff Stuff
 	void AlignBufferAndRead(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, void* Destination);
-	void AlignFillBufferAndWrite(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, void* Source);
+	void AlignFillBufferAndWrite(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, const void* Source);
 
 	//Json Stuff
 	template <typename T>
 	Utilities::StringContainer VectorToJSON(const Utilities::VectorContainer<T>& vec, const size_t indents = 0);
 
-
 #pragma region TemplateExplicits
 #pragma warning(disable: 4661)
+	template struct CALUMIANIMATION_API PairContainer<float, float>;
 	template struct CALUMIANIMATION_API VectorContainer<unsigned short>;
 	template struct CALUMIANIMATION_API VectorContainer<short>;
 	template struct CALUMIANIMATION_API VectorContainer<unsigned long>;
 	template struct CALUMIANIMATION_API VectorContainer<long>;
 	template struct CALUMIANIMATION_API VectorContainer<char>;
+	template struct CALUMIANIMATION_API VectorContainer<const char*>;
 	template struct CALUMIANIMATION_API VectorContainer<uint8_t>;
 	template struct CALUMIANIMATION_API VectorContainer<int8_t>;
 	template struct CALUMIANIMATION_API VectorContainer<uint16_t>;
 	template struct CALUMIANIMATION_API VectorContainer<int16_t>;
 	template struct CALUMIANIMATION_API VectorContainer<uint32_t>;
 	template struct CALUMIANIMATION_API VectorContainer<int32_t>;
+	template struct CALUMIANIMATION_API VectorContainer<int64_t>;
+	template struct CALUMIANIMATION_API VectorContainer<uint64_t>;
 	template struct CALUMIANIMATION_API VectorContainer<float>;
 	template struct CALUMIANIMATION_API VectorContainer<double>;
 	template struct CALUMIANIMATION_API VectorContainer<StringContainer>;
@@ -222,10 +392,10 @@ namespace CALUMI { namespace Utilities {
 	template struct CALUMIANIMATION_API ExpectedContainer<VectorContainer<PathContainer>, StringContainer>;
 	template struct CALUMIANIMATION_API ExpectedContainer<StringContainer, StringContainer>;
 	template struct CALUMIANIMATION_API ExpectedContainer<StringContainer, bool>;
+
 #pragma warning(default: 4661)
 #pragma endregion
 
-	
 
 }
 }

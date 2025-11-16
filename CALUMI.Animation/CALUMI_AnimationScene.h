@@ -16,9 +16,11 @@ namespace CALUMI{namespace UNIV{
 	class CALUMIANIMATION_API AnimationScene
 	{
 	public:
-		Utilities::StringContainer sceneName = "MyAnimationScene";
-		Utilities::VectorContainer<Animation> animations;
-		SkeletonRig rig;
+		SkeletonRig& Rig() const;
+		Utilities::VectorContainer<Animation>& Animations() const;
+		const char* SceneName() const;
+		void SceneName(const char* name);
+		void SceneName(const Utilities::StringContainer& input);
 
 		bool AddAnimationToScene(UNIV::Animation& animation, bool overwrite = true);
 		bool RemoveAnimationFromScene(Utilities::StringContainer& sceneToRemove);
@@ -27,12 +29,17 @@ namespace CALUMI{namespace UNIV{
 		Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension);
 		Utilities::StringContainer ToJSON(size_t indents) const;
 
-		AnimationScene() = default;
-		AnimationScene(const Utilities::StringContainer& sceneName)
-			: sceneName(sceneName) {}
-		AnimationScene(const char* sceneName)
-			: sceneName(sceneName) {
-		}
+		AnimationScene();
+		AnimationScene(const Utilities::StringContainer& sceneName);
+		AnimationScene(const char* sceneName);
+		AnimationScene(const AnimationScene& input);
+		~AnimationScene();
+
+		AnimationScene& operator=(const AnimationScene& input);
+
+	private:
+		struct Impl;
+		Impl* pImpl;
 	};
 
 	
