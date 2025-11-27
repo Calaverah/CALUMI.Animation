@@ -68,7 +68,7 @@ namespace CALUMI { namespace SFBGS{
 
 	RotationPrefix::RotationPrefix(const unsigned char* buffer) : RotationPrefix()
 	{
-		std::memcpy(pImpl, &buffer, sizeof(Impl));
+		std::memcpy(pImpl, buffer, sizeof(Impl));
 	}
 
 	bool RotationPrefix::operator==(const RotationPrefix& other) const
@@ -100,7 +100,7 @@ namespace CALUMI { namespace SFBGS{
 	}
 	RotationPrefix& RotationPrefix::operator=(const unsigned char* buffer)
 	{
-		std::memcpy(pImpl, &buffer, sizeof(Impl));
+		std::memcpy(pImpl, buffer, sizeof(Impl));
 		return *this;
 	}
 	int8_t SFBGS::RotationPrefix::First() const
@@ -379,7 +379,7 @@ namespace CALUMI { namespace SFBGS{
 	}
 	TranslationEntry::TranslationEntry(const TranslationEntry& input) : TranslationEntry()
 	{
-		pImpl->x = input.pImpl->z; pImpl->y = input.pImpl->z; pImpl->z = input.pImpl->z;
+		pImpl->x = input.pImpl->x; pImpl->y = input.pImpl->y; pImpl->z = input.pImpl->z;
 	}
 	TranslationEntry& TranslationEntry::operator=(const unsigned char* buffer)
 	{
@@ -388,7 +388,7 @@ namespace CALUMI { namespace SFBGS{
 	}
 	TranslationEntry& TranslationEntry::operator=(const TranslationEntry& input)
 	{
-		pImpl->x = input.pImpl->z; pImpl->y = input.pImpl->z; pImpl->z = input.pImpl->z;
+		pImpl->x = input.pImpl->x; pImpl->y = input.pImpl->y; pImpl->z = input.pImpl->z;
 		return *this;
 	}
 	int8_t TranslationEntry::getX() const { return pImpl->x; }
