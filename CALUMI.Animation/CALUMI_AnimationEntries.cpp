@@ -196,6 +196,7 @@ namespace CALUMI {
             if (ptr)
             {
                 delete ptr;
+                ptr = nullptr;
                 return true;
             }
             return false;
@@ -211,6 +212,7 @@ namespace CALUMI {
             if (ptr)
             {
                 delete ptr;
+                ptr = nullptr;
                 return true;
             }
             return false;
@@ -225,6 +227,7 @@ namespace CALUMI {
             if (ptr)
             {
                 delete ptr;
+                ptr = nullptr;
                 return true;
             }
             return false;
@@ -239,16 +242,30 @@ namespace CALUMI {
             if (ptr)
             {
                 delete ptr;
+                ptr = nullptr;
                 return true;
             }
             return false;
         }
 
-        uint16_t GetFrameFromEntryC(void* source)
+        uint16_t GetFrameFromRotationEntryC(Rotation* source)
         {
-            uint16_t output;
-            std::memcpy(&output, source, sizeof(uint16_t));
-            return output;
+            return source->Frame();
+        }
+
+        uint16_t GetFrameFromTranslationEntryC(Translation* source)
+        {
+            return source->Frame();
+        }
+
+        uint16_t GetFrameFromScalarEntryC(Scalar* source)
+        {
+            return source->Frame();
+        }
+
+        uint16_t GetFrameFromPriorityEntryC(Priority* source)
+        {
+            return source->Frame();
         }
 
         Math::Quaternion* GetValueFromRotationEntryC(Rotation* source)

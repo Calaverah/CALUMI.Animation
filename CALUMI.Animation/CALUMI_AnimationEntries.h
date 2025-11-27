@@ -128,12 +128,14 @@ namespace CALUMI {namespace UNIV {
 		CALUMIANIMATION_API bool DeleteScalarEntryC(Scalar* ptr);
 		CALUMIANIMATION_API Priority* CreatePriorityEntryC(uint16_t frame, uint8_t priority);
 		CALUMIANIMATION_API bool DeletePriorityEntryC(Priority* ptr);
-		/// <summary>
-		/// This will return a uint16_t corresponding to the frame of the sequence entry provided.
-		/// </summary>
-		/// <param name="source">Caution: If the source given is not of the proper entry type, then the returned value may be garbage</param>
-		/// <returns></returns>
-		CALUMIANIMATION_API uint16_t GetFrameFromEntryC(void* source);
+		
+		CALUMIANIMATION_API uint16_t GetFrameFromRotationEntryC(Rotation* source);
+		
+		CALUMIANIMATION_API uint16_t GetFrameFromTranslationEntryC(Translation* source);
+		
+		CALUMIANIMATION_API uint16_t GetFrameFromScalarEntryC(Scalar* source);
+		
+		CALUMIANIMATION_API uint16_t GetFrameFromPriorityEntryC(Priority* source);
 		/// <summary>
 		/// Returns a pointer to a rotation entry value (Quaternion). An array of 4 floats (4 bytes each)
 		/// </summary>

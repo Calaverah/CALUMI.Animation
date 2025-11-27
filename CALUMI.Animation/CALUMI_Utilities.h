@@ -396,6 +396,16 @@ namespace CALUMI { namespace Utilities {
 #pragma warning(default: 4661)
 #pragma endregion
 
+#pragma region EXTERN "C"
+	extern "C" {
+		StringContainer* CreateStringContainerC();
+		const char* GetStringFromContainerC(StringContainer* source);
+		size_t GetStringContainerSizeC(StringContainer* source);
+		void DeleteStringContainerC(StringContainer* ptr);
+
+
+	}
+#pragma endregion
 
 }
 }

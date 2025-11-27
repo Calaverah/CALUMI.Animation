@@ -1357,6 +1357,36 @@ namespace CALUMI {
 
 #pragma endregion
 
+
+#pragma region EXTERN"C"
+
+	StringContainer* CreateStringContainerC()
+	{
+		return new StringContainer();
+	}
+
+	const char* GetStringFromContainerC(StringContainer* source)
+	{
+		return source->c_str();
+	}
+
+	size_t GetStringContainerSizeC(StringContainer* source)
+	{
+		return source->Length();
+	}
+
+	void DeleteStringContainerC(StringContainer* ptr)
+	{
+		if (ptr)
+		{
+			delete ptr;
+			ptr = nullptr;
+		}
+	}
+#pragma endregion
+
+
+
 }
 
 }

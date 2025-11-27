@@ -506,6 +506,7 @@ namespace CALUMI{ namespace UNIV{
         if (ptr)
         {
             delete ptr;
+            ptr = nullptr;
             return true;
         }
         return false;

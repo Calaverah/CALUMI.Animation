@@ -437,6 +437,7 @@ namespace CALUMI {
 			if (ptr)
 			{
 				delete ptr;
+				ptr = nullptr;
 				return true;
 			}
 			return false;
@@ -483,6 +484,7 @@ namespace CALUMI {
 			if (ptr)
 			{
 				delete ptr;
+				ptr = nullptr;
 				return true;
 			}
 			return false;
