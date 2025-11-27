@@ -54,6 +54,10 @@ namespace CALUMI {
 			CALUMIANIMATION_API UNIV::AnimationScene* LoadAnimationSceneFromSFBGSFormatC(const wchar_t** filePathsArray, int numberOfFiles, Utilities::StringContainer* errorMessage);
 			CALUMIANIMATION_API UNIV::AnimationScene* LoadAnimationSceneFromSFBGSFormatAndSaveToJsonC(const wchar_t** filePathsArray, int numberOfFiles, Utilities::StringContainer* errorMessage, const wchar_t* jsonOutputPath);
 			CALUMIANIMATION_API UNIV::SkeletonRig* LoadSFBGSSkeletonRigFromFileC(const wchar_t* filePath, Utilities::StringContainer* errorMessage);
+
+			CALUMIANIMATION_API bool SaveAnimationToSFBGSFormatDirectC(UNIV::Animation* animation, const wchar_t* filePath, UNIV::SkeletonRig* rig, Utilities::StringContainer* errorMessage);
+			CALUMIANIMATION_API bool SaveAnimationToSFBGSFormatWithExistingRigDirectC(UNIV::Animation* animation, const wchar_t* filePath, const wchar_t* sfbgsRigPath, Utilities::StringContainer* errorMessage);
+			CALUMIANIMATION_API bool SaveSkeletonRigToSFBGSFormatDirectC(UNIV::SkeletonRig* rig, const wchar_t* filePath, Utilities::StringContainer* errorMessage);
 		}
 	}
 }

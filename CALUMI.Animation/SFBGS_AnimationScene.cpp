@@ -704,6 +704,133 @@ namespace CALUMI{ namespace SFBGS{
         return output;
     }
 
+    bool SFBGS::SaveAnimationToSFBGSFormatDirectC(UNIV::Animation* animation, const wchar_t* filePath, UNIV::SkeletonRig* rig, Utilities::StringContainer* errorMessage)
+    {
+        Utilities::StringContainer tempErrorMessage;
+        Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+        errorMessageHolder->Clear();
+        
+        if (!filePath)
+        {
+            *errorMessageHolder += "[CALUMI.Animation API] Error, No File Path Provided To Save File.";
+            return false;
+        }
+
+        if (!rig || rig->BoneEntries().size() <= 0)
+        {
+            *errorMessageHolder += "[CALUMI.Animation API] Error, No Rig Present Or Rig Is Empty.";
+            return false;
+        }
+        
+        if (!animation)
+        {
+            *errorMessageHolder += "[CALUMI.Animation API] Error, No Animation Present.";
+            return false;
+        }
+
+        SFBGS::SkeletonRig sfbgsRig = ConvertToSFBGSRig(*rig);
+        SFBGS::Animation sfbgsAnimation = ConvertToSFBGSAnimation(*animation, sfbgsRig);
+
+        auto result = sfbgsAnimation.WriteToFile(filePath);
+
+        if (result.has_value())
+        {
+            *errorMessageHolder += "[CALUMI.Animation API] Result: ";
+            *errorMessageHolder += result.value();
+            return true;
+        }
+        
+        *errorMessageHolder += "[CALUMI.Animation API] ";
+        *errorMessageHolder += result.error().ToString();
+        return false;
+
+    }
+
+    bool SFBGS::SaveAnimationToSFBGSFormatWithExistingRigDirectC(UNIV::Animation* animation, const wchar_t* filePath, const wchar_t* sfbgsRigPath, Utilities::StringContainer* errorMessage)
+    {
+        Utilities::StringContainer tempErrorMessage;
+        Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+        errorMessageHolder->Clear();
+
+        if (!filePath)
+        {
+            *errorMessageHolder += "[CALUMI.Animation API] Error, No File Path Provided To Save File.";
+            return false;
+        }
+
+        if (!sfbgsRigPath)
+        {
+            *errorMessageHolder += "[CALUMI.Animation API] Error, No Rig Path Provided.";
+            return false;
+        }
+
+        SFBGS::SkeletonRig sfbgsRig;
+        auto rigResult = sfbgsRig.ReadFromFile(sfbgsRigPath);
+
+        if (!rigResult.has_value() || sfbgsRig.BoneEntries().size() <= 0)
+        {
+            *errorMessageHolder += "[CALUMI.Animation API] Rig Error: ";
+            *errorMessageHolder += rigResult.error().ToString();
+            return false;
+        }
+
+        if (!animation)
+        {
+            *errorMessageHolder += "[CALUMI.Animation API] Error, No Animation Present.";
+            return false;
+        }
+
+        SFBGS::Animation sfbgsAnimation = ConvertToSFBGSAnimation(*animation, sfbgsRig);
+
+        auto result = sfbgsAnimation.WriteToFile(filePath);
+
+        if (result.has_value())
+        {
+            *errorMessageHolder += "[CALUMI.Animation API] Result: ";
+            *errorMessageHolder += result.value();
+            return true;
+        }
+
+        *errorMessageHolder += "[CALUMI.Animation API] ";
+        *errorMessageHolder += result.error().ToString();
+        return false;
+
+    }
+
+    bool SFBGS::SaveSkeletonRigToSFBGSFormatDirectC(UNIV::SkeletonRig* rig, const wchar_t* filePath, Utilities::StringContainer* errorMessage)
+    {
+        Utilities::StringContainer tempErrorMessage;
+        Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+        errorMessageHolder->Clear();
+
+        if (!filePath)
+        {
+            *errorMessageHolder += "[CALUMI.Animation API] Error, No File Path Provided To Save File.";
+            return false;
+        }
+
+        if (!rig || rig->BoneEntries().size() <= 0)
+        {
+            *errorMessageHolder += "[CALUMI.Animation API] Error, No Rig Present Or Rig Is Empty.";
+            return false;
+        }
+
+        SFBGS::SkeletonRig sfbgsRig = ConvertToSFBGSRig(*rig);
+
+        auto result = sfbgsRig.WriteToFile(filePath);
+
+        if (result.has_value())
+        {
+            *errorMessageHolder += "[CALUMI.Animation API] Result: ";
+            *errorMessageHolder += result.value();
+            return true;
+        }
+
+        *errorMessageHolder += "[CALUMI.Animation API] ";
+        *errorMessageHolder += result.error().ToString();
+        return false;
+    }
+
     
 
 }

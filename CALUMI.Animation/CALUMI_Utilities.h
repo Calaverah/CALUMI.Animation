@@ -398,12 +398,10 @@ namespace CALUMI { namespace Utilities {
 
 #pragma region EXTERN "C"
 	extern "C" {
-		StringContainer* CreateStringContainerC();
-		const char* GetStringFromContainerC(StringContainer* source);
-		size_t GetStringContainerSizeC(StringContainer* source);
-		void DeleteStringContainerC(StringContainer* ptr);
-
-
+		CALUMIANIMATION_API StringContainer* CreateStringContainerC();
+		CALUMIANIMATION_API const char* GetStringFromContainerC(StringContainer* source);
+		CALUMIANIMATION_API size_t GetStringContainerSizeC(StringContainer* source);
+		CALUMIANIMATION_API void DeleteStringContainerC(StringContainer* ptr);
 	}
 #pragma endregion
 
