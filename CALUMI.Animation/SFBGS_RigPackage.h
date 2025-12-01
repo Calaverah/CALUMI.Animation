@@ -199,12 +199,16 @@ namespace CALUMI {
 			CALUMIANIMATION_API const char* SFBGSRigPackage_GetBoneNameFromKeyC(UNIV::SkeletonRig* rig, uint8_t key);
 
 			CALUMIANIMATION_API bool SFBGSRigPackage_SetMannequinC(UNIV::SkeletonRig* rig, bool isMannequin);
+			CALUMIANIMATION_API bool SFBGSRigPackage_IsMannequinC(UNIV::SkeletonRig* rig);
 			CALUMIANIMATION_API size_t SFBGSRigPackage_GetRigMapSize();
 
 			CALUMIANIMATION_API void SFBGSRigPackage_SetPrecisionToDefaultC(UNIV::SkeletonRig* rig);
 			CALUMIANIMATION_API void SFBGSRigPackage_SetPrecisionToFirstPersonC(UNIV::SkeletonRig* rig);
 			CALUMIANIMATION_API void SFBGSRigPackage_SetPrecisionToShipValuesC(UNIV::SkeletonRig* rig);
 			CALUMIANIMATION_API void SFBGSRigPackage_SetPrecisionToCustomC(UNIV::SkeletonRig* rig, float custom1, float custom2);
+
+			CALUMIANIMATION_API float SFBGSRigPackage_GetHighPrecisionValueC(UNIV::SkeletonRig* rig);
+			CALUMIANIMATION_API float SFBGSRigPackage_GetLowPrecisionValueC(UNIV::SkeletonRig* rig);
 
 		}
 

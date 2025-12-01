@@ -462,6 +462,16 @@ namespace CALUMI {namespace SFBGS{
 		return true;
 	}
 
+	bool SFBGSRigPackage_IsMannequinC(UNIV::SkeletonRig* rig)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->getRigPackageManager().GetPackage(SFBGS_RIG_PACKAGE));
+
+		if (rigPackage)
+			return rigPackage->IsMannequin();
+
+		return false;
+	}
+
 	size_t SFBGSRigPackage_GetRigMapSize()
 	{
 		return SFBGSMAPSIZE;
@@ -493,6 +503,24 @@ namespace CALUMI {namespace SFBGS{
 		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->getRigPackageManager().GetPackage(SFBGS_RIG_PACKAGE));
 		if (rigPackage)
 			rigPackage->SetPrecisionValues(PrecisionSet::Custom, custom1, custom2);
+	}
+
+	float SFBGSRigPackage_GetHighPrecisionValueC(UNIV::SkeletonRig* rig)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->getRigPackageManager().GetPackage(SFBGS_RIG_PACKAGE));
+		if (rigPackage)
+			return rigPackage->HighPrecisionValue();
+
+		return SFBGSDefaultPrecision.getFirst();
+	}
+
+	float SFBGSRigPackage_GetLowPrecisionValueC(UNIV::SkeletonRig* rig)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->getRigPackageManager().GetPackage(SFBGS_RIG_PACKAGE));
+		if (rigPackage)
+			return rigPackage->LowPrecisionValue();
+
+		return SFBGSDefaultPrecision.getSecond();
 	}
 
 #pragma endregion
