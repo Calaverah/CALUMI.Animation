@@ -160,6 +160,7 @@ namespace CALUMI {
 			const char* GetBoneNameFromKey(BoneMapKey key);
 
 			void SetPrecisionValues(PrecisionSet setting, float custom1 = SFBGSDefaultPrecision.getFirst(), float custom2 = SFBGSDefaultPrecision.getSecond());
+			PrecisionSet GetPrecisionType() const;
 			float LowPrecisionValue() const;
 			float HighPrecisionValue() const;
 
@@ -207,6 +208,7 @@ namespace CALUMI {
 			CALUMIANIMATION_API void SFBGSRigPackage_SetPrecisionToShipValuesC(UNIV::SkeletonRig* rig);
 			CALUMIANIMATION_API void SFBGSRigPackage_SetPrecisionToCustomC(UNIV::SkeletonRig* rig, float custom1, float custom2);
 
+			CALUMIANIMATION_API uint8_t SFBGSRigPackage_GetPrecisionTypeC(UNIV::SkeletonRig* rig);
 			CALUMIANIMATION_API float SFBGSRigPackage_GetHighPrecisionValueC(UNIV::SkeletonRig* rig);
 			CALUMIANIMATION_API float SFBGSRigPackage_GetLowPrecisionValueC(UNIV::SkeletonRig* rig);
 

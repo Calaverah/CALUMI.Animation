@@ -293,6 +293,18 @@ namespace CALUMI {namespace SFBGS{
 
 	}
 
+	PrecisionSet SFBGS_RigPackage::GetPrecisionType() const
+	{
+		if (HighPrecisionValue() == SFBGSFirstPersonPrecision.getFirst() && LowPrecisionValue() == SFBGSFirstPersonPrecision.getSecond())
+			return PrecisionSet::FirstPerson;
+		if (HighPrecisionValue() == SFBGSShipPrecision.getFirst() && LowPrecisionValue() == SFBGSShipPrecision.getSecond())
+			return PrecisionSet::Ship;
+		if (HighPrecisionValue() == SFBGSDefaultPrecision.getFirst() && LowPrecisionValue() == SFBGSDefaultPrecision.getSecond())
+			return PrecisionSet::Default;
+
+		return PrecisionSet::Custom;
+	}
+
 	float SFBGS_RigPackage::LowPrecisionValue() const
 	{
 		return pImpl->lowPrecisionValue;
@@ -503,6 +515,15 @@ namespace CALUMI {namespace SFBGS{
 		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->getRigPackageManager().GetPackage(SFBGS_RIG_PACKAGE));
 		if (rigPackage)
 			rigPackage->SetPrecisionValues(PrecisionSet::Custom, custom1, custom2);
+	}
+
+	uint8_t SFBGSRigPackage_GetPrecisionTypeC(UNIV::SkeletonRig* rig)
+	{
+		SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->getRigPackageManager().GetPackage(SFBGS_RIG_PACKAGE));
+		if (rigPackage)
+			return static_cast<uint8_t>(rigPackage->GetPrecisionType());
+
+		return static_cast<uint8_t>(PrecisionSet::Default);
 	}
 
 	float SFBGSRigPackage_GetHighPrecisionValueC(UNIV::SkeletonRig* rig)
