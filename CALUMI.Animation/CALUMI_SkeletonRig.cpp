@@ -418,8 +418,25 @@ namespace CALUMI{ namespace UNIV{
 
     struct RigPackageManager::Impl
     {
-        Utilities::VectorContainer<std::shared_ptr<RigPackage>> packages;
+        Utilities::VectorContainer<RigPackage*> packages;
+        
+        void clear()
+        {
+            for (size_t i = 0; i < packages.size(); i++)
+            {
+                if (packages.at(i))
+                {
+                    delete packages.at(i);
+                    packages.at(i) = nullptr;
+                }
+            }
+            packages.clear();
+        }
+
         Impl() = default;
+        ~Impl() {
+                clear();
+        }
     };
     RigPackageManager::RigPackageManager()
     {
@@ -427,11 +444,24 @@ namespace CALUMI{ namespace UNIV{
     }
     RigPackageManager::RigPackageManager(const RigPackageManager& input) : RigPackageManager()
     {
-        *pImpl = *(input.pImpl);
+        for (size_t i = 0; i < input.pImpl->packages.size(); i++)
+        {
+            if (auto ptr = input.pImpl->packages.at(i))
+            {
+                pImpl->packages.push_back(ptr->Clone());
+            }
+        }
     }
     RigPackageManager& RigPackageManager::operator=(const RigPackageManager& other)
     {
-        *pImpl = *(other.pImpl);
+        pImpl->clear();
+        for (size_t i = 0; i < other.pImpl->packages.size(); i++)
+        {
+            if (auto ptr = other.pImpl->packages.at(i))
+            {
+                pImpl->packages.push_back(ptr->Clone());
+            }
+        }
         return *this;
     }
     RigPackageManager::~RigPackageManager() { if (pImpl) delete pImpl; }
@@ -442,7 +472,7 @@ namespace CALUMI{ namespace UNIV{
         {
             if (_stricmp(pImpl->packages.at(i)->GetPackageType(), packageName) == 0)
             {
-                return pImpl->packages.at(i).get();
+                return pImpl->packages.at(i);
             }
         }
         return nullptr;
@@ -454,8 +484,10 @@ namespace CALUMI{ namespace UNIV{
         {
             if (_stricmp(pImpl->packages.at(i)->GetPackageType(), packageName) == 0)
             {
-                if (pImpl->packages.at(i).get())
+                if (pImpl->packages.at(i))
                 {
+                    delete pImpl->packages.at(i);
+                    pImpl->packages.at(i) = nullptr;
                     pImpl->packages.erase(i);
                     return true;
                 }
@@ -474,11 +506,11 @@ namespace CALUMI{ namespace UNIV{
                 {
                     return false;
                 }
-                pImpl->packages.at(i) = std::shared_ptr<RigPackage>(package);
+                pImpl->packages.at(i) = package;
                 return true;
             }
         }
-        pImpl->packages.push_back(std::shared_ptr<RigPackage>(package));
+        pImpl->packages.push_back(package);
         return true;
     }
 

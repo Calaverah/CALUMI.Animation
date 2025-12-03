@@ -1,9 +1,9 @@
 #pragma once
 
-//#include "..\..\CALUMI_Math.h"
-//#include "SFBGS_AnimationGraphFlags.h"
-//#include "SFBGS_AnimationGraphComponents.h"
-//
+#include "..\..\CALUMI_Math.h"
+#include "SFBGS_AnimationGraphFlags.h"
+#include "SFBGS_AnimationGraphComponents.h"
+
 //namespace CALUMI {
 //	namespace SFBGS {
 //
@@ -93,12 +93,12 @@
 //			AgxPort(AgxNode* nodePtr, size_t id);
 //			virtual ~AgxPort() = default;
 //
-//			virtual bool connect(const Utilities::SharedPtrContainer<AgxPort>& other);
+//			virtual bool connect(const std::shared_ptr<AgxPort>& other);
 //			virtual bool canLink(const AgxPort& other) const;
 //			
 //		protected:
-//			Utilities::WeakPtrContainer<AgxPort> linkedTo;
-//			Utilities::WeakPtrContainer<AgxNode> parentNode;
+//			std::weak_ptr<AgxPort> linkedTo;
+//			std::weak_ptr<AgxNode> parentNode;
 //			size_t id = 0;
 //
 //		};
@@ -157,8 +157,8 @@
 //			bool RemoveOutput(AgxPort& port);
 //
 //		protected:
-//			Utilities::VectorContainer<Utilities::SharedPtrContainer<AgxPortInput>> inputs;
-//			Utilities::VectorContainer<Utilities::SharedPtrContainer<AgxPortOutput>> outputs;
+//			Utilities::VectorContainer<std::shared_ptr<AgxPortInput>> inputs;
+//			Utilities::VectorContainer<std::shared_ptr<AgxPortOutput>> outputs;
 //			size_t nextId = 0;
 //			strEntry guid;
 //		};
@@ -1160,7 +1160,7 @@
 //			SYNC_ONLY_TRANSITION_OUT;
 //			strEntry Blend_Tree_Name;
 //
-//			Utilities::SharedPtrContainer<AgxGraph> graph;
+//			std::shared_ptr<AgxGraph> graph;
 //
 //			Utilities::VectorContainer<EventIOComponent> Enter_Events;
 //			Utilities::VectorContainer<EventIOComponent> Exit_Events;
@@ -1177,7 +1177,7 @@
 //			SYNC_ONLY_TRANSITION_OUT;
 //			strEntry State_Machine_Name = "State Machine";
 //
-//			Utilities::SharedPtrContainer<AgxGraph> graph;
+//			std::shared_ptr<AgxGraph> graph;
 //
 //			Utilities::VectorContainer<EventIOComponent> Enter_Events;
 //			Utilities::VectorContainer<EventIOComponent> Exit_Events;

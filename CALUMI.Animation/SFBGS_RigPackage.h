@@ -169,12 +169,15 @@ namespace CALUMI {
 
 			// Inherited via RigPackage
 			bool HandleBoneRename(const char* oldBone, const char* newName, size_t idx) override;
+			// Inherited via RigPackage
+			RigPackage* Clone() const override;
+
 		private:
 			struct Impl;
 			Impl* pImpl;
 		};
 
-		SFBGS_RigPackage* CreateNewSFBGSRigPackage(UNIV::SkeletonRig& rig, bool overwrite = true);
+		bool CreateNewSFBGSRigPackage(UNIV::SkeletonRig& rig, bool overwrite = true);
 		bool RemoveSFBGSRigPackage(UNIV::SkeletonRig& rig);
 
 		Utilities::VectorContainer<int16_t> ConvertSFBGSRigPackage(UNIV::SkeletonRig& rig);

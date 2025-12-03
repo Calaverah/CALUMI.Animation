@@ -904,8 +904,9 @@ namespace CALUMI {namespace SFBGS {
 			int setter = bone.pImpl->mirrorBoneIndex == i ? -1 : bone.pImpl->mirrorBoneIndex;
 			output.BoneEntries().at(i).SetMirrorBoneIndex(setter);
 		}
-		auto sfbgsRigPackage = CreateNewSFBGSRigPackage(output);
-		if (sfbgsRigPackage)
+		
+		CreateNewSFBGSRigPackage(output);
+		if (SFBGS_RigPackage* sfbgsRigPackage = dynamic_cast<SFBGS_RigPackage*>(output.getRigPackageManager().GetPackage(SFBGS_RIG_PACKAGE)))
 		{
 			auto boneMapArray = inputRig.BoneMapArray();
 			for (int key = 0; key < SFBGSMAPSIZE; key++)

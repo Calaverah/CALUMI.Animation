@@ -18,6 +18,8 @@ namespace CALUMI{ namespace UNIV{
 		virtual bool HandleBoneRename(const char* oldBone, const char* newName, size_t idx) = 0;
 		virtual Utilities::StringContainer ToJSON(size_t indents) const = 0;
 
+		virtual RigPackage* Clone() const = 0;
+
 		RigPackage() = default;
 		virtual ~RigPackage() = default;
 	};

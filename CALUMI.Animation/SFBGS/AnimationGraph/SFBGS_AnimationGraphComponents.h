@@ -1,6 +1,6 @@
 #pragma once
-//#include "CALUMI_Math.h"
-//
+#include "CALUMI_Math.h"
+
 //#define SYNC_ONLY_TRANSITION_OUT bool Sync_Only_Transition_Out : 1 = false
 //#define MAX_BLEND_TIME float Max_Blend_Time = 0.0f
 //

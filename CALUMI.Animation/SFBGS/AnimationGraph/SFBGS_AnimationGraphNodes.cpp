@@ -43,7 +43,7 @@
 //
 //		const AgxPort& AgxNode::AddInput()
 //		{
-//			inputs.push_back(new AgxPortInput(this, nextId));
+//			//inputs.push_back(new AgxPortInput(this, nextId));
 //			nextId++;
 //			return *inputs.at(inputs.size() - 1);
 //		}
@@ -73,7 +73,7 @@
 //
 //		const AgxPort& AgxNode::AddOutput()
 //		{
-//			outputs.push_back(new AgxPortOutput(this, nextId));
+//			//outputs.push_back(new AgxPortOutput(this, nextId));
 //			nextId++;
 //			return *outputs.at(outputs.size() - 1);
 //		}
@@ -378,9 +378,9 @@
 //
 //
 //		//AgxPort() = default;
-//		AgxPort::AgxPort(AgxNode* nodePtr, size_t id) : id(id) { parentNode = Utilities::WeakPtrContainer<AgxNode>(nodePtr); }
+//		AgxPort::AgxPort(AgxNode* nodePtr, size_t id) : id(id) { parentNode = std::shared_ptr<AgxNode>(nodePtr); }
 //
-//		bool AgxPort::connect(const Utilities::SharedPtrContainer<AgxPort>& other)
+//		bool AgxPort::connect(const std::shared_ptr<AgxPort>& other)
 //		{
 //			if (!canLink(*other)) return false;
 //			if(!linkedTo.expired()){
@@ -393,8 +393,8 @@
 //				otherLinkedTo.reset();
 //			}
 //
-//			linkedTo = Utilities::WeakPtrContainer<AgxPort>(other);
-//			other->linkedTo = Utilities::WeakPtrContainer<AgxPort>(this);
+//			linkedTo = std::weak_ptr<AgxPort>(other);
+//			other->linkedTo = std::shared_ptr<AgxPort>(this);
 //			return true;
 //		}
 //
@@ -416,4 +416,4 @@
 //	
 //}
 //
-//
+

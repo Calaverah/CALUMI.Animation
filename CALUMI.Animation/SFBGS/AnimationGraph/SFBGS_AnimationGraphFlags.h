@@ -1,6 +1,7 @@
 #pragma once
-//#include "CALUMI_Common.h"
-//
+#include "CALUMI_Common.h"
+#include <memory>
+
 //namespace CALUMI {
 //	namespace SFBGS {
 //
