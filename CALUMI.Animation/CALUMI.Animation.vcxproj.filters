@@ -49,12 +49,6 @@
     <Filter Include="Header Files\UNIV">
       <UniqueIdentifier>{7306da6e-8231-4c81-8b46-86d12b150a67}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\SFBGS\AGX">
-      <UniqueIdentifier>{de3afd5c-32e3-46b8-b876-2ace7afba348}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\SFBGS\AGX">
-      <UniqueIdentifier>{ef429cfe-61aa-40aa-854b-0af90957d385}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -117,18 +111,6 @@
     <ClInclude Include="SFBGS_RigPackage.h">
       <Filter>Header Files\SFBGS</Filter>
     </ClInclude>
-    <ClInclude Include="SFBGS\AnimationGraph\SFBGS_AnimationGraph.h">
-      <Filter>Header Files\SFBGS\AGX</Filter>
-    </ClInclude>
-    <ClInclude Include="SFBGS\AnimationGraph\SFBGS_AnimationGraphNodes.h">
-      <Filter>Header Files\SFBGS\AGX</Filter>
-    </ClInclude>
-    <ClInclude Include="SFBGS\AnimationGraph\SFBGS_AnimationGraphComponents.h">
-      <Filter>Header Files\SFBGS\AGX</Filter>
-    </ClInclude>
-    <ClInclude Include="SFBGS\AnimationGraph\SFBGS_AnimationGraphFlags.h">
-      <Filter>Header Files\SFBGS\AGX</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -178,15 +160,6 @@
     </ClCompile>
     <ClCompile Include="CALUMI_BoneTypes.cpp">
       <Filter>Source Files\UNIV</Filter>
-    </ClCompile>
-    <ClCompile Include="SFBGS\AnimationGraph\SFBGS_AnimationGraph.cpp">
-      <Filter>Source Files\SFBGS\AGX</Filter>
-    </ClCompile>
-    <ClCompile Include="SFBGS\AnimationGraph\SFBGS_AnimationGraphNodes.cpp">
-      <Filter>Source Files\SFBGS\AGX</Filter>
-    </ClCompile>
-    <ClCompile Include="SFBGS\AnimationGraph\SFBGS_AnimationGraphComponents.cpp">
-      <Filter>Source Files\SFBGS\AGX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

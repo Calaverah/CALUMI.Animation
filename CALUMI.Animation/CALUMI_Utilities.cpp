@@ -13,7 +13,6 @@
 #include "SFBGS_AnimationScene.h"
 #include "FileError.h"
 #include "CALUMI_Utilities.h"
-#include "SFBGS/AnimationGraph/SFBGS_AnimationGraph.h"
 #include <objbase.h>
 
 namespace CALUMI {

@@ -7,6 +7,7 @@
 #include "CALUMI_Utilities.h"
 #include <format>
 #include <string>
+#include "CALUMI_Math.h"
 
 namespace CALUMI {
 	namespace UNIV {
@@ -232,6 +233,28 @@ namespace CALUMI {
 
 		size_t AnimationBlock::GetRotationEntryCount() const { return pImpl->_rotationSequence.size(); }
 
+		bool AnimationBlock::CleanRotationSequence()
+		{
+			Math::Quaternion defaultQuaternion;
+			size_t ndCount = 0;
+
+			for (size_t i = 0; i < pImpl->_rotationSequence.size(); i++)
+			{
+				if (!pImpl->_rotationSequence.at(i).RotationQuaternion().AreEqual(defaultQuaternion,0.0f))
+				{
+					ndCount++;
+				}
+			}
+
+			if (ndCount == 0)
+			{
+				ClearRotationEntries();
+				return true;
+			}
+
+			return false;
+		}
+
 		Utilities::VectorContainer<CALUMI::UNIV::Translation>& AnimationBlock::TranslationSequence() const
 		{
 			return pImpl->_translationSequence;
@@ -279,6 +302,28 @@ namespace CALUMI {
 
 		size_t AnimationBlock::GetTranslationEntryCount() const { return pImpl->_translationSequence.size(); }
 
+		bool AnimationBlock::CleanTranslationSequence()
+		{
+			Math::Vector3D defaultVector;
+			size_t ndCount = 0;
+
+			for (size_t i = 0; i < pImpl->_translationSequence.size(); i++)
+			{
+				if (pImpl->_translationSequence.at(i).TranslationVector() != defaultVector)
+				{
+					ndCount++;
+				}
+			}
+
+			if (ndCount == 0)
+			{
+				ClearTranslationEntries();
+				return true;
+			}
+
+			return false;
+		}
+
 		Utilities::VectorContainer<CALUMI::UNIV::Scalar>& AnimationBlock::ScalarSequence() const
 		{
 			return pImpl->_scalarSequence;
@@ -325,6 +370,28 @@ namespace CALUMI {
 		void AnimationBlock::ClearScalarEntries() { pImpl->_scalarSequence.clear(); }
 
 		size_t AnimationBlock::GetScalarEntryCount() const { return pImpl->_scalarSequence.size(); }
+
+		bool AnimationBlock::CleanScalarSequence()
+		{
+			float defaultScalar = 1.0f;
+			size_t ndCount = 0;
+
+			for (size_t i = 0; i < pImpl->_scalarSequence.size(); i++)
+			{
+				if (pImpl->_scalarSequence.at(i).ScalarValue() != defaultScalar)
+				{
+					ndCount++;
+				}
+			}
+
+			if (ndCount == 0)
+			{
+				ClearScalarEntries();
+				return true;
+			}
+
+			return false;
+		}
 
 		Utilities::VectorContainer<CALUMI::UNIV::Priority>& AnimationBlock::PrioritySequence()
 		{
@@ -533,6 +600,12 @@ namespace CALUMI {
 		{
 			return source->RotationSequence().size();
 		}
+		bool CleanRotationSqC(AnimationBlock* source)
+		{
+			if(!source) return false;
+
+			return source->CleanRotationSequence();
+		}
 		bool AddTranslationSqToAnimBlockC(AnimationBlock* block, Translation* trnSq, unsigned int size, bool overwrite)
 		{
 			for (unsigned int i = 0; i < size; i++)
@@ -565,6 +638,12 @@ namespace CALUMI {
 		{
 			return source->TranslationSequence().size();
 		}
+		bool CleanTranslationSqC(AnimationBlock* source)
+		{
+			if (!source) return false;
+
+			return source->CleanTranslationSequence();
+		}
 		bool AddScalarSqToAnimBlockC(AnimationBlock* block, Scalar* sclrSq, unsigned int size, bool overwrite)
 		{
 			for (unsigned int i = 0; i < size; i++)
@@ -596,6 +675,12 @@ namespace CALUMI {
 		size_t GetScalarSqSizeC(AnimationBlock* source)
 		{
 			return source->ScalarSequence().size();
+		}
+		bool CleanScalarSqC(AnimationBlock* source)
+		{
+			if(!source) return false;
+
+			return source->CleanScalarSequence();
 		}
 		bool AddPrioritySqToAnimBlockC(AnimationBlock* block, Priority* prtySq, unsigned int size, bool overwrite)
 		{

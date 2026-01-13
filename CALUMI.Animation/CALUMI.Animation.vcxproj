@@ -158,15 +158,11 @@
     <ClInclude Include="FileValidation.h" />
     <ClInclude Include="CALUMI_ReadWritable.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="SFBGS\AnimationGraph\SFBGS_AnimationGraphComponents.h" />
-    <ClInclude Include="SFBGS\AnimationGraph\SFBGS_AnimationGraphFlags.h" />
-    <ClInclude Include="SFBGS\AnimationGraph\SFBGS_AnimationGraphNodes.h" />
     <ClInclude Include="SFBGS_Animation.h" />
     <ClInclude Include="CALUMI_Animation.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SFBGS_AnimationEntries.h" />
-    <ClInclude Include="SFBGS\AnimationGraph\SFBGS_AnimationGraph.h" />
     <ClInclude Include="SFBGS_AnimationScene.h" />
     <ClInclude Include="SFBGS_RigPackage.h" />
     <ClInclude Include="SFBGS_SkeletonRig.h" />
@@ -180,8 +176,6 @@
     <ClCompile Include="CALUMI_SkeletonRig.cpp" />
     <ClCompile Include="FileError.cpp" />
     <ClCompile Include="FileValidation.cpp" />
-    <ClCompile Include="SFBGS\AnimationGraph\SFBGS_AnimationGraphComponents.cpp" />
-    <ClCompile Include="SFBGS\AnimationGraph\SFBGS_AnimationGraphNodes.cpp" />
     <ClCompile Include="SFBGS_Animation.cpp" />
     <ClCompile Include="CALUMI_Animation.cpp" />
     <ClCompile Include="dllmain.cpp" />
@@ -192,7 +186,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SFBGS_AnimationEntries.cpp" />
-    <ClCompile Include="SFBGS\AnimationGraph\SFBGS_AnimationGraph.cpp" />
     <ClCompile Include="SFBGS_AnimationScene.cpp" />
     <ClCompile Include="SFBGS_RigPackage.cpp" />
     <ClCompile Include="SFBGS_SkeletonRig.cpp" />
