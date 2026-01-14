@@ -1,4 +1,4 @@
-//Copyright © 2025 aka Calaverah. All rights reserved.
+//Copyright © 2025-2026 Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -340,7 +340,7 @@ namespace CALUMI{
 		struct AnimationBlock::Impl
 		{
 			uint16_t _rotationCount = 0;
-			uint16_t _rotationPrefixCount = 0; //rotation prefix contains the first half of the rotations in a total of 4 bytes, x,y,z, and a count/identifier such that the prefix can be reused on multiple keyframes to save space
+			uint16_t _rotationPrefixCount = 0; //rotation prefix contains the first half of the rotations in a total of 4 bytes, _x,_y,_z, and a count/identifier such that the prefix can be reused on multiple keyframes to save space
 
 			uint16_t _translationCount = 0;
 			uint16_t _translationPrefixCount = 0; //same as rotation prefix, however this entry is always 2 bytes each with the final 2 bytes (a ushort) being the count
@@ -349,23 +349,24 @@ namespace CALUMI{
 			uint16_t _scalarCount = 0;
 			uint16_t _bonePriorityCount = 0; //Never appears to have a count of more than 1, if at all
 
-			Utilities::VectorContainer<uint16_t> rotationKeyFrames;
-			Utilities::VectorContainer<uint16_t> translationKeyFrames;
-			Utilities::VectorContainer<uint16_t> scalarKeyFrames;
-			Utilities::VectorContainer<uint16_t> bonePriorityKeyFrames; //Usually just a single entry for the 0th frame
+			Utilities::VectorContainer<uint16_t> _rotationKeyFrames;
+			Utilities::VectorContainer<uint16_t> _translationKeyFrames;
+			Utilities::VectorContainer<uint16_t> _scalarKeyFrames;
+			Utilities::VectorContainer<uint16_t> _bonePriorityKeyFrames; //Usually just a single entry for the 0th frame
 
 
 			//ROTATIONS SECTION
-			Utilities::VectorContainer<CALUMI::SFBGS::RotationEntry> rotationEntries;
-			Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> rotationPrefixEntries;
+			Utilities::VectorContainer<CALUMI::SFBGS::RotationEntry> _rotationEntries;
+			Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> _rotationPrefixEntries;
 
 			//TRANSLATIONS SECTION
-			Utilities::VectorContainer<CALUMI::SFBGS::TranslationEntry> translationEntries;
-			Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> translationPrefixEntries;
+			Utilities::VectorContainer<CALUMI::SFBGS::TranslationEntry> _translationEntries;
+			Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> _translationPrefixEntries;
 
 			//ADDITIONALS SECTION
-			Utilities::VectorContainer<int16_t> scalarEntries;
-			Utilities::VectorContainer<uint8_t> bonePriorityEntries; //Unsure how to process this information as of now. Appears to be in units/100 for a scalar of 0-100%
+			Utilities::VectorContainer<int16_t> _scalarEntries;
+			Utilities::VectorContainer<uint8_t> _bonePriorityEntries; //Unsure how to process this information as of now. Appears to be in units/100 for a scalar of 0-100%
+
 			Impl() = default;
 		};
 		uint16_t AnimationBlock::getRotationCount() const
@@ -418,43 +419,43 @@ namespace CALUMI{
 		}
 		Utilities::VectorContainer<uint16_t>& AnimationBlock::RotationKeyFrames() const
 		{
-			return pImpl->rotationKeyFrames;
+			return pImpl->_rotationKeyFrames;
 		}
 		Utilities::VectorContainer<uint16_t>& AnimationBlock::TranslationKeyFrames() const
 		{
-			return pImpl->translationKeyFrames;
+			return pImpl->_translationKeyFrames;
 		}
 		Utilities::VectorContainer<uint16_t>& AnimationBlock::ScalarKeyFrames() const
 		{
-			return pImpl->scalarKeyFrames;
+			return pImpl->_scalarKeyFrames;
 		}
 		Utilities::VectorContainer<uint16_t>& AnimationBlock::BonePriorityKeyFrames() const
 		{
-			return pImpl->bonePriorityKeyFrames;
+			return pImpl->_bonePriorityKeyFrames;
 		}
 		Utilities::VectorContainer<CALUMI::SFBGS::RotationEntry>& AnimationBlock::RotationEntries() const
 		{
-			return pImpl->rotationEntries;
+			return pImpl->_rotationEntries;
 		}
 		Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& AnimationBlock::RotationPrefixEntries() const
 		{
-			return pImpl->rotationPrefixEntries;
+			return pImpl->_rotationPrefixEntries;
 		}
 		Utilities::VectorContainer<CALUMI::SFBGS::TranslationEntry>& AnimationBlock::TranslationEntries() const
 		{
-			return pImpl->translationEntries;
+			return pImpl->_translationEntries;
 		}
 		Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix>& AnimationBlock::TranslationPrefixEntries() const
 		{
-			return pImpl->translationPrefixEntries;
+			return pImpl->_translationPrefixEntries;
 		}
 		Utilities::VectorContainer<int16_t>& AnimationBlock::ScalarEntries() const
 		{
-			return pImpl->scalarEntries;
+			return pImpl->_scalarEntries;
 		}
 		Utilities::VectorContainer<uint8_t>& AnimationBlock::BonePriorityEntries() const
 		{
-			return pImpl->bonePriorityEntries;
+			return pImpl->_bonePriorityEntries;
 		}
 		AnimationBlock::AnimationBlock()
 		{
@@ -495,83 +496,83 @@ namespace CALUMI{
 
 			//Fill Keyframe arrays
 			{
-				pImpl->rotationKeyFrames.resize(pImpl->_rotationCount);
-				//Utilities::fill<unsigned short>(rotationKeyFrames,0); //resize should be all zero by default, but just in case
+				pImpl->_rotationKeyFrames.resize(pImpl->_rotationCount);
+				//Utilities::fill<unsigned short>(_rotationKeyFrames,0); //resize should be all zero by default, but just in case
 				for (unsigned short i = 0; i < pImpl->_rotationCount; i++)
 				{
-					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, kSize, kSize, &pImpl->rotationKeyFrames.at(i));
+					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, kSize, kSize, &pImpl->_rotationKeyFrames.at(i));
 				}
 
 
-				pImpl->translationKeyFrames.resize(pImpl->_translationCount);
-				//Utilities::fill<unsigned short>(translationKeyFrames,0); //""
+				pImpl->_translationKeyFrames.resize(pImpl->_translationCount);
+				//Utilities::fill<unsigned short>(_translationKeyFrames,0); //""
 				for (unsigned short i = 0; i < pImpl->_translationCount; i++)
 				{
-					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, kSize, kSize, &pImpl->translationKeyFrames.at(i));
+					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, kSize, kSize, &pImpl->_translationKeyFrames.at(i));
 				}
 
-				pImpl->scalarKeyFrames.resize(pImpl->_scalarCount);
-				//Utilities::fill<unsigned short>(scalarKeyFrames,0); //""
+				pImpl->_scalarKeyFrames.resize(pImpl->_scalarCount);
+				//Utilities::fill<unsigned short>(_scalarKeyFrames,0); //""
 				for (unsigned short i = 0; i < pImpl->_scalarCount; i++)
 				{
-					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, kSize, kSize, &pImpl->scalarKeyFrames.at(i));
+					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, kSize, kSize, &pImpl->_scalarKeyFrames.at(i));
 				}
 
-				pImpl->bonePriorityKeyFrames.resize(pImpl->_bonePriorityCount);
-				//Utilities::fill<unsigned short>(bonePriorityKeyFrames,0); //""
+				pImpl->_bonePriorityKeyFrames.resize(pImpl->_bonePriorityCount);
+				//Utilities::fill<unsigned short>(_bonePriorityKeyFrames,0); //""
 				for (unsigned short i = 0; i < pImpl->_bonePriorityCount; i++)
 				{
-					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, kSize, kSize, &pImpl->bonePriorityKeyFrames.at(i));
+					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, kSize, kSize, &pImpl->_bonePriorityKeyFrames.at(i));
 				}
 			}
 
 			//Fill Keyframe Entries and Prefix Entries
 			{
-				pImpl->rotationEntries.resize(pImpl->_rotationCount); //Resize to fill with default entries (empty)
+				pImpl->_rotationEntries.resize(pImpl->_rotationCount); //Resize to fill with default entries (empty)
 				{	unsigned char rBuffer[3] = {};
 					for (unsigned short i = 0; i < pImpl->_rotationCount; i++)
 					{
 						CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 1, 3, rBuffer);
-						pImpl->rotationEntries.at(i) = rBuffer;
+						pImpl->_rotationEntries.at(i) = rBuffer;
 					}}
 				
-				pImpl->rotationPrefixEntries.resize(pImpl->_rotationPrefixCount);
+				pImpl->_rotationPrefixEntries.resize(pImpl->_rotationPrefixCount);
 				{	unsigned char rBuffer[4] = {};
 					for (unsigned short i = 0; i < pImpl->_rotationPrefixCount; i++)
 					{
 						CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 1, 4, rBuffer);
-						pImpl->rotationPrefixEntries.at(i) = rBuffer;
+						pImpl->_rotationPrefixEntries.at(i) = rBuffer;
 					}}
 
 
-				pImpl->translationEntries.resize(pImpl->_translationCount);
+				pImpl->_translationEntries.resize(pImpl->_translationCount);
 				{	unsigned char tBuffer[3] = {};
 					for (unsigned short i = 0; i < pImpl->_translationCount; i++)
 					{
 						CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 1, 3, tBuffer);
-						pImpl->translationEntries.at(i) = tBuffer;
+						pImpl->_translationEntries.at(i) = tBuffer;
 					}}
 
-				pImpl->translationPrefixEntries.resize(pImpl->_translationPrefixCount);
+				pImpl->_translationPrefixEntries.resize(pImpl->_translationPrefixCount);
 				{	unsigned char tBuffer[8] = {};
 					for (unsigned short i = 0; i < pImpl->_translationPrefixCount; i++)
 					{
 						CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 2, 8, tBuffer);
-						pImpl->translationPrefixEntries.at(i) = tBuffer;
+						pImpl->_translationPrefixEntries.at(i) = tBuffer;
 					}}
 
-				pImpl->scalarEntries.resize(pImpl->_scalarCount);
-				//Utilities::fill<short>(scalarEntries,0);
+				pImpl->_scalarEntries.resize(pImpl->_scalarCount);
+				//Utilities::fill<short>(_scalarEntries,0);
 				for (unsigned short i = 0; i < pImpl->_scalarCount; i++)
 				{
-					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 2, 2, &pImpl->scalarEntries.at(i));
+					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 2, 2, &pImpl->_scalarEntries.at(i));
 				}
 
-				pImpl->bonePriorityEntries.resize(pImpl->_bonePriorityCount);
-				//Utilities::fill<uint8_t>(bonePriorityEntries, 0);
+				pImpl->_bonePriorityEntries.resize(pImpl->_bonePriorityCount);
+				//Utilities::fill<uint8_t>(_bonePriorityEntries, 0);
 				for (unsigned short i = 0; i < pImpl->_bonePriorityCount; i++)
 				{
-					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 1, 1, &pImpl->bonePriorityEntries.at(i));
+					CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 1, 1, &pImpl->_bonePriorityEntries.at(i));
 				}
 			}
 
@@ -598,22 +599,22 @@ namespace CALUMI{
 			{
 				for (unsigned short i = 0; i < pImpl->_rotationCount; i++)
 				{
-					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, kSize, kSize, &pImpl->rotationKeyFrames.at(i));
+					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, kSize, kSize, &pImpl->_rotationKeyFrames.at(i));
 				}
 
 				for (unsigned short i = 0; i < pImpl->_translationCount; i++)
 				{
-					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, kSize, kSize, &pImpl->translationKeyFrames.at(i));
+					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, kSize, kSize, &pImpl->_translationKeyFrames.at(i));
 				}
 
 				for (unsigned short i = 0; i < pImpl->_scalarCount; i++)
 				{
-					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, kSize, kSize, &pImpl->scalarKeyFrames.at(i));
+					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, kSize, kSize, &pImpl->_scalarKeyFrames.at(i));
 				}
 
 				for (unsigned short i = 0; i < pImpl->_bonePriorityCount; i++)
 				{
-					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, kSize, kSize, &pImpl->bonePriorityKeyFrames.at(i));
+					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, kSize, kSize, &pImpl->_bonePriorityKeyFrames.at(i));
 				}
 			}
 
@@ -622,33 +623,33 @@ namespace CALUMI{
 				
 				for (unsigned short i = 0; i < pImpl->_rotationCount; i++)
 				{
-					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, 1, 3, pImpl->rotationEntries.at(i).getRawData());
+					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, 1, 3, pImpl->_rotationEntries.at(i).getRawData());
 				}
 
 				for (unsigned short i = 0; i < pImpl->_rotationPrefixCount; i++)
 				{
-					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, 1, 4, pImpl->rotationPrefixEntries.at(i).getRawData());
+					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, 1, 4, pImpl->_rotationPrefixEntries.at(i).getRawData());
 				}
 
 				
 				for (unsigned short i = 0; i < pImpl->_translationCount; i++)
 				{
-					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, 1, 3, pImpl->translationEntries.at(i).getRawData());
+					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, 1, 3, pImpl->_translationEntries.at(i).getRawData());
 				}
 
 				for (unsigned short i = 0; i < pImpl->_translationPrefixCount; i++)
 				{
-					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, 2, 8, pImpl->translationPrefixEntries.at(i).getRawData());
+					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, 2, 8, pImpl->_translationPrefixEntries.at(i).getRawData());
 				}
 
 				for (unsigned short i = 0; i < pImpl->_scalarCount; i++)
 				{
-					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, 2, 2, &pImpl->scalarEntries.at(i));
+					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, 2, 2, &pImpl->_scalarEntries.at(i));
 				}
 
 				for (unsigned short i = 0; i < pImpl->_bonePriorityCount; i++)
 				{
-					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, 1, 1, &pImpl->bonePriorityEntries.at(i));
+					CALUMI::Utilities::AlignFillBufferAndWrite(buffer, addressIndex, 1, 1, &pImpl->_bonePriorityEntries.at(i));
 				}
 			}
 
@@ -661,8 +662,8 @@ namespace CALUMI{
 
 		struct Animation::Impl
 		{
-			CALUMI::Utilities::StringContainer animationFileName; //For file tracking. Should be unique without extension
-			size_t fileSize = 0; //For debugging
+			CALUMI::Utilities::StringContainer animationFileName; //Not present in file. For file tracking. Should be unique without extension
+			size_t fileSize = 0; //Not present in file. For debugging
 			// 
 			//9x4bytes, 2 blanks (CONFIRMED), 4 Quat Components (or all zero), 3 unknown (possibly xyz values)
 			uint64_t _magicNumber = 0;
@@ -684,8 +685,8 @@ namespace CALUMI{
 
 			Utilities::VectorContainer<float> _unknownSuffixFillFloats;
 
-			uint32_t preambleCount = 0;
-			Utilities::VectorContainer<Preamble> preamble;
+			uint32_t _preambleCount = 0;
+			Utilities::VectorContainer<Preamble> _preamble;
 
 			Utilities::VectorContainer<float> _suffixFillerValues;
 
@@ -694,8 +695,8 @@ namespace CALUMI{
 			//so we will keep our entries as a short (2 bytes) and cast them if they can be casted as 1 byte
 
 			//animation blocks go here
-			Utilities::VectorContainer<AnimationBlock> animationBlocks;
-			Utilities::VectorContainer<AnimationBlock> animationSuffixBlocks;
+			Utilities::VectorContainer<AnimationBlock> _animationBlocks;
+			Utilities::VectorContainer<AnimationBlock> _animationSuffixBlocks;
 
 			Impl() = default;
 		};
@@ -860,22 +861,22 @@ namespace CALUMI{
 
 		uint32_t Animation::getPreambleCount() const
 		{
-			return pImpl->preambleCount;
+			return pImpl->_preambleCount;
 		}
 
 		void Animation::setPreambleCount(uint32_t input)
 		{
-			pImpl->preambleCount = input;
+			pImpl->_preambleCount = input;
 		}
 
 		Utilities::VectorContainer<Preamble>& Animation::getPreamble() const
 		{
-			return pImpl->preamble;
+			return pImpl->_preamble;
 		}
 
 		void Animation::setPreamble(const Utilities::VectorContainer<Preamble>& input)
 		{
-			pImpl->preamble = input;
+			pImpl->_preamble = input;
 		}
 
 		Utilities::VectorContainer<float>& Animation::getSuffixFillerValues() const
@@ -900,22 +901,22 @@ namespace CALUMI{
 
 		Utilities::VectorContainer<AnimationBlock>& Animation::getAnimationBlocks() const
 		{
-			return pImpl->animationBlocks;
+			return pImpl->_animationBlocks;
 		}
 
 		Utilities::VectorContainer<AnimationBlock>& Animation::getAnimationSuffixBlocks() const
 		{
-			return pImpl->animationSuffixBlocks;
+			return pImpl->_animationSuffixBlocks;
 		}
 
 		void Animation::setAnimationBlocks(const Utilities::VectorContainer<AnimationBlock>& input)
 		{
-			pImpl->animationBlocks = input;
+			pImpl->_animationBlocks = input;
 		}
 
 		void Animation::setAnimationSuffixBlocks(const Utilities::VectorContainer<AnimationBlock>& input)
 		{
-			pImpl->animationSuffixBlocks = input;
+			pImpl->_animationSuffixBlocks = input;
 		}
 
 		unsigned short Animation::_SumIndices(Utilities::VectorContainer<unsigned short>inputVector, IndexCountingSolution type)
@@ -935,13 +936,13 @@ namespace CALUMI{
 
 			if (pImpl->_frameCount > 0xFF) newFlags.setKeyFrameEntriesFlag(true);
 
-			for (int i = 0; i < pImpl->animationBlocks.size(); i++)
+			for (int i = 0; i < pImpl->_animationBlocks.size(); i++)
 			{
-				if (pImpl->animationBlocks.at(i).getRotationCount() > 0xFF || pImpl->animationBlocks.at(i).getTranslationCount() > 0xFF || pImpl->animationBlocks.at(i).getScalarCount() > 0xFF || pImpl->animationBlocks.at(i).getPriorityCount() > 0xFF)
+				if (pImpl->_animationBlocks.at(i).getRotationCount() > 0xFF || pImpl->_animationBlocks.at(i).getTranslationCount() > 0xFF || pImpl->_animationBlocks.at(i).getScalarCount() > 0xFF || pImpl->_animationBlocks.at(i).getPriorityCount() > 0xFF)
 					newFlags.setKeyCountersFlag(true);
 
 
-				if (pImpl->animationBlocks.at(i).getScalarCount() > 0)
+				if (pImpl->_animationBlocks.at(i).getScalarCount() > 0)
 					newFlags.setScalarSequenceFlag(true);
 
 				//if (_headerFlags.scalarSequenceFlag && _headerFlags.shortKeyCounters) break; //we can exit loop early as both flags are set
@@ -1023,12 +1024,12 @@ namespace CALUMI{
 			size_t newOffset = addressIndex + pImpl->_preambleOffset;
 			if (pImpl->_preambleOffset > 0)
 			{
-				CALUMI::Utilities::AlignBufferAndRead(buffer.value(), addressIndex, 4, 4, &pImpl->preambleCount);
-				pImpl->preamble.reserve(pImpl->preambleCount);
-				for (size_t i = 0; i < pImpl->preambleCount; i++)
+				CALUMI::Utilities::AlignBufferAndRead(buffer.value(), addressIndex, 4, 4, &pImpl->_preambleCount);
+				pImpl->_preamble.reserve(pImpl->_preambleCount);
+				for (size_t i = 0; i < pImpl->_preambleCount; i++)
 				{
 
-					pImpl->preamble.push_back(Preamble(buffer.value(), addressIndex, pImpl->_frameCount));
+					pImpl->_preamble.push_back(Preamble(buffer.value(), addressIndex, pImpl->_frameCount));
 
 				}
 			}
@@ -1070,11 +1071,11 @@ namespace CALUMI{
 				if (j % 2 == 0)
 				{
 					AnimationBlock toAdd;
-					pImpl->animationBlocks.push_back(toAdd);
+					pImpl->_animationBlocks.push_back(toAdd);
 				}
 				else
 				{
-					pImpl->animationBlocks.push_back(AnimationBlock(buffer.value(), addressIndex, pImpl->_headerFlags));
+					pImpl->_animationBlocks.push_back(AnimationBlock(buffer.value(), addressIndex, pImpl->_headerFlags));
 				}
 
 				k++; //increment counter
@@ -1083,10 +1084,10 @@ namespace CALUMI{
 			}
 
 
-			pImpl->animationSuffixBlocks.reserve(pImpl->_unknownFillCount);
+			pImpl->_animationSuffixBlocks.reserve(pImpl->_unknownFillCount);
 			for (unsigned short i = 0; i < pImpl->_unknownFillCount; i++)
 			{
-				pImpl->animationSuffixBlocks.push_back(AnimationBlock(buffer.value(), addressIndex, pImpl->_headerFlags));
+				pImpl->_animationSuffixBlocks.push_back(AnimationBlock(buffer.value(), addressIndex, pImpl->_headerFlags));
 			}
 
 			if (buffer.value().size() != addressIndex)
@@ -1176,7 +1177,7 @@ namespace CALUMI{
 			unsigned short animationBlockCount = _SumIndices(pImpl->_indexAtlas, IndexCountingSolution::odd);
 			for (unsigned short i = 0; i < animationBlockCount; i++)
 			{
-				pImpl->animationBlocks.at(i).SerializeIntoBuffer(buffer,addressIndex, pImpl->_headerFlags);
+				pImpl->_animationBlocks.at(i).SerializeIntoBuffer(buffer,addressIndex, pImpl->_headerFlags);
 			}
 
 			//Skipping additional block entries until we know more

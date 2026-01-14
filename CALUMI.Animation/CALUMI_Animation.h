@@ -1,4 +1,4 @@
-//Copyright � 2025 aka Calaverah. All rights reserved.
+//Copyright © 2025-2026 Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -31,21 +31,21 @@ namespace CALUMI {namespace UNIV {
 		bool RemoveRotationEntry(unsigned int frame);
 		void ClearRotationEntries();
 		size_t GetRotationEntryCount() const;
-		bool CleanRotationSequence();
+		bool CheckEmptyRotationSequence();
 
 		Utilities::VectorContainer<CALUMI::UNIV::Translation>& TranslationSequence() const;
 		bool AddTranslationEntry(CALUMI::UNIV::Translation& input, bool overwrite = true);
 		bool RemoveTranslationEntry(unsigned int frame);
 		void ClearTranslationEntries();
 		size_t GetTranslationEntryCount() const;
-		bool CleanTranslationSequence();
+		bool CheckEmptyTranslationSequence();
 
 		Utilities::VectorContainer<CALUMI::UNIV::Scalar>& ScalarSequence() const;
 		bool AddScalarEntry(CALUMI::UNIV::Scalar& input, bool overwrite = true);
 		bool RemoveScalarEntry(unsigned int frame);
 		void ClearScalarEntries();
 		size_t GetScalarEntryCount() const;
-		bool CleanScalarSequence();
+		bool CheckEmptyScalarSequence();
 
 		Utilities::VectorContainer<CALUMI::UNIV::Priority>& PrioritySequence();
 		bool AddPriorityEntry(CALUMI::UNIV::Priority& input, bool overwrite = true);
@@ -110,19 +110,19 @@ namespace CALUMI {namespace UNIV {
 		CALUMIANIMATION_API Rotation* GetRotationSqArrayC(AnimationBlock* source);
 		CALUMIANIMATION_API Rotation* GetRotationFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API size_t GetRotationSqSizeC(AnimationBlock* source);
-		CALUMIANIMATION_API bool CleanRotationSqC(AnimationBlock* source);
+		CALUMIANIMATION_API bool CheckEmptyRotationSqC(AnimationBlock* source);
 		
 		CALUMIANIMATION_API bool AddTranslationSqToAnimBlockC(AnimationBlock* block, Translation* trnSq, unsigned int size, bool overwrite);
 		CALUMIANIMATION_API Translation* GetTranslationSqArrayC(AnimationBlock* source);
 		CALUMIANIMATION_API Translation* GetTranslationFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API size_t GetTranslationSqSizeC(AnimationBlock* source);
-		CALUMIANIMATION_API bool CleanTranslationSqC(AnimationBlock* source);
+		CALUMIANIMATION_API bool CheckEmptyTranslationSqC(AnimationBlock* source);
 		
 		CALUMIANIMATION_API bool AddScalarSqToAnimBlockC(AnimationBlock* block, Scalar* sclrSq, unsigned int size, bool overwrite);
 		CALUMIANIMATION_API Scalar* GetScalarSqArrayC(AnimationBlock* source);
 		CALUMIANIMATION_API Scalar* GetScalarFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API size_t GetScalarSqSizeC(AnimationBlock* source);
-		CALUMIANIMATION_API bool CleanScalarSqC(AnimationBlock* source);
+		CALUMIANIMATION_API bool CheckEmptyScalarSqC(AnimationBlock* source);
 		
 		CALUMIANIMATION_API bool AddPrioritySqToAnimBlockC(AnimationBlock* block, Priority* prtySq, unsigned int size, bool overwrite);
 		CALUMIANIMATION_API Priority* GetPrioritySqArrayC(AnimationBlock* source);

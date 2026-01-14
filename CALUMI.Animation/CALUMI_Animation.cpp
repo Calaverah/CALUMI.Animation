@@ -1,4 +1,4 @@
-//Copyright � 2025 aka Calaverah. All rights reserved.
+//Copyright © 2025-2026 Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -109,10 +109,10 @@ namespace CALUMI {
 		{
 			int boneIndex = -2;
 			Utilities::StringContainer boneName = "UNNAMED";
-			Utilities::VectorContainer<CALUMI::UNIV::Rotation> _rotationSequence;
-			Utilities::VectorContainer<CALUMI::UNIV::Translation> _translationSequence;
-			Utilities::VectorContainer<CALUMI::UNIV::Scalar> _scalarSequence;
-			Utilities::VectorContainer<CALUMI::UNIV::Priority> _prioritySequence;
+			Utilities::VectorContainer<CALUMI::UNIV::Rotation> rotationSequence;
+			Utilities::VectorContainer<CALUMI::UNIV::Translation> translationSequence;
+			Utilities::VectorContainer<CALUMI::UNIV::Scalar> scalarSequence;
+			Utilities::VectorContainer<CALUMI::UNIV::Priority> prioritySequence;
 			Impl() = default;
 		};
 
@@ -126,10 +126,10 @@ namespace CALUMI {
 
 			pImpl->boneIndex = other.pImpl->boneIndex;
 			pImpl->boneName = other.pImpl->boneName;
-			pImpl->_rotationSequence = other.pImpl->_rotationSequence;
-			pImpl->_translationSequence = other.pImpl->_translationSequence;
-			pImpl->_scalarSequence = other.pImpl->_scalarSequence;
-			pImpl->_prioritySequence = other.pImpl->_prioritySequence;
+			pImpl->rotationSequence = other.pImpl->rotationSequence;
+			pImpl->translationSequence = other.pImpl->translationSequence;
+			pImpl->scalarSequence = other.pImpl->scalarSequence;
+			pImpl->prioritySequence = other.pImpl->prioritySequence;
 
 			return *this;
 		}
@@ -137,28 +137,28 @@ namespace CALUMI {
 		unsigned int UNIV::AnimationBlock::GetLastFrameInBlock()
 		{
 			unsigned int output = 0;
-			if (pImpl->_rotationSequence.size() > 0) {
-				if (pImpl->_rotationSequence.at(pImpl->_rotationSequence.size()-1).Frame() > output)
+			if (pImpl->rotationSequence.size() > 0) {
+				if (pImpl->rotationSequence.at(pImpl->rotationSequence.size()-1).Frame() > output)
 				{
-					output = pImpl->_rotationSequence.at(pImpl->_rotationSequence.size()-1).Frame();
+					output = pImpl->rotationSequence.at(pImpl->rotationSequence.size()-1).Frame();
 				}
 			}
-			if (pImpl->_translationSequence.size() > 0) {
-				if (pImpl->_translationSequence.at(pImpl->_translationSequence.size()-1).Frame() > output)
+			if (pImpl->translationSequence.size() > 0) {
+				if (pImpl->translationSequence.at(pImpl->translationSequence.size()-1).Frame() > output)
 				{
-					output = pImpl->_translationSequence.at(pImpl->_translationSequence.size() - 1).Frame();
+					output = pImpl->translationSequence.at(pImpl->translationSequence.size() - 1).Frame();
 				}
 			}
-			if (pImpl->_scalarSequence.size() > 0) {
-				if (pImpl->_scalarSequence.at(pImpl->_scalarSequence.size()-1).Frame() > output)
+			if (pImpl->scalarSequence.size() > 0) {
+				if (pImpl->scalarSequence.at(pImpl->scalarSequence.size()-1).Frame() > output)
 				{
-					output = pImpl->_scalarSequence.at(pImpl->_scalarSequence.size() - 1).Frame();
+					output = pImpl->scalarSequence.at(pImpl->scalarSequence.size() - 1).Frame();
 				}
 			}
-			if (pImpl->_prioritySequence.size() > 0) {
-				if (pImpl->_prioritySequence.at(pImpl->_prioritySequence.size()-1).Frame() > output)
+			if (pImpl->prioritySequence.size() > 0) {
+				if (pImpl->prioritySequence.at(pImpl->prioritySequence.size()-1).Frame() > output)
 				{
-					output = pImpl->_prioritySequence.at(pImpl->_prioritySequence.size() - 1).Frame();
+					output = pImpl->prioritySequence.at(pImpl->prioritySequence.size() - 1).Frame();
 				}
 			}
 
@@ -187,41 +187,41 @@ namespace CALUMI {
 
 		Utilities::VectorContainer<CALUMI::UNIV::Rotation>& AnimationBlock::RotationSequence() const
 		{
-			return pImpl->_rotationSequence;
+			return pImpl->rotationSequence;
 		}
 
 		bool AnimationBlock::AddRotationEntry(CALUMI::UNIV::Rotation& input, bool overwrite)
 		{
 
-			for (size_t i = 0; i < pImpl->_rotationSequence.size(); i++)
+			for (size_t i = 0; i < pImpl->rotationSequence.size(); i++)
 			{
-				if (pImpl->_rotationSequence.at(i).Frame() == input.Frame())
+				if (pImpl->rotationSequence.at(i).Frame() == input.Frame())
 				{
 					if (!overwrite) return false;
 					else
 					{
-						pImpl->_rotationSequence.at(i) = input;
+						pImpl->rotationSequence.at(i) = input;
 						return true;
 					}
 				}
-				else if (pImpl->_rotationSequence.at(i).Frame() > input.Frame())
+				else if (pImpl->rotationSequence.at(i).Frame() > input.Frame())
 				{
-					pImpl->_rotationSequence.insert_r(i, input);
+					pImpl->rotationSequence.insert_r(i, input);
 					return true;
 				}
 			}
 			
-			pImpl->_rotationSequence.push_back(input);
+			pImpl->rotationSequence.push_back(input);
 			return true;
 		}
 
 		bool AnimationBlock::RemoveRotationEntry(unsigned int frame)
 		{
-			for (unsigned int i = 0; i < pImpl->_rotationSequence.size(); i++)
+			for (unsigned int i = 0; i < pImpl->rotationSequence.size(); i++)
 			{
-				if (frame == pImpl->_rotationSequence.at(i).Frame())
+				if (frame == pImpl->rotationSequence.at(i).Frame())
 				{
-					pImpl->_rotationSequence.erase(i);
+					pImpl->rotationSequence.erase(i);
 					return true;
 				}
 			}
@@ -229,18 +229,18 @@ namespace CALUMI {
 			return false;
 		}
 
-		void AnimationBlock::ClearRotationEntries() { pImpl->_rotationSequence.clear(); }
+		void AnimationBlock::ClearRotationEntries() { pImpl->rotationSequence.clear(); }
 
-		size_t AnimationBlock::GetRotationEntryCount() const { return pImpl->_rotationSequence.size(); }
+		size_t AnimationBlock::GetRotationEntryCount() const { return pImpl->rotationSequence.size(); }
 
-		bool AnimationBlock::CleanRotationSequence()
+		bool AnimationBlock::CheckEmptyRotationSequence()
 		{
 			Math::Quaternion defaultQuaternion;
 			size_t ndCount = 0;
 
-			for (size_t i = 0; i < pImpl->_rotationSequence.size(); i++)
+			for (size_t i = 0; i < pImpl->rotationSequence.size(); i++)
 			{
-				if (!pImpl->_rotationSequence.at(i).RotationQuaternion().AreEqual(defaultQuaternion,0.0f))
+				if (!pImpl->rotationSequence.at(i).RotationQuaternion().AreEqual(defaultQuaternion,0.0f))
 				{
 					ndCount++;
 				}
@@ -257,40 +257,40 @@ namespace CALUMI {
 
 		Utilities::VectorContainer<CALUMI::UNIV::Translation>& AnimationBlock::TranslationSequence() const
 		{
-			return pImpl->_translationSequence;
+			return pImpl->translationSequence;
 		}
 
 		bool AnimationBlock::AddTranslationEntry(CALUMI::UNIV::Translation& input, bool overwrite)
 		{
-			for (size_t i = 0; i < pImpl->_translationSequence.size(); i++)
+			for (size_t i = 0; i < pImpl->translationSequence.size(); i++)
 			{
-				if (pImpl->_translationSequence.at(i).Frame() == input.Frame())
+				if (pImpl->translationSequence.at(i).Frame() == input.Frame())
 				{
 					if (!overwrite) return false;
 					else
 					{
-						pImpl->_translationSequence.at(i) = input;
+						pImpl->translationSequence.at(i) = input;
 						return true;
 					}
 				}
-				else if (pImpl->_translationSequence.at(i).Frame() > input.Frame())
+				else if (pImpl->translationSequence.at(i).Frame() > input.Frame())
 				{
-					pImpl->_translationSequence.insert_r(i, input);
+					pImpl->translationSequence.insert_r(i, input);
 					return true;
 				}
 			}
 
-			pImpl->_translationSequence.push_back(input);
+			pImpl->translationSequence.push_back(input);
 			return true;
 		}
 
 		bool AnimationBlock::RemoveTranslationEntry(unsigned int frame)
 		{
-			for (unsigned int i = 0; i < pImpl->_translationSequence.size(); i++)
+			for (unsigned int i = 0; i < pImpl->translationSequence.size(); i++)
 			{
-				if (frame == pImpl->_translationSequence.at(i).Frame())
+				if (frame == pImpl->translationSequence.at(i).Frame())
 				{
-					pImpl->_translationSequence.erase(i);
+					pImpl->translationSequence.erase(i);
 					return true;
 				}
 			}
@@ -298,18 +298,18 @@ namespace CALUMI {
 			return false;
 		}
 
-		void AnimationBlock::ClearTranslationEntries() { pImpl->_translationSequence.clear(); }
+		void AnimationBlock::ClearTranslationEntries() { pImpl->translationSequence.clear(); }
 
-		size_t AnimationBlock::GetTranslationEntryCount() const { return pImpl->_translationSequence.size(); }
+		size_t AnimationBlock::GetTranslationEntryCount() const { return pImpl->translationSequence.size(); }
 
-		bool AnimationBlock::CleanTranslationSequence()
+		bool AnimationBlock::CheckEmptyTranslationSequence()
 		{
 			Math::Vector3D defaultVector;
 			size_t ndCount = 0;
 
-			for (size_t i = 0; i < pImpl->_translationSequence.size(); i++)
+			for (size_t i = 0; i < pImpl->translationSequence.size(); i++)
 			{
-				if (pImpl->_translationSequence.at(i).TranslationVector() != defaultVector)
+				if (pImpl->translationSequence.at(i).TranslationVector() != defaultVector)
 				{
 					ndCount++;
 				}
@@ -326,40 +326,40 @@ namespace CALUMI {
 
 		Utilities::VectorContainer<CALUMI::UNIV::Scalar>& AnimationBlock::ScalarSequence() const
 		{
-			return pImpl->_scalarSequence;
+			return pImpl->scalarSequence;
 		}
 
 		bool AnimationBlock::AddScalarEntry(CALUMI::UNIV::Scalar& input, bool overwrite)
 		{
-			for (size_t i = 0; i < pImpl->_scalarSequence.size(); i++)
+			for (size_t i = 0; i < pImpl->scalarSequence.size(); i++)
 			{
-				if (pImpl->_scalarSequence.at(i).Frame() == input.Frame())
+				if (pImpl->scalarSequence.at(i).Frame() == input.Frame())
 				{
 					if (!overwrite) return false;
 					else
 					{
-						pImpl->_scalarSequence.at(i) = input;
+						pImpl->scalarSequence.at(i) = input;
 						return true;
 					}
 				}
-				else if (pImpl->_scalarSequence.at(i).Frame() > input.Frame())
+				else if (pImpl->scalarSequence.at(i).Frame() > input.Frame())
 				{
-					pImpl->_scalarSequence.insert_r(i, input);
+					pImpl->scalarSequence.insert_r(i, input);
 					return true;
 				}
 			}
 
-			pImpl->_scalarSequence.push_back(input);
+			pImpl->scalarSequence.push_back(input);
 			return true;
 		}
 
 		bool AnimationBlock::RemoveScalarEntry(unsigned int frame)
 		{
-			for (unsigned int i = 0; i < pImpl->_scalarSequence.size(); i++)
+			for (unsigned int i = 0; i < pImpl->scalarSequence.size(); i++)
 			{
-				if (frame == pImpl->_scalarSequence.at(i).Frame())
+				if (frame == pImpl->scalarSequence.at(i).Frame())
 				{
-					pImpl->_scalarSequence.erase(i);
+					pImpl->scalarSequence.erase(i);
 					return true;
 				}
 			}
@@ -367,18 +367,18 @@ namespace CALUMI {
 			return false;
 		}
 
-		void AnimationBlock::ClearScalarEntries() { pImpl->_scalarSequence.clear(); }
+		void AnimationBlock::ClearScalarEntries() { pImpl->scalarSequence.clear(); }
 
-		size_t AnimationBlock::GetScalarEntryCount() const { return pImpl->_scalarSequence.size(); }
+		size_t AnimationBlock::GetScalarEntryCount() const { return pImpl->scalarSequence.size(); }
 
-		bool AnimationBlock::CleanScalarSequence()
+		bool AnimationBlock::CheckEmptyScalarSequence()
 		{
 			float defaultScalar = 1.0f;
 			size_t ndCount = 0;
 
-			for (size_t i = 0; i < pImpl->_scalarSequence.size(); i++)
+			for (size_t i = 0; i < pImpl->scalarSequence.size(); i++)
 			{
-				if (pImpl->_scalarSequence.at(i).ScalarValue() != defaultScalar)
+				if (pImpl->scalarSequence.at(i).ScalarValue() != defaultScalar)
 				{
 					ndCount++;
 				}
@@ -395,40 +395,40 @@ namespace CALUMI {
 
 		Utilities::VectorContainer<CALUMI::UNIV::Priority>& AnimationBlock::PrioritySequence()
 		{
-			return pImpl->_prioritySequence;
+			return pImpl->prioritySequence;
 		}
 
 		bool AnimationBlock::AddPriorityEntry(CALUMI::UNIV::Priority& input, bool overwrite)
 		{
-			for (size_t i = 0; i < pImpl->_prioritySequence.size(); i++)
+			for (size_t i = 0; i < pImpl->prioritySequence.size(); i++)
 			{
-				if (pImpl->_prioritySequence.at(i).Frame() == input.Frame())
+				if (pImpl->prioritySequence.at(i).Frame() == input.Frame())
 				{
 					if (!overwrite) return false;
 					else
 					{
-						pImpl->_prioritySequence.at(i) = input;
+						pImpl->prioritySequence.at(i) = input;
 						return true;
 					}
 				}
-				else if (pImpl->_prioritySequence.at(i).Frame() > input.Frame())
+				else if (pImpl->prioritySequence.at(i).Frame() > input.Frame())
 				{
-					pImpl->_prioritySequence.insert_r(i, input);
+					pImpl->prioritySequence.insert_r(i, input);
 					return true;
 				}
 			}
 
-			pImpl->_prioritySequence.push_back(input);
+			pImpl->prioritySequence.push_back(input);
 			return true;
 		}
 
 		bool AnimationBlock::RemovePriorityEntry(unsigned int frame)
 		{
-			for (unsigned int i = 0; i < pImpl->_prioritySequence.size(); i++)
+			for (unsigned int i = 0; i < pImpl->prioritySequence.size(); i++)
 			{
-				if (frame == pImpl->_prioritySequence.at(i).Frame())
+				if (frame == pImpl->prioritySequence.at(i).Frame())
 				{
-					pImpl->_prioritySequence.erase(i);
+					pImpl->prioritySequence.erase(i);
 					return true;
 				}
 			}
@@ -436,18 +436,18 @@ namespace CALUMI {
 			return false;
 		}
 
-		void AnimationBlock::ClearPriorityEntries() { pImpl->_prioritySequence.clear(); }
+		void AnimationBlock::ClearPriorityEntries() { pImpl->prioritySequence.clear(); }
 
-		size_t AnimationBlock::GetPriorityEntryCount() const { return pImpl->_prioritySequence.size(); }
+		size_t AnimationBlock::GetPriorityEntryCount() const { return pImpl->prioritySequence.size(); }
 
 		Utilities::StringContainer AnimationBlock::ToJSON(const size_t indents) const {
 			Utilities::StringContainer output = Utilities::Indent(indents).c_str();
 			output += "{\n";
 			output += std::format("{0}\"boneName\":\"{1}\",\n{0}\"boneIndex\":{2},\n", Utilities::Indent(indents + 1).c_str(), pImpl->boneName.c_str(), pImpl->boneIndex).c_str();
-			output += std::format("{0}\"rotationSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->_rotationSequence, indents + 1).c_str()).c_str();
-			output += std::format("{0}\"translationSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->_translationSequence, indents + 1).c_str()).c_str();
-			output += std::format("{0}\"scalarSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->_scalarSequence, indents + 1).c_str()).c_str();
-			output += std::format("{0}\"prioritySequence\":{1}\n{2}", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->_prioritySequence, indents + 1).c_str(), Utilities::Indent(indents).c_str()).c_str();
+			output += std::format("{0}\"rotationSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->rotationSequence, indents + 1).c_str()).c_str();
+			output += std::format("{0}\"translationSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->translationSequence, indents + 1).c_str()).c_str();
+			output += std::format("{0}\"scalarSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->scalarSequence, indents + 1).c_str()).c_str();
+			output += std::format("{0}\"prioritySequence\":{1}\n{2}", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->prioritySequence, indents + 1).c_str(), Utilities::Indent(indents).c_str()).c_str();
 			output += "}";
 			return output;
 		}
@@ -600,11 +600,11 @@ namespace CALUMI {
 		{
 			return source->RotationSequence().size();
 		}
-		bool CleanRotationSqC(AnimationBlock* source)
+		bool CheckEmptyRotationSqC(AnimationBlock* source)
 		{
 			if(!source) return false;
 
-			return source->CleanRotationSequence();
+			return source->CheckEmptyRotationSequence();
 		}
 		bool AddTranslationSqToAnimBlockC(AnimationBlock* block, Translation* trnSq, unsigned int size, bool overwrite)
 		{
@@ -638,11 +638,11 @@ namespace CALUMI {
 		{
 			return source->TranslationSequence().size();
 		}
-		bool CleanTranslationSqC(AnimationBlock* source)
+		bool CheckEmptyTranslationSqC(AnimationBlock* source)
 		{
 			if (!source) return false;
 
-			return source->CleanTranslationSequence();
+			return source->CheckEmptyTranslationSequence();
 		}
 		bool AddScalarSqToAnimBlockC(AnimationBlock* block, Scalar* sclrSq, unsigned int size, bool overwrite)
 		{
@@ -676,11 +676,11 @@ namespace CALUMI {
 		{
 			return source->ScalarSequence().size();
 		}
-		bool CleanScalarSqC(AnimationBlock* source)
+		bool CheckEmptyScalarSqC(AnimationBlock* source)
 		{
 			if(!source) return false;
 
-			return source->CleanScalarSequence();
+			return source->CheckEmptyScalarSequence();
 		}
 		bool AddPrioritySqToAnimBlockC(AnimationBlock* block, Priority* prtySq, unsigned int size, bool overwrite)
 		{

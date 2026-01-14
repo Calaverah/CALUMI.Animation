@@ -1,4 +1,4 @@
-//Copyright � 2025 aka Calaverah. All rights reserved.
+//Copyright © 2025-2026 Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -45,25 +45,25 @@ namespace CALUMI {namespace SFBGS {
 
 	struct SkeletonBone::Impl
 	{
-		CALUMI::Math::Quaternion localRotation;
-		CALUMI::Math::Quaternion globalRotation;
-		CALUMI::Math::Vector3 position;
+		CALUMI::Math::Quaternion _localRotation;
+		CALUMI::Math::Quaternion _globalRotation;
+		CALUMI::Math::Vector3 _position;
 
-		BoneType boneType = BoneType::Default;
+		BoneType _boneType = BoneType::Default;
 
-		uint64_t nameOffset = 0;
+		uint64_t _nameOffset = 0;
 		/// <summary>
 		/// -1 for the root bone
 		/// </summary>
-		int32_t parentBoneIndex = -1;
+		int32_t _parentBoneIndex = -1;
 		/// <summary>
 		/// Twist influence override? Always points to parent on mannequin twist bones
 		/// </summary>
-		int32_t twistDriverMqnIndex = -1;
+		int32_t _twistDriverMqnIndex = -1;
 		/// <summary>
 		/// Twist influence, -1 if skipped
 		/// </summary>
-		int32_t twistDriverIndex = -1;
+		int32_t _twistDriverIndex = -1;
 		/// <summary>
 		/// Always -1
 		/// </summary>
@@ -71,18 +71,18 @@ namespace CALUMI {namespace SFBGS {
 		/// <summary>
 		/// Same as this bone's index by default
 		/// </summary>
-		int32_t mirrorBoneIndex = 0;
-		int32_t term05 = 0;
+		int32_t _mirrorBoneIndex = 0;
+		int32_t _term05 = 0;
 		/// <summary>
 		/// Negative if pointing to parent
 		/// </summary>
-		float twistDriverWeight = 0;
+		float _twistDriverWeight = 0;
 		/// <summary>
 		/// Always 0
 		/// </summary>
 		int32_t _pad02 = 0;
-		float unknownScalar = 0.0;
-		int32_t term08 = 0;
+		float _unknownScalar = 0.0;
+		int32_t _pad03 = 0; //appears to be garbage/leftover memory from whatever block of memory was used during output at BGS
 
 		Impl() = default;
 	};
@@ -108,76 +108,76 @@ namespace CALUMI {namespace SFBGS {
 			float w;
 			std::memcpy(&w, &buffer.at(addressIndex), sizeof(w));
 			addressIndex += sizeof(w);
-			pImpl->localRotation.setW(w);
+			pImpl->_localRotation.setW(w);
 		}
 
 		{
 			float f[3] = {};
 			std::memcpy(&f, &buffer.at(addressIndex), sizeof(f));
 			addressIndex += (sizeof(f));
-			pImpl->localRotation.setX(f[0]); pImpl->localRotation.setY(f[1]); pImpl->localRotation.setZ(f[2]);
+			pImpl->_localRotation.setX(f[0]); pImpl->_localRotation.setY(f[1]); pImpl->_localRotation.setZ(f[2]);
 		}
 
 		{
 			float w;
 			std::memcpy(&w, &buffer.at(addressIndex), sizeof(w));
 			addressIndex += sizeof(w);
-			pImpl->globalRotation.setW(w);
+			pImpl->_globalRotation.setW(w);
 		}
 
 		{
 			float f[3] = {};
 			std::memcpy(&f, &buffer.at(addressIndex), sizeof(f));
 			addressIndex += (sizeof(f));
-			pImpl->globalRotation.setX(f[0]); pImpl->globalRotation.setY(f[1]); pImpl->globalRotation.setZ(f[2]);
+			pImpl->_globalRotation.setX(f[0]); pImpl->_globalRotation.setY(f[1]); pImpl->_globalRotation.setZ(f[2]);
 		}
 
 		{
 			float f[3] = {};
 			std::memcpy(&f, &buffer.at(addressIndex), sizeof(f));
 			addressIndex += sizeof(f);
-			pImpl->position.setX(f[0]);
-			pImpl->position.setY(f[1]);
-			pImpl->position.setZ(f[2]);
+			pImpl->_position.setX(f[0]);
+			pImpl->_position.setY(f[1]);
+			pImpl->_position.setZ(f[2]);
 		}
 
 		
 
-		std::memcpy(&pImpl->boneType, &buffer.at(addressIndex), sizeof(pImpl->boneType));
-		addressIndex += sizeof(pImpl->boneType);
+		std::memcpy(&pImpl->_boneType, &buffer.at(addressIndex), sizeof(pImpl->_boneType));
+		addressIndex += sizeof(pImpl->_boneType);
 
-		std::memcpy(&pImpl->nameOffset, &buffer.at(addressIndex), sizeof(pImpl->nameOffset));
-		addressIndex += sizeof(pImpl->nameOffset);
+		std::memcpy(&pImpl->_nameOffset, &buffer.at(addressIndex), sizeof(pImpl->_nameOffset));
+		addressIndex += sizeof(pImpl->_nameOffset);
 
-		std::memcpy(&pImpl->parentBoneIndex, &buffer.at(addressIndex), sizeof(pImpl->parentBoneIndex));
-		addressIndex += sizeof(pImpl->parentBoneIndex);
+		std::memcpy(&pImpl->_parentBoneIndex, &buffer.at(addressIndex), sizeof(pImpl->_parentBoneIndex));
+		addressIndex += sizeof(pImpl->_parentBoneIndex);
 
-		std::memcpy(&pImpl->twistDriverMqnIndex, &buffer.at(addressIndex), sizeof(pImpl->twistDriverMqnIndex));
-		addressIndex += sizeof(pImpl->twistDriverMqnIndex);
+		std::memcpy(&pImpl->_twistDriverMqnIndex, &buffer.at(addressIndex), sizeof(pImpl->_twistDriverMqnIndex));
+		addressIndex += sizeof(pImpl->_twistDriverMqnIndex);
 
-		std::memcpy(&pImpl->twistDriverIndex, &buffer.at(addressIndex), sizeof(pImpl->twistDriverIndex));
-		addressIndex += sizeof(pImpl->twistDriverIndex);
+		std::memcpy(&pImpl->_twistDriverIndex, &buffer.at(addressIndex), sizeof(pImpl->_twistDriverIndex));
+		addressIndex += sizeof(pImpl->_twistDriverIndex);
 
 		std::memcpy(&pImpl->_pad01, &buffer.at(addressIndex), sizeof(pImpl->_pad01));
 		addressIndex += sizeof(pImpl->_pad01);
 
-		std::memcpy(&pImpl->mirrorBoneIndex, &buffer.at(addressIndex), sizeof(pImpl->mirrorBoneIndex));
-		addressIndex += sizeof(pImpl->mirrorBoneIndex);
+		std::memcpy(&pImpl->_mirrorBoneIndex, &buffer.at(addressIndex), sizeof(pImpl->_mirrorBoneIndex));
+		addressIndex += sizeof(pImpl->_mirrorBoneIndex);
 
-		std::memcpy(&pImpl->term05, &buffer.at(addressIndex), sizeof(pImpl->term05));
-		addressIndex += sizeof(pImpl->term05);
+		std::memcpy(&pImpl->_term05, &buffer.at(addressIndex), sizeof(pImpl->_term05));
+		addressIndex += sizeof(pImpl->_term05);
 
-		std::memcpy(&pImpl->twistDriverWeight, &buffer.at(addressIndex), sizeof(pImpl->twistDriverWeight));
-		addressIndex += sizeof(pImpl->twistDriverWeight);
+		std::memcpy(&pImpl->_twistDriverWeight, &buffer.at(addressIndex), sizeof(pImpl->_twistDriverWeight));
+		addressIndex += sizeof(pImpl->_twistDriverWeight);
 
 		std::memcpy(&pImpl->_pad02, &buffer.at(addressIndex), sizeof(pImpl->_pad02));
 		addressIndex += sizeof(pImpl->_pad02);
 
-		std::memcpy(&pImpl->unknownScalar, &buffer.at(addressIndex), sizeof(pImpl->unknownScalar));
-		addressIndex += sizeof(pImpl->unknownScalar);
+		std::memcpy(&pImpl->_unknownScalar, &buffer.at(addressIndex), sizeof(pImpl->_unknownScalar));
+		addressIndex += sizeof(pImpl->_unknownScalar);
 
-		std::memcpy(&pImpl->term08, &buffer.at(addressIndex), sizeof(pImpl->term08));
-		addressIndex += sizeof(pImpl->term08);
+		std::memcpy(&pImpl->_pad03, &buffer.at(addressIndex), sizeof(pImpl->_pad03));
+		addressIndex += sizeof(pImpl->_pad03);
 	}
 	SkeletonBone::SkeletonBone(const SkeletonBone& input) : SkeletonBone()
 	{
@@ -189,29 +189,29 @@ namespace CALUMI {namespace SFBGS {
 		return *this;
 	}
 	
-	CALUMI::Math::Quaternion& SFBGS::SkeletonBone::LocalRotation() const { return pImpl->localRotation; }
-	CALUMI::Math::Quaternion& SkeletonBone::GlobalRotation() const { return pImpl->globalRotation; }
-	CALUMI::Math::Vector3& SkeletonBone::Position() const { return pImpl->position; }
-	BoneType SkeletonBone::getBoneType() const { return pImpl->boneType; }
-	void SkeletonBone::setBoneType(BoneType t) { pImpl->boneType = t; }
-	uint64_t SkeletonBone::getNameOffset() const { return pImpl->nameOffset; }
-	void SkeletonBone::setNameOffset(uint64_t offset) { pImpl->nameOffset = offset; }
-	int32_t SkeletonBone::getParentBoneIndex() const { return pImpl->parentBoneIndex; }
-	void SkeletonBone::setParentBoneIndex(int32_t idx) { pImpl->parentBoneIndex = idx; }
-	int32_t SkeletonBone::getTwistDriverMqnIndex() const { return pImpl->twistDriverMqnIndex; }
-	void SkeletonBone::setTwistDriverMqnIndex(int32_t idx) { pImpl->twistDriverMqnIndex = idx; }
-	int32_t SkeletonBone::getTwistDriverIndex() const { return pImpl->twistDriverIndex; }
-	void SkeletonBone::setTwistDriverIndex(int32_t idx) { pImpl->twistDriverIndex = idx; }
-	int32_t SkeletonBone::getMirrorBoneIndex() const { return pImpl->mirrorBoneIndex; }
-	void SkeletonBone::setMirrorBoneIndex(int32_t idx) { pImpl->mirrorBoneIndex = idx; }
-	int32_t SkeletonBone::getTerm05() const { return pImpl->term05; }
-	void SkeletonBone::setTerm05(int32_t value) { pImpl->term05 = value; }
-	float SkeletonBone::getTwistDriverWeight() const { return pImpl->twistDriverWeight; }
-	void SkeletonBone::setTwistDriverWeight(float weight) { pImpl->twistDriverWeight = weight; }
-	float SkeletonBone::getUnknownScalar() const { return pImpl->unknownScalar; }
-	void SkeletonBone::setUnknownScalar(float value) { pImpl->unknownScalar = value; }
-	int32_t SkeletonBone::getTerm08() const { return pImpl->term08; }
-	void SkeletonBone::setTerm08(int32_t value) { pImpl->term08 = value; }
+	CALUMI::Math::Quaternion& SFBGS::SkeletonBone::LocalRotation() const { return pImpl->_localRotation; }
+	CALUMI::Math::Quaternion& SkeletonBone::GlobalRotation() const { return pImpl->_globalRotation; }
+	CALUMI::Math::Vector3& SkeletonBone::Position() const { return pImpl->_position; }
+	BoneType SkeletonBone::getBoneType() const { return pImpl->_boneType; }
+	void SkeletonBone::setBoneType(BoneType t) { pImpl->_boneType = t; }
+	uint64_t SkeletonBone::getNameOffset() const { return pImpl->_nameOffset; }
+	void SkeletonBone::setNameOffset(uint64_t offset) { pImpl->_nameOffset = offset; }
+	int32_t SkeletonBone::getParentBoneIndex() const { return pImpl->_parentBoneIndex; }
+	void SkeletonBone::setParentBoneIndex(int32_t idx) { pImpl->_parentBoneIndex = idx; }
+	int32_t SkeletonBone::getTwistDriverMqnIndex() const { return pImpl->_twistDriverMqnIndex; }
+	void SkeletonBone::setTwistDriverMqnIndex(int32_t idx) { pImpl->_twistDriverMqnIndex = idx; }
+	int32_t SkeletonBone::getTwistDriverIndex() const { return pImpl->_twistDriverIndex; }
+	void SkeletonBone::setTwistDriverIndex(int32_t idx) { pImpl->_twistDriverIndex = idx; }
+	int32_t SkeletonBone::getMirrorBoneIndex() const { return pImpl->_mirrorBoneIndex; }
+	void SkeletonBone::setMirrorBoneIndex(int32_t idx) { pImpl->_mirrorBoneIndex = idx; }
+	int32_t SkeletonBone::getTerm05() const { return pImpl->_term05; }
+	void SkeletonBone::setTerm05(int32_t value) { pImpl->_term05 = value; }
+	float SkeletonBone::getTwistDriverWeight() const { return pImpl->_twistDriverWeight; }
+	void SkeletonBone::setTwistDriverWeight(float weight) { pImpl->_twistDriverWeight = weight; }
+	float SkeletonBone::getUnknownScalar() const { return pImpl->_unknownScalar; }
+	void SkeletonBone::setUnknownScalar(float value) { pImpl->_unknownScalar = value; }
+	int32_t SkeletonBone::getTerm08() const { return pImpl->_pad03; }
+	void SkeletonBone::setTerm08(int32_t value) { pImpl->_pad03 = value; }
 
 	void SkeletonBone::SerializeIntoBuffer(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex) const
 	{
@@ -219,7 +219,7 @@ namespace CALUMI {namespace SFBGS {
 
 		//QUAT UNITS ARE SERIALIZED AS WXYZ AND NEED TO BE WRITTEN FROM XYZW
 		{
-			float w = pImpl->localRotation.getW(); float f[3] = { pImpl->localRotation.getX(),pImpl->localRotation.getY(), pImpl->localRotation.getZ() };
+			float w = pImpl->_localRotation.getW(); float f[3] = { pImpl->_localRotation.getX(),pImpl->_localRotation.getY(), pImpl->_localRotation.getZ() };
 			std::memcpy(&buffer.at(addressIndex), &w, sizeof(w));
 			addressIndex += sizeof(w);
 
@@ -228,7 +228,7 @@ namespace CALUMI {namespace SFBGS {
 		}
 
 		{
-			float w = pImpl->globalRotation.getW(); float f[3] = { pImpl->globalRotation.getX(),pImpl->globalRotation.getY(), pImpl->globalRotation.getZ() };
+			float w = pImpl->_globalRotation.getW(); float f[3] = { pImpl->_globalRotation.getX(),pImpl->_globalRotation.getY(), pImpl->_globalRotation.getZ() };
 			std::memcpy(&buffer.at(addressIndex), &w, sizeof(w));
 			addressIndex += sizeof(w);
 
@@ -237,46 +237,46 @@ namespace CALUMI {namespace SFBGS {
 		}
 
 		{
-			float f[3] = { pImpl->position.getX(), pImpl->position.getY(), pImpl->position.getZ()};
+			float f[3] = { pImpl->_position.getX(), pImpl->_position.getY(), pImpl->_position.getZ()};
 			std::memcpy(&buffer.at(addressIndex), f, sizeof(f));
 			addressIndex += sizeof(f);
 		}
 
-		std::memcpy(&buffer.at(addressIndex), &pImpl->boneType, sizeof(pImpl->boneType));
-		addressIndex += sizeof(pImpl->boneType);
+		std::memcpy(&buffer.at(addressIndex), &pImpl->_boneType, sizeof(pImpl->_boneType));
+		addressIndex += sizeof(pImpl->_boneType);
 
-		std::memcpy(&buffer.at(addressIndex), &pImpl->nameOffset, sizeof(pImpl->nameOffset));
-		addressIndex += sizeof(pImpl->nameOffset);
+		std::memcpy(&buffer.at(addressIndex), &pImpl->_nameOffset, sizeof(pImpl->_nameOffset));
+		addressIndex += sizeof(pImpl->_nameOffset);
 
-		std::memcpy(&buffer.at(addressIndex), &pImpl->parentBoneIndex, sizeof(pImpl->parentBoneIndex));
-		addressIndex += sizeof(pImpl->parentBoneIndex);
+		std::memcpy(&buffer.at(addressIndex), &pImpl->_parentBoneIndex, sizeof(pImpl->_parentBoneIndex));
+		addressIndex += sizeof(pImpl->_parentBoneIndex);
 
-		std::memcpy(&buffer.at(addressIndex), &pImpl->twistDriverMqnIndex, sizeof(pImpl->twistDriverMqnIndex));
-		addressIndex += sizeof(pImpl->twistDriverMqnIndex);
+		std::memcpy(&buffer.at(addressIndex), &pImpl->_twistDriverMqnIndex, sizeof(pImpl->_twistDriverMqnIndex));
+		addressIndex += sizeof(pImpl->_twistDriverMqnIndex);
 
-		std::memcpy(&buffer.at(addressIndex), &pImpl->twistDriverIndex, sizeof(pImpl->twistDriverIndex));
-		addressIndex += sizeof(pImpl->twistDriverIndex);
+		std::memcpy(&buffer.at(addressIndex), &pImpl->_twistDriverIndex, sizeof(pImpl->_twistDriverIndex));
+		addressIndex += sizeof(pImpl->_twistDriverIndex);
 
 		std::memcpy(&buffer.at(addressIndex), &pImpl->_pad01, sizeof(pImpl->_pad01));
 		addressIndex += sizeof(pImpl->_pad01);
 
-		std::memcpy(&buffer.at(addressIndex), &pImpl->mirrorBoneIndex, sizeof(pImpl->mirrorBoneIndex));
-		addressIndex += sizeof(pImpl->mirrorBoneIndex);
+		std::memcpy(&buffer.at(addressIndex), &pImpl->_mirrorBoneIndex, sizeof(pImpl->_mirrorBoneIndex));
+		addressIndex += sizeof(pImpl->_mirrorBoneIndex);
 
-		std::memcpy(&buffer.at(addressIndex), &pImpl->term05, sizeof(pImpl->term05));
-		addressIndex += sizeof(pImpl->term05);
+		std::memcpy(&buffer.at(addressIndex), &pImpl->_term05, sizeof(pImpl->_term05));
+		addressIndex += sizeof(pImpl->_term05);
 
-		std::memcpy(&buffer.at(addressIndex), &pImpl->twistDriverWeight, sizeof(pImpl->twistDriverWeight));
-		addressIndex += sizeof(pImpl->twistDriverWeight);
+		std::memcpy(&buffer.at(addressIndex), &pImpl->_twistDriverWeight, sizeof(pImpl->_twistDriverWeight));
+		addressIndex += sizeof(pImpl->_twistDriverWeight);
 
 		std::memcpy(&buffer.at(addressIndex), &pImpl->_pad02, sizeof(pImpl->_pad02));
 		addressIndex += sizeof(pImpl->_pad02);
 
-		std::memcpy(&buffer.at(addressIndex), &pImpl->unknownScalar, sizeof(pImpl->unknownScalar));
-		addressIndex += sizeof(pImpl->unknownScalar);
+		std::memcpy(&buffer.at(addressIndex), &pImpl->_unknownScalar, sizeof(pImpl->_unknownScalar));
+		addressIndex += sizeof(pImpl->_unknownScalar);
 
-		std::memcpy(&buffer.at(addressIndex), &pImpl->term08, sizeof(pImpl->term08));
-		addressIndex += sizeof(pImpl->term08);
+		std::memcpy(&buffer.at(addressIndex), &pImpl->_pad03, sizeof(pImpl->_pad03));
+		addressIndex += sizeof(pImpl->_pad03);
 	}
 
 	bool SFBGS::SkeletonBone::SetBoneTypeFromUNIV(UNIV::SkeletonBone& univBone)
@@ -284,19 +284,19 @@ namespace CALUMI {namespace SFBGS {
 		switch (univBone.GetBoneTypeProperty()->GetType())
 		{
 		case CALUMI::UNIV::BoneType::Default:
-			pImpl->boneType = SFBGS::BoneType::Default;
+			pImpl->_boneType = SFBGS::BoneType::Default;
 			//UNIV::DefaultBoneProperties* dProp = dynamic_cast<UNIV::DefaultBoneProperties*>(const_cast<UNIV::BoneTypeProperties*>(univBone.GetBoneTypeProperty()));
-			pImpl->twistDriverIndex = -1;
-			pImpl->twistDriverMqnIndex = -1;
-			pImpl->twistDriverWeight = 0.0;
+			pImpl->_twistDriverIndex = -1;
+			pImpl->_twistDriverMqnIndex = -1;
+			pImpl->_twistDriverWeight = 0.0;
 			break;
 		case CALUMI::UNIV::BoneType::Twist:
 		{
-			pImpl->boneType = SFBGS::BoneType::Twist;
+			pImpl->_boneType = SFBGS::BoneType::Twist;
 			//We are permitting const_casting as we are paying special attention not to delete the struct while modifying
 			UNIV::TwistBoneProperties* tProp = dynamic_cast<UNIV::TwistBoneProperties*>(const_cast<UNIV::BoneTypeProperties*>(univBone.GetBoneTypeProperty()));
-			pImpl->twistDriverIndex = tProp->TwistDriverIndex();
-			pImpl->twistDriverWeight = tProp->TwistDriverWeight();
+			pImpl->_twistDriverIndex = tProp->TwistDriverIndex();
+			pImpl->_twistDriverWeight = tProp->TwistDriverWeight();
 		}
 		break;
 		default:
@@ -318,8 +318,8 @@ namespace CALUMI {namespace SFBGS {
 		{
 			//We are permitting const_casting as we are paying special attention not to delete the struct while modifying
 			UNIV::TwistBoneProperties* tProp = dynamic_cast<UNIV::TwistBoneProperties*>(const_cast<UNIV::BoneTypeProperties*>(univBone.GetBoneTypeProperty()));
-			tProp->TwistDriverIndex(pImpl->twistDriverIndex);
-			tProp->TwistDriverWeight(pImpl->twistDriverWeight);
+			tProp->TwistDriverIndex(pImpl->_twistDriverIndex);
+			tProp->TwistDriverWeight(pImpl->_twistDriverWeight);
 		}
 		break;
 		default:
@@ -330,7 +330,7 @@ namespace CALUMI {namespace SFBGS {
 
 	UNIV::BoneType SFBGS::SkeletonBone::GetBoneTypeAsUNIVEnum()
 	{
-		switch (pImpl->boneType)
+		switch (pImpl->_boneType)
 		{
 		case SFBGS::BoneType::Default:
 			return UNIV::BoneType::Default;
@@ -343,7 +343,7 @@ namespace CALUMI {namespace SFBGS {
 
 	const char* SkeletonBone::GetBoneTypeAsString()
 	{
-		switch (pImpl->boneType)
+		switch (pImpl->_boneType)
 		{
 		case CALUMI::SFBGS::BoneType::Default:
 			return "Default";
@@ -360,56 +360,56 @@ namespace CALUMI {namespace SFBGS {
 
 	struct SkeletonRig::Impl
 	{
-		int versionNumber = 05;
+		int _versionNumber = 05;
 
-		uint32_t fileSize = 0;
+		uint32_t _fileSize = 0;
 
 		/// <summary>
 		/// Currently the only value seen is 0x50 (80)
 		/// </summary>
-		uint32_t headerSize = 0x50;
+		uint32_t _headerSize = 0x50;
 
 		/// <summary>
 		/// Always empty, possibly padding, see _PRIVATE_ for placement in struct
 		/// </summary>
-		uint32_t headerEmpty01 = 0;
+		uint32_t _headerEmpty01 = 0;
 		/// <summary>
 		/// 96* bone count + 80 bytes
 		/// </summary>
-		uint32_t boneMapOffset = 0;
+		uint32_t _boneMapOffset = 0;
 
 		/// <summary>
 		/// Always empty, possibly padding, see _PRIVATE_ for placement in struct
 		/// </summary>
-		uint32_t headerEmpty02 = 0;
+		uint32_t _headerEmpty02 = 0;
 		/// <summary>
 			/// No matter what, these three ALWAYS match. Could be internal number tracking for BGS and may not matter to anyone outside of the company
 			/// </summary>
-		uint64_t matchingThree[3] = { 0,0,0 };
+		uint64_t _matchingThree[3] = { 0,0,0 };
 		/// <summary>
 		/// default precision values. For ships use 0.25. For first person use 0.0078125 (1/128)
 		/// </summary>
-		float lowPrecision = 0.03125f;
+		float _lowPrecision = 0.03125f;
 		/// <summary>
 		/// default precision values. For ships use 0.002. For first person use 6.25e-5 (1/16000)
 		/// </summary>
-		float highPrecision = 0.00025f;
+		float _highPrecision = 0.00025f;
 
-		uint16_t boneCount = 0;
-		uint16_t boneCount_Animated = 0;
+		uint16_t _boneCount = 0;
+		uint16_t _boneCountNoTwist = 0;
 		/// <summary>
 		/// Always empty, possibly padding, see _PRIVATE_ for placement in struct
 		/// </summary>
-		uint32_t headerEmpty03 = 0;
+		uint32_t _headerEmpty03 = 0;
 		/// <summary>
 		/// ;)
 		/// </summary>
-		uint8_t endOfHeader[16] = { 0x0, 0x0, 0x43, 0x41, 0x4C, 0x55, 0x4D, 0x49, 0x44, 0x56, 0x52, 0x53, 0x4A, 0x4F, 0x4A, 0x4F };
+		uint8_t _endOfHeader[16] = { 0x0, 0x0, 0x43, 0x41, 0x4C, 0x55, 0x4D, 0x49, 0x44, 0x56, 0x52, 0x53, 0x4A, 0x4F, 0x4A, 0x4F };
 
-		Utilities::VectorContainer<SkeletonBone> boneEntries;
+		Utilities::VectorContainer<SkeletonBone> _boneEntries;
 
 		//Don't ask why I'm initializing like this... let's just move on.
-		int16_t boneMapArray[SFBGSMAPSIZE] =
+		int16_t _boneMapArray[SFBGSMAPSIZE] =
 		{
 			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 			-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
@@ -420,7 +420,7 @@ namespace CALUMI {namespace SFBGS {
 		/// <summary>
 		/// String array for the bone names
 		/// </summary>
-		Utilities::VectorContainer<Utilities::StringContainer> stringArray;
+		Utilities::VectorContainer<Utilities::StringContainer> _stringArray;
 		Impl() = default;
 	};
 
@@ -433,114 +433,114 @@ namespace CALUMI {namespace SFBGS {
 	{
 		for (uint8_t j = 0; j < input.size(); j++)
 		{
-			pImpl->boneMapArray[j] = input.at(j);
+			pImpl->_boneMapArray[j] = input.at(j);
 		}
 	}
 
 	Utilities::VectorContainer<Utilities::StringContainer>& SkeletonRig::StringArray() const
 	{
-		return pImpl->stringArray;
+		return pImpl->_stringArray;
 	}
 
 	int SkeletonRig::VersionNumber() const
 	{
-		return pImpl->versionNumber;
+		return pImpl->_versionNumber;
 	}
 
 	void SkeletonRig::VersionNumber(int v)
 	{
-		pImpl->versionNumber = v;
+		pImpl->_versionNumber = v;
 	}
 
 	uint32_t SkeletonRig::FileSize() const
 	{
-		return pImpl->fileSize;
+		return pImpl->_fileSize;
 	}
 
 	void SkeletonRig::FileSize(uint32_t size)
 	{
-		pImpl->fileSize = size;
+		pImpl->_fileSize = size;
 	}
 
 	uint32_t SkeletonRig::HeaderSize() const
 	{
-		return pImpl->headerSize;
+		return pImpl->_headerSize;
 	}
 
 	void SkeletonRig::HeaderSize(uint32_t size)
 	{
-		pImpl->headerSize = size;
+		pImpl->_headerSize = size;
 	}
 
 	uint32_t SkeletonRig::BoneMapOffset() const
 	{
-		return pImpl->boneMapOffset;
+		return pImpl->_boneMapOffset;
 	}
 
 	void SkeletonRig::BoneMapOffset(uint32_t offset)
 	{
-		pImpl->boneMapOffset = offset;
+		pImpl->_boneMapOffset = offset;
 	}
 
 	Utilities::VectorContainer<uint64_t> SkeletonRig::getMatchingThree() const
 	{
 		Utilities::VectorContainer<uint64_t> output(3);
-		output.at(0) = pImpl->matchingThree[0];
-		output.at(1) = pImpl->matchingThree[1];
-		output.at(2) = pImpl->matchingThree[2];
+		output.at(0) = pImpl->_matchingThree[0];
+		output.at(1) = pImpl->_matchingThree[1];
+		output.at(2) = pImpl->_matchingThree[2];
 		return output;
 	}
 
 	void SkeletonRig::setMatchingThree(uint64_t m1, uint64_t m2, uint64_t m3)
 	{
-		pImpl->matchingThree[0] = m1;
-		pImpl->matchingThree[1] = m2;
-		pImpl->matchingThree[2] = m3;
+		pImpl->_matchingThree[0] = m1;
+		pImpl->_matchingThree[1] = m2;
+		pImpl->_matchingThree[2] = m3;
 	}
 
 	float SkeletonRig::LowPrecision() const
 	{
-		return pImpl->lowPrecision;
+		return pImpl->_lowPrecision;
 	}
 
 	void SkeletonRig::LowPrecision(float value)
 	{
-		pImpl->lowPrecision = value;
+		pImpl->_lowPrecision = value;
 	}
 
 	float SkeletonRig::HighPrecision() const
 	{
-		return pImpl->highPrecision;
+		return pImpl->_highPrecision;
 	}
 
 	void SkeletonRig::HighPrecision(float value)
 	{
-		pImpl->highPrecision = value;
+		pImpl->_highPrecision = value;
 	}
 
 	uint16_t SkeletonRig::BoneCount() const
 	{
-		return pImpl->boneCount;
+		return pImpl->_boneCount;
 	}
 
 	void SkeletonRig::BoneCount(uint16_t count)
 	{
-		pImpl->boneCount = count;
+		pImpl->_boneCount = count;
 	}
 
 	uint16_t SkeletonRig::BoneCountAnimated() const
 	{
-		return pImpl->boneCount_Animated;
+		return pImpl->_boneCountNoTwist;
 	}
 
 	void SkeletonRig::BoneCountAnimated(uint16_t count)
 	{
-		pImpl->boneCount_Animated = count;
+		pImpl->_boneCountNoTwist = count;
 	}
 
 	Utilities::VectorContainer<SkeletonBone>& SkeletonRig::BoneEntries() const
 	{
-		return pImpl->boneEntries;
+		return pImpl->_boneEntries;
 	}
 
 	Utilities::VectorContainer<int16_t> SkeletonRig::BoneMapArray() const
@@ -548,7 +548,7 @@ namespace CALUMI {namespace SFBGS {
 		Utilities::VectorContainer<int16_t> output; output.reserve(SFBGSMAPSIZE);
 		for (uint8_t i = 0; i < SFBGSMAPSIZE; i++)
 		{
-			output.push_back(pImpl->boneMapArray[i]);
+			output.push_back(pImpl->_boneMapArray[i]);
 		}
 		return output;
 	}
@@ -559,7 +559,7 @@ namespace CALUMI {namespace SFBGS {
 		Utilities::VectorContainer<char> output(16);
 		for (uint8_t i = 0; i < 16; i++)
 		{
-			output.at(i) = pImpl->endOfHeader[i];
+			output.at(i) = pImpl->_endOfHeader[i];
 		}
 		return output;
 	}
@@ -572,9 +572,9 @@ namespace CALUMI {namespace SFBGS {
 	}
 	bool SkeletonRig::IsMarkedMannequin() const
 	{
-		for (size_t i = 0; i < pImpl->boneEntries.size(); i++)
+		for (size_t i = 0; i < pImpl->_boneEntries.size(); i++)
 		{
-			if (pImpl->boneEntries.at(i).getTwistDriverMqnIndex() > 0)
+			if (pImpl->_boneEntries.at(i).getTwistDriverMqnIndex() > 0)
 				return true;
 		}
 		return false;
@@ -595,69 +595,69 @@ namespace CALUMI {namespace SFBGS {
 
 		//HEADER READING
 		{
-			std::memcpy(&pImpl->versionNumber, &buffer.value().at(addressIndex), sizeof(pImpl->versionNumber));
-			addressIndex += sizeof(pImpl->versionNumber);
+			std::memcpy(&pImpl->_versionNumber, &buffer.value().at(addressIndex), sizeof(pImpl->_versionNumber));
+			addressIndex += sizeof(pImpl->_versionNumber);
 
-			std::memcpy(&pImpl->fileSize, &buffer.value().at(addressIndex), sizeof(pImpl->fileSize));
-			addressIndex += sizeof(pImpl->fileSize);
+			std::memcpy(&pImpl->_fileSize, &buffer.value().at(addressIndex), sizeof(pImpl->_fileSize));
+			addressIndex += sizeof(pImpl->_fileSize);
 
-			std::memcpy(&pImpl->headerSize, &buffer.value().at(addressIndex), sizeof(pImpl->headerSize));
-			addressIndex += sizeof(pImpl->headerSize);
+			std::memcpy(&pImpl->_headerSize, &buffer.value().at(addressIndex), sizeof(pImpl->_headerSize));
+			addressIndex += sizeof(pImpl->_headerSize);
 
-			std::memcpy(&pImpl->headerEmpty01, &buffer.value().at(addressIndex), sizeof(pImpl->headerEmpty01));
-			addressIndex += sizeof(pImpl->headerEmpty01);
+			std::memcpy(&pImpl->_headerEmpty01, &buffer.value().at(addressIndex), sizeof(pImpl->_headerEmpty01));
+			addressIndex += sizeof(pImpl->_headerEmpty01);
 
-			std::memcpy(&pImpl->boneMapOffset, &buffer.value().at(addressIndex), sizeof(pImpl->boneMapOffset));
-			addressIndex += sizeof(pImpl->boneMapOffset);
+			std::memcpy(&pImpl->_boneMapOffset, &buffer.value().at(addressIndex), sizeof(pImpl->_boneMapOffset));
+			addressIndex += sizeof(pImpl->_boneMapOffset);
 
-			std::memcpy(&pImpl->headerEmpty02, &buffer.value().at(addressIndex), sizeof(pImpl->headerEmpty02));
-			addressIndex += sizeof(pImpl->headerEmpty02);
+			std::memcpy(&pImpl->_headerEmpty02, &buffer.value().at(addressIndex), sizeof(pImpl->_headerEmpty02));
+			addressIndex += sizeof(pImpl->_headerEmpty02);
 
-			std::memcpy(&pImpl->matchingThree, &buffer.value().at(addressIndex), sizeof(pImpl->matchingThree));
-			addressIndex += sizeof(pImpl->matchingThree);
+			std::memcpy(&pImpl->_matchingThree, &buffer.value().at(addressIndex), sizeof(pImpl->_matchingThree));
+			addressIndex += sizeof(pImpl->_matchingThree);
 
-			std::memcpy(&pImpl->lowPrecision, &buffer.value().at(addressIndex), sizeof(pImpl->lowPrecision));
-			addressIndex += sizeof(pImpl->lowPrecision);
+			std::memcpy(&pImpl->_lowPrecision, &buffer.value().at(addressIndex), sizeof(pImpl->_lowPrecision));
+			addressIndex += sizeof(pImpl->_lowPrecision);
 
-			std::memcpy(&pImpl->highPrecision, &buffer.value().at(addressIndex), sizeof(pImpl->highPrecision));
-			addressIndex += sizeof(pImpl->highPrecision);
+			std::memcpy(&pImpl->_highPrecision, &buffer.value().at(addressIndex), sizeof(pImpl->_highPrecision));
+			addressIndex += sizeof(pImpl->_highPrecision);
 
-			std::memcpy(&pImpl->boneCount, &buffer.value().at(addressIndex), sizeof(pImpl->boneCount));
-			addressIndex += sizeof(pImpl->boneCount);
+			std::memcpy(&pImpl->_boneCount, &buffer.value().at(addressIndex), sizeof(pImpl->_boneCount));
+			addressIndex += sizeof(pImpl->_boneCount);
 
-			std::memcpy(&pImpl->boneCount_Animated, &buffer.value().at(addressIndex), sizeof(pImpl->boneCount_Animated));
-			addressIndex += sizeof(pImpl->boneCount_Animated);
+			std::memcpy(&pImpl->_boneCountNoTwist, &buffer.value().at(addressIndex), sizeof(pImpl->_boneCountNoTwist));
+			addressIndex += sizeof(pImpl->_boneCountNoTwist);
 
-			std::memcpy(&pImpl->headerEmpty03, &buffer.value().at(addressIndex), sizeof(pImpl->headerEmpty03));
-			addressIndex += sizeof(pImpl->headerEmpty03);
+			std::memcpy(&pImpl->_headerEmpty03, &buffer.value().at(addressIndex), sizeof(pImpl->_headerEmpty03));
+			addressIndex += sizeof(pImpl->_headerEmpty03);
 
-			std::memcpy(&pImpl->endOfHeader, &buffer.value().at(addressIndex), sizeof(pImpl->endOfHeader));
-			addressIndex += sizeof(pImpl->endOfHeader);
+			std::memcpy(&pImpl->_endOfHeader, &buffer.value().at(addressIndex), sizeof(pImpl->_endOfHeader));
+			addressIndex += sizeof(pImpl->_endOfHeader);
 		}
 
 		//WARN IF FILE SIZE VAR != BUFFER
-		if (pImpl->fileSize != buffer.value().size()) std::println("WARNING: THE VARIABLE, FILE SIZE = {} DOES NOT MATCH THE BUFFER SIZE OF {}", pImpl->fileSize, buffer.value().size());
+		if (pImpl->_fileSize != buffer.value().size()) std::println("WARNING: THE VARIABLE, FILE SIZE = {} DOES NOT MATCH THE BUFFER SIZE OF {}", pImpl->_fileSize, buffer.value().size());
 
 		//READ BONE ENTRIES IN ORDER
 		{
-			pImpl->boneEntries.reserve(pImpl->boneCount);
-			for (unsigned short i = 0; i < pImpl->boneCount; i++)
+			pImpl->_boneEntries.reserve(pImpl->_boneCount);
+			for (unsigned short i = 0; i < pImpl->_boneCount; i++)
 			{
-				pImpl->boneEntries.push_back(SkeletonBone(buffer.value(), addressIndex));
+				pImpl->_boneEntries.push_back(SkeletonBone(buffer.value(), addressIndex));
 			}
 		}
 
 
 		//READ SUFFIX
-		std::memcpy(&pImpl->boneMapArray, &buffer.value().at(addressIndex), sizeof(pImpl->boneMapArray));
-		addressIndex += sizeof(pImpl->boneMapArray);
+		std::memcpy(&pImpl->_boneMapArray, &buffer.value().at(addressIndex), sizeof(pImpl->_boneMapArray));
+		addressIndex += sizeof(pImpl->_boneMapArray);
 
 		//READ STRINGS
-		pImpl->stringArray.reserve(pImpl->boneCount);
-		for (uint16_t i = 0; i < pImpl->boneCount; i++)
+		pImpl->_stringArray.reserve(pImpl->_boneCount);
+		for (uint16_t i = 0; i < pImpl->_boneCount; i++)
 		{
-			pImpl->stringArray.push_back(&buffer.value().at(pImpl->boneEntries.at(i).getNameOffset()));
-			addressIndex += (pImpl->stringArray.at(i).Length(true));
+			pImpl->_stringArray.push_back(&buffer.value().at(pImpl->_boneEntries.at(i).getNameOffset()));
+			addressIndex += (pImpl->_stringArray.at(i).Length(true));
 		}
 
 		if (buffer.value().size() != addressIndex)
@@ -692,86 +692,86 @@ namespace CALUMI {namespace SFBGS {
 		buffer.reserve(18500);
 
 		unsigned long long addressIndex = 0;
-		std::vector<unsigned int> offsets = _getSFBGSRigStringOffsets(pImpl->stringArray);
+		std::vector<unsigned int> offsets = _getSFBGSRigStringOffsets(pImpl->_stringArray);
 
 		//HEADER
 		{
 			buffer.insert(buffer.end(), 80, 0);
-			std::memcpy(&buffer.at(addressIndex), &pImpl->versionNumber, sizeof(pImpl->versionNumber));
-			addressIndex += sizeof(pImpl->versionNumber);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_versionNumber, sizeof(pImpl->_versionNumber));
+			addressIndex += sizeof(pImpl->_versionNumber);
 
-			std::memcpy(&buffer.at(addressIndex), &pImpl->fileSize, sizeof(pImpl->fileSize));
-			addressIndex += sizeof(pImpl->fileSize);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_fileSize, sizeof(pImpl->_fileSize));
+			addressIndex += sizeof(pImpl->_fileSize);
 
-			std::memcpy(&buffer.at(addressIndex), &pImpl->headerSize, sizeof(pImpl->headerSize));
-			addressIndex += sizeof(pImpl->headerSize);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_headerSize, sizeof(pImpl->_headerSize));
+			addressIndex += sizeof(pImpl->_headerSize);
 
-			std::memcpy(&buffer.at(addressIndex), &pImpl->headerEmpty01, sizeof(pImpl->headerEmpty01));
-			addressIndex += sizeof(pImpl->headerEmpty01);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_headerEmpty01, sizeof(pImpl->_headerEmpty01));
+			addressIndex += sizeof(pImpl->_headerEmpty01);
 
-			std::memcpy(&buffer.at(addressIndex), &pImpl->boneMapOffset, sizeof(pImpl->boneMapOffset));
-			addressIndex += sizeof(pImpl->boneMapOffset);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_boneMapOffset, sizeof(pImpl->_boneMapOffset));
+			addressIndex += sizeof(pImpl->_boneMapOffset);
 
-			std::memcpy(&buffer.at(addressIndex), &pImpl->headerEmpty02, sizeof(pImpl->headerEmpty02));
-			addressIndex += sizeof(pImpl->headerEmpty02);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_headerEmpty02, sizeof(pImpl->_headerEmpty02));
+			addressIndex += sizeof(pImpl->_headerEmpty02);
 
-			std::memcpy(&buffer.at(addressIndex), &pImpl->matchingThree, sizeof(pImpl->matchingThree));
-			addressIndex += sizeof(pImpl->matchingThree);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_matchingThree, sizeof(pImpl->_matchingThree));
+			addressIndex += sizeof(pImpl->_matchingThree);
 
-			std::memcpy(&buffer.at(addressIndex), &pImpl->lowPrecision, sizeof(pImpl->lowPrecision));
-			addressIndex += sizeof(pImpl->lowPrecision);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_lowPrecision, sizeof(pImpl->_lowPrecision));
+			addressIndex += sizeof(pImpl->_lowPrecision);
 
-			std::memcpy(&buffer.at(addressIndex), &pImpl->highPrecision, sizeof(pImpl->highPrecision));
-			addressIndex += sizeof(pImpl->highPrecision);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_highPrecision, sizeof(pImpl->_highPrecision));
+			addressIndex += sizeof(pImpl->_highPrecision);
 
-			std::memcpy(&buffer.at(addressIndex), &pImpl->boneCount, sizeof(pImpl->boneCount));
-			addressIndex += sizeof(pImpl->boneCount);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_boneCount, sizeof(pImpl->_boneCount));
+			addressIndex += sizeof(pImpl->_boneCount);
 
-			std::memcpy(&buffer.at(addressIndex), &pImpl->boneCount_Animated, sizeof(pImpl->boneCount_Animated));
-			addressIndex += sizeof(pImpl->boneCount_Animated);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_boneCountNoTwist, sizeof(pImpl->_boneCountNoTwist));
+			addressIndex += sizeof(pImpl->_boneCountNoTwist);
 
-			std::memcpy(&buffer.at(addressIndex), &pImpl->headerEmpty03, sizeof(pImpl->headerEmpty03));
-			addressIndex += sizeof(pImpl->headerEmpty03);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_headerEmpty03, sizeof(pImpl->_headerEmpty03));
+			addressIndex += sizeof(pImpl->_headerEmpty03);
 
-			std::memcpy(&buffer.at(addressIndex), &pImpl->endOfHeader, sizeof(pImpl->endOfHeader));
-			addressIndex += sizeof(pImpl->endOfHeader);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_endOfHeader, sizeof(pImpl->_endOfHeader));
+			addressIndex += sizeof(pImpl->_endOfHeader);
 		}
 
 		//BONE ENTRIES
 		{
-			for (unsigned int i = 0; i < pImpl->boneEntries.size(); i++)
+			for (unsigned int i = 0; i < pImpl->_boneEntries.size(); i++)
 			{
-				pImpl->boneEntries.at(i).setNameOffset(offsets.at(i));
-				pImpl->boneEntries.at(i).SerializeIntoBuffer(buffer, addressIndex);
+				pImpl->_boneEntries.at(i).setNameOffset(offsets.at(i));
+				pImpl->_boneEntries.at(i).SerializeIntoBuffer(buffer, addressIndex);
 			}
 		}
 
 		//SUFFIX (PI SIZED SECTION)
 		{
-			buffer.insert(buffer.end(), sizeof(pImpl->boneMapArray), -1);
+			buffer.insert(buffer.end(), sizeof(pImpl->_boneMapArray), -1);
 
 			//Setting header value to confirm offset. In case the SFBGS Rig Values were changed incorrectly by the user
-			pImpl->boneMapOffset = static_cast<unsigned int>(addressIndex);
-			std::memcpy(&buffer.at(16), &pImpl->boneMapOffset, sizeof(pImpl->boneMapOffset));
+			pImpl->_boneMapOffset = static_cast<unsigned int>(addressIndex);
+			std::memcpy(&buffer.at(16), &pImpl->_boneMapOffset, sizeof(pImpl->_boneMapOffset));
 
-			std::memcpy(&buffer.at(addressIndex), &pImpl->boneMapArray, sizeof(pImpl->boneMapArray));
-			addressIndex += sizeof(pImpl->boneMapArray);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_boneMapArray, sizeof(pImpl->_boneMapArray));
+			addressIndex += sizeof(pImpl->_boneMapArray);
 		}
 
 		//STRING ARRAY
 		{
-			for (uint16_t i = 0; i < pImpl->stringArray.size(); i++)
+			for (uint16_t i = 0; i < pImpl->_stringArray.size(); i++)
 			{
-				for (int j = 0; j < pImpl->stringArray.at(i).Length(); j++)
+				for (int j = 0; j < pImpl->_stringArray.at(i).Length(); j++)
 				{
-					buffer.push_back(pImpl->stringArray.at(i).at(j));
+					buffer.push_back(pImpl->_stringArray.at(i).at(j));
 				}
 				buffer.push_back('\0');
-				addressIndex += pImpl->stringArray.at(i).Length(true);
+				addressIndex += pImpl->_stringArray.at(i).Length(true);
 			}
 		}
 
-		if (pImpl->fileSize != addressIndex)
+		if (pImpl->_fileSize != addressIndex)
 		{
 			std::println("===========================================================");
 			std::println("===========================================================");
@@ -779,15 +779,15 @@ namespace CALUMI {namespace SFBGS {
 			//std::println("CURRENT  POS: {}",(void*)currentAddress);
 			//std::println("CURRENT ITER: {}",addressIndex);
 			std::println("BUFFER  SIZE: {}", buffer.size());
-			std::println("FILE  SIZE: {}", pImpl->fileSize);
+			std::println("FILE  SIZE: {}", pImpl->_fileSize);
 			std::println("===========================================================");
 			std::cout << "Press ENTER to continue running the program." << std::endl;
 			std::cin.get();
 			std::println("===========================================================");
 		}
 
-		pImpl->fileSize = static_cast<unsigned int>(buffer.size());
-		std::memcpy(&buffer.at(4), &pImpl->fileSize, sizeof(pImpl->fileSize));
+		pImpl->_fileSize = static_cast<unsigned int>(buffer.size());
+		std::memcpy(&buffer.at(4), &pImpl->_fileSize, sizeof(pImpl->_fileSize));
 
 		return CALUMI::WriteToBinaryFile(outputFilePath, buffer);
 	}
@@ -796,31 +796,31 @@ namespace CALUMI {namespace SFBGS {
 	{
 		uint8_t output = 0;
 
-		if (pImpl->headerEmpty01 != 0)
+		if (pImpl->_headerEmpty01 != 0)
 			output += 0b1;
-		if (pImpl->headerEmpty02 != 0)
+		if (pImpl->_headerEmpty02 != 0)
 			output += 0b10;
-		if (pImpl->headerEmpty03 != 0)
+		if (pImpl->_headerEmpty03 != 0)
 			output += 0b100;
 
-		if (pImpl->matchingThree[0] != pImpl->matchingThree[1] || pImpl->matchingThree[0] != pImpl->matchingThree[2])
+		if (pImpl->_matchingThree[0] != pImpl->_matchingThree[1] || pImpl->_matchingThree[0] != pImpl->_matchingThree[2])
 			output += 0b1000;
 
-		if (pImpl->headerSize != 0x50)
+		if (pImpl->_headerSize != 0x50)
 			output += 0b10000;
 
-		if (pImpl->versionNumber != 5)
+		if (pImpl->_versionNumber != 5)
 			output += 0b100000;
 
 		int aCount = 0;
-		for (size_t i = 0; i < pImpl->boneEntries.size(); i++)
+		for (size_t i = 0; i < pImpl->_boneEntries.size(); i++)
 		{
-			if (pImpl->boneEntries.at(i).getBoneType() == SFBGS::BoneType::Default)
+			if (pImpl->_boneEntries.at(i).getBoneType() == SFBGS::BoneType::Default)
 			{
 				aCount++;
 			}
 		}
-		if (aCount != pImpl->boneCount_Animated)
+		if (aCount != pImpl->_boneCountNoTwist)
 			output += 0b1000000;
 
 		return output;
@@ -856,21 +856,21 @@ namespace CALUMI {namespace SFBGS {
 		for (unsigned int i = 0; i < output.BoneCount(); i++)
 		{
 			SkeletonBone toAdd;
-			toAdd.pImpl->localRotation = inputRig.BoneEntries().at(i).LocalRotation();
-			toAdd.pImpl->globalRotation = inputRig.BoneEntries().at(i).GlobalRotation();
-			toAdd.pImpl->position = inputRig.BoneEntries().at(i).LocalPosition();
-			toAdd.pImpl->nameOffset = static_cast<uint64_t>(stringResult.GetOffset(i));
-			toAdd.pImpl->parentBoneIndex = inputRig.BoneEntries().at(i).GetParentBoneIndex();
+			toAdd.pImpl->_localRotation = inputRig.BoneEntries().at(i).LocalRotation();
+			toAdd.pImpl->_globalRotation = inputRig.BoneEntries().at(i).GlobalRotation();
+			toAdd.pImpl->_position = inputRig.BoneEntries().at(i).LocalPosition();
+			toAdd.pImpl->_nameOffset = static_cast<uint64_t>(stringResult.GetOffset(i));
+			toAdd.pImpl->_parentBoneIndex = inputRig.BoneEntries().at(i).GetParentBoneIndex();
 
-			toAdd.pImpl->mirrorBoneIndex = (toAdd.pImpl->mirrorBoneIndex < 0 || toAdd.pImpl->mirrorBoneIndex >= inputRig.BoneEntries().size()) ? i : inputRig.BoneEntries().at(i).GetMirrorBoneIndex();
+			toAdd.pImpl->_mirrorBoneIndex = (toAdd.pImpl->_mirrorBoneIndex < 0 || toAdd.pImpl->_mirrorBoneIndex >= inputRig.BoneEntries().size()) ? i : inputRig.BoneEntries().at(i).GetMirrorBoneIndex();
 
 			if (!toAdd.SetBoneTypeFromUNIV(inputRig.BoneEntries().at(i)))
 			{
 				std::println("[CALUMI.Animation API] UNIV Rig: {} Bone: {} ({}) Bone Type: {} Is Not An Acceptable Type For SFBGS Skeleton Rigs! This Bone Will Remain As The Default Type", inputRig.RigName().c_str(), inputRig.BoneEntries().at(i).Name().c_str(), i, inputRig.BoneEntries().at(i).GetBoneTypeProperty()->GetTypeString());
 			}
-			if (isMarkedMannequin && toAdd.pImpl->boneType == BoneType::Twist)
+			if (isMarkedMannequin && toAdd.pImpl->_boneType == BoneType::Twist)
 			{
-				toAdd.pImpl->twistDriverMqnIndex = toAdd.pImpl->parentBoneIndex;
+				toAdd.pImpl->_twistDriverMqnIndex = toAdd.pImpl->_parentBoneIndex;
 			}
 			else { animatedBoneCount++; }
 
@@ -899,9 +899,9 @@ namespace CALUMI {namespace SFBGS {
 		for (unsigned int i = 0; i < inputRig.BoneEntries().size(); i++)
 		{
 			SFBGS::SkeletonBone& bone = inputRig.BoneEntries().at(i);
-			output.AddBoneToRig(bone.pImpl->localRotation,bone.pImpl->position,inputRig.StringArray().at(i).c_str(), bone.pImpl->parentBoneIndex, true);
+			output.AddBoneToRig(bone.pImpl->_localRotation,bone.pImpl->_position,inputRig.StringArray().at(i).c_str(), bone.pImpl->_parentBoneIndex, true);
 			bone.SetBoneTypeToUNIV(output.BoneEntries().at(i));
-			int setter = bone.pImpl->mirrorBoneIndex == i ? -1 : bone.pImpl->mirrorBoneIndex;
+			int setter = bone.pImpl->_mirrorBoneIndex == i ? -1 : bone.pImpl->_mirrorBoneIndex;
 			output.BoneEntries().at(i).SetMirrorBoneIndex(setter);
 		}
 		
