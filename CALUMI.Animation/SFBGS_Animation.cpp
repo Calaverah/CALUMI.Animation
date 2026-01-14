@@ -665,7 +665,7 @@ namespace CALUMI{
 			size_t fileSize = 0; //For debugging
 			// 
 			//9x4bytes, 2 blanks (CONFIRMED), 4 Quat Components (or all zero), 3 unknown (possibly xyz values)
-			uint64_t MagicNumber = 0;
+			uint64_t _magicNumber = 0;
 			Math::Quaternion _headerRotation;
 			Math::Vector3 _headerTranslation;
 			HeaderFlags _headerFlags; //1 byte and 3 empty bytes
@@ -738,12 +738,12 @@ namespace CALUMI{
 
 		uint64_t Animation::getMagicNumber() const
 		{
-			return pImpl->MagicNumber;
+			return pImpl->_magicNumber;
 		}
 
 		void Animation::setMagicNumber(uint64_t input)
 		{
-			pImpl->MagicNumber = input;
+			pImpl->_magicNumber = input;
 		}
 
 		Math::Quaternion& Animation::getHeaderRotation() const
@@ -975,8 +975,8 @@ namespace CALUMI{
 
 			//Evaluate header
 			{
-				std::memcpy(&pImpl->MagicNumber, &buffer.value().at(addressIndex), sizeof(pImpl->MagicNumber));
-				addressIndex += sizeof(pImpl->MagicNumber);
+				std::memcpy(&pImpl->_magicNumber, &buffer.value().at(addressIndex), sizeof(pImpl->_magicNumber));
+				addressIndex += sizeof(pImpl->_magicNumber);
 
 				{
 					float qBuffer[4] = {}; float vBuffer[3] = {};
@@ -1122,8 +1122,8 @@ namespace CALUMI{
 			//Header Section
 			{
 				buffer.insert(buffer.end(), 64, 0); //Prepares empty entries for the header. Header is always 64 bytes long as of file version 05
-				std::memcpy(&buffer.at(addressIndex), &pImpl->MagicNumber, sizeof(pImpl->MagicNumber));
-				addressIndex += sizeof(pImpl->MagicNumber);
+				std::memcpy(&buffer.at(addressIndex), &pImpl->_magicNumber, sizeof(pImpl->_magicNumber));
+				addressIndex += sizeof(pImpl->_magicNumber);
 
 				{
 					float qBuffer[4] = {pImpl->_headerRotation.getW(),pImpl->_headerRotation.getX(),pImpl->_headerRotation.getY(),pImpl->_headerRotation.getZ()};
