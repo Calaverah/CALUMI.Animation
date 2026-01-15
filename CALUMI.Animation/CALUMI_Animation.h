@@ -13,8 +13,8 @@ namespace CALUMI {namespace UNIV {
 	{
 		AnimationBlock();
 		~AnimationBlock();
+		
 		AnimationBlock(const AnimationBlock& input);
-
 		AnimationBlock& operator=(const AnimationBlock& input);
 
 		//This will get the final frame entry, not the total number of frames in the sequence
@@ -66,21 +66,24 @@ namespace CALUMI {namespace UNIV {
 	{
 	public:
 
-		Utilities::VectorContainer<AnimationBlock>& AnimationBlocks() const;
+
+		Animation(const Utilities::StringContainer& title, unsigned int initialBlockCount);
+		Animation();
+		~Animation();
+
+		Animation(const Animation& input);
+		Animation& operator=(const Animation& input);
+		
 		const char* AnimationTitle() const;
 		void AnimationTitle(const char* title);
 		void AnimationTitle(const Utilities::StringContainer& title);
 
-		Animation(const Utilities::StringContainer& title, unsigned int initialBlockCount);
-		Animation(const Animation& input);
-		Animation();
-		~Animation();
-		Animation& operator=(const Animation& input);
-
+		Utilities::VectorContainer<AnimationBlock>& AnimationBlocks() const;
 		bool AddAnimationBlock(AnimationBlock& blockToAdd, bool overwrite = true);
 		void ClearAnimationBlocks();
 		size_t GetAnimationBlockCount() const;
 
+		//This will get the final frame entry of all sequences, not the total number of frames in each sequence
 		unsigned int GetFrameCount();
 
 		Utilities::StringContainer ToJSON(const size_t indents = 0) const;

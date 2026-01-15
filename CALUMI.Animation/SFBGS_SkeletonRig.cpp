@@ -396,7 +396,7 @@ namespace CALUMI {namespace SFBGS {
 		float _highPrecision = 0.00025f;
 
 		uint16_t _boneCount = 0;
-		uint16_t _boneCountNoTwist = 0;
+		uint16_t _boneCountAnimated = 0;
 		/// <summary>
 		/// Always empty, possibly padding, see _PRIVATE_ for placement in struct
 		/// </summary>
@@ -530,12 +530,12 @@ namespace CALUMI {namespace SFBGS {
 
 	uint16_t SkeletonRig::BoneCountAnimated() const
 	{
-		return pImpl->_boneCountNoTwist;
+		return pImpl->_boneCountAnimated;
 	}
 
 	void SkeletonRig::BoneCountAnimated(uint16_t count)
 	{
-		pImpl->_boneCountNoTwist = count;
+		pImpl->_boneCountAnimated = count;
 	}
 
 	Utilities::VectorContainer<SkeletonBone>& SkeletonRig::BoneEntries() const
@@ -625,8 +625,8 @@ namespace CALUMI {namespace SFBGS {
 			std::memcpy(&pImpl->_boneCount, &buffer.value().at(addressIndex), sizeof(pImpl->_boneCount));
 			addressIndex += sizeof(pImpl->_boneCount);
 
-			std::memcpy(&pImpl->_boneCountNoTwist, &buffer.value().at(addressIndex), sizeof(pImpl->_boneCountNoTwist));
-			addressIndex += sizeof(pImpl->_boneCountNoTwist);
+			std::memcpy(&pImpl->_boneCountAnimated, &buffer.value().at(addressIndex), sizeof(pImpl->_boneCountAnimated));
+			addressIndex += sizeof(pImpl->_boneCountAnimated);
 
 			std::memcpy(&pImpl->_headerEmpty03, &buffer.value().at(addressIndex), sizeof(pImpl->_headerEmpty03));
 			addressIndex += sizeof(pImpl->_headerEmpty03);
@@ -727,8 +727,8 @@ namespace CALUMI {namespace SFBGS {
 			std::memcpy(&buffer.at(addressIndex), &pImpl->_boneCount, sizeof(pImpl->_boneCount));
 			addressIndex += sizeof(pImpl->_boneCount);
 
-			std::memcpy(&buffer.at(addressIndex), &pImpl->_boneCountNoTwist, sizeof(pImpl->_boneCountNoTwist));
-			addressIndex += sizeof(pImpl->_boneCountNoTwist);
+			std::memcpy(&buffer.at(addressIndex), &pImpl->_boneCountAnimated, sizeof(pImpl->_boneCountAnimated));
+			addressIndex += sizeof(pImpl->_boneCountAnimated);
 
 			std::memcpy(&buffer.at(addressIndex), &pImpl->_headerEmpty03, sizeof(pImpl->_headerEmpty03));
 			addressIndex += sizeof(pImpl->_headerEmpty03);
@@ -820,7 +820,7 @@ namespace CALUMI {namespace SFBGS {
 				aCount++;
 			}
 		}
-		if (aCount != pImpl->_boneCountNoTwist)
+		if (aCount != pImpl->_boneCountAnimated)
 			output += 0b1000000;
 
 		return output;
