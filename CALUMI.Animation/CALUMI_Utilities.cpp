@@ -604,6 +604,24 @@ namespace CALUMI {
 			}
 		}
 
+		template<class T>
+		VectorContainer<T> VectorContainer<T>::range(size_t first, size_t last) const
+		{
+			if (first > last) return VectorContainer<T>();
+
+			VectorContainer<T> output;
+			output.reserve(last + 1 - first);
+
+			for (size_t i = first; i < last + 1 && i < size(); i++)
+			{
+				output.push_back(at(i));
+			}
+
+			output.shrink_to_fit();
+
+			return output;
+		}
+
 
 #pragma endregion
 

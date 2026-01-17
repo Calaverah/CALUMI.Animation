@@ -8,6 +8,7 @@
 #include <format>
 #include <string>
 #include "CALUMI_Math.h"
+//#include <print>
 
 namespace CALUMI {
 	namespace UNIV {
@@ -233,26 +234,82 @@ namespace CALUMI {
 
 		size_t AnimationBlock::GetRotationEntryCount() const { return pImpl->rotationSequence.size(); }
 
-		bool AnimationBlock::CheckEmptyRotationSequence()
+		static Utilities::VectorContainer<UNIV::Rotation> _RDP_Rotation_Recursive(Utilities::VectorContainer<UNIV::Rotation> input, float tolerance)
 		{
-			Math::Quaternion defaultQuaternion;
-			size_t ndCount = 0;
+			if (input.size() <= 2) return input;
 
-			for (size_t i = 0; i < pImpl->rotationSequence.size(); i++)
-			{
-				if (!pImpl->rotationSequence.at(i).RotationQuaternion().AreEqual(defaultQuaternion,0.0f))
+
+			//Maximum Distance
+			float dMax = 0.0f;
+			size_t index = 0;
+			auto f0 = input.at(0).Frame();
+			auto fn = input.at(input.size() - 1).Frame();
+
+			bool skip = false;
+
+			float distance = input.at(0).RotationQuaternion().AngularDistance(input.at(input.size()-1).RotationQuaternion());
+			//std::println("size {}, dist {}, start/finish {}/{}", input.size(),distance,input.at(0).Frame(),input.at(input.size()-1).Frame());
+
+			//We force the split in this range of entries as Slerp for 0-180 degrees will have an undefined direction 
+			// and almost always will give an slerp/key angle of some value above 180 degrees...
+			// By setting the index to half (or at least 1) and skipping any index assignment we force at least one key in between the 0-180 degree 
+			// interpolation allowing the user to keep their intended direction.
+			if (distance >= Math::ToRadians(180.0) - tolerance) {
+				index = input.size()/2 > 0 ? input.size()/2 : 1;
+				skip = true;
+			}
+
+			if(!skip) {
+				for (size_t i = 1; i < input.size()-1; i++)
 				{
-					ndCount++;
+
+					float t = static_cast<float>(input.at(i).Frame() - f0) / (fn - f0);
+
+					//Slerp isn't quite the "perpindicular" distance needed for this algorithm, but it makes for a practical compromise
+					Math::Quaternion interp = input.at(0).RotationQuaternion().Slerp(input.at(input.size() - 1).RotationQuaternion(), t);
+					
+					float angle = interp.AngularDistance(input.at(i).RotationQuaternion());
+					//std::println("--angle {}, t {}, interp {}, f0/fn {}/{}", angle, t, interp.ToString().c_str(),f0,fn);
+					
+					if (angle > dMax) {
+						dMax = angle;
+						index = i;
+					}
 				}
 			}
 
-			if (ndCount == 0)
-			{
-				ClearRotationEntries();
-				return true;
+			Utilities::VectorContainer<UNIV::Rotation> output;
+
+			if (dMax > tolerance || skip) {
+				auto left = _RDP_Rotation_Recursive(input.range(0, index), tolerance);
+				auto right = _RDP_Rotation_Recursive(input.range(index, input.size() - 1),tolerance);
+
+				output.reserve(left.size() + right.size() - 1);
+
+				for (size_t i = 0; i < left.size(); i++)
+				{
+					output.push_back(left.at(i));
+				}
+
+				for (size_t i = 1; i < right.size(); i++)
+				{
+					output.push_back(right.at(i));
+				}
+
+				output.shrink_to_fit();
+			} else {
+
+				output.reserve(2);
+				output.push_back(input.at(0));
+				output.push_back(input.at(input.size() - 1));
 			}
 
-			return false;
+			return output;
+		}
+
+		void AnimationBlock::ExecuteRDPReduction_Rotation(float tolerance)
+		{
+			pImpl->rotationSequence = _RDP_Rotation_Recursive(pImpl->rotationSequence, tolerance);
 		}
 
 		Utilities::VectorContainer<CALUMI::UNIV::Translation>& AnimationBlock::TranslationSequence() const
@@ -302,26 +359,63 @@ namespace CALUMI {
 
 		size_t AnimationBlock::GetTranslationEntryCount() const { return pImpl->translationSequence.size(); }
 
-		bool AnimationBlock::CheckEmptyTranslationSequence()
+		static Utilities::VectorContainer<UNIV::Translation> _RDP_Translation_Recursive(Utilities::VectorContainer<UNIV::Translation> input, float tolerance)
 		{
-			Math::Vector3D defaultVector;
-			size_t ndCount = 0;
+			if (input.size() <= 2) return input;
 
-			for (size_t i = 0; i < pImpl->translationSequence.size(); i++)
+
+			//Maximum Distance
+			double dMax = 0.0f;
+			size_t index = 0;
+			auto f0 = input.at(0).Frame();
+			auto fn = input.at(input.size() - 1).Frame();
+
+			for (size_t i = 1; i < input.size() - 1; i++)
 			{
-				if (pImpl->translationSequence.at(i).TranslationVector() != defaultVector)
-				{
-					ndCount++;
+				double t = static_cast<float>(input.at(i).Frame() - f0) / (fn - f0);
+
+				//Lerp isn't quite the "perpindicular" distance needed for this algorithm, but it makes for a practical compromise
+				Math::Vector3D interp = input.at(0).TranslationVector().Lerp(input.at(input.size() - 1).TranslationVector(), t);
+				double distance = (interp - input.at(i).TranslationVector()).Length();
+
+				if (distance > dMax) {
+					dMax = distance;
+					index = i;
 				}
 			}
 
-			if (ndCount == 0)
-			{
-				ClearTranslationEntries();
-				return true;
-			}
+			Utilities::VectorContainer<UNIV::Translation> output;
 
-			return false;
+			if (dMax > tolerance) {
+
+				auto left = _RDP_Translation_Recursive(input.range(0, index), tolerance);
+				auto right = _RDP_Translation_Recursive(input.range(index, input.size() - 1), tolerance);
+
+				output.reserve(left.size() + right.size() - 1);
+
+				for (size_t i = 0; i < left.size(); i++)
+				{
+					output.push_back(left.at(i));
+				}
+
+				for (size_t i = 1; i < right.size(); i++)
+				{
+					output.push_back(right.at(i));
+				}
+
+				output.shrink_to_fit();
+
+			} else {
+				output.reserve(2);
+				output.push_back(input.at(0));
+				output.push_back(input.at(input.size() - 1));
+			}
+			return output;
+		}
+
+		void AnimationBlock::ExecuteRDPReduction_Translation(float tolerance)
+		{
+			pImpl->translationSequence = _RDP_Translation_Recursive(pImpl->translationSequence, tolerance);
 		}
 
 		Utilities::VectorContainer<CALUMI::UNIV::Scalar>& AnimationBlock::ScalarSequence() const
@@ -371,26 +465,67 @@ namespace CALUMI {
 
 		size_t AnimationBlock::GetScalarEntryCount() const { return pImpl->scalarSequence.size(); }
 
-		bool AnimationBlock::CheckEmptyScalarSequence()
+		static Utilities::VectorContainer<UNIV::Scalar> _RDP_Scalar_Recursive(Utilities::VectorContainer<UNIV::Scalar> input, float tolerance)
 		{
-			float defaultScalar = 1.0f;
-			size_t ndCount = 0;
+			if (input.size() <= 2) return input;
 
-			for (size_t i = 0; i < pImpl->scalarSequence.size(); i++)
+
+			//Maximum Distance
+			double dMax = 0.0f;
+			size_t index = 0;
+			auto f0 = input.at(0).Frame();
+			auto fN = input.at(input.size() - 1).Frame();
+
+			Math::Vector2D vec0(f0, input.at(0).ScalarValue());
+			Math::Vector2D vecN(fN, input.at(input.size()-1).ScalarValue());
+
+			for (size_t i = 1; i < input.size() - 1; i++)
 			{
-				if (pImpl->scalarSequence.at(i).ScalarValue() != defaultScalar)
-				{
-					ndCount++;
+				double t = static_cast<float>(input.at(i).Frame() - f0) / (fN - f0);
+
+				//Lerp isn't quite the "perpindicular" distance needed for this algorithm, but it makes for a practical compromise
+				Math::Vector2D interp = vec0.Lerp(vecN, t);
+				Math::Vector2D current(input.at(i).Frame(), input.at(i).ScalarValue());
+				double distance = (interp - current).Length();
+
+				if (distance > dMax) {
+					dMax = distance;
+					index = i;
 				}
 			}
 
-			if (ndCount == 0)
-			{
-				ClearScalarEntries();
-				return true;
-			}
+			Utilities::VectorContainer<UNIV::Scalar> output;
 
-			return false;
+			if (dMax > tolerance) {
+
+				auto left = _RDP_Scalar_Recursive(input.range(0, index), tolerance);
+				auto right = _RDP_Scalar_Recursive(input.range(index, input.size() - 1), tolerance);
+
+				output.reserve(left.size() + right.size() - 1);
+
+				for (size_t i = 0; i < left.size(); i++)
+				{
+					output.push_back(left.at(i));
+				}
+
+				for (size_t i = 1; i < right.size(); i++)
+				{
+					output.push_back(right.at(i));
+				}
+
+				output.shrink_to_fit();
+
+			} else {
+				output.reserve(2);
+				output.push_back(input.at(0));
+				output.push_back(input.at(input.size() - 1));
+			}
+			return output;
+		}
+
+		void AnimationBlock::ExecuteRDPReduction_Scalar(float tolerance)
+		{
+			pImpl->scalarSequence = _RDP_Scalar_Recursive(pImpl->scalarSequence, tolerance);
 		}
 
 		Utilities::VectorContainer<CALUMI::UNIV::Priority>& AnimationBlock::PrioritySequence()
@@ -600,11 +735,11 @@ namespace CALUMI {
 		{
 			return source->RotationSequence().size();
 		}
-		bool CheckEmptyRotationSqC(AnimationBlock* source)
+		void ExecuteRDPReduction_RotationC(AnimationBlock* source, float tolerance)
 		{
-			if(!source) return false;
+			if (!source) return;
 
-			return source->CheckEmptyRotationSequence();
+			source->ExecuteRDPReduction_Rotation(tolerance);
 		}
 		bool AddTranslationSqToAnimBlockC(AnimationBlock* block, Translation* trnSq, unsigned int size, bool overwrite)
 		{
@@ -638,11 +773,11 @@ namespace CALUMI {
 		{
 			return source->TranslationSequence().size();
 		}
-		bool CheckEmptyTranslationSqC(AnimationBlock* source)
+		void ExecuteRDPReduction_TranslationC(AnimationBlock* source, float tolerance)
 		{
-			if (!source) return false;
+			if (!source) return;
 
-			return source->CheckEmptyTranslationSequence();
+			source->ExecuteRDPReduction_Translation(tolerance);
 		}
 		bool AddScalarSqToAnimBlockC(AnimationBlock* block, Scalar* sclrSq, unsigned int size, bool overwrite)
 		{
@@ -676,11 +811,11 @@ namespace CALUMI {
 		{
 			return source->ScalarSequence().size();
 		}
-		bool CheckEmptyScalarSqC(AnimationBlock* source)
+		void ExecuteRDPReduction_ScalarC(AnimationBlock* source, float tolerance)
 		{
-			if(!source) return false;
+			if (!source) return;
 
-			return source->CheckEmptyScalarSequence();
+			source->ExecuteRDPReduction_Scalar(tolerance);
 		}
 		bool AddPrioritySqToAnimBlockC(AnimationBlock* block, Priority* prtySq, unsigned int size, bool overwrite)
 		{

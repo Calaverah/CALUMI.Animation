@@ -214,6 +214,65 @@ namespace CALUMIAnimationUnitTests
 			Assert::IsTrue(expectedOut.AreSameRotation(result, 0.0000001f));
 		}
 
+		TEST_METHOD(AngleDistance1)
+		{
+			Quaternion quaternion1;
+			Quaternion quaternion2(1.0f, 0.0f, 0.0f, 0.0f);
+			float diff = quaternion1.AngularDistance(quaternion2);
+
+			Assert::AreEqual(static_cast<float>(ToRadians(180.0f)), diff);
+		}
+
+		TEST_METHOD(AngleDistance2)
+		{
+			Quaternion quaternion1;
+			Quaternion quaternion2(-1.0f, 0.0f, 0.0f, 0.0f);
+			float diff = quaternion1.AngularDistance(quaternion2);
+
+			Assert::AreEqual(static_cast<float>(ToRadians(180.0f)), diff);
+		}
+
+		TEST_METHOD(AngleDistance3)
+		{
+			Quaternion quaternion1;
+			Quaternion quaternion2(Vector3D(1.0, 1.0, 0.5), ToRadians(90.0));
+			float diff = quaternion1.AngularDistance(quaternion2);
+
+			Assert::AreEqual(static_cast<float>(ToRadians(90.0f)), diff);
+		}
+
+		TEST_METHOD(Slerp1)
+		{
+			Quaternion q1;
+			Quaternion q2(Vector3D(0.0, 1.0, 0.0), ToRadians(90.0));
+			Quaternion expected(Vector3D(0.0, 1.0, 0.0), ToRadians(45.0));
+			Quaternion result = q1.Slerp(q2, 0.5f);
+
+			Logger::WriteMessage("Expected ");
+			Logger::WriteMessage(expected.ToString().c_str());
+
+			Logger::WriteMessage("; Result ");
+			Logger::WriteMessage(result.ToString().c_str());
+
+			Assert::IsTrue(expected.AreEqual(result,0.001f));
+		}
+
+		TEST_METHOD(Slerp2)
+		{
+			Quaternion q1;
+			Quaternion q2(Vector3D(0.0, 1.0, 0.0), ToRadians(178.0));
+			Quaternion expected(Vector3D(0.0, 1.0, 0.0), ToRadians(89.0));
+			Quaternion result = q1.Slerp(q2, 0.5f);
+
+			Logger::WriteMessage("Expected ");
+			Logger::WriteMessage(expected.ToString().c_str());
+			
+			Logger::WriteMessage("; Result ");
+			Logger::WriteMessage(result.ToString().c_str());
+
+			Assert::IsTrue(expected.AreEqual(result, 0.001f));
+		}
+
 	};
 
 	TEST_CLASS(CALUMI_MathVector3)

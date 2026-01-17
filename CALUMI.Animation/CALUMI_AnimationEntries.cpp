@@ -45,6 +45,11 @@ namespace CALUMI {
         {
             *pImpl = *(input.pImpl);
         }
+        bool Translation::IsIdentical(const Translation& input) const
+        {
+            return pImpl->frame == input.pImpl->frame &&
+                pImpl->translation == input.pImpl->translation;
+        }
         UNIV::Translation& UNIV::Translation::operator=(const UNIV::Translation& other) { *pImpl = *(other.pImpl); return *this; }
 
         bool operator<(const UNIV::Translation& A, const UNIV::Translation& B) { return A.Frame() < B.Frame(); }
@@ -99,6 +104,12 @@ namespace CALUMI {
             if (pImpl) delete pImpl;
         }
 
+        bool Rotation::IsIdentical(const Rotation& input) const
+        {
+            return pImpl->frame == input.pImpl->frame &&
+                   pImpl->rotation == input.pImpl->rotation;
+        }
+
         UNIV::Rotation& UNIV::Rotation::operator=(const UNIV::Rotation& other) { *pImpl = *(other.pImpl); return *this; }
 
         bool operator<(const UNIV::Rotation& A, const UNIV::Rotation& B)    { return A.Frame() < B.Frame(); }
@@ -136,6 +147,12 @@ namespace CALUMI {
             pImpl->scalar = scalar;
         }
         Scalar::Scalar(const Scalar& input) : Scalar() { *pImpl = *(input.pImpl); }
+
+        bool Scalar::IsIdentical(const Scalar& input) const
+        {
+            return pImpl->frame == input.pImpl->frame &&
+                   pImpl->scalar == input.pImpl->scalar;
+        }
 
         UNIV::Scalar& UNIV::Scalar::operator=(const UNIV::Scalar& other) { *pImpl = *(other.pImpl); return *this; }
 

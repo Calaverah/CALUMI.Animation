@@ -122,6 +122,8 @@ namespace CALUMI
 
 			void Normalize();
 
+			Vector2D Lerp(const Vector2D& input, double t = 0.5) const;
+
 			static const Vector2D Zero;
 			static const Vector2D One;
 			static const Vector2D UnitX;
@@ -269,6 +271,8 @@ namespace CALUMI
 
 			void Normalize();
 
+			Vector3D Lerp(const Vector3D& input, double t = 0.5) const;
+
 			static const Vector3D Zero;
 			static const Vector3D One;
 			static const Vector3D UnitX;
@@ -356,6 +360,11 @@ namespace CALUMI
 
 			void Inverse(Quaternion& result) const noexcept;
 			void Inverse() noexcept;
+
+			//Returns angle in radians
+			float AngularDistance(const Quaternion& input) const;
+
+			Quaternion Slerp(const Quaternion& input, float t = 0.5f) const;
 
 			static const Quaternion Identity;
 

@@ -7,6 +7,7 @@
 #include <math.h>
 #include <format>
 #include <corecrt_math_defines.h>
+//#include <print>
 
 namespace CALUMI
 {
@@ -458,6 +459,13 @@ namespace CALUMI
 			*this /= this->Length();
 		}
 
+		Vector3D Vector3D::Lerp(const Vector3D& input, double t) const
+		{
+			Vector3D output = (1.0-t)*(*this) + t * input;
+			
+			return output;
+		}
+
 		Math::Vector3D operator+ (const Math::Vector3D& A, const Math::Vector3D& B) noexcept
 		{
 			return Math::Vector3D(A.getX() + B.getX(), A.getY() + B.getY(), A.getZ() + B.getZ());
@@ -800,6 +808,38 @@ namespace CALUMI
 			pImpl->y = conjugate.pImpl->y / length;
 			pImpl->z = conjugate.pImpl->z / length;
 			pImpl->w = conjugate.pImpl->w / length;
+		}
+
+		float Quaternion::AngularDistance(const Quaternion& input) const
+		{
+			Quaternion inverse;
+			Inverse(inverse);
+
+			Quaternion diffQ = inverse * input;
+
+			return 2 * acos(diffQ.getW());
+		}
+
+		Quaternion Quaternion::Slerp(const Quaternion& input, float t) const
+		{
+			float dot = Dot(input);
+
+			if (abs(dot) >= 1.0f) return input;
+
+			float hTheta = acos(dot);
+			float sinhTheta = sqrtf(1.0 - dot * dot);
+
+			float ratio1 = sin((1 - t) * hTheta) / sinhTheta;
+			float ratio2 = sin(t * hTheta) / sinhTheta;
+
+			Quaternion output(
+				(getX() * ratio1 + input.getX() * ratio2),
+				(getY() * ratio1 + input.getY() * ratio2),
+				(getZ() * ratio1 + input.getZ() * ratio2),
+				(getW() * ratio1 + input.getW() * ratio2)			
+			);
+
+			return output;
 		}
 
 		const Math::Quaternion Math::Quaternion::Identity = {0.0f,0.0f,0.0f,1.0f};
@@ -1212,6 +1252,12 @@ namespace CALUMI
 		void Vector2D::Normalize()
 		{
 			*this /= this->Length();
+		}
+		Vector2D Vector2D::Lerp(const Vector2D& input, double t) const
+		{
+			Vector2D output = (1.0 - t) * (*this) + t * input;
+
+			return output;
 		}
 		Utilities::StringContainer Vector2D::ToString() const
 		{

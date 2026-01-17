@@ -27,6 +27,9 @@
     <ClCompile Include="SFBGS.ExternCInterface.Tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UNIV_SequenceCompression.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">

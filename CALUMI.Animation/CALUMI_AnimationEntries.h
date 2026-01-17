@@ -22,6 +22,8 @@ namespace CALUMI {namespace UNIV {
 		Translation(const uint16_t& frame, const CALUMI::Math::Vector3D& translation);
 		Translation(const Translation& input);
 
+		bool IsIdentical(const Translation& input) const;
+
 		UNIV::Translation& operator=(const UNIV::Translation& other);
 
 		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
@@ -49,6 +51,8 @@ namespace CALUMI {namespace UNIV {
 		Rotation(const Rotation& input);
 		~Rotation();
 
+		bool IsIdentical(const Rotation& input) const;
+
 		UNIV::Rotation& operator=(const UNIV::Rotation& other);
 
 		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
@@ -75,6 +79,8 @@ namespace CALUMI {namespace UNIV {
 		~Scalar();
 		Scalar(const uint16_t& frame, float scalar);
 		Scalar(const Scalar& input);
+
+		bool IsIdentical(const Scalar& input) const;
 
 		UNIV::Scalar& operator=(const UNIV::Scalar& other);
 

@@ -180,6 +180,8 @@ namespace CALUMI { namespace Utilities {
 		const T* data() const noexcept;
 		void sort(bool highToLow = false);
 
+		VectorContainer<T> range(size_t first, size_t last) const;
+
 		size_t end() const;
 		
 		/*template<typename T>
