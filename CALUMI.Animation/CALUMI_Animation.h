@@ -118,7 +118,7 @@ namespace CALUMI {namespace UNIV {
 		CALUMIANIMATION_API size_t GetRotationSqSizeC(AnimationBlock* source);
 
 		//A good default tolerance may be 0.0000863f
-		void ExecuteRDPReduction_RotationC(AnimationBlock* source, float tolerance);
+		CALUMIANIMATION_API void ExecuteRDPReduction_RotationC(AnimationBlock* source, float tolerance);
 		
 		CALUMIANIMATION_API bool AddTranslationSqToAnimBlockC(AnimationBlock* block, Translation* trnSq, unsigned int size, bool overwrite);
 		CALUMIANIMATION_API Translation* GetTranslationSqArrayC(AnimationBlock* source);
@@ -126,7 +126,7 @@ namespace CALUMI {namespace UNIV {
 		CALUMIANIMATION_API size_t GetTranslationSqSizeC(AnimationBlock* source);
 		
 		//A good default tolerance may be 1.0f/4000.0f
-		void ExecuteRDPReduction_TranslationC(AnimationBlock* source, float tolerance);
+		CALUMIANIMATION_API void ExecuteRDPReduction_TranslationC(AnimationBlock* source, float tolerance);
 		
 		CALUMIANIMATION_API bool AddScalarSqToAnimBlockC(AnimationBlock* block, Scalar* sclrSq, unsigned int size, bool overwrite);
 		CALUMIANIMATION_API Scalar* GetScalarSqArrayC(AnimationBlock* source);
@@ -134,7 +134,7 @@ namespace CALUMI {namespace UNIV {
 		CALUMIANIMATION_API size_t GetScalarSqSizeC(AnimationBlock* source);
 
 		//A good default tolerance may be 1.0f/5000.0f
-		void ExecuteRDPReduction_ScalarC(AnimationBlock* source, float tolerance);
+		CALUMIANIMATION_API void ExecuteRDPReduction_ScalarC(AnimationBlock* source, float tolerance);
 		
 		CALUMIANIMATION_API bool AddPrioritySqToAnimBlockC(AnimationBlock* block, Priority* prtySq, unsigned int size, bool overwrite);
 		CALUMIANIMATION_API Priority* GetPrioritySqArrayC(AnimationBlock* source);
