@@ -24,8 +24,8 @@ CALUMI Animation is a dynamic linked library aimed at providing a conversion and
 
 ## Documentation
 
-[Documentation]("https://calaverah.gitbook.io/calumi.animation/")  
-[Contributors]("https://calaverah.gitbook.io/calumi.animation/contributor-documentation")
+[Documentation](https://calaverah.gitbook.io/calumi.animation/)  
+[Contributors](https://calaverah.gitbook.io/calumi.animation/contributor-documentation)
 
 
 ## Credits
