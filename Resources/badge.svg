@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1080"
+   height="1080"
+   viewBox="0 0 1080 1080"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   sodipodi:docname="badge.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="px"
+     showgrid="false"
+     showguides="true"
+     inkscape:lockguides="true"
+     inkscape:zoom="1.0805556"
+     inkscape:cx="540.46272"
+     inkscape:cy="540"
+     inkscape:window-width="2560"
+     inkscape:window-height="1369"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       id="grid1"
+       units="px"
+       originx="0"
+       originy="0"
+       spacingx="1"
+       spacingy="1"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       enabled="true"
+       visible="false" />
+    <sodipodi:guide
+       position="540,1080"
+       orientation="-1,0"
+       id="guide1"
+       inkscape:locked="true"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="0,540"
+       orientation="0,1"
+       id="guide2"
+       inkscape:locked="true"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="270,1080"
+       orientation="-1,0"
+       id="guide3"
+       inkscape:locked="true"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="810,1080"
+       orientation="-1,0"
+       id="guide4"
+       inkscape:locked="true"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="0,810"
+       orientation="0,1"
+       id="guide5"
+       inkscape:locked="true"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+    <sodipodi:guide
+       position="0,270"
+       orientation="0,1"
+       id="guide6"
+       inkscape:locked="true"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ff0000;stroke:#000000;stroke-width:2.73199;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect6"
+       width="537.26801"
+       height="537.26801"
+       x="68.865997"
+       y="68.865997"
+       ry="65.567764" />
+    <rect
+       style="fill:#00ff00;stroke:#000000;stroke-width:2.73199;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect6-2"
+       width="537.26801"
+       height="537.26801"
+       x="203.866"
+       y="203.866"
+       ry="65.567764"
+       inkscape:transform-center-x="143.44473"
+       inkscape:transform-center-y="-192.49357" />
+    <rect
+       style="fill:#0000ff;stroke:#000000;stroke-width:2.73199;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect6-2-1"
+       width="537.26801"
+       height="537.26801"
+       x="338.866"
+       y="338.866"
+       ry="65.567764"
+       inkscape:transform-center-x="143.44473"
+       inkscape:transform-center-y="-192.49357" />
+    <rect
+       style="fill:#ffff00;stroke:#000000;stroke-width:2.73199;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect6-2-6"
+       width="537.26801"
+       height="537.26801"
+       x="473.866"
+       y="473.866"
+       ry="65.567764"
+       inkscape:transform-center-x="143.44473"
+       inkscape:transform-center-y="-192.49357" />
+  </g>
+</svg>

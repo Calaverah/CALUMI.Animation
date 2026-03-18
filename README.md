@@ -1,5 +1,5 @@
 
-![Logo](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/th5xamgrr6se0x5ro4g6.png)
+![Logo](https://github.com/Calaverah/CALUMI.Animation/blob/master/Resources/badge.png)
 
 
 # CALUMI.Animation by [Calaverah](https://www.github.com/Calaverah)
@@ -21,22 +21,11 @@ CALUMI Animation is a dynamic linked library aimed at providing a conversion and
 - Full .af/.rig decoding and utilization for Starfield
 - Future BGS title support
 
->[!NOTE] 
->A behavior graph editor is in development but will exist as its own application and will take more time before it is ready for release
-
-## Used By
-
-This library is used by the following projects:
-
-|                                                                                                     |                                                                                   |
-|:---------------------------------------------------------------------------------------------------:|-----------------------------------------------------------------------------------|
-| <p><a href = "https://github.com/SesamePaste233/StarfieldMeshConverter"><img src="https://raw.githubusercontent.com/SesamePaste233/StarfieldMeshConverter/refs/heads/master/sgblogo_02.png" width="128"></img></a></p> | Starfield Geometry Bridge |
-
 
 ## Documentation
 
-[Documentation]("https://github.com/Calaverah/CALUMI.Animation/blob/master/Documentation/Prelim_CALUMI_ANIMATION_User_Documentation.pdf")  
-[Contributors]("https://github.com/Calaverah/CALUMI.Animation/blob/master/Documentation/Prelim_CALUMI_ANIMATION_User_Documentation.pdf")
+[Documentation]("https://app.gitbook.com/o/8VBbCgPfZUupve3msgHg/s/mOK4yHIbE4cD9Fw4cxq0/")  
+[Contributors]("https://app.gitbook.com/o/8VBbCgPfZUupve3msgHg/s/FWRHIYvLKAqALnyDGfqe/")
 
 
 ## Credits
@@ -51,8 +40,6 @@ This library is used by the following projects:
 Contributions are always welcome!
 
 Check out our Contributors Documentation above for ways to get started.
-
-Please adhere to this project's [Code of Conduct]("https://github.com/Calaverah/CALUMI.Animation/blob/master/Documentation/Prelim_CALUMI_ANIMATION_User_Documentation.pdf").
 
 ## Disclaimer
 
