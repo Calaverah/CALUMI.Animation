@@ -174,7 +174,7 @@ namespace CALUMI {
         struct Priority::Impl
         {
             uint16_t frame = 0;
-            uint8_t priority = 90; //Unsure what a good default is yet. 90 is the highest seen so far
+            uint8_t priority = 90;
             Impl() = default;
         };
         uint16_t Priority::Frame() const { return pImpl->frame; }
