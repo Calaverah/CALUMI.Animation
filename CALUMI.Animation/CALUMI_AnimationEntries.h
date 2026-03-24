@@ -127,12 +127,30 @@ namespace CALUMI {namespace UNIV {
 
 	extern  "C" {
 		CALUMIANIMATION_API Rotation* CreateRotationEntryC(uint16_t frame, float x, float y, float z, float w);
+
+		/// <summary>
+		/// Creates a quaternion using euler operations.
+		/// </summary>
+		/// <param name="frame">Frame of the entry</param>
+		/// <param name="x">In Radians</param>
+		/// <param name="y">In Radians</param>
+		/// <param name="z">In Radians</param>
+		/// <param name="order">Enum found in the Math::Quaternion struct</param>
+		/// <returns></returns>
+		CALUMIANIMATION_API Rotation* CreateRotationEntryFromEulerC(uint16_t frame, float x, float y, float z, uint8_t order);
+		
 		CALUMIANIMATION_API bool DeleteRotationEntryC(Rotation* ptr);
+
 		CALUMIANIMATION_API Translation* CreateTranslationEntryC(uint16_t frame, double x, double y, double z);
+		
 		CALUMIANIMATION_API bool DeleteTranslationEntryC(Translation* ptr);
+		
 		CALUMIANIMATION_API Scalar* CreateScalarEntryC(uint16_t frame, float scalar);
+		
 		CALUMIANIMATION_API bool DeleteScalarEntryC(Scalar* ptr);
+		
 		CALUMIANIMATION_API Priority* CreatePriorityEntryC(uint16_t frame, uint8_t priority);
+		
 		CALUMIANIMATION_API bool DeletePriorityEntryC(Priority* ptr);
 		
 		CALUMIANIMATION_API uint16_t GetFrameFromRotationEntryC(Rotation* source);

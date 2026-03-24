@@ -211,6 +211,14 @@ namespace CALUMI {
             outputRotation->RotationQuaternion().Normalize();
             return outputRotation;
         }
+        Rotation* CreateRotationEntryFromEulerC(uint16_t frame, float x, float y, float z, uint8_t order)
+        {
+            Math::Quaternion::EulerOrder eOrder = order > static_cast<uint8_t>(Math::Quaternion::EulerOrder::Max) ? Math::Quaternion::EulerOrder::XYZ : static_cast<Math::Quaternion::EulerOrder>(order);
+
+            Rotation* outputRotation = new Rotation(frame, { x,y,z,order });
+            outputRotation->RotationQuaternion().Normalize();
+            return outputRotation;
+        }
         bool DeleteRotationEntryC(Rotation* ptr)
         {
             if (ptr)

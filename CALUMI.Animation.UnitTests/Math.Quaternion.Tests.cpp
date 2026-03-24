@@ -17,7 +17,11 @@ namespace CALUMIAnimationUnitTests
 	TEST_CLASS(CALUMI_MathQuaternion)
 	{
 	public:
-
+		/// <summary>
+		/// https://articulatedrobotics.xyz/tools/rotation-calculator/
+		/// is so far the most consistent and accurate quaternion calculator
+		/// please use this for tests as the current first link on google for quaternion to euler calculations is flawed
+		/// </summary>
 		TEST_METHOD(DefaultConstruction)
 		{
 			Quaternion quaternion;
@@ -272,6 +276,175 @@ namespace CALUMIAnimationUnitTests
 
 			Assert::IsTrue(expected.AreEqual(result, 0.001f));
 		}
+
+		TEST_METHOD(EulerXYZ)
+		{
+			Quaternion q1(float(ToRadians(30)), float(ToRadians(60)), float(ToRadians(45)), Quaternion::EulerOrder::XYZ);
+			Quaternion expected(0.3919038f, 0.3604234f, 0.4396797f, 0.7233174f);
+
+			Logger::WriteMessage("Expected ");
+			Logger::WriteMessage(expected.ToString().c_str());
+
+			Logger::WriteMessage("; Result ");
+			Logger::WriteMessage(q1.ToString().c_str());
+
+			Assert::IsTrue(expected.AreEqual(q1, 0.001));
+		}
+
+		TEST_METHOD(EulerXZY)
+		{
+			Quaternion q1(float(ToRadians(30)), float(ToRadians(60)), float(ToRadians(45)), Quaternion::EulerOrder::XZY);
+			Quaternion expected(0.02226f, 0.200562f, 0.531976f, 0.8223632f);
+
+			Logger::WriteMessage("Expected ");
+			Logger::WriteMessage(expected.ToString().c_str());
+
+			Logger::WriteMessage("; Result ");
+			Logger::WriteMessage(q1.ToString().c_str());
+
+			Assert::IsTrue(expected.AreEqual(q1, 0.001));
+		}
+
+		TEST_METHOD(EulerYXZ)
+		{
+			Quaternion q1(float(ToRadians(30)), float(ToRadians(60)), float(ToRadians(45)), Quaternion::EulerOrder::YXZ);
+			Quaternion expected(0.531976f, 0.02226f, 0.200562f, 0.8223632f);
+
+			Logger::WriteMessage("Expected ");
+			Logger::WriteMessage(expected.ToString().c_str());
+
+			Logger::WriteMessage("; Result ");
+			Logger::WriteMessage(q1.ToString().c_str());
+
+			Assert::IsTrue(expected.AreEqual(q1, 0.001));
+		}
+
+		TEST_METHOD(EulerYZX)
+		{
+			Quaternion q1(float(ToRadians(30)), float(ToRadians(60)), float(ToRadians(45)), Quaternion::EulerOrder::YZX);
+			Quaternion expected(0.439680f, 0.391904f, 0.360423f, 0.723317f);
+
+			Logger::WriteMessage("Expected ");
+			Logger::WriteMessage(expected.ToString().c_str());
+
+			Logger::WriteMessage("; \nResult ");
+			Logger::WriteMessage(q1.ToString().c_str());
+
+			Assert::IsTrue(expected.AreEqual(q1, 0.001));
+		}
+
+		TEST_METHOD(EulerZXY)
+		{
+			Quaternion q1(float(ToRadians(30)), float(ToRadians(60)), float(ToRadians(45)), Quaternion::EulerOrder::ZXY);
+			Quaternion expected(0.360423f, 0.439680f, 0.391904f, 0.723317f);
+
+			Logger::WriteMessage("Expected ");
+			Logger::WriteMessage(expected.ToString().c_str());
+
+			Logger::WriteMessage("; \nResult ");
+			Logger::WriteMessage(q1.ToString().c_str());
+
+			Assert::IsTrue(expected.AreEqual(q1, 0.001));
+		}
+
+		TEST_METHOD(EulerZYX)
+		{
+			Quaternion q1(float(ToRadians(30)), float(ToRadians(60)), float(ToRadians(45)), Quaternion::EulerOrder::ZYX);
+			Quaternion expected(0.200562f, 0.531976f, 0.022260f, 0.822363f);
+
+			Logger::WriteMessage("Expected ");
+			Logger::WriteMessage(expected.ToString().c_str());
+
+			Logger::WriteMessage("; \nResult ");
+			Logger::WriteMessage(q1.ToString().c_str());
+
+			Assert::IsTrue(expected.AreEqual(q1, 0.001));
+		}
+
+		TEST_METHOD(EulerXYX)
+		{
+			Quaternion q1(float(ToRadians(30)), float(ToRadians(60)), float(ToRadians(45)), Quaternion::EulerOrder::XYX);
+			Quaternion expected(0.527203f, 0.495722f, -0.065263f, 0.687064f);
+
+			Logger::WriteMessage("Expected ");
+			Logger::WriteMessage(expected.ToString().c_str());
+
+			Logger::WriteMessage("; \nResult ");
+			Logger::WriteMessage(q1.ToString().c_str());
+
+			Assert::IsTrue(expected.AreEqual(q1, 0.001));
+		}
+
+		TEST_METHOD(EulerXZX)
+		{
+			Quaternion q1(float(ToRadians(30)), float(ToRadians(60)), float(ToRadians(45)), Quaternion::EulerOrder::XZX);
+			Quaternion expected(0.527203f, 0.065263f, 0.495722f, 0.687064f);
+
+			Logger::WriteMessage("Expected ");
+			Logger::WriteMessage(expected.ToString().c_str());
+
+			Logger::WriteMessage("; \nResult ");
+			Logger::WriteMessage(q1.ToString().c_str());
+
+			Assert::IsTrue(expected.AreEqual(q1, 0.001));
+		}
+
+		TEST_METHOD(EulerYXY)
+		{
+			Quaternion q1(float(ToRadians(30)), float(ToRadians(60)), float(ToRadians(45)), Quaternion::EulerOrder::YXY);
+			Quaternion expected(0.495722f, 0.527203f, 0.065263f, 0.687064f);
+
+			Logger::WriteMessage("Expected ");
+			Logger::WriteMessage(expected.ToString().c_str());
+
+			Logger::WriteMessage("; \nResult ");
+			Logger::WriteMessage(q1.ToString().c_str());
+
+			Assert::IsTrue(expected.AreEqual(q1, 0.001));
+		}
+
+		TEST_METHOD(EulerYZY)
+		{
+			Quaternion q1(float(ToRadians(30)), float(ToRadians(60)), float(ToRadians(45)), Quaternion::EulerOrder::YZY);
+			Quaternion expected(-0.065263f, 0.527203f, 0.495722f, 0.687064f);
+
+			Logger::WriteMessage("Expected ");
+			Logger::WriteMessage(expected.ToString().c_str());
+
+			Logger::WriteMessage("; \nResult ");
+			Logger::WriteMessage(q1.ToString().c_str());
+
+			Assert::IsTrue(expected.AreEqual(q1, 0.001));
+		}
+
+		TEST_METHOD(EulerZXZ)
+		{
+			Quaternion q1(float(ToRadians(30)), float(ToRadians(60)), float(ToRadians(45)), Quaternion::EulerOrder::ZXZ);
+			Quaternion expected(0.495722f, -0.065263f, 0.527203f, 0.687064f);
+
+			Logger::WriteMessage("Expected ");
+			Logger::WriteMessage(expected.ToString().c_str());
+
+			Logger::WriteMessage("; \nResult ");
+			Logger::WriteMessage(q1.ToString().c_str());
+
+			Assert::IsTrue(expected.AreEqual(q1, 0.001));
+		}
+
+		TEST_METHOD(EulerZYZ)
+		{
+			Quaternion q1(float(ToRadians(30)), float(ToRadians(60)), float(ToRadians(45)), Quaternion::EulerOrder::ZYZ);
+			Quaternion expected(0.065263f, 0.495722f, 0.527203f, 0.687064f);
+
+			Logger::WriteMessage("Expected ");
+			Logger::WriteMessage(expected.ToString().c_str());
+
+			Logger::WriteMessage("; \nResult ");
+			Logger::WriteMessage(q1.ToString().c_str());
+
+			Assert::IsTrue(expected.AreEqual(q1, 0.001));
+		}
+
 
 	};
 

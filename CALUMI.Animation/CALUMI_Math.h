@@ -313,6 +313,22 @@ namespace CALUMI
 		struct CALUMIANIMATION_API Quaternion
 		{
 
+			enum class EulerOrder{
+				XYZ,
+				XZY,
+				YXZ,
+				YZX,
+				ZXY,
+				ZYX,
+				XYX,
+				XZX,
+				YXY,
+				YZY,
+				ZXZ,
+				ZYZ,
+				Max = ZYZ
+			};
+
 			Quaternion();
 			~Quaternion();
 			Quaternion(float input[4], bool normalize = true);
@@ -320,6 +336,7 @@ namespace CALUMI
 			Quaternion(Vector3D direction, double radians, bool normalize = true);
 			Quaternion(double x, double y, double z, double w, bool normalize = true);
 			Quaternion(float x, float y, float z, float w, bool normalize = true);
+			Quaternion(float x, float y, float z, EulerOrder order = EulerOrder::XYZ);
 			Quaternion(const Quaternion& input);
 
 			float getX() const;

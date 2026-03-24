@@ -577,6 +577,120 @@ namespace CALUMI
 			if (normalize)
 				Normalize();
 		}
+		//**Warning**
+		// https://www.andre-gaschler.com/rotationconverter/ is incorrect on euler conversion as of 3/24/2026
+		// 
+		// https://articulatedrobotics.xyz/tools/rotation-calculator/ has a more accurate conversion as of 3/24/2026
+		//**Warning**
+		Quaternion::Quaternion(float x, float y, float z, EulerOrder order)
+		{
+			const float cX = cosf(x * 0.5f), cY = cosf(y * 0.5f), cZ = cosf(z * 0.5f);
+			const float sX = sinf(x * 0.5f), sY = sinf(y * 0.5f), sZ = sinf(z * 0.5f);
+			float qx = 0.0f, qy = 0.0f, qz = 0.0f, qw = 1.0f;
+
+			switch (order)
+			{
+				case CALUMI::Math::Quaternion::EulerOrder::XZY:
+				{
+					qx = sX * cY * cZ - sY * sZ * cX;
+					qy = sZ * cX * cY - sX * sY * cZ;
+					qz = sX * sZ * cY + sY * cX * cZ;
+					qw = sX * sY * sZ + cX * cY * cZ;
+					break;
+				}
+				case CALUMI::Math::Quaternion::EulerOrder::YXZ:
+				{
+					qx = sX * sZ * cY + sY * cX * cZ;
+					qy = sX * cY * cZ - sY * sZ * cX;
+					qz = sZ * cX * cY - sX * sY * cZ;
+					qw = sX * sY * sZ + cX * cY * cZ;
+					break;
+				}
+				case CALUMI::Math::Quaternion::EulerOrder::YZX:
+				{
+					qx = sX * sY * cZ + sZ * cX * cY;
+					qy = sX * cY * cZ + sY * sZ * cX;
+					qz = sY * cX * cZ - sX * sZ * cY;
+					qw = cX * cY * cZ - sX * sY * sZ;
+					break;
+				}
+				case CALUMI::Math::Quaternion::EulerOrder::ZXY:
+				{
+					qx = sY * cX * cZ - sX * sZ * cY;
+					qy = sX * sY * cZ + sZ * cX * cY;
+					qz = sX * cY * cZ + sY * sZ * cX;
+					qw = cX * cY * cZ - sX * sY * sZ;
+					break;
+				}
+				case CALUMI::Math::Quaternion::EulerOrder::ZYX:
+				{
+					qx = sZ * cX * cY - sX * sY * cZ;
+					qy = sX * sZ * cY + sY * cX * cZ;
+					qz = sX * cY * cZ - sY * sZ * cX;
+					qw = sX * sY * sZ + cX * cY * cZ;
+					break;
+				}
+				case CALUMI::Math::Quaternion::EulerOrder::XYX:
+				{
+					qx = sX* cY* cZ + sZ * cX * cY;
+					qy = sX* sY* sZ + sY * cX * cZ;
+					qz = sX* sY* cZ - sY * sZ * cX;
+					qw = cX* cY* cZ - sX * sZ * cY;
+					break;					
+				}
+				case CALUMI::Math::Quaternion::EulerOrder::XZX:
+				{
+					qx = sX* cY* cZ + sZ * cX * cY;
+					qy = sY* sZ* cX - sX * sY * cZ;
+					qz = sX* sY* sZ + sY * cX * cZ;
+					qw = cX* cY* cZ - sX * sZ * cY;
+					break;					
+				}
+				case CALUMI::Math::Quaternion::EulerOrder::YXY:
+				{
+					qx = sX* sY* sZ + sY * cX * cZ;
+					qy = sX* cY* cZ + sZ * cX * cY;
+					qz = sY* sZ* cX - sX * sY * cZ;
+					qw = cX* cY* cZ - sX * sZ * cY;
+					break;					
+				}
+				case CALUMI::Math::Quaternion::EulerOrder::YZY:
+				{
+					qx = sX* sY* cZ - sY * sZ * cX;
+					qy = sX* cY* cZ + sZ * cX * cY;
+					qz = sX* sY* sZ + sY * cX * cZ;
+					qw = cX* cY* cZ - sX * sZ * cY;
+					break;					
+				}
+				case CALUMI::Math::Quaternion::EulerOrder::ZXZ:
+				{
+					qx = sX * sY * sZ + sY * cX * cZ;
+					qy = sX * sY * cZ - sY * sZ * cX;
+					qz = sX * cY * cZ + sZ * cX * cY;
+					qw = cX * cY * cZ - sX * sZ * cY;
+					break;					
+				}
+				case CALUMI::Math::Quaternion::EulerOrder::ZYZ:
+				{
+					qx = sY * sZ * cX - sX * sY * cZ;
+					qy = sX * sY * sZ + sY * cX * cZ;
+					qz = sX * cY * cZ + sZ * cX * cY;
+					qw = cX * cY * cZ - sX * sZ * cY;
+					break;					
+				}
+				//XYZ
+				default:
+				{
+					qx = sX* cY* cZ + sY * sZ * cX;
+					qy = sY* cX* cZ - sX * sZ * cY;
+					qz = sX* sY* cZ + sZ * cX * cY;
+					qw = cX* cY* cZ - sX * sY * sZ;
+					break;
+				}
+			}
+
+			pImpl = new Impl(qx, qy, qz, qw);
+		}
 
 		Quaternion::Quaternion(const Quaternion& input)
 		{
@@ -901,9 +1015,10 @@ namespace CALUMI
 		bool RotateQuaternionByAxisAngleC(Quaternion* input, Quaternion* result, float x, float y, float z, float radians)
 		{
 			if (x == 0 && y == 0 && z == 0)
-			{
 				return false;
-			}
+
+			if (!input || !result)
+				return false;
 
 			Quaternion rotation(Vector3(x,y,z) , radians);
 			*result = rotation * (*input);
