@@ -215,7 +215,7 @@ namespace CALUMI {
         {
             Math::Quaternion::EulerOrder eOrder = order > static_cast<uint8_t>(Math::Quaternion::EulerOrder::Max) ? Math::Quaternion::EulerOrder::XYZ : static_cast<Math::Quaternion::EulerOrder>(order);
 
-            Rotation* outputRotation = new Rotation(frame, { x,y,z,order });
+            Rotation* outputRotation = new Rotation(frame, { x,y,z,eOrder });
             outputRotation->RotationQuaternion().Normalize();
             return outputRotation;
         }
