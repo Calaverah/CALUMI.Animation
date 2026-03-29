@@ -139,15 +139,15 @@ namespace CALUMI {
 		{
 		public:
 
+			SFBGS_RigPackage();
+			SFBGS_RigPackage(const SFBGS_RigPackage& source);
+			~SFBGS_RigPackage() override;
+
 			bool IsMannequin() const;
 			void IsMannequin(bool mqn);
 
 			// Inherited via RigPackage
 			const char* GetPackageType() const override;
-
-			SFBGS_RigPackage();
-			SFBGS_RigPackage(const SFBGS_RigPackage& source);
-			~SFBGS_RigPackage() override;
 
 			bool BoneIsMapped(const char* boneName) const;
 			bool KeyIsMapped(BoneMapKey key);
@@ -171,6 +171,7 @@ namespace CALUMI {
 			// Inherited via RigPackage
 			Utilities::StringContainer ToJSON(size_t indents) const override;
 
+		protected:
 			// Inherited via RigPackage
 			bool HandleBoneRename(const char* oldBone, const char* newName, size_t idx) override;
 			// Inherited via RigPackage
@@ -184,7 +185,7 @@ namespace CALUMI {
 		bool CreateNewSFBGSRigPackage(UNIV::SkeletonRig& rig, bool overwrite = true);
 		bool RemoveSFBGSRigPackage(UNIV::SkeletonRig& rig);
 
-		Utilities::VectorContainer<int16_t> ConvertSFBGSRigPackage(UNIV::SkeletonRig& rig);
+		Utilities::VectorContainer<int16_t> ConvertSFBGSRigPackage(const UNIV::SkeletonRig& rig);
 
 
 

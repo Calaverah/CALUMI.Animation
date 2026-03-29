@@ -7,95 +7,99 @@
 #include <format>
 #include <string>
 
-struct FileError::Impl
-{
-	FileErrorCode fileCode = FileErrorCode::UnknownErrorCode;
-	CALUMI::Utilities::PathContainer path;
-	CALUMI::Utilities::StringContainer errorMessage;
-	Impl() = default;
-	Impl(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const char* errorMessage) : fileCode(fileCode), path(path), errorMessage(errorMessage) {}
-	Impl(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const CALUMI::Utilities::StringContainer& errorMessage) : fileCode(fileCode), path(path), errorMessage(errorMessage) {}
-};
+namespace CALUMI {
+	namespace Utilities {
 
-CALUMI::Utilities::StringContainer FileError::ToString()
-{
+		struct FileError::Impl
+		{
+			FileErrorCode fileCode = FileErrorCode::UnknownErrorCode;
+			CALUMI::Utilities::PathContainer path;
+			CALUMI::Utilities::StringContainer errorMessage;
+			Impl() = default;
+			Impl(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const char* errorMessage) : fileCode(fileCode), path(path), errorMessage(errorMessage) {}
+			Impl(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const CALUMI::Utilities::StringContainer& errorMessage) : fileCode(fileCode), path(path), errorMessage(errorMessage) {}
+		};
 
-	std::string fileCodeString;
+		CALUMI::Utilities::StringContainer FileError::ToString()
+		{
 
-	switch (pImpl->fileCode) {
-	case FileErrorCode::FileNotFound:		fileCodeString = "File not found. "; break;
-	case FileErrorCode::PermissionDenied:	fileCodeString = "Permission denied. "; break;
-	case FileErrorCode::NotAFile:			fileCodeString = "Path is not a regular file. "; break;
-	case FileErrorCode::ReadFailure:		fileCodeString = "Failed to read file. "; break;
-	case FileErrorCode::IncorrectFileType:	fileCodeString = "File is not expected type. "; break;
-	case FileErrorCode::FileTooLarge:		fileCodeString = "File exceeds size limits. "; break;
-	case FileErrorCode::FileTooSmall:		fileCodeString = "File does not meet size requirement. "; break;
-	case FileErrorCode::UnknownErrorCode:	fileCodeString = "Unknown Error. "; break;
-	case FileErrorCode::WriteFailure:		fileCodeString = "Failed to write to file. "; break;
-	default: fileCodeString = "No Error Code Found. See fileCode - FileErrorCode Enum. ";
-	}
+			std::string fileCodeString;
 
-	std::string em;
-	if (!pImpl->errorMessage.Empty()) em = std::format("({})", pImpl->errorMessage.c_str());
-	else em = "";
+			switch (pImpl->fileCode) {
+				case FileErrorCode::FileNotFound:		fileCodeString = "File not found. "; break;
+				case FileErrorCode::PermissionDenied:	fileCodeString = "Permission denied. "; break;
+				case FileErrorCode::NotAFile:			fileCodeString = "Path is not a regular file. "; break;
+				case FileErrorCode::ReadFailure:		fileCodeString = "Failed to read file. "; break;
+				case FileErrorCode::IncorrectFileType:	fileCodeString = "File is not expected type. "; break;
+				case FileErrorCode::FileTooLarge:		fileCodeString = "File exceeds size limits. "; break;
+				case FileErrorCode::FileTooSmall:		fileCodeString = "File does not meet size requirement. "; break;
+				case FileErrorCode::UnknownErrorCode:	fileCodeString = "Unknown Error. "; break;
+				case FileErrorCode::WriteFailure:		fileCodeString = "Failed to write to file. "; break;
+				default: fileCodeString = "No Error Code Found. See fileCode - FileErrorCode Enum. ";
+			}
 
-	CALUMI::Utilities::StringContainer output("FILE ERROR: [");
-	output += pImpl->path.StringContainer();
-	output += "]: ";
-	output += fileCodeString.c_str();
-	output += em.c_str();
-	return output;
-}
+			std::string em;
+			if (!pImpl->errorMessage.Empty()) em = std::format("({})", pImpl->errorMessage.c_str());
+			else em = "";
 
-FileErrorCode FileError::GetFileErrorCode() const
-{
-	return pImpl->fileCode;
-}
+			CALUMI::Utilities::StringContainer output("FILE ERROR: [");
+			output += pImpl->path.StringContainer();
+			output += "]: ";
+			output += fileCodeString.c_str();
+			output += em.c_str();
+			return output;
+		}
 
-CALUMI::Utilities::PathContainer FileError::GetFilePath() const
-{
-	return pImpl->path;
-}
+		FileError::FileErrorCode FileError::GetFileErrorCode() const
+		{
+			return pImpl->fileCode;
+		}
 
-const char* FileError::GetErrorMessage() const
-{
-	return pImpl->errorMessage.c_str();
-}
+		CALUMI::Utilities::PathContainer FileError::GetFilePath() const
+		{
+			return pImpl->path;
+		}
 
-FileError::~FileError()
-{
-	if (pImpl)
-		delete pImpl;
-}
+		const char* FileError::GetErrorMessage() const
+		{
+			return pImpl->errorMessage.c_str();
+		}
 
-FileError::FileError()
-{
-	pImpl = new Impl;
-}
+		FileError::~FileError()
+		{
+			if (pImpl)
+				delete pImpl;
+		}
 
-FileError::FileError(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const char* errorMessage)
-{
-	pImpl = new Impl(fileCode, path, errorMessage);
-}
+		FileError::FileError()
+		{
+			pImpl = new Impl;
+		}
 
-FileError::FileError(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const CALUMI::Utilities::StringContainer& errorMessage)
-{
-	pImpl = new Impl(fileCode, path, errorMessage);
-}
+		FileError::FileError(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const char* errorMessage)
+		{
+			pImpl = new Impl(fileCode, path, errorMessage);
+		}
 
-FileError::FileError(const FileError& source)
-{
-	pImpl = new Impl;
-	pImpl->fileCode = source.pImpl->fileCode;
-	pImpl->errorMessage = source.pImpl->errorMessage;
-	pImpl->path = source.pImpl->path;
-}
+		FileError::FileError(const FileErrorCode& fileCode, const CALUMI::Utilities::PathContainer& path, const CALUMI::Utilities::StringContainer& errorMessage)
+		{
+			pImpl = new Impl(fileCode, path, errorMessage);
+		}
 
-FileError& FileError::operator=(const FileError& source)
-{
-	pImpl->fileCode = source.pImpl->fileCode;
-	pImpl->errorMessage = source.pImpl->errorMessage;
-	pImpl->path = source.pImpl->path;
-	return *this;
-}
+		FileError::FileError(const FileError& source)
+		{
+			pImpl = new Impl;
+			pImpl->fileCode = source.pImpl->fileCode;
+			pImpl->errorMessage = source.pImpl->errorMessage;
+			pImpl->path = source.pImpl->path;
+		}
 
+		FileError& FileError::operator=(const FileError& source)
+		{
+			pImpl->fileCode = source.pImpl->fileCode;
+			pImpl->errorMessage = source.pImpl->errorMessage;
+			pImpl->path = source.pImpl->path;
+			return *this;
+		}
+
+}}

@@ -8,6 +8,8 @@
 #include <print>
 #include "FileValidation.h"
 #include "CALUMI_Utilities.h"
+#include "SFBGS_SkeletonRig.h"
+#include "CALUMI_Animation.h"
 
 
 namespace CALUMI{
@@ -919,7 +921,7 @@ namespace CALUMI{
 			pImpl->_animationSuffixBlocks = input;
 		}
 
-		unsigned short Animation::_SumIndices(Utilities::VectorContainer<unsigned short>inputVector, IndexCountingSolution type)
+		static unsigned short _SumIndices(Utilities::VectorContainer<unsigned short>inputVector, Animation::IndexCountingSolution type)
 		{
 			unsigned short sum = 0;
 			for (int i = 0; i < inputVector.size(); i++)
@@ -930,7 +932,7 @@ namespace CALUMI{
 			return sum;
 		}
 
-		void Animation::_evaluateHeaderFlags()
+		void Animation::evaluateHeaderFlags()
 		{
 			HeaderFlags newFlags;
 
@@ -951,19 +953,19 @@ namespace CALUMI{
 			pImpl->_headerFlags = newFlags;
 		}
 
-		Utilities::ExpectedContainer<bool, FileError> Animation::ReadFromFile(const wchar_t* inputFilePath)
+		Utilities::ExpectedContainer<bool, Utilities::FileError> Animation::ReadFromFile(const wchar_t* inputFilePath)
 		{
 			Utilities::PathContainer output(inputFilePath);
 			return ReadFromFile(output);
 		}
-		Utilities::ExpectedContainer<bool, FileError> Animation::ReadFromFile(Utilities::PathContainer& inputFilePath)
+		Utilities::ExpectedContainer<bool, Utilities::FileError> Animation::ReadFromFile(Utilities::PathContainer& inputFilePath)
 		{
 			//Check to see if file exists and is valid
 			Utilities::VectorContainer<Utilities::StringContainer>vec; vec.push_back(".af");
 			auto buffer = CALUMI::ValidateFile(inputFilePath, vec, 64, 0, true);
 			if (!buffer.has_value())
 			{
-				Utilities::ExpectedContainer<bool, FileError> tempOutput;
+				Utilities::ExpectedContainer<bool, Utilities::FileError> tempOutput;
 				tempOutput.SetErrorValue(buffer.error());
 				return tempOutput;
 			}
@@ -983,7 +985,7 @@ namespace CALUMI{
 					float qBuffer[4] = {}; float vBuffer[3] = {};
 					std::memcpy(&qBuffer, &buffer.value().at(addressIndex), sizeof(qBuffer));
 					addressIndex += sizeof(qBuffer);
-					pImpl->_headerRotation = Math::Quaternion(qBuffer[1],qBuffer[2],qBuffer[3],qBuffer[0]);
+					pImpl->_headerRotation = Math::Quaternion(qBuffer[1], qBuffer[2], qBuffer[3], qBuffer[0]);
 
 					std::memcpy(&vBuffer, &buffer.value().at(addressIndex), sizeof(vBuffer));
 					addressIndex += sizeof(vBuffer);
@@ -1018,7 +1020,7 @@ namespace CALUMI{
 			}
 			//Validate header?
 
-			
+
 
 			//Evaluate Preamble
 			size_t newOffset = addressIndex + pImpl->_preambleOffset;
@@ -1079,8 +1081,8 @@ namespace CALUMI{
 				}
 
 				k++; //increment counter
-				
-				
+
+
 			}
 
 
@@ -1108,7 +1110,7 @@ namespace CALUMI{
 			return true;
 		}
 
-		Utilities::ExpectedContainer<Utilities::StringContainer, FileError> Animation::WriteToFile(Utilities::PathContainer& outputFilePath)
+		Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> Animation::WriteToFile(Utilities::PathContainer& outputFilePath)
 		{
 			//D:/ModOrganizer/Starfield_Mod_Authoring_01/mods/ExtractedData/meshes/actors/human/animations/scenes/mq101_001_miningscene/female/animstart_lin.af has the largest size of 780896 bytes
 
@@ -1205,7 +1207,7 @@ namespace CALUMI{
 			return CALUMI::WriteToBinaryFile(outputFilePath, buffer);
 		}
 
-		Utilities::ExpectedContainer<Utilities::StringContainer, FileError> Animation::WriteToFile(const wchar_t* outputFilePath)
+		Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> Animation::WriteToFile(const wchar_t* outputFilePath)
 		{
 			Utilities::PathContainer output(outputFilePath);
 			return WriteToFile(output);

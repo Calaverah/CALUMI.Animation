@@ -6,8 +6,8 @@
 #include <cmath>
 #include <math.h>
 #include <format>
-#include <corecrt_math_defines.h>
-//#include <print>
+
+
 
 namespace CALUMI
 {
@@ -213,9 +213,9 @@ namespace CALUMI
 			*this /= this->Length();
 		}
 
-		double ToRadians(double degrees) noexcept { return degrees * (M_PI / 180.0); }
+		double ToRadians(double degrees) noexcept { return degrees * (CLA_PI / 180.0); }
 
-		double ToDegrees(double radians) noexcept { return radians * (180.0 / M_PI); }
+		double ToDegrees(double radians) noexcept { return radians * (180.0 / CLA_PI); }
 
 		Math::Vector3 operator+ (const Math::Vector3& A, const Math::Vector3& B) noexcept
 		{
@@ -941,7 +941,7 @@ namespace CALUMI
 			if (abs(dot) >= 1.0f) return input;
 
 			float hTheta = acos(dot);
-			float sinhTheta = sqrtf(1.0 - dot * dot);
+			float sinhTheta = sqrtf(1.0f - dot * dot);
 
 			float ratio1 = sin((1 - t) * hTheta) / sinhTheta;
 			float ratio2 = sin(t * hTheta) / sinhTheta;

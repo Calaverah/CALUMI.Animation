@@ -136,20 +136,28 @@ namespace CALUMI {namespace SFBGS{
 		return rig.getRigPackageManager().RemovePackage(SFBGS_RIG_PACKAGE);
 	}
 
-	Utilities::VectorContainer<int16_t> ConvertSFBGSRigPackage(UNIV::SkeletonRig& rig)
+	Utilities::VectorContainer<int16_t> ConvertSFBGSRigPackage(const UNIV::SkeletonRig& rig)
 	{
 		Utilities::VectorContainer<int16_t> output(SFBGSMAPSIZE);
-		for (int i = 0; i < output.size(); i++) { output.at(i) = -1; }
+
+		for (int i = 0; i < output.size(); i++) 
+		{ 
+			output.at(i) = -1; 
+		}
 
 		auto rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig.getRigPackageManager().GetPackage(SFBGS_RIG_PACKAGE));
-		if (rigPackage == nullptr) { return output; }
+		
+		if (rigPackage == nullptr) 
+		{ 
+			return output; 
+		}
 
 		for (int i = 0; i < output.size(); i++)
 		{
 			auto result = rig.GetBoneIndex(rigPackage->GetBoneNameFromKey(static_cast<BoneMapKey>(i)));
-			if (result.has_value())
+			if (result >= 0)
 			{
-				output.at(i) = static_cast<int16_t>(result.value());
+				output.at(i) = static_cast<int16_t>(result);
 			}
 		}
 

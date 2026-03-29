@@ -15,7 +15,7 @@ namespace CALUMI {
 	namespace SFBGS {
 
 		
-		class CALUMIANIMATION_API AnimationScene : UNIV::Convertible
+		class CALUMIANIMATION_API AnimationScene : UNIV::IConvertibleScene
 		{
 		public:
 			Utilities::StringContainer& SceneName() const;
@@ -33,7 +33,7 @@ namespace CALUMI {
 			bool RemoveAnimationFromScene(const char* sceneToRemove);
 			bool RemoveAnimationFromScene(unsigned int idx);
 
-			// Inherited via Convertible
+			// Inherited via IConvertibleScene
 			bool ConvertFromUniversalScene(UNIV::AnimationScene& input) override;
 			bool ConvertFromUniversalScene(CALUMI::UNIV::AnimationScene& input, SFBGS::SkeletonRig& rigReference);
 			UNIV::AnimationScene ConvertToUniversalScene() override;

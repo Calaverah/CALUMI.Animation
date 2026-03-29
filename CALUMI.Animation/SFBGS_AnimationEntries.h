@@ -9,8 +9,28 @@
 
 namespace CALUMI{ namespace SFBGS{
 
+	/**
+	 * @brief Prefix RLE based entry component for Rotations
+	 */
 	struct CALUMIANIMATION_API RotationPrefix
 	{
+		/// @name Constructors
+		/// @{
+
+		RotationPrefix();
+		RotationPrefix(const RotationPrefix& input);
+		RotationPrefix(int8_t X, bool QX, int8_t Y, bool QY, int8_t Z, bool QZ, uint8_t C, uint8_t ID);
+		/**
+		 * @brief Raw copy constructor
+		 * @param buffer Expects a 4 byte buffer
+		 */
+		RotationPrefix(const unsigned char* buffer);
+		~RotationPrefix();
+
+		/// @}
+		/// @name Data
+		/// @{
+		
 		int8_t First() const;
 		void First(int8_t input);
 		bool FirstFlag() const;
@@ -30,26 +50,42 @@ namespace CALUMI{ namespace SFBGS{
 
 		const void* const getRawData() const;
 
-		RotationPrefix();
-		RotationPrefix(const RotationPrefix& input);
-		~RotationPrefix();
-		RotationPrefix(int8_t X, bool QX, int8_t Y, bool QY, int8_t Z, bool QZ, uint8_t C, uint8_t ID);
-		RotationPrefix(const unsigned char* buffer); //expects a buffer of 4 bytes
-
-		//Count is not considered in comparison
+		/// @}
+		/// @name Operators
+		/// @{
+		
+		/**
+		 * @brief Equality operator
+		 * @param other 
+		 * @return Returns true if all data, excluding the RLE count, are equal
+		 */
 		bool operator==(const RotationPrefix& other) const;
+		/**
+		 * @brief Equality operator
+		 * @param other
+		 * @return Returns true if any data, excluding the RLE count, are not equal
+		 */
 		bool operator!=(const RotationPrefix& other) const;
 
 		RotationPrefix& operator=(const RotationPrefix& input);
-		RotationPrefix& operator=(const unsigned char* buffer); //expects a buffer of 4 bytes
-
+		/**
+		 * @brief Raw data assignment
+		 * @param buffer 4 bytes expected
+		 * @return 
+		 */
+		RotationPrefix& operator=(const unsigned char* buffer);
+		/// @}
 	private:
 		struct Impl;
 		Impl* pImpl;
 	};
 
+	/**
+	 * @brief Basic entry component for Rotations
+	 */
 	struct CALUMIANIMATION_API RotationEntry
 	{
+		//TODO: Documentation for SFBGS Rotation Entry
 		int8_t First() const;
 		void First(int8_t input);
 		int8_t Second() const;
@@ -72,6 +108,7 @@ namespace CALUMI{ namespace SFBGS{
 		Impl* pImpl;
 	};
 
+	//TODO: Documentation for SFBGS Translation Prefix
 	struct CALUMIANIMATION_API TranslationPrefix
 	{
 		int16_t getX() const;
@@ -102,6 +139,7 @@ namespace CALUMI{ namespace SFBGS{
 		Impl* pImpl;
 	};
 
+	//TODO: Documentation for SFBGS Translation Entry
 	struct CALUMIANIMATION_API TranslationEntry
 	{
 		int8_t getX() const;

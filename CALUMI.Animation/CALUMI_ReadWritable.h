@@ -8,10 +8,23 @@
 #include "FileError.h"
 
 namespace CALUMI {
-	class CALUMIANIMATION_API ReadWritable
+	/**
+	 * @brief Provides an interface for a class to be written/read from a given path
+	 */
+	class CALUMIANIMATION_API IReadWritable
 	{
-		virtual Utilities::ExpectedContainer<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) = 0;
-		virtual Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) = 0;
+		/**
+		 * @brief Reads in a file from a given file path
+		 * @param inputFilePath 
+		 * @return Expected container with error status and success result
+		 */
+		virtual Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) = 0;
+		/**
+		 * @brief Writes to a file at a given file path
+		 * @param outputFilePath
+		 * @return Expected container with error status and file result
+		 */
+		virtual Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(Utilities::PathContainer& outputFilePath) = 0;
 	};
 }
 

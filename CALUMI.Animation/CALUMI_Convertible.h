@@ -9,11 +9,22 @@
 namespace CALUMI {namespace UNIV
 {
 
-	//template <class T>
-	class CALUMIANIMATION_API Convertible
+	/**
+	 * @brief Provides interface methods for converting a UNIV Animation Scene and it's data to a given format
+	 */
+	class CALUMIANIMATION_API IConvertibleScene
 	{
 	public:
+		/**
+		 * @brief For populating this class with data based on a UNIV Animation Scene
+		 * @param input Universal Animation Scene to pull information from
+		 * @return Whether the operation was a success
+		 */
 		virtual bool ConvertFromUniversalScene(AnimationScene& input) = 0;
+		/**
+		 * @brief For creating a new UNIV Animation Scene with this data from this class
+		 * @return Newly constructed Universal Animation Scene
+		 */
 		virtual AnimationScene ConvertToUniversalScene() = 0;
 	};
 }}

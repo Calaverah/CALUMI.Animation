@@ -169,5 +169,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+    <None Include="SFBGS_DecodingDocumentation.h" />
   </ItemGroup>
 </Project>

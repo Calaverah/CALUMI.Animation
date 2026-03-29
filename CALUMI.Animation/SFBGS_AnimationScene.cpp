@@ -230,7 +230,7 @@ namespace CALUMI{ namespace SFBGS{
 
             output.getAnimationBlocks().at(anim.AnimationBlocks().at(i).BoneIndex()) = toAdd; //Fill block for the correct index
         }
-        output._evaluateHeaderFlags();
+        output.evaluateHeaderFlags();
         return output;
     }
 
@@ -272,7 +272,7 @@ namespace CALUMI{ namespace SFBGS{
         }
 
         pImpl->sceneName = input.SceneName();
-        pImpl->rig = ConvertToSFBGSRig(input.Rig());
+        pImpl->rig.ConvertFromUniversalRig(input.Rig());
 
         pImpl->animations.reserve(input.Animations().size());
         for (unsigned int i = 0; i < input.Animations().size(); i++)
@@ -315,7 +315,7 @@ namespace CALUMI{ namespace SFBGS{
         }
 
         outputScene.SceneName(pImpl->sceneName);
-        outputScene.Rig() = SFBGS::ConvertToUniversalRig(pImpl->rig);
+        outputScene.Rig() = pImpl->rig.ConvertToUniversalRig();
 
         outputScene.Animations().reserve(pImpl->animations.size());
         for (int i = 0; i < pImpl->animations.size(); i++)
@@ -699,7 +699,7 @@ namespace CALUMI{ namespace SFBGS{
         }
 
         UNIV::SkeletonRig* output = new UNIV::SkeletonRig;
-        *output = SFBGS::ConvertToUniversalRig(rig);
+        *output = rig.ConvertToUniversalRig();
         *errorMessageHolder += "[CALUMI.Animation API] Rig Loaded Successfully From File Path Provided.";
         return output;
     }
@@ -728,7 +728,7 @@ namespace CALUMI{ namespace SFBGS{
             return false;
         }
 
-        SFBGS::SkeletonRig sfbgsRig = ConvertToSFBGSRig(*rig);
+        SFBGS::SkeletonRig sfbgsRig(*rig);
         SFBGS::Animation sfbgsAnimation = ConvertToSFBGSAnimation(*animation, sfbgsRig);
 
         auto result = sfbgsAnimation.WriteToFile(filePath);
@@ -815,7 +815,7 @@ namespace CALUMI{ namespace SFBGS{
             return false;
         }
 
-        SFBGS::SkeletonRig sfbgsRig = ConvertToSFBGSRig(*rig);
+        SFBGS::SkeletonRig sfbgsRig(*rig);
 
         auto result = sfbgsRig.WriteToFile(filePath);
 

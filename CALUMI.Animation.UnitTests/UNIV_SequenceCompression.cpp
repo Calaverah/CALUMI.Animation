@@ -7,7 +7,6 @@
 #include "..\CALUMI.Animation\CALUMI_Math.h"
 #include "..\CALUMI.Animation\CALUMI_Animation.h"
 #include <iostream>
-#include "corecrt_math_defines.h"
 
 #define ROTATIONENTRY(input, f, x,y,z,deg) {CALUMI::Math::Quaternion rotation(Vector3(x, y, z), ToRadians(deg)); uint16_t frame = f; \
 											CALUMI::UNIV::Rotation entry(frame,rotation);\

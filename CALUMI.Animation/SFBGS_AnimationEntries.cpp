@@ -3,7 +3,6 @@
 //Contact: Calaverahmedia@gmail.com
 
 #include "pch.h"
-#include <corecrt_math_defines.h>
 #include "SFBGS_AnimationEntries.h"
 #include <print>
 #include <utility>
@@ -316,8 +315,8 @@ namespace CALUMI { namespace SFBGS{
 
 	static std::tuple<int8_t, int8_t, bool> GetSFBGSRotationComponents(const float& component)
 	{
-		float lowPrecision = static_cast<float>(M_SQRT1_2 / 64.0); //1.0 / (sqrt(2) * 64.0);		//2^6
-		float highPrecision = static_cast<float>(M_SQRT1_2 / 16384.0); //1.0 / (sqrt(2) * 16384.0);	//2^14
+		float lowPrecision = static_cast<float>(CLA_SQRT1_2 / 64.0); //1.0 / (sqrt(2) * 64.0);		//2^6
+		float highPrecision = static_cast<float>(CLA_SQRT1_2 / 16384.0); //1.0 / (sqrt(2) * 16384.0);	//2^14
 
 		float value = 0.0;
 		if(component != 0)
@@ -417,9 +416,9 @@ namespace CALUMI { namespace SFBGS{
 		CALUMI::Math::Quaternion tempInput = input;
 
 		prefix.Missing(3);
-		if (abs(input.getX()) > M_SQRT1_2) prefix.Missing(0);
-		if (abs(input.getY()) > M_SQRT1_2) prefix.Missing(1);
-		if (abs(input.getZ()) > M_SQRT1_2) prefix.Missing(2);
+		if (abs(input.getX()) > CLA_SQRT1_2) prefix.Missing(0);
+		if (abs(input.getY()) > CLA_SQRT1_2) prefix.Missing(1);
+		if (abs(input.getZ()) > CLA_SQRT1_2) prefix.Missing(2);
 
 		//We must flip the quaternion values such that the missing value is positive. When derived, the missing will always be positive. So long as all values flip the quaternion is equal.
 		if (prefix.Missing() == 0 && input.getX() < 0) tempInput = -input;
@@ -453,8 +452,8 @@ namespace CALUMI { namespace SFBGS{
 
 	CALUMI::Math::Quaternion GetUniversalRotation(const CALUMI::SFBGS::RotationPrefix& prefix, const CALUMI::SFBGS::RotationEntry& suffix)
 	{
-		double lowPrecision		= M_SQRT1_2 / 64.0;
-		double highPrecision	= M_SQRT1_2 / 16384.0;
+		double lowPrecision		= CLA_SQRT1_2 / 64.0;
+		double highPrecision	= CLA_SQRT1_2 / 16384.0;
 
 		uint8_t s1 = 1 << (3 * prefix.FirstFlag());
 		uint8_t s2 = 1 << (3 * prefix.SecondFlag());

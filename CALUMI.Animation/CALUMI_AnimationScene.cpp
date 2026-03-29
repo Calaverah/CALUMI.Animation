@@ -181,7 +181,7 @@ namespace CALUMI {
             scene->Rig() = *rig;
 
             if (rig)
-                delete rig;
+                DeleteSkeletonRigC(rig);
 
             *errorMessageHolder += "[CALUMI.Animation API] Rig Data Copied Successfully. Original Rig Has Been Deleted!";
             return true;

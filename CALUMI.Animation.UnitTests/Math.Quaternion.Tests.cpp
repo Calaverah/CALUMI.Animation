@@ -5,8 +5,6 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 #include "..\CALUMI.Animation\CALUMI_Math.h"
-#include <iostream>
-#include "corecrt_math_defines.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace CALUMI::Math;
@@ -142,7 +140,7 @@ namespace CALUMIAnimationUnitTests
 		}
 		TEST_METHOD(Multiplication4_F)
 		{
-			Quaternion quaternion1(M_SQRT1_2, 0.0, 0.0, M_SQRT1_2);
+			Quaternion quaternion1(CLA_SQRT1_2, 0.0, 0.0, CLA_SQRT1_2);
 			Quaternion quaternion2(1.0, 2.0, 3.0, 4.0);
 			Assert::IsFalse(quaternion2.AreSameRotation(quaternion1 * -quaternion2, 0.0000001f));
 		}

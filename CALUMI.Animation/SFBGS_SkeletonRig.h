@@ -14,19 +14,23 @@
 
 namespace CALUMI {namespace SFBGS {
 
-	//Fwd Declaring for friend function
 	struct SkeletonRig;
-	SkeletonRig ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig);
-	CALUMI::UNIV::SkeletonRig ConvertToUniversalRig(CALUMI::SFBGS::SkeletonRig& inputRig);
 
-	enum class CALUMIANIMATION_API BoneType : int32_t
-	{
-		Default		= -1,
-		Twist		=  1
-	};
-
+	/**
+	 * @brief SFBGS Struct defining a skeleton bone
+	 */
 	struct CALUMIANIMATION_API SkeletonBone
 	{
+
+		/**
+		* @brief Bone type for SFBGS Rig Bones currently include these enums
+		*
+		*/
+		enum class BoneType : int32_t
+		{
+			Default = -1, /**< Animation driven **in game** */
+			Twist	=  1  /**< Dynamically driven **in game**  */
+		};
 		
 		CALUMI::Math::Quaternion& LocalRotation() const;
 		
@@ -88,15 +92,15 @@ namespace CALUMI {namespace SFBGS {
 		bool SetBoneTypeFromUNIV(UNIV::SkeletonBone& univBone);
 		bool SetBoneTypeToUNIV(UNIV::SkeletonBone& univBone);
 
-		friend SkeletonRig CALUMI::SFBGS::ConvertToSFBGSRig(CALUMI::UNIV::SkeletonRig& inputRig);
-		friend CALUMI::UNIV::SkeletonRig CALUMI::SFBGS::ConvertToUniversalRig(CALUMI::SFBGS::SkeletonRig& inputRig);
-
 	private:
 		struct Impl;
 		Impl* pImpl;
+
+	private:
+		friend struct SkeletonRig;
 	};
 
-	struct CALUMIANIMATION_API SkeletonRig : CALUMI::ReadWritable
+	struct CALUMIANIMATION_API SkeletonRig : CALUMI::IReadWritable
 	{
 		int VersionNumber() const;
 		void VersionNumber(int v);
@@ -126,17 +130,21 @@ namespace CALUMI {namespace SFBGS {
 
 		bool IsMarkedMannequin() const;
 
-		// Inherited via ReadWritable
-		Utilities::ExpectedContainer<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
-		Utilities::ExpectedContainer<bool, FileError> ReadFromFile(const wchar_t* inputFilePath);
-		Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
-		Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToFile(const wchar_t* outputFilePath);
+		// Inherited via IReadWritable
+		Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
+		Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(const wchar_t* inputFilePath);
+		Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
+		Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(const wchar_t* outputFilePath);
 
 		~SkeletonRig();
 		SkeletonRig();
-		SkeletonRig(const SkeletonRig& input);
+		SkeletonRig(const SFBGS::SkeletonRig& input);
+		SkeletonRig(const UNIV::SkeletonRig& input);
 
 		SkeletonRig& operator=(const SkeletonRig& input);
+
+		CALUMI::UNIV::SkeletonRig ConvertToUniversalRig() const;
+		void ConvertFromUniversalRig(const CALUMI::UNIV::SkeletonRig& inputRig);
 
 	public:
 		//DEBUG FUNCTIONS

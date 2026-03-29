@@ -7,28 +7,93 @@
 #include "SFBGS_AnimationEntries.h"
 
 
-
 namespace CALUMI{
+
+	
 	namespace SFBGS {
 
-		enum class CALUMIANIMATION_API IndexCountingSolution : uint8_t
-		{
-			odd, //1,3,5,etc
-			even, //0,2,4,etc
-			all
-		};
+		class AnimationScene;
 
+		/**
+		 * @brief Flags defined in the SFBGS animation file's header
+		 */
 		struct CALUMIANIMATION_API HeaderFlags
 		{
-			bool getFirstEntry() const;
-			void setFirstEntry(bool input);
-			bool areKeyCounters2Byte() const;
-			void setKeyCountersFlag(bool input);
-			bool areKeyFrameEntries2Byte() const;
-			void setKeyFrameEntriesFlag(bool input);
-			bool hasScalarSequence() const;
-			void setScalarSequenceFlag(bool input);
+			/**
+			 * @name Constructors
+			 * @{
+			 */
+			HeaderFlags();
+			~HeaderFlags();
+			HeaderFlags(char c0, char c1, char c2, char c3);
+			HeaderFlags(char input[4]);
+			HeaderFlags(const HeaderFlags& input);
+			/// @}
 
+			/**
+			 * @name Operators
+			 * @{
+			 */
+			HeaderFlags& operator=(const HeaderFlags& input);
+			/// @}
+
+			/**
+			 * @name Known Data
+			 * @{
+			 */
+
+			/**
+			 * @brief Unknown flag that appears unused
+			 * @return 
+			 */
+			bool getFirstEntry() const;
+			/**
+			 * @brief Unknown flag that appears unused
+			 * @param input 
+			 */
+			void setFirstEntry(bool input);
+			/**
+			 * @brief Counter size flag
+			 * @return Whether animation block counters are 1 or 2 bytes in size
+			 */
+			bool areKeyCounters2Byte() const;
+			/**
+			 * @brief Counter size flag
+			 * @param input Whether animation block counters are 1 or 2 bytes in size
+			 */
+			void setKeyCountersFlag(bool input);
+			/**
+			 * @brief Key Frame size flag
+			 * @return Whether animation block key frames are 1 or 2 bytes in size
+			 */
+			bool areKeyFrameEntries2Byte() const;
+			/**
+			 * @brief Key Frame size flag
+			 * @param input Whether animation block key frames are 1 or 2 bytes in size
+			 */
+			void setKeyFrameEntriesFlag(bool input);
+			/**
+			 * @brief Scalars present flag
+			 * @return Whether scalars are present
+			 */
+			bool hasScalarSequence() const;
+			/**
+			 * @brief Scalars present flag
+			 * @param input Whether scalars are present
+			 */
+			void setScalarSequenceFlag(bool input);
+			/**
+			 * @brief Main byte of flag data
+			 * @return Byte containing the 3 used flags
+			 */
+			char getData() const;
+
+			/// @}
+
+			/**
+			 * @name Unknown or Unused
+			 * @{
+			 */
 			bool getU1() const;
 			bool getU2() const;
 			bool getU3() const;
@@ -38,7 +103,6 @@ namespace CALUMI{
 			void setU3(bool input);
 			void setU4(bool input);
 
-			char getData() const;
 			char getC1() const;
 			char getC2() const;
 			char getC3() const;
@@ -46,28 +110,70 @@ namespace CALUMI{
 			void setC2(char input);
 			void setC3(char input);
 
-			HeaderFlags();
-			~HeaderFlags();
-			HeaderFlags(char c0, char c1, char c2, char c3);
-			HeaderFlags(char input[4]);
-			HeaderFlags(const HeaderFlags& input);
-
-			HeaderFlags& operator=(const HeaderFlags& input);
+			/// @}
 
 		private:
 			struct Impl;
 			Impl* pImpl;
 		};
 
+		/**
+		 * @brief Section of data that describes transform sequences
+		 */
 		struct CALUMIANIMATION_API AnimationBlock
 		{
+			/**
+			 * @name Constructors
+			 * @{
+			 */
 			
+			AnimationBlock();
+			AnimationBlock(const AnimationBlock& input);
+			AnimationBlock(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, const HeaderFlags& flags);
+			~AnimationBlock();
+
+			/// @}
+			/// @name Operators
+			/// @{
+			
+			AnimationBlock& operator=(const AnimationBlock& input);
+			
+			/// @}
+			/**
+			 * @name Counts
+			 */
+			
+			/**
+			 * @brief 
+			 * @return The number of rotation entries (suffix) 
+			 */
 			uint16_t getRotationCount() const;
+			/**
+			 * @brief 
+			 * @return The number of rotation entries (prefix) 
+			 */
 			uint16_t getRotationPrefixCount() const;
+			/**
+			 * @brief 
+			 * @return The number of translation entries (suffix) 
+			 */
 			uint16_t getTranslationCount() const;
+			/**
+			 * @brief 
+			 * @return The number of translation entries (prefix) 
+			 */
 			uint16_t getTranslationPrefixCount() const;
+			/**
+			 * @brief 
+			 * @return The number of scalar entries 
+			 */
 			uint16_t getScalarCount() const;
+			/**
+			 * @brief 
+			 * @return The number of "priority" entries 
+			 */
 			uint16_t getPriorityCount() const;
+
 
 			void setRotationCount(uint16_t input);
 			void setRotationPrefixCount(uint16_t input);
@@ -76,33 +182,95 @@ namespace CALUMI{
 			void setScalarCount(uint16_t input);
 			void setPriorityCount(uint16_t input);
 
+			/// @}
+
+			/**
+			 * @name Key Frames 
+			 * @{
+			 */
+
+			/**
+			 * @brief Vector of Keyframes of size [RotationCount]
+			 * @return 
+			 */
 			Utilities::VectorContainer<uint16_t>& RotationKeyFrames() const;
+			/**
+			 * @brief Vector of Keyframes of size [TranslationCount] 
+			 * @return 
+			 */
 			Utilities::VectorContainer<uint16_t>& TranslationKeyFrames() const;
+			/**
+			 * @brief Vector of Keyframes of size [ScalarCount]
+			 * @return 
+			 */
 			Utilities::VectorContainer<uint16_t>& ScalarKeyFrames() const;
+			/**
+			 * @brief Vector of Keyframes of size [PriorityCount]
+			 * @return 
+			 */
 			Utilities::VectorContainer<uint16_t>& BonePriorityKeyFrames() const;
 
-			Utilities::VectorContainer<CALUMI::SFBGS::RotationEntry>& RotationEntries() const;
-			Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& RotationPrefixEntries() const;
-			Utilities::VectorContainer<CALUMI::SFBGS::TranslationEntry>& TranslationEntries() const;
-			Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix>& TranslationPrefixEntries() const;
+			/// @}
+			/**
+			* @name Compressed Entries
+			*/
 
+			/**
+			 * @brief "Suffix" of the compressed Rotation entries, one for each frame
+			 * @return 
+			 */
+			Utilities::VectorContainer<CALUMI::SFBGS::RotationEntry>& RotationEntries() const;
+			/**
+			 * @brief "Prefix" of the compress Rotation entries, RLE sequence
+			 * @details The "prefix" entries are folded into an RLE sequence where there is a counter on the bitfield that describes how many frames this entries applies to using the programitc counting method (0,1,2...)
+			 * @return 
+			 */
+			Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& RotationPrefixEntries() const;
+			/**
+			 * @brief "Suffix" of the compressed Translation entries, one for each frame
+			 * @return 
+			 */
+			Utilities::VectorContainer<CALUMI::SFBGS::TranslationEntry>& TranslationEntries() const;
+			/**
+			 * @brief "Prefix" of the compress Translation entries, RLE sequence
+			 * @details The "prefix" entries are folded into an RLE sequence where there is a counter on the bitfield that describes how many frames this entries applies to using the common counting method (1,2, 3...)
+			 * @return
+			 */
+			Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix>& TranslationPrefixEntries() const;
+			/**
+			 * @brief Scalar entries
+			 * @details Value described with a signed short (2 Bytes) where 5000 is the base scale of 1.0f
+			 * @return 
+			 */
 			Utilities::VectorContainer<int16_t>& ScalarEntries() const;
+			/**
+			 * @brief "Priority" entries
+			 * @details Not much is known about these. It is believed that they are used by additive animations to determine which animation take precedence when transforming this bone
+			 * @return 
+			 */
 			Utilities::VectorContainer<uint8_t>& BonePriorityEntries() const;
 
-
-			AnimationBlock();
-			AnimationBlock(const AnimationBlock& input);
-			~AnimationBlock();
-			AnimationBlock(Utilities::VectorContainer<char>&buffer, unsigned long long& addressIndex, const HeaderFlags & flags);
+			/// @}
+			/// @name Serialization
+			/// @{
+			/**
+			 * @brief Method for serializing data into the expected file format
+			 * @param buffer 
+			 * @param addressIndex 
+			 * @param flags 
+			 */
 			void SerializeIntoBuffer(Utilities::VectorContainer<char>&buffer, unsigned long long& addressIndex, const HeaderFlags & flags);
-
-			AnimationBlock& operator=(const AnimationBlock& input);
+			/// @}
+			
 
 		private:
 			struct Impl;
 			Impl* pImpl;
 		};
 
+		/**
+		 * @brief Not much is known about this just yet. Nothing that has been proven that is
+		 */
 		struct CALUMIANIMATION_API Preamble
 		{
 			uint16_t getCount() const;
@@ -129,16 +297,51 @@ namespace CALUMI{
 			Impl* pImpl;
 		};
 
-		
-		class CALUMIANIMATION_API Animation : CALUMI::ReadWritable
+		/**
+		 * @brief Starfield Animation
+		 */
+		class CALUMIANIMATION_API Animation : CALUMI::IReadWritable
 		{
+		public:
+			/**
+			 * @brief Index Counting Solution for the Index Atlas
+			 */
+			enum class IndexCountingSolution : uint8_t
+			{
+				odd		= 0, ///< 1,3,5,etc
+				even	= 1, ///< 0,2,4,etc
+				all		= 2  ///< all indices
+			};
 
 		public:
+			/**
+			 * @name Constructors
+			 * @{
+			 */
+			
+			Animation();
+			Animation(const Animation& input);
+			~Animation();
+			
+			/// @}
+			/// @name Operators
+			/// @{
+			
+			Animation& operator=(const Animation& input);
+			
+			/// @}
+			/// @name Meta
+			/// @{
+			/// 
 			size_t getSourceFileSize() const;
 			
 			CALUMI::Utilities::StringContainer& getAnimationFileName() const;
 			void setAnimationFileName(const CALUMI::Utilities::StringContainer& input);
 		
+			/// @}
+			/// @name Header Data
+			/// @{
+
 			uint64_t getMagicNumber() const;
 			void setMagicNumber(uint64_t input);
 
@@ -150,6 +353,7 @@ namespace CALUMI{
 
 			HeaderFlags& getHeaderFlags() const;
 			void setHeaderFlags(const HeaderFlags& input);
+			void evaluateHeaderFlags();
 
 			short getVersionNumber() const;
 			void setVersionNumber(short v);
@@ -171,12 +375,10 @@ namespace CALUMI{
 			CALUMI::Utilities::VectorContainer<float> getNZeroFloats() const;
 			void setNZeroFloats(float input[3]);
 
+
 			Utilities::VectorContainer<float>& getUnknownSuffixFillFloats() const;
 			void setUnknownSuffixFillFloats(const Utilities::VectorContainer<float>& input);
-			//--------------------------------------------------The header to this point is 64 bytes. The Animation blocks begin at address = 64+preambleOffset
 
-			//preamble section goes here
-				//NOTE: Preamble begins after the nZeroFloat array and is [preambleOffset] bytes long.
 			uint32_t getPreambleCount() const;
 			void setPreambleCount(uint32_t input);
 			Utilities::VectorContainer<Preamble>& getPreamble() const;
@@ -184,36 +386,55 @@ namespace CALUMI{
 
 			Utilities::VectorContainer<float>& getSuffixFillerValues() const;
 			void getSuffixFillerValues(const Utilities::VectorContainer<float>& input);
+			
+			/// @}
+			/// @name Animation Block Entries
+			/// @{
 
+			/**
+			 * @brief Index Atlas describes how the following data is assigned
+			 * @details The atlas consists of an array of unsigned values, the first value (and following odd index values) being the amount of bones to skip during processing 
+			 * and the second value (and following even index values) being the amount of bones to apply the data to. \n 
+			 * For example an array {1, 9, 11, 1} will skip the SkeletonRig's root bone, apply the first 11 animation blocks to bone indices 1-9, skip bone indices 10-20, 
+			 * and then finally apply the final blocks to the bone at index 21
+			 * @return 
+			 */
 			Utilities::VectorContainer<uint16_t>& getIndexAtlas() const;
+			/**
+			 * @brief 
+			 * @param input An evenly sized array of unsigned values
+			 */
 			void setIndexAtlast(const Utilities::VectorContainer<uint16_t>& input);
 
+			/**
+			 * @brief The array of animation blocks to apply to the given Starfield skeleton rig
+			 * @return 
+			 */
 			Utilities::VectorContainer<AnimationBlock>& getAnimationBlocks() const;
-			Utilities::VectorContainer<AnimationBlock>& getAnimationSuffixBlocks() const;
 			void setAnimationBlocks(const Utilities::VectorContainer<AnimationBlock>& input);
+
+			Utilities::VectorContainer<AnimationBlock>& getAnimationSuffixBlocks() const;
 			void setAnimationSuffixBlocks(const Utilities::VectorContainer<AnimationBlock>& input);
 
-			unsigned short _SumIndices(Utilities::VectorContainer<unsigned short>inputVector, IndexCountingSolution type);
-			/// <summary>
-			/// Header flags will be reset based on the values of the entries. It is not recommended to call this directly.
-			/// </summary>
-			void _evaluateHeaderFlags();
+			/// @}
 
-			Animation();
-			Animation(const Animation& input);
-			~Animation();
+		public:
+			/// @name IReadWritable
+			/// @{
+			
+			Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
+			Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(const wchar_t* inputFilePath);
+			Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
+			Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(const wchar_t* outputFilePath);
 
-			Animation& operator=(const Animation& input);
-
-			// Inherited via CALUMI::ReadWritable
-			Utilities::ExpectedContainer<bool, FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
-			Utilities::ExpectedContainer<bool, FileError> ReadFromFile(const wchar_t* inputFilePath);
-			Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
-			Utilities::ExpectedContainer<Utilities::StringContainer, FileError> WriteToFile(const wchar_t* outputFilePath);
+			/// @}
 
 		private:
 			struct Impl;
 			Impl* pImpl;
+
+		private:
+			friend class AnimationScene;
 		};
 #pragma warning(disable: 4661)
 		template struct CALUMIANIMATION_API Utilities::VectorContainer<AnimationBlock>;
