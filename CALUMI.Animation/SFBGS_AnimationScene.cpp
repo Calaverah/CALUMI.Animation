@@ -12,7 +12,8 @@
 #include <print>
 #include <format>
 #include <vector>
-
+#include "SFBGS_AnimationPackage.h"
+#include "CALUMI_Hashes.h"
 
 
 
@@ -28,6 +29,7 @@ namespace CALUMI{ namespace SFBGS{
     Utilities::StringContainer& AnimationScene::SceneName() const { return pImpl->sceneName; }
     Utilities::VectorContainer<Animation>& AnimationScene::Animations() const { return pImpl->animations; }
     SkeletonRig& AnimationScene::Rig() const { return pImpl->rig; }
+    void AnimationScene::setRig(const SkeletonRig& rig) { pImpl->rig = rig; }
 
     AnimationScene::AnimationScene() { pImpl = new Impl; }
     AnimationScene::~AnimationScene() { if (pImpl) delete pImpl; }
@@ -222,14 +224,35 @@ namespace CALUMI{ namespace SFBGS{
             _ConvertTranslationSq(anim.AnimationBlocks().at(i).TranslationSequence(), toAdd, rig.HighPrecision(), rig.LowPrecision());
             _ConvertScalarSq(anim.AnimationBlocks().at(i).ScalarSequence(), toAdd);
             _ConvertPrioritySq(anim.AnimationBlocks().at(i).PrioritySequence(), toAdd);
+
+#ifdef DEBUG_BUILD
             if (rig.StringArray().at(anim.AnimationBlocks().at(i).BoneIndex()) != anim.AnimationBlocks().at(i).BoneName())
             {
                 std::println("UNIV Bone Entry Name Does Not Match SFBGS RIG Bone Index Name");
                 std::cin.get();
             }
+#endif // DEBUG_BUILD
 
             output.getAnimationBlocks().at(anim.AnimationBlocks().at(i).BoneIndex()) = toAdd; //Fill block for the correct index
         }
+
+        if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(anim.getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+        {
+            for (size_t i = 0; i < pkg->getAmendedBlockCount(); i++)
+            {
+                AnimationBlock toAdd;
+                _ConvertRotationSq(pkg->getAmendedBlock(i)->RotationSequence(), toAdd);
+
+                float hiVal = pkg->usesRigForPrecision() ? rig.HighPrecision() : pkg->getOverridePrecisionSet().high();
+                float loVal = pkg->usesRigForPrecision() ? rig.LowPrecision() : pkg->getOverridePrecisionSet().low();
+
+                _ConvertTranslationSq(pkg->getAmendedBlock(i)->TranslationSequence(), toAdd, hiVal, loVal);
+
+                _ConvertScalarSq(pkg->getAmendedBlock(i)->ScalarSequence(), toAdd);
+                _ConvertPrioritySq(pkg->getAmendedBlock(i)->PrioritySequence(), toAdd);
+            }
+        }
+
         output.evaluateHeaderFlags();
         return output;
     }
@@ -258,6 +281,37 @@ namespace CALUMI{ namespace SFBGS{
             }
         }
         output.AnimationBlocks().shrink_to_fit();
+
+        //Amended animation blocks (NiNode bones)
+        CreateNewSFBGSAnimationPackage(output, true);
+
+        if(anim.VerifyAmendedBlocks())
+        {
+            auto& amendedBlocks = anim.getAmendedAnimationBlocks();
+            auto& hashSet = anim.getAmendedHashSet();
+
+            if(auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(output.getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            {
+                for (size_t i = 0; i < amendedBlocks.size(); i++)
+                {
+                    uint32_t hash = hashSet.at(i);
+                    CALUMI::UNIV::AnimationBlock toAdd;
+                    
+                    toAdd.BoneIndex(i);
+
+                    std::string tempName = Utilities::HashRegistry::getInstance().isKnownHash(hash) ? Utilities::HashRegistry::getInstance().getKnownHashString(hash) : "Unknown_Hash_" + std::to_string(i);
+                    toAdd.BoneName(tempName.c_str());
+
+                    toAdd.ScalarSequence() = _ConvertScalarSq(amendedBlocks.at(i));
+                    toAdd.PrioritySequence() = _ConvertPrioritySq(amendedBlocks.at(i));
+                    toAdd.TranslationSequence() = _ConvertTranslationSq(amendedBlocks.at(i), rig.HighPrecision(), rig.LowPrecision());
+                    toAdd.RotationSequence() = _ConvertRotationSq(amendedBlocks.at(i));
+
+                    pkg->addAmendedBlock(hash, toAdd);
+                }
+            }
+        }
+
         return output;
     }
 
@@ -450,7 +504,7 @@ namespace CALUMI{ namespace SFBGS{
             return false;
         }
 
-        size_t minSize = min(translatedScene.Animations().size(), (arraySize - 1));
+        size_t minSize = std::min(translatedScene.Animations().size(), (arraySize - 1));
 
         for (int i = 0; i < minSize; i++)
         {
@@ -518,7 +572,7 @@ namespace CALUMI{ namespace SFBGS{
             return false;
         }
         
-        size_t minSize = min(translatedScene.Animations().size(), (arraySize - 1));
+        size_t minSize = std::min(translatedScene.Animations().size(), (arraySize - 1));
         for (unsigned int i = 0; i < minSize; i++)
         {
             auto animResult = translatedScene.Animations().at(i).WriteToFile(animationFilePaths.at(i).c_str());

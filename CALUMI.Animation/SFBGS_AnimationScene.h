@@ -10,10 +10,8 @@
 #include "SFBGS_SkeletonRig.h"
 
 
-
 namespace CALUMI {
 	namespace SFBGS {
-
 		
 		class CALUMIANIMATION_API AnimationScene : UNIV::IConvertibleScene
 		{
@@ -21,6 +19,7 @@ namespace CALUMI {
 			Utilities::StringContainer& SceneName() const;
 			Utilities::VectorContainer<Animation>& Animations() const;
 			SkeletonRig& Rig() const;
+			void setRig(const SkeletonRig& rig);
 
 			AnimationScene();
 			~AnimationScene();

@@ -677,7 +677,7 @@ namespace CALUMI{
 			uint16_t _boneCount = 0;
 			uint16_t _frameCount = 0;
 
-			uint16_t _unknownFillCount = 0;
+			uint16_t _amendedBlockCount = 0;
 
 			uint16_t _indexAtlasCounter = 0x02; //At least 2, unless bones are zero (special case where addition bones are filled in at the bottom but they may not be from the main rig)
 
@@ -685,12 +685,10 @@ namespace CALUMI{
 
 			float _nZeroFloats[3] = { 0.0,-0.0,0.0 }; //UNKNOWN:
 
-			Utilities::VectorContainer<float> _unknownSuffixFillFloats;
-
 			uint32_t _preambleCount = 0;
 			Utilities::VectorContainer<Preamble> _preamble;
 
-			Utilities::VectorContainer<float> _suffixFillerValues;
+			Utilities::VectorContainer<uint32_t> _amendedHashSet;
 
 			//animation index atlas goes here
 			Utilities::VectorContainer<uint16_t> _indexAtlas; //NOTE: this index is the size of the indexAtlasCounter, it is unknown if the entries are one byte only or if they can be expanded to two bytes, 
@@ -698,7 +696,7 @@ namespace CALUMI{
 
 			//animation blocks go here
 			Utilities::VectorContainer<AnimationBlock> _animationBlocks;
-			Utilities::VectorContainer<AnimationBlock> _animationSuffixBlocks;
+			Utilities::VectorContainer<AnimationBlock> _amendedAnimationBlocks;
 
 			Impl() = default;
 		};
@@ -819,14 +817,14 @@ namespace CALUMI{
 			pImpl->_indexAtlasCounter = input;
 		}
 
-		uint16_t Animation::getUnknownFillCount() const
+		uint16_t Animation::getAmendedBlockCount() const
 		{
-			return pImpl->_unknownFillCount;
+			return pImpl->_amendedBlockCount;
 		}
 
-		void Animation::setUnknownFillCount(uint16_t input)
+		void Animation::setAmendedBlockCount(uint16_t input)
 		{
-			pImpl->_unknownFillCount = input;
+			pImpl->_amendedBlockCount = input;
 		}
 
 		uint16_t Animation::getPreambleOffset() const
@@ -851,16 +849,6 @@ namespace CALUMI{
 			for (size_t i = 0; i < 3; i++) { pImpl->_nZeroFloats[i] = input[i]; }
 		}
 
-		Utilities::VectorContainer<float>& Animation::getUnknownSuffixFillFloats() const
-		{
-			return pImpl->_unknownSuffixFillFloats;
-		}
-
-		void Animation::setUnknownSuffixFillFloats(const Utilities::VectorContainer<float>& input)
-		{
-			pImpl->_unknownSuffixFillFloats = input;
-		}
-
 		uint32_t Animation::getPreambleCount() const
 		{
 			return pImpl->_preambleCount;
@@ -881,14 +869,14 @@ namespace CALUMI{
 			pImpl->_preamble = input;
 		}
 
-		Utilities::VectorContainer<float>& Animation::getSuffixFillerValues() const
+		Utilities::VectorContainer<uint32_t>& Animation::getAmendedHashSet() const
 		{
-			return pImpl->_suffixFillerValues;
+			return pImpl->_amendedHashSet;
 		}
 
-		void Animation::getSuffixFillerValues(const Utilities::VectorContainer<float>& input)
+		void Animation::setAmendedHashSet(const Utilities::VectorContainer<uint32_t>& input)
 		{
-			pImpl->_suffixFillerValues = input;
+			pImpl->_amendedHashSet = input;
 		}
 
 		Utilities::VectorContainer<uint16_t>& Animation::getIndexAtlas() const
@@ -906,9 +894,9 @@ namespace CALUMI{
 			return pImpl->_animationBlocks;
 		}
 
-		Utilities::VectorContainer<AnimationBlock>& Animation::getAnimationSuffixBlocks() const
+		Utilities::VectorContainer<AnimationBlock>& Animation::getAmendedAnimationBlocks() const
 		{
-			return pImpl->_animationSuffixBlocks;
+			return pImpl->_amendedAnimationBlocks;
 		}
 
 		void Animation::setAnimationBlocks(const Utilities::VectorContainer<AnimationBlock>& input)
@@ -916,9 +904,9 @@ namespace CALUMI{
 			pImpl->_animationBlocks = input;
 		}
 
-		void Animation::setAnimationSuffixBlocks(const Utilities::VectorContainer<AnimationBlock>& input)
+		void Animation::setAmendedAnimationBlocks(const Utilities::VectorContainer<AnimationBlock>& input)
 		{
-			pImpl->_animationSuffixBlocks = input;
+			pImpl->_amendedAnimationBlocks = input;
 		}
 
 		static unsigned short _SumIndices(Utilities::VectorContainer<unsigned short>inputVector, Animation::IndexCountingSolution type)
@@ -1009,8 +997,8 @@ namespace CALUMI{
 				std::memcpy(&pImpl->_indexAtlasCounter, &buffer.value().at(addressIndex), sizeof(pImpl->_indexAtlasCounter));
 				addressIndex += sizeof(pImpl->_indexAtlasCounter);
 
-				std::memcpy(&pImpl->_unknownFillCount, &buffer.value().at(addressIndex), sizeof(pImpl->_unknownFillCount));
-				addressIndex += sizeof(pImpl->_unknownFillCount);
+				std::memcpy(&pImpl->_amendedBlockCount, &buffer.value().at(addressIndex), sizeof(pImpl->_amendedBlockCount));
+				addressIndex += sizeof(pImpl->_amendedBlockCount);
 
 				std::memcpy(&pImpl->_preambleOffset, &buffer.value().at(addressIndex), sizeof(pImpl->_preambleOffset));
 				addressIndex += sizeof(pImpl->_preambleOffset);
@@ -1037,11 +1025,11 @@ namespace CALUMI{
 			}
 
 			//FILL PAD????
-			//addressIndex += 4 * static_cast<unsigned long long>(_unknownFillCount);
-			pImpl->_suffixFillerValues.resize(pImpl->_unknownFillCount);
-			for (size_t i = 0; i < pImpl->_unknownFillCount; i++)
+			//addressIndex += 4 * static_cast<unsigned long long>(_amendedBlockCount);
+			pImpl->_amendedHashSet.resize(pImpl->_amendedBlockCount);
+			for (size_t i = 0; i < pImpl->_amendedBlockCount; i++)
 			{
-				CALUMI::Utilities::AlignBufferAndRead(buffer.value(), addressIndex, 4, 4, &pImpl->_suffixFillerValues.at(i));
+				CALUMI::Utilities::AlignBufferAndRead(buffer.value(), addressIndex, 4, 4, &pImpl->_amendedHashSet.at(i));
 			}
 
 			//Aligning To 4 before hitting the Animation Block Evalutation
@@ -1086,10 +1074,10 @@ namespace CALUMI{
 			}
 
 
-			pImpl->_animationSuffixBlocks.reserve(pImpl->_unknownFillCount);
-			for (unsigned short i = 0; i < pImpl->_unknownFillCount; i++)
+			pImpl->_amendedAnimationBlocks.reserve(pImpl->_amendedBlockCount);
+			for (unsigned short i = 0; i < pImpl->_amendedBlockCount; i++)
 			{
-				pImpl->_animationSuffixBlocks.push_back(AnimationBlock(buffer.value(), addressIndex, pImpl->_headerFlags));
+				pImpl->_amendedAnimationBlocks.push_back(AnimationBlock(buffer.value(), addressIndex, pImpl->_headerFlags));
 			}
 
 			if (buffer.value().size() != addressIndex)
@@ -1153,8 +1141,8 @@ namespace CALUMI{
 				std::memcpy( &buffer.at(addressIndex), &pImpl->_indexAtlasCounter, sizeof(pImpl->_indexAtlasCounter));
 				addressIndex += sizeof(pImpl->_indexAtlasCounter);
 
-				std::memcpy( &buffer.at(addressIndex), &pImpl->_unknownFillCount, sizeof(pImpl->_unknownFillCount));
-				addressIndex += sizeof(pImpl->_unknownFillCount);
+				std::memcpy( &buffer.at(addressIndex), &pImpl->_amendedBlockCount, sizeof(pImpl->_amendedBlockCount));
+				addressIndex += sizeof(pImpl->_amendedBlockCount);
 
 				std::memcpy( &buffer.at(addressIndex), &pImpl->_preambleOffset, sizeof(pImpl->_preambleOffset));
 				addressIndex += sizeof(pImpl->_preambleOffset);
@@ -1211,6 +1199,10 @@ namespace CALUMI{
 		{
 			Utilities::PathContainer output(outputFilePath);
 			return WriteToFile(output);
+		}
+		bool Animation::VerifyAmendedBlocks() const
+		{
+			return pImpl->_amendedBlockCount == pImpl->_amendedHashSet.size() && pImpl->_amendedBlockCount == pImpl->_amendedAnimationBlocks.size();
 		}
 #pragma endregion
 }

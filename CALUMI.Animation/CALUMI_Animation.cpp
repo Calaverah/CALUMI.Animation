@@ -8,7 +8,7 @@
 #include <format>
 #include <string>
 #include "CALUMI_Math.h"
-//#include <print>
+#include "UNIV_IAnimationPackage.h"
 
 namespace CALUMI {
 	namespace UNIV {
@@ -16,33 +16,35 @@ namespace CALUMI {
 #pragma region ANIMATION
 		struct Animation::Impl
 		{
-			Utilities::StringContainer animationTitle = "NO TITLE";
-			Utilities::VectorContainer<AnimationBlock> animationBlocks;
+			Utilities::StringContainer _animationTitle = "NO TITLE";
+			Utilities::VectorContainer<AnimationBlock> _animationBlocks;
+
+			AnimationPackageManager _packageManager;
 			
 			Impl() = default;
 		};
 		Animation::Animation() { pImpl = new Impl; }
 		Utilities::VectorContainer<AnimationBlock>& Animation::AnimationBlocks() const
 		{
-			return pImpl->animationBlocks;
+			return pImpl->_animationBlocks;
 		}
 		const char* Animation::AnimationTitle() const
 		{
-			return pImpl->animationTitle.c_str();
+			return pImpl->_animationTitle.c_str();
 		}
 		void Animation::AnimationTitle(const char* title)
 		{
-			pImpl->animationTitle = title;
+			pImpl->_animationTitle = title;
 		}
 		void Animation::AnimationTitle(const Utilities::StringContainer& title)
 		{
-			pImpl->animationTitle = title;
+			pImpl->_animationTitle = title;
 		}
 		UNIV::Animation::Animation(const Utilities::StringContainer& title, unsigned int initialBlockCount = 8) : Animation()
 		{
-			pImpl->animationTitle = title;
+			pImpl->_animationTitle = title;
 			//boneCount = initialBoneCount;
-			pImpl->animationBlocks.reserve(initialBlockCount);
+			pImpl->_animationBlocks.reserve(initialBlockCount);
 		}
 		UNIV::Animation::Animation(const Animation& input) : Animation()
 		{
@@ -53,35 +55,35 @@ namespace CALUMI {
 
 		bool UNIV::Animation::AddAnimationBlock(AnimationBlock& blockToAdd, bool overwrite)
 		{
-			for (unsigned int i = 0; i < pImpl->animationBlocks.size(); i ++)
+			for (unsigned int i = 0; i < pImpl->_animationBlocks.size(); i ++)
 			{
-				if (pImpl->animationBlocks.at(i).BoneIndex() == blockToAdd.BoneIndex())
+				if (pImpl->_animationBlocks.at(i).BoneIndex() == blockToAdd.BoneIndex())
 				{
 					if (!overwrite) return false;
 					else 
 					{
-						pImpl->animationBlocks.at(i) = blockToAdd;
+						pImpl->_animationBlocks.at(i) = blockToAdd;
 						return true;
 					}
 				}
 			}
 
-			pImpl->animationBlocks.push_back(blockToAdd);
+			pImpl->_animationBlocks.push_back(blockToAdd);
 			return true;
 		}
 
-		//inline CALUMIANIMATION_API UNIV::AnimationBlock GetAnimationBlock(unsigned int i) const { return animationBlocks.at(i); }
-		//inline CALUMIANIMATION_API std::vector<UNIV::AnimationBlock> GetAnimationBlockVector() const { return animationBlocks; }
-		void Animation::ClearAnimationBlocks() { pImpl->animationBlocks.clear(); }
-
-		size_t Animation::GetAnimationBlockCount() const { return pImpl->animationBlocks.size(); }
+		//inline CALUMIANIMATION_API UNIV::AnimationBlock GetAnimationBlock(unsigned int i) const { return _animationBlocks.at(i); }
+		//inline CALUMIANIMATION_API std::vector<UNIV::AnimationBlock> GetAnimationBlockVector() const { return _animationBlocks; }
+		void Animation::ClearAnimationBlocks() { pImpl->_animationBlocks.clear(); }
+		size_t Animation::GetAnimationBlockCount() const { return pImpl->_animationBlocks.size(); }
+		AnimationPackageManager& Animation::getPackageManager() const { return pImpl->_packageManager; }
 
 		unsigned int UNIV::Animation::GetFrameCount()
 		{
 			unsigned int output = 0;
-			for (unsigned int i = 0; i < pImpl->animationBlocks.size(); i++)
+			for (unsigned int i = 0; i < pImpl->_animationBlocks.size(); i++)
 			{
-				unsigned int temp = pImpl->animationBlocks.at(i).GetLastFrameInBlock();
+				unsigned int temp = pImpl->_animationBlocks.at(i).GetLastFrameInBlock();
 				if (temp > output)
 				{
 					output = temp;
@@ -94,8 +96,8 @@ namespace CALUMI {
 		{
 			Utilities::StringContainer output = Utilities::Indent(indents).c_str();
 			output += "{\n";
-			output += std::format("{0}\"animationTitle\":\"{1}\",\n{0}\"animationBlocks\":", Utilities::Indent(indents + 1).c_str(), pImpl->animationTitle.c_str() /*, boneCount*/).c_str(); //    \n{0}\"boneCount\":{2},
-			output += Utilities::VectorToJSON(pImpl->animationBlocks, indents + 1);
+			output += std::format("{0}\"animationTitle\":\"{1}\",\n{0}\"animationBlocks\":", Utilities::Indent(indents + 1).c_str(), pImpl->_animationTitle.c_str() /*, boneCount*/).c_str(); //    \n{0}\"boneCount\":{2},
+			output += Utilities::VectorToJSON(pImpl->_animationBlocks, indents + 1);
 			output += "\n";
 			output += Utilities::Indent(indents).c_str();
 			output += "}";
@@ -108,6 +110,8 @@ namespace CALUMI {
 
 		struct AnimationBlock::Impl 
 		{
+			///@privatesection
+			///@{
 			int boneIndex = -2;
 			Utilities::StringContainer boneName = "UNNAMED";
 			Utilities::VectorContainer<CALUMI::UNIV::Rotation> rotationSequence;
@@ -115,6 +119,7 @@ namespace CALUMI {
 			Utilities::VectorContainer<CALUMI::UNIV::Scalar> scalarSequence;
 			Utilities::VectorContainer<CALUMI::UNIV::Priority> prioritySequence;
 			Impl() = default;
+			///@}
 		};
 
 		AnimationBlock::AnimationBlock() { pImpl = new Impl; }

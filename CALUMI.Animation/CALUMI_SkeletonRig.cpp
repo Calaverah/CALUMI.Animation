@@ -30,7 +30,7 @@ namespace CALUMI{ namespace UNIV{
     };
     Utilities::StringContainer& SkeletonRig::RigName() const { return pImpl->_rigName; }
     Utilities::VectorContainer<SkeletonBone>& SkeletonRig::BoneEntries() const { return pImpl->_boneEntries; }
-    RigPackageManager& SkeletonRig::getRigPackageManager() const { return pImpl->_rigPackageManager; }
+    RigPackageManager& SkeletonRig::getPackageManager() const { return pImpl->_rigPackageManager; }
 
 
     SkeletonRig::SkeletonRig() { pImpl = new Impl; }
@@ -416,124 +416,6 @@ namespace CALUMI{ namespace UNIV{
         output += (Utilities::Indent(indents) + "}").c_str();
         return output.c_str();
     }
-#pragma endregion
-
-#pragma region RIGPACKAGEMANAGER
-
-    struct RigPackageManager::Impl
-    {
-        Utilities::VectorContainer<RigPackage*> packages;
-        
-        void clear()
-        {
-            for (size_t i = 0; i < packages.size(); i++)
-            {
-                if (packages.at(i))
-                {
-                    delete packages.at(i);
-                    packages.at(i) = nullptr;
-                }
-            }
-            packages.clear();
-        }
-
-        Impl() = default;
-        ~Impl() {
-                clear();
-        }
-    };
-    RigPackageManager::RigPackageManager()
-    {
-        pImpl = new Impl;
-    }
-    RigPackageManager::RigPackageManager(const RigPackageManager& input) : RigPackageManager()
-    {
-        for (size_t i = 0; i < input.pImpl->packages.size(); i++)
-        {
-            if (auto ptr = input.pImpl->packages.at(i))
-            {
-                pImpl->packages.push_back(ptr->Clone());
-            }
-        }
-    }
-    RigPackageManager& RigPackageManager::operator=(const RigPackageManager& other)
-    {
-        pImpl->clear();
-        for (size_t i = 0; i < other.pImpl->packages.size(); i++)
-        {
-            if (auto ptr = other.pImpl->packages.at(i))
-            {
-                pImpl->packages.push_back(ptr->Clone());
-            }
-        }
-        return *this;
-    }
-    RigPackageManager::~RigPackageManager() { if (pImpl) delete pImpl; }
-
-    RigPackage* RigPackageManager::GetPackage(const char* packageName)
-    {
-        for (int i = 0; i < pImpl->packages.size(); i++)
-        {
-            if (_stricmp(pImpl->packages.at(i)->GetPackageType(), packageName) == 0)
-            {
-                return pImpl->packages.at(i);
-            }
-        }
-        return nullptr;
-    }
-
-    bool RigPackageManager::RemovePackage(const char* packageName)
-    {
-        for (int i = 0; i < pImpl->packages.size(); i++)
-        {
-            if (_stricmp(pImpl->packages.at(i)->GetPackageType(), packageName) == 0)
-            {
-                if (pImpl->packages.at(i))
-                {
-                    delete pImpl->packages.at(i);
-                    pImpl->packages.at(i) = nullptr;
-                    pImpl->packages.erase(i);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    bool RigPackageManager::AddPackage(RigPackage* package, bool overwrite)
-    {
-        for (int i = 0; i < pImpl->packages.size(); i++)
-        {
-            if (_stricmp(pImpl->packages.at(i)->GetPackageType(), package->GetPackageType()) == 0)
-            {
-                if (!overwrite)
-                {
-                    return false;
-                }
-                pImpl->packages.at(i) = package;
-                return true;
-            }
-        }
-        pImpl->packages.push_back(package);
-        return true;
-    }
-
-    Utilities::StringContainer RigPackageManager::ToJSON(size_t indents) const
-    {
-        //TODO: RigPackageManager JSON
-        return Utilities::StringContainer();
-    }
-
-    bool RigPackageManager::HandleBoneRename(const char* oldBone, const char* newName, size_t idx)
-    {
-        for (size_t i = 0; i < pImpl->packages.size(); i++)
-        {
-            if (!pImpl->packages.at(i)->HandleBoneRename(oldBone, newName, idx))
-                return false;
-        }
-        return true;
-    }
-
 #pragma endregion
 
 #pragma region EXTERN"C"

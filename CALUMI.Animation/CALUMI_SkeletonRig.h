@@ -6,127 +6,10 @@
 #include "CALUMI_BoneTypes.h"
 #include "CALUMI_Math.h"
 #include "CALUMI_Utilities.h"
+#include "UNIV_IRigPackage.h"
 
 namespace CALUMI{ namespace UNIV{
-
-	/**
-	 * @brief RigPackages provide a convenient way for users to apply game specific data to a rig
-	 * 
-	 * @details Rig Packages allow a rig to have multiple games worth of data applied to the rig without conflicting. The intention is that users can export a single rig for various games at the same time... assuming the game is supported.
-	 */
-	struct CALUMIANIMATION_API RigPackage
-	{
-		/** @name Initialization */
-		/// @{
-		RigPackage() = default;
-		virtual ~RigPackage() = default;
-
-		/// @}
-
-	public:
-		/**
-		 * @brief A way to get a string describing the package.
-		 * @return A string of the package type
-		 */
-		virtual const char* GetPackageType() const = 0;
-
-		/**
-		 * @brief Serialization of the class
-		 * @param indents Amount of spaces for formatting
-		 * @return The serialized struct as a StringContainer
-		 */
-		virtual Utilities::StringContainer ToJSON(size_t indents) const = 0;
-
-	protected:
-		/**
-		 * @brief Event called when a rig renames a bone.
-		 * @param oldBone Name of the bone being renamed
-		 * @param newName The new bone name
-		 * @param idx Index of the interaction
-		 * @return Whether the operation was successful
-		 */
-		virtual bool HandleBoneRename(const char* oldBone, const char* newName, size_t idx) = 0;
-
-		/**
-		 * @brief A convenient way to duplicate the struct into a new dynamically allocated version.
-		 * @details This function should only be used by the package manager as a simple way to copy data without sharing the struct or using pvt/shared ptrs
-		 * @return The new dynamically allocated clone of the package
-		 */
-		virtual RigPackage* Clone() const = 0;
-
-	private:
-
-		friend struct RigPackageManager;
-	};
-
-	/**
-	 * @brief The Rig Package Manager handles the data and memory allocation of the packages for a rig
-	 */
-	struct CALUMIANIMATION_API RigPackageManager
-	{
-	public:
-		/** @name Initialization*/
-		/// @{
-
-		RigPackageManager();
-		RigPackageManager(const RigPackageManager& input);
-		~RigPackageManager();
-
-		/// @}
-		/** @name Operators*/
-		/// @{
-	public:
-		RigPackageManager& operator=(const RigPackageManager& other);
-
-		///@}
-
-	public:
-		/**
-		 * @brief Retrieves a package by name/type
-		 * @param packageName Name/Type
-		 * @return The first package ptr that matches, if it exists
-		 */
-		RigPackage* GetPackage(const char* packageName);
-
-		/**
-		 * @brief Removes a package
-		 * @param packageName Name/Type
-		 * @return Whether the operation was successful
-		 */
-		bool RemovePackage(const char* packageName);
-
-		/**
-		 * @brief Adds a package to the rig
-		 * @param package Package to add
-		 * @param overwrite Replaces an existing package, if one of the same type is found
-		 * @return Whether the operation was a success
-		 */
-		bool AddPackage(RigPackage* package, bool overwrite = true);
-
-		/**
-		 * @brief Serialization
-		 * @param indents Spaces for formatting
-		 * @return The StringContainer of the serialized struct
-		 */
-		Utilities::StringContainer ToJSON(size_t indents) const;
-
-
-
-	private:
-		struct Impl;
-		Impl* pImpl;
-
-	private:
-		/**
-		 * @brief Bone Rename Event that's passed to the packages being managed
-		 * @param oldBone Old name of the bone
-		 * @param newName New name of the bone
-		 * @param idx Index of the bone
-		 * @return Whether the operation was a success
-		 */
-		bool HandleBoneRename(const char* oldBone, const char* newName, size_t idx);
-		friend struct SkeletonRig;
-	};
+		
 
 	/**
 	 * @brief Universal method of storing skeleton limb data
@@ -327,7 +210,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @brief 
 		 * @return Reference to this rig's package manager 
 		 */
-		RigPackageManager& getRigPackageManager() const;
+		RigPackageManager& getPackageManager() const;
 
 		/// @}
 		/** @name Validation*/
@@ -456,9 +339,10 @@ namespace CALUMI{ namespace UNIV{
 	};
 
 	/**
-	 * @brief Provides C Style API for the UNIV SkeletonRig and its data
-	 * 
+	 * @addtogroup extern_c
+	 * @{
 	 * @defgroup c_univ_rig Universal SkeletonRig "C" API
+	 * @brief Provides C Style API for the UNIV SkeletonRig and its data
 	 * @{
 	 */
 	extern  "C" {
@@ -705,10 +589,11 @@ namespace CALUMI{ namespace UNIV{
 
 	/**
 	* @}
+	* @}
 	*/
 }}
 
 #pragma warning(disable: 4661)
 _VECTORTEMPLATE(CALUMI::UNIV::SkeletonBone);
-_VECTORTEMPLATE(CALUMI::UNIV::RigPackage*);
+_VECTORTEMPLATE(CALUMI::UNIV::IRigPackage*);
 #pragma warning(default: 4661)

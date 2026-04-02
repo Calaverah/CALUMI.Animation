@@ -433,7 +433,7 @@ namespace CALUMI {namespace SFBGS {
 	{
 		auto stringResult = CreateStringVectorFromRig(input);
 
-		auto sfbgsRigPackagePtr = dynamic_cast<SFBGS_RigPackage*>(input.getRigPackageManager().GetPackage(SFBGS_RIG_PACKAGE));
+		auto sfbgsRigPackagePtr = dynamic_cast<SFBGS_RigPackage*>(input.getPackageManager().getPackage(SFBGS_RIG_PACKAGE));
 		SFBGS_RigPackage sfbgsRigPackage;
 		bool isMarkedMannequin = false;
 		if (sfbgsRigPackagePtr)
@@ -442,8 +442,8 @@ namespace CALUMI {namespace SFBGS {
 		}
 
 		isMarkedMannequin = sfbgsRigPackage.IsMannequin();
-		LowPrecision(sfbgsRigPackage.LowPrecisionValue());
-		HighPrecision(sfbgsRigPackage.HighPrecisionValue());
+		LowPrecision(sfbgsRigPackage.getPrecisionSet().low());
+		HighPrecision(sfbgsRigPackage.getPrecisionSet().high());
 
 		FileSize(FileSize() + static_cast<unsigned int>(stringResult.GetFinalOffset()));
 		BoneMapOffset(BoneMapOffset() + static_cast<unsigned int>(80 + 96 * input.BoneEntries().size()));
@@ -479,7 +479,7 @@ namespace CALUMI {namespace SFBGS {
 
 		BoneCountAnimated(animatedBoneCount);
 
-		Utilities::VectorContainer<int16_t> vecPackage = ConvertSFBGSRigPackage(input);
+		Utilities::VectorContainer<int16_t> vecPackage = SFBGS_RigPackage::ConvertSFBGSRigPackage(input);
 		BoneMapArray(vecPackage);
 
 
@@ -909,21 +909,21 @@ namespace CALUMI {namespace SFBGS {
 			output.BoneEntries().at(i).SetMirrorBoneIndex(setter);
 		}
 		
-		CreateNewSFBGSRigPackage(output);
-		if (SFBGS_RigPackage* sfbgsRigPackage = dynamic_cast<SFBGS_RigPackage*>(output.getRigPackageManager().GetPackage(SFBGS_RIG_PACKAGE)))
+		SFBGS_RigPackage::CreateNewSFBGSRigPackage(output);
+		if (SFBGS_RigPackage* sfbgsRigPackage = dynamic_cast<SFBGS_RigPackage*>(output.getPackageManager().getPackage(SFBGS_RIG_PACKAGE)))
 		{
 			auto boneMapArray = BoneMapArray();
 			for (int key = 0; key < SFBGSMAPSIZE; key++)
 			{
 				if (boneMapArray.at(key) >= 0)
 				{
-					sfbgsRigPackage->AddBoneToMap(static_cast<BoneMapKey>(key), output.BoneEntries().at(boneMapArray.at(key)).Name().c_str(), true);
+					sfbgsRigPackage->AddBoneToMap(static_cast<SFBGS_RigPackage::BoneMapKey>(key), output.BoneEntries().at(boneMapArray.at(key)).Name().c_str(), true);
 				}
 			}
 			if (IsMarkedMannequin())
 				sfbgsRigPackage->IsMannequin(true);
 
-			sfbgsRigPackage->SetPrecisionValues(SFBGS::PrecisionSet::Custom, LowPrecision(), HighPrecision());
+			sfbgsRigPackage->SetPrecisionValues(SFBGS::PrecisionSet(LowPrecision(), HighPrecision()));
 		}
 
 		return output;

@@ -5,7 +5,7 @@
 #pragma once
 #include "CALUMI_AnimationEntries.h"
 #include "CALUMI_Common.h"
-
+#include "UNIV_IAnimationPackage.h"
 
 namespace CALUMI {namespace UNIV {
 
@@ -85,6 +85,8 @@ namespace CALUMI {namespace UNIV {
 		bool AddAnimationBlock(AnimationBlock& blockToAdd, bool overwrite = true);
 		void ClearAnimationBlocks();
 		size_t GetAnimationBlockCount() const;
+
+		AnimationPackageManager& getPackageManager() const;
 
 		//This will get the final frame entry of all sequences, not the total number of frames in each sequence
 		unsigned int GetFrameCount();

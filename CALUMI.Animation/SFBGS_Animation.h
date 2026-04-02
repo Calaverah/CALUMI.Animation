@@ -366,8 +366,12 @@ namespace CALUMI{
 			uint16_t getIndexAtlasCount() const;
 			void setIndexAtlasCount(uint16_t input);
 
-			uint16_t getUnknownFillCount() const;
-			void setUnknownFillCount(uint16_t input);
+			/**
+			 * @brief Count of Non-Rig based animation blocks
+			 * @return 
+			 */
+			uint16_t getAmendedBlockCount() const;
+			void setAmendedBlockCount(uint16_t input);
 
 			uint16_t getPreambleOffset() const;
 			void setPreambleOffset(uint16_t input);
@@ -375,17 +379,18 @@ namespace CALUMI{
 			CALUMI::Utilities::VectorContainer<float> getNZeroFloats() const;
 			void setNZeroFloats(float input[3]);
 
-
-			Utilities::VectorContainer<float>& getUnknownSuffixFillFloats() const;
-			void setUnknownSuffixFillFloats(const Utilities::VectorContainer<float>& input);
+			/**
+			 * @brief Hash values to apply the amended animation blocks. The original string is lost during export and must be retraced
+			 * @return 
+			 */
+			Utilities::VectorContainer<uint32_t>& getAmendedHashSet() const;
+			void setAmendedHashSet(const Utilities::VectorContainer<uint32_t>& input);
 
 			uint32_t getPreambleCount() const;
 			void setPreambleCount(uint32_t input);
 			Utilities::VectorContainer<Preamble>& getPreamble() const;
 			void setPreamble(const Utilities::VectorContainer<Preamble>& input);
 
-			Utilities::VectorContainer<float>& getSuffixFillerValues() const;
-			void getSuffixFillerValues(const Utilities::VectorContainer<float>& input);
 			
 			/// @}
 			/// @name Animation Block Entries
@@ -412,9 +417,12 @@ namespace CALUMI{
 			 */
 			Utilities::VectorContainer<AnimationBlock>& getAnimationBlocks() const;
 			void setAnimationBlocks(const Utilities::VectorContainer<AnimationBlock>& input);
-
-			Utilities::VectorContainer<AnimationBlock>& getAnimationSuffixBlocks() const;
-			void setAnimationSuffixBlocks(const Utilities::VectorContainer<AnimationBlock>& input);
+			/**
+			 * @brief The array of animation blocks that are applied by hash value in game, to some form of AnimObject
+			 * @return 
+			 */
+			Utilities::VectorContainer<AnimationBlock>& getAmendedAnimationBlocks() const;
+			void setAmendedAnimationBlocks(const Utilities::VectorContainer<AnimationBlock>& input);
 
 			/// @}
 
@@ -426,6 +434,18 @@ namespace CALUMI{
 			Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(const wchar_t* inputFilePath);
 			Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
 			Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(const wchar_t* outputFilePath);
+
+			/// @}
+
+		public:
+			/// @name Validation
+			/// @{
+			
+			/**
+			 * @brief Confirms the sizes of various amended block data to be equal
+			 * @return 
+			 */
+			bool VerifyAmendedBlocks() const;
 
 			/// @}
 

@@ -111,6 +111,21 @@
     <ClInclude Include="SFBGS_RigPackage.h">
       <Filter>Header Files\SFBGS</Filter>
     </ClInclude>
+    <ClInclude Include="CALUMI_Hashes.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="SFBGS_AnimationPackage.h">
+      <Filter>Header Files\SFBGS</Filter>
+    </ClInclude>
+    <ClInclude Include="UNIV_IRigPackage.h">
+      <Filter>Header Files\UNIV</Filter>
+    </ClInclude>
+    <ClInclude Include="UNIV_IAnimationPackage.h">
+      <Filter>Header Files\UNIV</Filter>
+    </ClInclude>
+    <ClInclude Include="UNIV_IPackageManager.h">
+      <Filter>Header Files\UNIV</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -159,6 +174,21 @@
       <Filter>Source Files\SFBGS</Filter>
     </ClCompile>
     <ClCompile Include="CALUMI_BoneTypes.cpp">
+      <Filter>Source Files\UNIV</Filter>
+    </ClCompile>
+    <ClCompile Include="UNIV_IRigPackage.cpp">
+      <Filter>Source Files\UNIV</Filter>
+    </ClCompile>
+    <ClCompile Include="CALUMI_Hashes.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="SFBGS_AnimationPackage.cpp">
+      <Filter>Source Files\SFBGS</Filter>
+    </ClCompile>
+    <ClCompile Include="UNIV_IAnimationPackage.cpp">
+      <Filter>Source Files\UNIV</Filter>
+    </ClCompile>
+    <ClCompile Include="UNIV_IPackageManager.cpp">
       <Filter>Source Files\UNIV</Filter>
     </ClCompile>
   </ItemGroup>
