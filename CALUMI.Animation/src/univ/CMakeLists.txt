@@ -1,0 +1,10 @@
+target_sources(${PROJECT_NAME} 
+PRIVATE
+UNIV_AnimationScene.cpp
+animation/UNIV_Animation.cpp
+animation/UNIV_AnimationEntries.cpp
+animation/UNIV_IAnimationPackage.cpp
+skeletonrig/UNIV_SkeletonRig.cpp
+skeletonrig/UNIV_IRigPackage.cpp
+skeletonrig/UNIV_BoneTypes.cpp
+)

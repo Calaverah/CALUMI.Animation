@@ -4,7 +4,7 @@
 
 #include "pch.h"
 #include "CppUnitTest.h"
-#include "..\CALUMI.Animation\CALUMI_Math.h"
+#include "../CALUMI.Animation/include/math/Math.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace CALUMI::Math;

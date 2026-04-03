@@ -1,0 +1,9 @@
+target_sources(${PROJECT_NAME} 
+PRIVATE
+SFBGS_AnimationScene.cpp
+animation/SFBGS_Animation.cpp
+animation/SFBGS_AnimationEntries.cpp
+animation/SFBGS_AnimationPackage.cpp
+skeletonrig/SFBGS_SkeletonRig.cpp
+skeletonrig/SFBGS_RigPackage.cpp
+)

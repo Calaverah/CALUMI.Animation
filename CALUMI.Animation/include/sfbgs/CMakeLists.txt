@@ -1,0 +1,10 @@
+target_sources(${PROJECT_NAME} 
+PUBLIC
+SFBGS_AnimationScene.h
+animation/SFBGS_Animation.h
+animation/SFBGS_AnimationEntries.h
+animation/SFBGS_AnimationPackage.h
+animation/SFBGS_AnimationPackage.h
+skeletonrig/SFBGS_SkeletonRig.h
+skeletonrig/SFBGS_RigPackage.h
+)
