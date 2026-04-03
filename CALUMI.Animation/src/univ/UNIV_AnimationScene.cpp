@@ -108,7 +108,7 @@ namespace CALUMI {
             output += "\",\n";
             output += Utilities::Indent(indents + 1).c_str();
             output += "\"animations\":";
-            output += Utilities::VectorToJSON(pImpl->animations);
+            // output += Utilities::VectorToJSON(pImpl->animations);
             output += ",\n";
             output += Utilities::Indent(indents + 1).c_str();
             output += "\"rig\":\n";
@@ -161,14 +161,14 @@ namespace CALUMI {
         {
             return !source->Rig().BoneEntries().empty();
         }
-        AnimationScene* UNIV::CreateAnimationSceneC(const char* sceneName)
+        AnimationScene* CreateAnimationSceneC(const char* sceneName)
         {
             UNIV::AnimationScene* univAnimationScene = new UNIV::AnimationScene;
             univAnimationScene->SceneName(sceneName);
 
             return univAnimationScene;
         }
-        bool UNIV::AddRigToAnimationSceneC(AnimationScene* scene, SkeletonRig* rig, Utilities::StringContainer* errorMessage)
+        bool AddRigToAnimationSceneC(AnimationScene* scene, SkeletonRig* rig, Utilities::StringContainer* errorMessage)
         {
             Utilities::StringContainer tempErrorMessage;
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
@@ -187,7 +187,7 @@ namespace CALUMI {
             *errorMessageHolder += "[CALUMI.Animation API] Rig Data Copied Successfully. Original Rig Has Been Deleted!";
             return true;
         }
-        bool UNIV::AddAnimationToAnimationSceneC(AnimationScene* scene, Animation* animation, bool overwrite, Utilities::StringContainer* errorMessage)
+        bool AddAnimationToAnimationSceneC(AnimationScene* scene, Animation* animation, bool overwrite, Utilities::StringContainer* errorMessage)
         {
             Utilities::StringContainer tempErrorMessage;
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "univ/animation/UNIV_Animation.h"
 #include "univ/animation/UNIV_IAnimationPackage.h"
 #include "sfbgs/skeletonrig/SFBGS_RigPackage.h"
 
@@ -11,6 +12,7 @@ namespace CALUMI {
 
 	namespace UNIV {
 		struct AnimationBlock;
+        class Animation;
 	}
 
 	namespace SFBGS {
@@ -162,7 +164,7 @@ namespace CALUMI {
 			SFBGS_AnimationPackage* Clone() const override;
 };
 
-		bool CreateNewSFBGSAnimationPackage(UNIV::Animation& animation, bool overwrite = true);
+        bool CreateNewSFBGSAnimationPackage(UNIV::Animation& animation, bool overwrite = true);
 		bool RemoveSFBGSAnimationPackage(UNIV::Animation& animation);
 
 		/**

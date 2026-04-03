@@ -50,8 +50,13 @@ namespace CALUMI {
 			return output;
 		}
 
+#ifdef _WIN32
 		std::ifstream file(inputPath.w_str(), std::ios::binary);
-		if (!file)
+#else
+        std::ifstream file(inputPath.c_str(), std::ios::binary);
+#endif
+
+        if (!file)
 		{
 			output.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::PermissionDenied, inputPath.w_str(), ec.message().c_str() });
 			return output;
@@ -73,7 +78,12 @@ namespace CALUMI {
 	{
 		std::error_code ec;
 		const auto size = std::filesystem::file_size(inputPath.w_str());
-		std::ifstream file(inputPath.w_str(), std::ios::binary);
+
+#ifdef _WIN32
+        std::ifstream file(inputPath.w_str(), std::ios::binary);
+#else
+        std::ifstream file(inputPath.c_str(), std::ios::binary);
+#endif
 
 		Utilities::VectorContainer<char> buffer(static_cast<size_t>(size));
 
@@ -251,8 +261,13 @@ namespace CALUMI {
 				return tempOutput; //We found an entry with this path and it is not a file to be written to
 			}
 
-			file = std::ofstream(outputPath.w_str(), std::ios::binary);
-			if(!file.is_open())
+#ifdef _WIN32
+            file = std::ofstream(outputPath.w_str(), std::ios::binary);
+#else
+            file = std::ofstream(outputPath.c_str(), std::ios::binary);
+#endif
+
+            if(!file.is_open())
 			{
 				Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> tempOutput;
 				tempOutput.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::PermissionDenied, outputPath.w_str(), ec.message().c_str() });
@@ -261,8 +276,12 @@ namespace CALUMI {
 		}
 		else
 		{
+#ifdef _WIN32
 			file = std::ofstream(outputPath.w_str(), std::ios::binary);
-			if (!file.is_open())
+#else
+            file = std::ofstream(outputPath.c_str(), std::ios::binary);
+#endif
+            if (!file.is_open())
 			{
 				Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> tempOutput;
 				tempOutput.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::UnknownErrorCode, outputPath.w_str(), ec.message().c_str() });

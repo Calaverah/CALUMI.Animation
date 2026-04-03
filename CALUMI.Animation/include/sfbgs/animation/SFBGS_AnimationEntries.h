@@ -176,13 +176,17 @@ namespace CALUMI{ namespace SFBGS{
 	Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> UnfoldRotationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& input);
 	Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> FoldRotationPrefixSequence (const Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& input);
 
-#pragma warning(disable: 4661)
-	template struct CALUMIANIMATION_API Utilities::VectorContainer<RotationEntry>;
-	template struct CALUMIANIMATION_API Utilities::VectorContainer<RotationPrefix>;
-	template struct CALUMIANIMATION_API Utilities::VectorContainer<TranslationEntry>;
-	template struct CALUMIANIMATION_API Utilities::VectorContainer<TranslationPrefix>;
-	template struct CALUMIANIMATION_API Utilities::PairContainer<struct RotationPrefix, struct RotationEntry>;
-	template struct CALUMIANIMATION_API Utilities::PairContainer<struct TranslationPrefix, struct TranslationEntry>;
-#pragma warning(default: 4661)	
 
-	}}
+
+    }
+
+#pragma warning(disable: 4661)
+    template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::RotationEntry>;
+    template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::RotationPrefix>;
+    template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::TranslationEntry>;
+    template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::TranslationPrefix>;
+    template struct CALUMIANIMATION_API Utilities::PairContainer<struct SFBGS::RotationPrefix, struct SFBGS::RotationEntry>;
+    template struct CALUMIANIMATION_API Utilities::PairContainer<struct SFBGS::TranslationPrefix, struct SFBGS::TranslationEntry>;
+#pragma warning(default: 4661)
+
+    }

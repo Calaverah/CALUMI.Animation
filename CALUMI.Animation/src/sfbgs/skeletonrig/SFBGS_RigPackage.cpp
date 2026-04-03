@@ -5,6 +5,7 @@
 
 #include <AnimStarfield>
 #include "internalplatform.h"
+#include <cmath>
 
 namespace CALUMI {namespace SFBGS{
 

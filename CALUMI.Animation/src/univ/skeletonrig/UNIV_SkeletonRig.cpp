@@ -267,7 +267,7 @@ namespace CALUMI{ namespace UNIV{
         Utilities::StringContainer output = Utilities::Indent(indents).c_str();
         output += "{\n";
         output += std::format("{0}\"rigName\":\"{1}\",\n{0}\"boneEntries\":", Utilities::Indent(indents + 1).c_str(), pImpl->_rigName.c_str()).c_str();
-        output += Utilities::VectorToJSON(pImpl->_boneEntries,indents + 1);
+        // output += Utilities::VectorToJSON(pImpl->_boneEntries,indents + 1);
         output += "\n ";
         output += Utilities::Indent(indents).c_str();
         output += "}";

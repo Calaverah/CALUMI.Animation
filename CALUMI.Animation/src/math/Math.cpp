@@ -245,7 +245,7 @@ namespace CALUMI
 		{
 			return Math::Vector3(A.getX() / B, A.getY() / B, A.getZ() / B);
 		}
-		Math::Vector3 CALUMI::Math::operator/(float A, const Math::Vector3& B) noexcept
+        Math::Vector3 operator/(float A, const Math::Vector3& B) noexcept
 		{
 			return Math::Vector3(A / B.getX(), A / B.getY(), A / B.getZ());
 		}
@@ -494,7 +494,7 @@ namespace CALUMI
 		{
 			return Math::Vector3D(A.getX() / B, A.getY() / B, A.getZ() / B);
 		}
-		Math::Vector3D CALUMI::Math::operator/(double A, const Math::Vector3D& B) noexcept
+        Math::Vector3D operator/(double A, const Math::Vector3D& B) noexcept
 		{
 			return Math::Vector3D(A / B.getX(), A / B.getY(), A / B.getZ());
 		}
@@ -780,10 +780,10 @@ namespace CALUMI
 
 		bool Quaternion::AreEqual(const Quaternion & input, float tolerance) const noexcept
 		{
-			float dx = abs(pImpl->x - input.pImpl->x);
-			float dy = abs(pImpl->y - input.pImpl->y);
-			float dz = abs(pImpl->z - input.pImpl->z);
-			float dw = abs(pImpl->w - input.pImpl->w);
+            float dx = std::abs(pImpl->x - input.pImpl->x);
+            float dy = std::abs(pImpl->y - input.pImpl->y);
+            float dz = std::abs(pImpl->z - input.pImpl->z);
+            float dw = std::abs(pImpl->w - input.pImpl->w);
 			return (dx < tolerance && dy < tolerance && dz < tolerance && dw < tolerance);
 		}
 
@@ -938,7 +938,7 @@ namespace CALUMI
 		{
 			float dot = Dot(input);
 
-			if (abs(dot) >= 1.0f) return input;
+            if (std::abs(dot) >= 1.0f) return input;
 
 			float hTheta = acos(dot);
 			float sinhTheta = sqrtf(1.0f - dot * dot);

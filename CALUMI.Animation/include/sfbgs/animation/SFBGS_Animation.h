@@ -62,7 +62,7 @@ namespace CALUMI{
 			 * @param input Whether animation block counters are 1 or 2 bytes in size
 			 */
 			void setKeyCountersFlag(bool input);
-			/**
+            /**
 			 * @brief Key Frame size flag
 			 * @return Whether animation block key frames are 1 or 2 bytes in size
 			 */
@@ -431,9 +431,9 @@ namespace CALUMI{
 			/// @{
 			
 			Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
-			Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(const wchar_t* inputFilePath);
+            Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(Utilities::PathContainer&& inputFilePath) override;
 			Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
-			Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(const wchar_t* outputFilePath);
+            Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(Utilities::PathContainer&& outputFilePath) override;
 
 			/// @}
 
@@ -456,11 +456,12 @@ namespace CALUMI{
 		private:
 			friend class AnimationScene;
 		};
+        }
 #pragma warning(disable: 4661)
-		template struct CALUMIANIMATION_API Utilities::VectorContainer<AnimationBlock>;
-		template struct CALUMIANIMATION_API Utilities::VectorContainer<Animation>;
-		template struct CALUMIANIMATION_API Utilities::VectorContainer<Preamble>;
+        template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::AnimationBlock>;
+        template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::Animation>;
+        template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::Preamble>;
 #pragma warning(default: 4661)
-	}
+
 }
 

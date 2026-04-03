@@ -5,7 +5,7 @@
 	#define SCOMPARE _stricmp
 #else
 	#include <strings.h>
-	#define SCOMPARE strcasecmp
+    #define SCOMPARE strcasecmp
 #endif 
 
 #if __has_include(<format>)

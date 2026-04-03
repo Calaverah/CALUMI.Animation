@@ -8,7 +8,8 @@
 #include <utility>
 #include <vector>
 #include <algorithm>
-
+#include <cstring>
+#include <cmath>
 
 
 namespace CALUMI { namespace SFBGS{
@@ -416,9 +417,9 @@ namespace CALUMI { namespace SFBGS{
 		CALUMI::Math::Quaternion tempInput = input;
 
 		prefix.Missing(3);
-		if (abs(input.getX()) > CLA_SQRT1_2) prefix.Missing(0);
-		if (abs(input.getY()) > CLA_SQRT1_2) prefix.Missing(1);
-		if (abs(input.getZ()) > CLA_SQRT1_2) prefix.Missing(2);
+        if (std::abs(input.getX()) > CLA_SQRT1_2) prefix.Missing(0);
+        if (std::abs(input.getY()) > CLA_SQRT1_2) prefix.Missing(1);
+        if (std::abs(input.getZ()) > CLA_SQRT1_2) prefix.Missing(2);
 
 		//We must flip the quaternion values such that the missing value is positive. When derived, the missing will always be positive. So long as all values flip the quaternion is equal.
 		if (prefix.Missing() == 0 && input.getX() < 0) tempInput = -input;

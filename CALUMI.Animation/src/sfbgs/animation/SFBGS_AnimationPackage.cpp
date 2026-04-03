@@ -8,6 +8,7 @@
 #include <AnimUniv>
 #include <AnimUtil>
 #include <string>
+#include <limits>
 
 namespace CALUMI {
     namespace SFBGS {

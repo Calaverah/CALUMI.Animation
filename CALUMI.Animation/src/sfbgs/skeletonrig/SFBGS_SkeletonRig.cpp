@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <cstring>
 
 namespace CALUMI {namespace SFBGS {
 
@@ -626,7 +627,7 @@ namespace CALUMI {namespace SFBGS {
 	}
 #endif 
 
-	Utilities::ExpectedContainer<bool, Utilities::FileError> SkeletonRig::ReadFromFile(const wchar_t* inputFilePath)
+    Utilities::ExpectedContainer<bool, Utilities::FileError> SkeletonRig::ReadFromFile(Utilities::PathContainer&& inputFilePath)
 	{
 		Utilities::PathContainer output(inputFilePath);
 		return ReadFromFile(output);
@@ -740,7 +741,7 @@ namespace CALUMI {namespace SFBGS {
 		return true;
 	}
 
-	Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> SkeletonRig::WriteToFile(const wchar_t* outputFilePath)
+    Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> SkeletonRig::WriteToFile(Utilities::PathContainer&& outputFilePath)
 	{
 		Utilities::PathContainer output(outputFilePath);
 		return WriteToFile(output);

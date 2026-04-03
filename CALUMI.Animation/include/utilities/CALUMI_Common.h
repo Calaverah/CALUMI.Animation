@@ -20,7 +20,6 @@
 #endif
 
 #include <cstdint>
-#include <cstddef>
 
 namespace CALUMI {
 	enum class CALUMIANIMATION_API SupportedGames : uint8_t

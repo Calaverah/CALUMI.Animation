@@ -8,7 +8,7 @@
 #include "io/FileValidation.h"
 #include <iostream>
 #include <print>
-
+#include <cstring>
 
 namespace CALUMI{
 	namespace SFBGS {
@@ -939,7 +939,7 @@ namespace CALUMI{
 			pImpl->_headerFlags = newFlags;
 		}
 
-		Utilities::ExpectedContainer<bool, Utilities::FileError> Animation::ReadFromFile(const wchar_t* inputFilePath)
+        Utilities::ExpectedContainer<bool, Utilities::FileError> Animation::ReadFromFile(Utilities::PathContainer&& inputFilePath)
 		{
 			Utilities::PathContainer output(inputFilePath);
 			return ReadFromFile(output);
@@ -1193,7 +1193,7 @@ namespace CALUMI{
 			return CALUMI::WriteToBinaryFile(outputFilePath, buffer);
 		}
 
-		Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> Animation::WriteToFile(const wchar_t* outputFilePath)
+        Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> Animation::WriteToFile(Utilities::PathContainer&& outputFilePath)
 		{
 			Utilities::PathContainer output(outputFilePath);
 			return WriteToFile(output);

@@ -97,7 +97,7 @@ namespace CALUMI {
 			Utilities::StringContainer output = Utilities::Indent(indents).c_str();
 			output += "{\n";
 			output += std::format("{0}\"animationTitle\":\"{1}\",\n{0}\"animationBlocks\":", Utilities::Indent(indents + 1).c_str(), pImpl->_animationTitle.c_str() /*, boneCount*/).c_str(); //    \n{0}\"boneCount\":{2},
-			output += Utilities::VectorToJSON(pImpl->_animationBlocks, indents + 1);
+            // output += Utilities::VectorToJSON(pImpl->_animationBlocks, indents + 1);
 			output += "\n";
 			output += Utilities::Indent(indents).c_str();
 			output += "}";
@@ -120,7 +120,7 @@ namespace CALUMI {
 			Utilities::VectorContainer<CALUMI::UNIV::Priority> prioritySequence;
 			Impl() = default;
 			///@}
-		};
+        };
 
 		AnimationBlock::AnimationBlock() { pImpl = new Impl; }
 		AnimationBlock::~AnimationBlock() { if (pImpl) delete pImpl; }
@@ -584,10 +584,10 @@ namespace CALUMI {
 			Utilities::StringContainer output = Utilities::Indent(indents).c_str();
 			output += "{\n";
 			output += std::format("{0}\"boneName\":\"{1}\",\n{0}\"boneIndex\":{2},\n", Utilities::Indent(indents + 1).c_str(), pImpl->boneName.c_str(), pImpl->boneIndex).c_str();
-			output += std::format("{0}\"rotationSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->rotationSequence, indents + 1).c_str()).c_str();
-			output += std::format("{0}\"translationSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->translationSequence, indents + 1).c_str()).c_str();
-			output += std::format("{0}\"scalarSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->scalarSequence, indents + 1).c_str()).c_str();
-			output += std::format("{0}\"prioritySequence\":{1}\n{2}", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->prioritySequence, indents + 1).c_str(), Utilities::Indent(indents).c_str()).c_str();
+            // output += std::format("{0}\"rotationSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->rotationSequence, indents + 1).c_str()).c_str();
+            // output += std::format("{0}\"translationSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->translationSequence, indents + 1).c_str()).c_str();
+            // output += std::format("{0}\"scalarSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->scalarSequence, indents + 1).c_str()).c_str();
+            // output += std::format("{0}\"prioritySequence\":{1}\n{2}", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->prioritySequence, indents + 1).c_str(), Utilities::Indent(indents).c_str()).c_str();
 			output += "}";
 			return output;
 		}
@@ -670,7 +670,7 @@ namespace CALUMI {
 			Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
 			errorMessageHolder->clear();
 
-			if (boneName == "")
+            if (std::string(boneName).empty())
 			{
 				*errorMessageHolder += "[CALUMI.Animation API] Animation Block Must Have Bone Name!";
 				return nullptr;

@@ -132,9 +132,9 @@ namespace CALUMI {namespace SFBGS {
 
 		// Inherited via IReadWritable
 		Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
-		Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(const wchar_t* inputFilePath);
+        Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(Utilities::PathContainer&& inputFilePath) override;
 		Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
-		Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(const wchar_t* outputFilePath);
+        Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(Utilities::PathContainer&& outputFilePath) override;
 
 		~SkeletonRig();
 		SkeletonRig();
@@ -153,11 +153,12 @@ namespace CALUMI {namespace SFBGS {
 		struct Impl;
 		Impl* pImpl;
 	};
-	
+
+    }
 
 #pragma warning(disable: 4661)
-	template struct CALUMIANIMATION_API Utilities::VectorContainer <SkeletonBone>;
+    template struct CALUMIANIMATION_API Utilities::VectorContainer <SFBGS::SkeletonBone>;
 #pragma warning(default: 4661)
-}}
+}
 
 

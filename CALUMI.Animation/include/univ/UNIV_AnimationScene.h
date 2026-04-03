@@ -43,18 +43,19 @@ namespace CALUMI{namespace UNIV{
 
 	
 
-	extern "C" {
-		CALUMIANIMATION_API AnimationScene* CreateAnimationSceneC(const char* sceneName);
-		CALUMIANIMATION_API bool AddRigToAnimationSceneC(AnimationScene* scene, SkeletonRig* rig, Utilities::StringContainer* errorMessage);
-		CALUMIANIMATION_API bool AddAnimationToAnimationSceneC(AnimationScene* scene, Animation* animation, bool overwrite, Utilities::StringContainer* errorMessage);
-		CALUMIANIMATION_API bool DeleteAnimationSceneC(AnimationScene* ptr);
-		CALUMIANIMATION_API Animation* GetAnimationC(AnimationScene* source, int index, Utilities::StringContainer* errorMessage);
-		CALUMIANIMATION_API std::size_t GetAnimationCountC(AnimationScene* source);
-		CALUMIANIMATION_API const char* GetAnimationSceneNameC(AnimationScene* source);
-		CALUMIANIMATION_API SkeletonRig* GetSkeletonRigC(AnimationScene* source);
-		CALUMIANIMATION_API bool HasSkeletonRigC(AnimationScene* source);
-	}
+
 
 	
 }}
 
+extern "C" {
+CALUMIANIMATION_API CALUMI::UNIV::AnimationScene* CreateAnimationSceneC(const char* sceneName);
+CALUMIANIMATION_API bool AddRigToAnimationSceneC(CALUMI::UNIV::AnimationScene* scene, CALUMI::UNIV::SkeletonRig* rig, CALUMI::Utilities::StringContainer* errorMessage);
+CALUMIANIMATION_API bool AddAnimationToAnimationSceneC(CALUMI::UNIV::AnimationScene* scene, CALUMI::UNIV::Animation* animation, bool overwrite, CALUMI::Utilities::StringContainer* errorMessage);
+CALUMIANIMATION_API bool DeleteAnimationSceneC(CALUMI::UNIV::AnimationScene* ptr);
+CALUMIANIMATION_API CALUMI::UNIV::Animation* GetAnimationC(CALUMI::UNIV::AnimationScene* source, int index, CALUMI::Utilities::StringContainer* errorMessage);
+CALUMIANIMATION_API std::size_t GetAnimationCountC(CALUMI::UNIV::AnimationScene* source);
+CALUMIANIMATION_API const char* GetAnimationSceneNameC(CALUMI::UNIV::AnimationScene* source);
+CALUMIANIMATION_API CALUMI::UNIV::SkeletonRig* GetSkeletonRigC(CALUMI::UNIV::AnimationScene* source);
+CALUMIANIMATION_API bool HasSkeletonRigC(CALUMI::UNIV::AnimationScene* source);
+}

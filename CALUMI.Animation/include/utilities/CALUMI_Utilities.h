@@ -6,7 +6,7 @@
 #include "CALUMI_Common.h"
 
 #define _VECTORTEMPLATE(T)	template struct CALUMIANIMATION_API CALUMI::Utilities::VectorContainer<T>; \
-							template CALUMI::Utilities::StringContainer CALUMI::Utilities::VectorToJSON(const CALUMI::Utilities::VectorContainer<T>& vec, std::size_t indents);
+                            // template CALUMI::Utilities::StringContainer CALUMI::Utilities::VectorToJSON(const CALUMI::Utilities::VectorContainer<T>& vec, std::size_t indents);
 
 
 
@@ -224,26 +224,26 @@ namespace CALUMI { namespace Utilities {
 #pragma warning(disable: 4661)
 	template struct CALUMIANIMATION_API PairContainer<float, float>;
 	template struct CALUMIANIMATION_API VectorContainer<unsigned short>;
-	template struct CALUMIANIMATION_API VectorContainer<short>;
-	template struct CALUMIANIMATION_API VectorContainer<unsigned long>;
-	template struct CALUMIANIMATION_API VectorContainer<long>;
+    template struct CALUMIANIMATION_API VectorContainer<short>;
+    template struct CALUMIANIMATION_API VectorContainer<unsigned long>;
+    template struct CALUMIANIMATION_API VectorContainer<long>;
 	template struct CALUMIANIMATION_API VectorContainer<char>;
 	template struct CALUMIANIMATION_API VectorContainer<const char*>;
 	template struct CALUMIANIMATION_API VectorContainer<uint8_t>;
 	template struct CALUMIANIMATION_API VectorContainer<int8_t>;
-	template struct CALUMIANIMATION_API VectorContainer<uint16_t>;
-	template struct CALUMIANIMATION_API VectorContainer<int16_t>;
+    // template struct CALUMIANIMATION_API VectorContainer<uint16_t>;
+    // template struct CALUMIANIMATION_API VectorContainer<int16_t>;
 	template struct CALUMIANIMATION_API VectorContainer<uint32_t>;
 	template struct CALUMIANIMATION_API VectorContainer<int32_t>;
-	template struct CALUMIANIMATION_API VectorContainer<int64_t>;
-	template struct CALUMIANIMATION_API VectorContainer<uint64_t>;
+    // template struct CALUMIANIMATION_API VectorContainer<int64_t>;
+    // template struct CALUMIANIMATION_API VectorContainer<uint64_t>;
 	template struct CALUMIANIMATION_API VectorContainer<float>;
 	template struct CALUMIANIMATION_API VectorContainer<double>;
 	template struct CALUMIANIMATION_API VectorContainer<StringContainer>;
 	template struct CALUMIANIMATION_API VectorContainer<PathContainer>;
 
 	template struct CALUMIANIMATION_API ExpectedContainer<bool, StringContainer>;
-	template struct CALUMIANIMATION_API ExpectedContainer<size_t, StringContainer>;
+    template struct CALUMIANIMATION_API ExpectedContainer<std::size_t, StringContainer>;
 	template struct CALUMIANIMATION_API ExpectedContainer<bool, PathContainer>;
 	template struct CALUMIANIMATION_API ExpectedContainer<PathContainer, bool>;
 	template struct CALUMIANIMATION_API ExpectedContainer<PathContainer, StringContainer>;

@@ -11,6 +11,7 @@
 #include "sfbgs/SFBGS_AnimationScene.h"
 
 //Rest of the headers can go here
+#include <cstring>
 #include <expected>
 #include <string>
 #include <vector>
@@ -38,7 +39,7 @@ namespace CALUMI {
 		}
 
 		template<typename T>
-		Utilities::StringContainer VectorToJSON(const Utilities::VectorContainer<T>& vec, const std::size_t indents)
+        CALUMI::Utilities::StringContainer VectorToJSON(const CALUMI::Utilities::VectorContainer<T>& vec, const std::size_t indents)
 		{
 			if (vec.empty()) {
 				return " []";
@@ -177,7 +178,7 @@ namespace CALUMI {
 #ifdef _WIN32
 			return pImpl->path.c_str();
 #else
-			pImpl->wStringHolder = pImpl->path.c_str();
+            pImpl->wStringHolder = pImpl->path.wstring();
 			return pImpl->wStringHolder.c_str();
 #endif
 		}
