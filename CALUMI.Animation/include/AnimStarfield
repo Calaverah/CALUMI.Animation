@@ -1,0 +1,7 @@
+#pragma once
+#include "sfbgs/animation/SFBGS_Animation.h"
+#include "sfbgs/animation/SFBGS_AnimationEntries.h"
+#include "sfbgs/animation/SFBGS_AnimationPackage.h"
+#include "sfbgs/skeletonrig/SFBGS_RigPackage.h"
+#include "sfbgs/skeletonrig/SFBGS_SkeletonRig.h"
+#include "sfbgs/SFBGS_AnimationScene.h"

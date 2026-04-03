@@ -1,0 +1,8 @@
+#pragma once
+#include "univ/animation/UNIV_Animation.h"
+#include "univ/animation/UNIV_AnimationEntries.h"
+#include "univ/animation/UNIV_IAnimationPackage.h"
+#include "univ/skeletonrig/UNIV_IRigPackage.h"
+#include "univ/skeletonrig/UNIV_SkeletonRig.h"
+#include "univ/skeletonrig/UNIV_BoneTypes.h"
+#include "univ/UNIV_AnimationScene.h"
