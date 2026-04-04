@@ -286,7 +286,7 @@ namespace CALUMI {
 	{
 		Utilities::VectorContainer<char> vBuffer;
 		vBuffer.reserve(buffer.Length(true));
-		for (size_t i = 0; i < buffer.Length(); i++)
+		for (std::size_t i = 0; i < buffer.Length(); i++)
 		{
 			vBuffer.push_back(buffer.at(i));
 		}

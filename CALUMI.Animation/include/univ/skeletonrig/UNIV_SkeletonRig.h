@@ -153,7 +153,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @param indents Spaces for formatting
 		 * @return The StringContainer of the serialized struct
 		 */
-		Utilities::StringContainer ToJSON(size_t indents) const;
+		Utilities::StringContainer ToJSON(std::size_t indents) const;
 
 		/// @}
 
@@ -270,7 +270,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @param newBoneName The new name for the bone
 		 * @return Whether the operation was a success
 		 */
-		bool RenameBone(size_t boneIndex, const char* newBoneName);
+		bool RenameBone(std::size_t boneIndex, const char* newBoneName);
 		/**
 		 * @brief Pairs two bones to mirror eachother
 		 * @param i1 Index of the first bone
@@ -294,12 +294,12 @@ namespace CALUMI{ namespace UNIV{
 		 * @brief Returns the bones that are animation driven, rather than dynamically controlled
 		 * @return The number of animated bones (ie not in-game twist)
 		 */
-		size_t GetAnimatedBoneCount();
+		std::size_t GetAnimatedBoneCount();
 		/**
 		 * @brief Returns the total amount of bones, whether they are driven by curves or dynamically in game
 		 * @return The total number of bones on this rig
 		 */
-		size_t GetBoneCount() const;
+		std::size_t GetBoneCount() const;
 		/**
 		 * @brief Finds the 
 		 * @param boneName 
@@ -318,7 +318,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @param indents Spaces for formatting
 		 * @return The StringContainer of the serialized struct
 		 */
-		Utilities::StringContainer ToJSON(size_t indents) const;
+		Utilities::StringContainer ToJSON(std::size_t indents) const;
 		
 		/// @}
 		/** @name Static Members
@@ -514,14 +514,14 @@ namespace CALUMI{ namespace UNIV{
 		 * @param source Ptr to skeleton rig to check
 		 * @return The total number of bones belonging to this rig
 		 */
-		CALUMIANIMATION_API size_t GetSkeletonRigBoneCountC(SkeletonRig* source);
+		CALUMIANIMATION_API std::size_t GetSkeletonRigBoneCountC(SkeletonRig* source);
 		/**
 		 * @brief Animated bones that are not driven dynamically in game
 		 
 		 * @param source Ptr to rig 
 		 * @return The total number of animated bones that driven by animation's data prior to runtime
 		 */
-		CALUMIANIMATION_API size_t GetSkeletonRigAnimatedBoneCountC(SkeletonRig* source);
+		CALUMIANIMATION_API std::size_t GetSkeletonRigAnimatedBoneCountC(SkeletonRig* source);
 		/**
 		 * @brief 
 		 

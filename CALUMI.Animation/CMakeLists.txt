@@ -22,7 +22,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE CALUMIANIMATION_EXPORTS)
 if(WIN32)
     target_sources(${PROJECT_NAME} PRIVATE CALUMI.Animation.rc resource.h)
 else()
-    target_link_options(my_app PRIVATE -static-libgcc -static-libstdc++)
+    target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

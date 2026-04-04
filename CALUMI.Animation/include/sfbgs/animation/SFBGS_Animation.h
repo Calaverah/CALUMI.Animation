@@ -288,7 +288,7 @@ namespace CALUMI{
 
 			Preamble();
 			~Preamble();
-			Preamble(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, size_t frameCount);
+			Preamble(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, std::size_t frameCount);
 			Preamble& operator=(const Preamble& other);
 			Preamble(const Preamble& other);
 
@@ -333,7 +333,7 @@ namespace CALUMI{
 			/// @name Meta
 			/// @{
 			/// 
-			size_t getSourceFileSize() const;
+			std::size_t getSourceFileSize() const;
 			
 			CALUMI::Utilities::StringContainer& getAnimationFileName() const;
 			void setAnimationFileName(const CALUMI::Utilities::StringContainer& input);

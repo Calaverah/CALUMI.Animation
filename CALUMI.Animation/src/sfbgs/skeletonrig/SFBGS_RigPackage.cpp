@@ -408,12 +408,12 @@ namespace CALUMI {namespace SFBGS{
 	// Inherited via IRigPackage
 	const char* SFBGS_RigPackage::getPackageType() const { return SFBGS_RIG_PACKAGE; }
 
-	Utilities::StringContainer SFBGS_RigPackage::ToJSON(size_t indents) const
+	Utilities::StringContainer SFBGS_RigPackage::ToJSON(std::size_t indents) const
 	{
 		return Utilities::StringContainer();
 	}
 
-	bool SFBGS_RigPackage::HandleBoneRename(const char* oldBone, const char* newName, size_t idx)
+	bool SFBGS_RigPackage::HandleBoneRename(const char* oldBone, const char* newName, std::size_t idx)
 	{
 		for (int i = 0; i < SFBGSMAPSIZE; i++)
 		{
@@ -572,7 +572,7 @@ namespace CALUMI {namespace SFBGS{
 		return false;
 	}
 
-	size_t SFBGSRigPackage_GetRigMapSize()
+	std::size_t SFBGSRigPackage_GetRigMapSize()
 	{
 		return SFBGSMAPSIZE;
 	}

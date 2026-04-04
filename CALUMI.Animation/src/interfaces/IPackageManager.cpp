@@ -14,7 +14,7 @@ namespace CALUMI {
 
             void clear()
             {
-                for (size_t i = 0; i < _packages.size(); i++)
+                for (std::size_t i = 0; i < _packages.size(); i++)
                 {
                     if (_packages.at(i))
                     {
@@ -39,7 +39,7 @@ namespace CALUMI {
         IPackageManager& IPackageManager::operator=(const IPackageManager& other)
         {
             pImpl->clear();
-            for (size_t i = 0; i < other.pImpl->_packages.size(); i++)
+            for (std::size_t i = 0; i < other.pImpl->_packages.size(); i++)
             {
                 if (auto ptr = other.pImpl->_packages.at(i))
                 {
@@ -125,7 +125,7 @@ namespace CALUMI {
             return true;
         }
 
-        size_t IPackageManager::packageCount() const
+        std::size_t IPackageManager::packageCount() const
         {
             return pImpl->_packages.size();
         }

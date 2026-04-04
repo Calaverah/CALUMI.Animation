@@ -16,7 +16,7 @@ namespace CALUMI {namespace SFBGS {
 	{
 		Utilities::StringMap stringMap;
 		stringMap.Reserve(inputRig.BoneEntries().size());
-		size_t iOffset = 0;
+		std::size_t iOffset = 0;
 		for (int i = 0; i < inputRig.BoneEntries().size(); i++)
 		{
 			stringMap.push_back(inputRig.BoneEntries().at(i).Name().c_str(), iOffset);
@@ -633,7 +633,7 @@ namespace CALUMI {namespace SFBGS {
 	}
 	bool SkeletonRig::IsMarkedMannequin() const
 	{
-		for (size_t i = 0; i < pImpl->_boneEntries.size(); i++)
+		for (std::size_t i = 0; i < pImpl->_boneEntries.size(); i++)
 		{
 			if (pImpl->_boneEntries.at(i).getTwistDriverMqnIndex() > 0)
 				return true;
@@ -875,7 +875,7 @@ namespace CALUMI {namespace SFBGS {
 			output += 0b100000;
 
 		int aCount = 0;
-		for (size_t i = 0; i < pImpl->_boneEntries.size(); i++)
+		for (std::size_t i = 0; i < pImpl->_boneEntries.size(); i++)
 		{
 			if (pImpl->_boneEntries.at(i).getBoneType() == SFBGS::SkeletonBone::BoneType::Default)
 			{

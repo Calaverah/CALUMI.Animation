@@ -120,7 +120,7 @@ namespace CALUMI{ namespace UNIV{
             return false;
         }
 
-        for (size_t i = 0; i < pImpl->_boneEntries.size(); i++)
+        for (std::size_t i = 0; i < pImpl->_boneEntries.size(); i++)
         {
             if (boneName.compare(pImpl->_boneEntries.at(i).Name(), false) == 0)
             {
@@ -178,7 +178,7 @@ namespace CALUMI{ namespace UNIV{
 
         return RenameBone(result, newBoneName);
     }
-    bool SkeletonRig::RenameBone(size_t boneIndex, const char* newBoneName)
+    bool SkeletonRig::RenameBone(std::size_t boneIndex, const char* newBoneName)
     {
         Utilities::StringContainer oldName = pImpl->_boneEntries.at(boneIndex).Name();
         pImpl->_boneEntries.at(boneIndex).Name() = newBoneName;
@@ -226,7 +226,7 @@ namespace CALUMI{ namespace UNIV{
         return true;
     }
 
-    size_t UNIV::SkeletonRig::GetAnimatedBoneCount()
+    std::size_t UNIV::SkeletonRig::GetAnimatedBoneCount()
     {
         unsigned int AnimatedBoneCount = 0;
 
@@ -241,7 +241,7 @@ namespace CALUMI{ namespace UNIV{
         return AnimatedBoneCount;
     }
 
-    size_t SkeletonRig::GetBoneCount() const
+    std::size_t SkeletonRig::GetBoneCount() const
     {
         return pImpl->_boneEntries.size();
     }
@@ -251,7 +251,7 @@ namespace CALUMI{ namespace UNIV{
         int output = -1;
         if (boneName == "") return output;
 
-        for (size_t i = 0; i < pImpl->_boneEntries.size() && i < MaxBoneCount; i++)
+        for (std::size_t i = 0; i < pImpl->_boneEntries.size() && i < MaxBoneCount; i++)
         {
             if (pImpl->_boneEntries.at(i).Name() == boneName)
             {
@@ -263,7 +263,7 @@ namespace CALUMI{ namespace UNIV{
 
     }
 
-    Utilities::StringContainer SkeletonRig::ToJSON(const size_t indents = 0) const {
+    Utilities::StringContainer SkeletonRig::ToJSON(const std::size_t indents = 0) const {
         Utilities::StringContainer output = Utilities::Indent(indents).c_str();
         output += "{\n";
         output += std::format("{0}\"rigName\":\"{1}\",\n{0}\"boneEntries\":", Utilities::Indent(indents + 1).c_str(), pImpl->_rigName.c_str()).c_str();
@@ -391,7 +391,7 @@ namespace CALUMI{ namespace UNIV{
 
     int SkeletonBone::GetParentBoneIndex() const { return pImpl->parentBoneIndex; }
 
-    Utilities::StringContainer SkeletonBone::ToJSON(const size_t indents = 0) const {
+    Utilities::StringContainer SkeletonBone::ToJSON(const std::size_t indents = 0) const {
 
         std::string output = (
             Utilities::Indent(indents) + "{\n" +  
@@ -576,11 +576,11 @@ namespace CALUMI{ namespace UNIV{
     {
         return rig->VerifyExclusiveBoneMirrors();
     }
-    size_t GetSkeletonRigBoneCountC(SkeletonRig* source)
+    std::size_t GetSkeletonRigBoneCountC(SkeletonRig* source)
     {
         return source->GetBoneCount();
     }
-    size_t GetSkeletonRigAnimatedBoneCountC(SkeletonRig* source)
+    std::size_t GetSkeletonRigAnimatedBoneCountC(SkeletonRig* source)
     {
         return source->GetAnimatedBoneCount();
     }

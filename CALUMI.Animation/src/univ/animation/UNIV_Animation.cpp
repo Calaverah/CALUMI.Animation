@@ -75,7 +75,7 @@ namespace CALUMI {
 		//inline CALUMIANIMATION_API UNIV::AnimationBlock GetAnimationBlock(unsigned int i) const { return _animationBlocks.at(i); }
 		//inline CALUMIANIMATION_API std::vector<UNIV::AnimationBlock> GetAnimationBlockVector() const { return _animationBlocks; }
 		void Animation::ClearAnimationBlocks() { pImpl->_animationBlocks.clear(); }
-		size_t Animation::GetAnimationBlockCount() const { return pImpl->_animationBlocks.size(); }
+		std::size_t Animation::GetAnimationBlockCount() const { return pImpl->_animationBlocks.size(); }
 		AnimationPackageManager& Animation::getPackageManager() const { return pImpl->_packageManager; }
 
 		unsigned int UNIV::Animation::GetFrameCount()
@@ -92,7 +92,7 @@ namespace CALUMI {
 			output++; //adding one to sum up total frames in animation. If final frame is 50, the count is 51
 			return output;
 		}
-		Utilities::StringContainer Animation::ToJSON(const size_t indents) const
+		Utilities::StringContainer Animation::ToJSON(const std::size_t indents) const
 		{
 			Utilities::StringContainer output = Utilities::Indent(indents).c_str();
 			output += "{\n";
@@ -199,7 +199,7 @@ namespace CALUMI {
 		bool AnimationBlock::AddRotationEntry(CALUMI::UNIV::Rotation& input, bool overwrite)
 		{
 
-			for (size_t i = 0; i < pImpl->rotationSequence.size(); i++)
+			for (std::size_t i = 0; i < pImpl->rotationSequence.size(); i++)
 			{
 				if (pImpl->rotationSequence.at(i).Frame() == input.Frame())
 				{
@@ -237,7 +237,7 @@ namespace CALUMI {
 
 		void AnimationBlock::ClearRotationEntries() { pImpl->rotationSequence.clear(); }
 
-		size_t AnimationBlock::GetRotationEntryCount() const { return pImpl->rotationSequence.size(); }
+		std::size_t AnimationBlock::GetRotationEntryCount() const { return pImpl->rotationSequence.size(); }
 
 		static Utilities::VectorContainer<UNIV::Rotation> _RDP_Rotation_Recursive(Utilities::VectorContainer<UNIV::Rotation> input, float tolerance)
 		{
@@ -246,7 +246,7 @@ namespace CALUMI {
 
 			//Maximum Distance
 			float dMax = 0.0f;
-			size_t index = 0;
+			std::size_t index = 0;
 			auto f0 = input.at(0).Frame();
 			auto fn = input.at(input.size() - 1).Frame();
 
@@ -265,7 +265,7 @@ namespace CALUMI {
 			}
 
 			if(!skip) {
-				for (size_t i = 1; i < input.size()-1; i++)
+				for (std::size_t i = 1; i < input.size()-1; i++)
 				{
 
 					float t = static_cast<float>(input.at(i).Frame() - f0) / (fn - f0);
@@ -291,12 +291,12 @@ namespace CALUMI {
 
 				output.reserve(left.size() + right.size() - 1);
 
-				for (size_t i = 0; i < left.size(); i++)
+				for (std::size_t i = 0; i < left.size(); i++)
 				{
 					output.push_back(left.at(i));
 				}
 
-				for (size_t i = 1; i < right.size(); i++)
+				for (std::size_t i = 1; i < right.size(); i++)
 				{
 					output.push_back(right.at(i));
 				}
@@ -324,7 +324,7 @@ namespace CALUMI {
 
 		bool AnimationBlock::AddTranslationEntry(CALUMI::UNIV::Translation& input, bool overwrite)
 		{
-			for (size_t i = 0; i < pImpl->translationSequence.size(); i++)
+			for (std::size_t i = 0; i < pImpl->translationSequence.size(); i++)
 			{
 				if (pImpl->translationSequence.at(i).Frame() == input.Frame())
 				{
@@ -362,7 +362,7 @@ namespace CALUMI {
 
 		void AnimationBlock::ClearTranslationEntries() { pImpl->translationSequence.clear(); }
 
-		size_t AnimationBlock::GetTranslationEntryCount() const { return pImpl->translationSequence.size(); }
+		std::size_t AnimationBlock::GetTranslationEntryCount() const { return pImpl->translationSequence.size(); }
 
 		static Utilities::VectorContainer<UNIV::Translation> _RDP_Translation_Recursive(Utilities::VectorContainer<UNIV::Translation> input, float tolerance)
 		{
@@ -371,11 +371,11 @@ namespace CALUMI {
 
 			//Maximum Distance
 			double dMax = 0.0f;
-			size_t index = 0;
+			std::size_t index = 0;
 			auto f0 = input.at(0).Frame();
 			auto fn = input.at(input.size() - 1).Frame();
 
-			for (size_t i = 1; i < input.size() - 1; i++)
+			for (std::size_t i = 1; i < input.size() - 1; i++)
 			{
 				double t = static_cast<float>(input.at(i).Frame() - f0) / (fn - f0);
 
@@ -398,12 +398,12 @@ namespace CALUMI {
 
 				output.reserve(left.size() + right.size() - 1);
 
-				for (size_t i = 0; i < left.size(); i++)
+				for (std::size_t i = 0; i < left.size(); i++)
 				{
 					output.push_back(left.at(i));
 				}
 
-				for (size_t i = 1; i < right.size(); i++)
+				for (std::size_t i = 1; i < right.size(); i++)
 				{
 					output.push_back(right.at(i));
 				}
@@ -430,7 +430,7 @@ namespace CALUMI {
 
 		bool AnimationBlock::AddScalarEntry(CALUMI::UNIV::Scalar& input, bool overwrite)
 		{
-			for (size_t i = 0; i < pImpl->scalarSequence.size(); i++)
+			for (std::size_t i = 0; i < pImpl->scalarSequence.size(); i++)
 			{
 				if (pImpl->scalarSequence.at(i).Frame() == input.Frame())
 				{
@@ -468,7 +468,7 @@ namespace CALUMI {
 
 		void AnimationBlock::ClearScalarEntries() { pImpl->scalarSequence.clear(); }
 
-		size_t AnimationBlock::GetScalarEntryCount() const { return pImpl->scalarSequence.size(); }
+		std::size_t AnimationBlock::GetScalarEntryCount() const { return pImpl->scalarSequence.size(); }
 
 		static Utilities::VectorContainer<UNIV::Scalar> _RDP_Scalar_Recursive(Utilities::VectorContainer<UNIV::Scalar> input, float tolerance)
 		{
@@ -477,14 +477,14 @@ namespace CALUMI {
 
 			//Maximum Distance
 			double dMax = 0.0f;
-			size_t index = 0;
+			std::size_t index = 0;
 			auto f0 = input.at(0).Frame();
 			auto fN = input.at(input.size() - 1).Frame();
 
 			Math::Vector2D vec0(f0, input.at(0).ScalarValue());
 			Math::Vector2D vecN(fN, input.at(input.size()-1).ScalarValue());
 
-			for (size_t i = 1; i < input.size() - 1; i++)
+			for (std::size_t i = 1; i < input.size() - 1; i++)
 			{
 				double t = static_cast<float>(input.at(i).Frame() - f0) / (fN - f0);
 
@@ -508,12 +508,12 @@ namespace CALUMI {
 
 				output.reserve(left.size() + right.size() - 1);
 
-				for (size_t i = 0; i < left.size(); i++)
+				for (std::size_t i = 0; i < left.size(); i++)
 				{
 					output.push_back(left.at(i));
 				}
 
-				for (size_t i = 1; i < right.size(); i++)
+				for (std::size_t i = 1; i < right.size(); i++)
 				{
 					output.push_back(right.at(i));
 				}
@@ -540,7 +540,7 @@ namespace CALUMI {
 
 		bool AnimationBlock::AddPriorityEntry(CALUMI::UNIV::Priority& input, bool overwrite)
 		{
-			for (size_t i = 0; i < pImpl->prioritySequence.size(); i++)
+			for (std::size_t i = 0; i < pImpl->prioritySequence.size(); i++)
 			{
 				if (pImpl->prioritySequence.at(i).Frame() == input.Frame())
 				{
@@ -578,9 +578,9 @@ namespace CALUMI {
 
 		void AnimationBlock::ClearPriorityEntries() { pImpl->prioritySequence.clear(); }
 
-		size_t AnimationBlock::GetPriorityEntryCount() const { return pImpl->prioritySequence.size(); }
+		std::size_t AnimationBlock::GetPriorityEntryCount() const { return pImpl->prioritySequence.size(); }
 
-		Utilities::StringContainer AnimationBlock::ToJSON(const size_t indents) const {
+		Utilities::StringContainer AnimationBlock::ToJSON(const std::size_t indents) const {
 			Utilities::StringContainer output = Utilities::Indent(indents).c_str();
 			output += "{\n";
 			output += std::format("{0}\"boneName\":\"{1}\",\n{0}\"boneIndex\":{2},\n", Utilities::Indent(indents + 1).c_str(), pImpl->boneName.c_str(), pImpl->boneIndex).c_str();
@@ -623,7 +623,7 @@ namespace CALUMI {
 			}
 			return &source->AnimationBlocks().at(index);
 		}
-		size_t GetAnimationBlockCountC(Animation* source)
+		std::size_t GetAnimationBlockCountC(Animation* source)
 		{
 			return source->AnimationBlocks().size();
 		}
@@ -635,7 +635,7 @@ namespace CALUMI {
 		{
 			return source->boneCount;
 		}*/
-		size_t GetFrameCountC(Animation* source)
+		std::size_t GetFrameCountC(Animation* source)
 		{
 			return source->GetFrameCount();
 		}
@@ -736,7 +736,7 @@ namespace CALUMI {
 			}
 			return &source->RotationSequence().at(index);
 		}
-		size_t GetRotationSqSizeC(AnimationBlock* source)
+		std::size_t GetRotationSqSizeC(AnimationBlock* source)
 		{
 			return source->RotationSequence().size();
 		}
@@ -774,7 +774,7 @@ namespace CALUMI {
 			}
 			return &source->TranslationSequence().at(index);
 		}
-		size_t GetTranslationSqSizeC(AnimationBlock* source)
+		std::size_t GetTranslationSqSizeC(AnimationBlock* source)
 		{
 			return source->TranslationSequence().size();
 		}
@@ -812,7 +812,7 @@ namespace CALUMI {
 			}
 			return &source->ScalarSequence().at(index);
 		}
-		size_t GetScalarSqSizeC(AnimationBlock* source)
+		std::size_t GetScalarSqSizeC(AnimationBlock* source)
 		{
 			return source->ScalarSequence().size();
 		}
@@ -850,7 +850,7 @@ namespace CALUMI {
 			}
 			return &source->PrioritySequence().at(index);
 		}
-		size_t GetPrioritySqSizeC(AnimationBlock* source)
+		std::size_t GetPrioritySqSizeC(AnimationBlock* source)
 		{
 			return source->PrioritySequence().size();
 		}

@@ -137,7 +137,7 @@ namespace CALUMI {
 
         int SFBGS_AnimationPackage::findAmendedBlock(uint32_t hash) const
         {
-            for (size_t i = 0; i < pImpl->_amendedBlocks.size(); i++)
+            for (std::size_t i = 0; i < pImpl->_amendedBlocks.size(); i++)
             {
                 if (pImpl->_amendedBlocks.at(i).first == hash)
                     return static_cast<int>(i);
@@ -174,7 +174,7 @@ namespace CALUMI {
             return SFBGS_ANIM_PACKAGE;
         }
 
-        Utilities::StringContainer SFBGS_AnimationPackage::ToJSON(size_t indents) const
+        Utilities::StringContainer SFBGS_AnimationPackage::ToJSON(std::size_t indents) const
         {
             return Utilities::StringContainer();
         }

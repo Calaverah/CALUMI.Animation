@@ -152,7 +152,7 @@ namespace CALUMI {
 			 * @param indents Amount of spaces for formatting
 			 * @return The serialized struct as a StringContainer
 			 */
-			Utilities::StringContainer ToJSON(size_t indents) const override;
+			Utilities::StringContainer ToJSON(std::size_t indents) const override;
 
 		private:
 			struct Impl;

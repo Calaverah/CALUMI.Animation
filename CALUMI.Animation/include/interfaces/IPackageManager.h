@@ -34,7 +34,7 @@ namespace CALUMI {
 			 * @param indents Amount of spaces for formatting
 			 * @return The serialized struct as a StringContainer
 			 */
-			virtual Utilities::StringContainer ToJSON(size_t indents) const = 0;
+			virtual Utilities::StringContainer ToJSON(std::size_t indents) const = 0;
 
 		protected:
 
@@ -119,14 +119,14 @@ namespace CALUMI {
 			 * @brief 
 			 * @return Number of packages 
 			 */
-			size_t packageCount() const;
+			std::size_t packageCount() const;
 		
 			/**
 			 * @brief Serialization
 			 * @param indents Spaces for formatting
 			 * @return The StringContainer of the serialized struct
 			 */
-			virtual Utilities::StringContainer ToJSON(size_t indents) const = 0;
+			virtual Utilities::StringContainer ToJSON(std::size_t indents) const = 0;
 		
 		
 		

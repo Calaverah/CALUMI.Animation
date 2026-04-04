@@ -6,7 +6,7 @@
 #include "CALUMI_Common.h"
 
 #define _VECTORTEMPLATE(T)	template struct CALUMIANIMATION_API CALUMI::Utilities::VectorContainer<T>; \
-							template CALUMI::Utilities::StringContainer CALUMI::Utilities::VectorToJSON(const CALUMI::Utilities::VectorContainer<T>& vec, size_t indents);
+							template CALUMI::Utilities::StringContainer CALUMI::Utilities::VectorToJSON(const CALUMI::Utilities::VectorContainer<T>& vec, std::size_t indents);
 
 
 
@@ -37,7 +37,7 @@ namespace CALUMI { namespace Utilities {
 	struct CALUMIANIMATION_API StringContainer
 	{
 		StringContainer(const char* cString);
-		StringContainer(size_t count, char c);
+		StringContainer(std::size_t count, char c);
 		StringContainer(const StringContainer& source);
 		StringContainer(StringContainer&& source) noexcept;
 		StringContainer();
@@ -47,17 +47,17 @@ namespace CALUMI { namespace Utilities {
 		const char* data() const;
 		void Clear();
 		bool Empty();
-		size_t Length(bool includeNull = false) const;
+		std::size_t Length(bool includeNull = false) const;
 
-		size_t find(const char* s, size_t pos = 0) const;
+		std::size_t find(const char* s, std::size_t pos = 0) const;
 
 		int compare(const StringContainer& other, bool caseSensitive = true) const noexcept;
-		int compare(size_t pos, size_t len, const StringContainer& other) const;
-		int compare(size_t pos, size_t len, const StringContainer& other, size_t subpos, size_t sublen) const;
+		int compare(std::size_t pos, std::size_t len, const StringContainer& other) const;
+		int compare(std::size_t pos, std::size_t len, const StringContainer& other, std::size_t subpos, std::size_t sublen) const;
 
 		void assign(const char* str);
 
-		char at(size_t idx) const;
+		char at(std::size_t idx) const;
 		StringContainer& operator+=(const char* other);
 		StringContainer& operator+=(const StringContainer& other);
 		StringContainer& operator=(const StringContainer& other);
@@ -78,7 +78,7 @@ namespace CALUMI { namespace Utilities {
 	};
 
 	//String Stuff
-	Utilities::StringContainer Indent(const size_t indents);
+	Utilities::StringContainer Indent(const std::size_t indents);
 	bool IsNumeric(const Utilities::StringContainer& str);
 
 	struct CALUMIANIMATION_API PathContainer
@@ -126,17 +126,17 @@ namespace CALUMI { namespace Utilities {
 		StringMap();
 		~StringMap();
 
-		void push_back(const char* string, size_t offset);
+		void push_back(const char* string, std::size_t offset);
 		void push_back(const char* string);
 
-		size_t GetOffset(size_t idx);
-		size_t GetFinalOffset();
-		bool HasOffset(size_t idx);
-		void SetFinalOffset(size_t offset);
-		void Reserve(size_t size);
-		const char* GetString(size_t idx);
-		size_t StringLength(size_t idx, bool includeNull = false);
-		size_t Size();
+		std::size_t GetOffset(std::size_t idx);
+		std::size_t GetFinalOffset();
+		bool HasOffset(std::size_t idx);
+		void SetFinalOffset(std::size_t offset);
+		void Reserve(std::size_t size);
+		const char* GetString(std::size_t idx);
+		std::size_t StringLength(std::size_t idx, bool includeNull = false);
+		std::size_t Size();
 
 	private:
 		struct Impl;
@@ -150,8 +150,8 @@ namespace CALUMI { namespace Utilities {
 	{
 		constexpr VectorContainer() noexcept;
 		constexpr ~VectorContainer();
-		explicit VectorContainer(size_t count);
-		constexpr VectorContainer(size_t count, const T& value);
+		explicit VectorContainer(std::size_t count);
+		constexpr VectorContainer(std::size_t count, const T& value);
 		constexpr VectorContainer(const VectorContainer& source);
 		constexpr VectorContainer(VectorContainer&& source) noexcept;
 
@@ -162,27 +162,27 @@ namespace CALUMI { namespace Utilities {
 
 		void push_back(const T& input);
 		void push_back(const T&& input);
-		void resize(size_t n);
-		void reserve(size_t n);
+		void resize(std::size_t n);
+		void reserve(std::size_t n);
 		void shrink_to_fit();
-		const T& at(size_t i) const;
-		T& at(size_t i);
+		const T& at(std::size_t i) const;
+		T& at(std::size_t i);
 		void clear();
-		size_t size() const;
+		std::size_t size() const;
 		bool empty() const;
 		
-		void erase(size_t pos);
-		void insert_r(size_t pos, T& item);
-		void insert(size_t pos, T item);
-		void insert(size_t pos, size_t count, T& item);
-		void insert(size_t pos, size_t count, T item);
+		void erase(std::size_t pos);
+		void insert_r(std::size_t pos, T& item);
+		void insert(std::size_t pos, T item);
+		void insert(std::size_t pos, std::size_t count, T& item);
+		void insert(std::size_t pos, std::size_t count, T item);
 		T* data() noexcept;
 		const T* data() const noexcept;
 		void sort(bool highToLow = false);
 
-		VectorContainer<T> range(size_t first, size_t last) const;
+		VectorContainer<T> range(std::size_t first, std::size_t last) const;
 
-		size_t end() const;
+		std::size_t end() const;
 		
 		/*template<typename T>
 		friend void fill(VectorContainer<T>& vector, T fillValue);*/
@@ -221,7 +221,7 @@ namespace CALUMI { namespace Utilities {
 
 	//Json Stuff
 	template <typename T>
-	Utilities::StringContainer VectorToJSON(const Utilities::VectorContainer<T>& vec, const size_t indents = 0);
+	Utilities::StringContainer VectorToJSON(const Utilities::VectorContainer<T>& vec, const std::size_t indents = 0);
 
 #pragma region TemplateExplicits
 #pragma warning(disable: 4661)
@@ -261,7 +261,7 @@ namespace CALUMI { namespace Utilities {
 	extern "C" {
 		CALUMIANIMATION_API StringContainer* CreateStringContainerC();
 		CALUMIANIMATION_API const char* GetStringFromContainerC(StringContainer* source);
-		CALUMIANIMATION_API size_t GetStringContainerSizeC(StringContainer* source);
+		CALUMIANIMATION_API std::size_t GetStringContainerSizeC(StringContainer* source);
 		CALUMIANIMATION_API void DeleteStringContainerC(StringContainer* ptr);
 	}
 #pragma endregion

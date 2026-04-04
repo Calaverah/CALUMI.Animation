@@ -37,14 +37,14 @@ namespace CALUMI {
 		}
 
 		template<typename T>
-		Utilities::StringContainer VectorToJSON(const Utilities::VectorContainer<T>& vec, const size_t indents)
+		Utilities::StringContainer VectorToJSON(const Utilities::VectorContainer<T>& vec, const std::size_t indents)
 		{
 			if (vec.empty()) {
 				return " []";
 			}
 
 			Utilities::StringContainer output = "[\n";
-			for (size_t i = 0; i < vec.size(); i++) {
+			for (std::size_t i = 0; i < vec.size(); i++) {
 
 				if constexpr (std::is_pointer_v<T>) 
 				{ output += vec.at(i)->ToJSON(indents + 1).c_str(); }
@@ -95,13 +95,13 @@ namespace CALUMI {
 			currentIndex += variableSize;
 		}
 
-		Utilities::StringContainer Indent(const size_t indents) {
+		Utilities::StringContainer Indent(const std::size_t indents) {
 			return Utilities::StringContainer(indents * 2, ' ');
 		}
 
 		bool IsNumeric(const Utilities::StringContainer& str)
 		{
-			for (size_t i = 0; i < str.Length(); i++)
+			for (std::size_t i = 0; i < str.Length(); i++)
 			{
 				char _char = str.at(i);
 				if (_char != '-' && _char != '.' && !std::isdigit(_char)) return false;
@@ -307,17 +307,17 @@ namespace CALUMI {
 		{
 			return pImpl->string.empty();
 		}
-		char StringContainer::at(size_t idx) const
+		char StringContainer::at(std::size_t idx) const
 		{
 			return pImpl->string.at(idx);
 		}
-		size_t StringContainer::Length(bool includeNull) const
+		std::size_t StringContainer::Length(bool includeNull) const
 		{
-			size_t output = includeNull ? 1 : 0;
+			std::size_t output = includeNull ? 1 : 0;
 			output += pImpl->string.length();
 			return output;
 		}
-		size_t StringContainer::find(const char* s, size_t pos) const
+		std::size_t StringContainer::find(const char* s, std::size_t pos) const
 		{
 			return pImpl->string.find(s,pos);
 		}
@@ -330,11 +330,11 @@ namespace CALUMI {
 
 			return pImpl->string.compare(other.pImpl->string);
 		}
-		int StringContainer::compare(size_t pos, size_t len, const StringContainer& other) const
+		int StringContainer::compare(std::size_t pos, std::size_t len, const StringContainer& other) const
 		{
 			return pImpl->string.compare(pos,len,other.pImpl->string);
 		}
-		int StringContainer::compare(size_t pos, size_t len, const StringContainer& other, size_t subpos, size_t sublen) const
+		int StringContainer::compare(std::size_t pos, std::size_t len, const StringContainer& other, std::size_t subpos, std::size_t sublen) const
 		{
 			return pImpl->string.compare(pos,len,other.pImpl->string,subpos,sublen);
 		}
@@ -352,7 +352,7 @@ namespace CALUMI {
 			pImpl = new Impl;
 			pImpl->string = cString;
 		}
-		StringContainer::StringContainer(size_t count, char c)
+		StringContainer::StringContainer(std::size_t count, char c)
 		{
 			pImpl = new Impl;
 			pImpl->string = std::string(count, c);
@@ -415,12 +415,12 @@ namespace CALUMI {
 		{
 			std::vector<T> vector;
 			constexpr Impl() noexcept = default;
-			explicit Impl(size_t count)
+			explicit Impl(std::size_t count)
 			{
 				std::vector<T> temp(count);
 				vector = temp;
 			}
-			constexpr Impl(size_t count, const T& value) { std::vector<T> temp(count, value); vector = temp; }
+			constexpr Impl(std::size_t count, const T& value) { std::vector<T> temp(count, value); vector = temp; }
 			constexpr Impl(std::vector<T>&& source) noexcept { std::vector<T> temp(source); vector = temp; }
 			constexpr Impl(const std::vector<T>& source) noexcept { std::vector<T> temp(source); vector = temp; }
 			template<class InputIt>
@@ -438,12 +438,12 @@ namespace CALUMI {
 				delete pImpl;
 		}
 		template<class T>
-		VectorContainer<T>::VectorContainer(size_t count)
+		VectorContainer<T>::VectorContainer(std::size_t count)
 		{
 			pImpl = new Impl(count);
 		}
 		template<class T>
-		constexpr VectorContainer<T>::VectorContainer(size_t count, const T& value)
+		constexpr VectorContainer<T>::VectorContainer(std::size_t count, const T& value)
 		{
 			pImpl = new Impl(count, value);
 		}
@@ -476,12 +476,12 @@ namespace CALUMI {
 			return *this;
 		}
 		template<class T>
-		void VectorContainer<T>::resize(size_t n)
+		void VectorContainer<T>::resize(std::size_t n)
 		{
 			pImpl->vector.resize(n);
 		}
 		template<class T>
-		void VectorContainer<T>::reserve(size_t n)
+		void VectorContainer<T>::reserve(std::size_t n)
 		{
 			pImpl->vector.reserve(n);
 		}
@@ -491,12 +491,12 @@ namespace CALUMI {
 			pImpl->vector.shrink_to_fit();
 		}
 		template<class T>
-		const T& VectorContainer<T>::at(size_t i) const
+		const T& VectorContainer<T>::at(std::size_t i) const
 		{
 			return pImpl->vector.at(i);
 		}
 		template<class T>
-		T& VectorContainer<T>::at(size_t i)
+		T& VectorContainer<T>::at(std::size_t i)
 		{
 			return pImpl->vector.at(i);
 		}
@@ -516,7 +516,7 @@ namespace CALUMI {
 			pImpl->vector.clear();
 		}
 		template<class T>
-		size_t VectorContainer<T>::size() const
+		std::size_t VectorContainer<T>::size() const
 		{
 			return pImpl->vector.size();
 		}
@@ -527,7 +527,7 @@ namespace CALUMI {
 		}
 
 		template<class T>
-		void VectorContainer<T>::erase(size_t pos)
+		void VectorContainer<T>::erase(std::size_t pos)
 		{
 			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) < pImpl->vector.end())
 			{
@@ -536,7 +536,7 @@ namespace CALUMI {
 		}
 
 		template<class T>
-		void VectorContainer<T>::insert_r(size_t pos, T& item)
+		void VectorContainer<T>::insert_r(std::size_t pos, T& item)
 		{
 			if ((pImpl->vector.begin()+pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end())
 			{
@@ -545,7 +545,7 @@ namespace CALUMI {
 		}
 
 		template<class T>
-		void VectorContainer<T>::insert(size_t pos, T item)
+		void VectorContainer<T>::insert(std::size_t pos, T item)
 		{
 			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end())
 			{
@@ -554,7 +554,7 @@ namespace CALUMI {
 		}
 
 		template<class T>
-		void VectorContainer<T>::insert(size_t pos, size_t count, T& item)
+		void VectorContainer<T>::insert(std::size_t pos, std::size_t count, T& item)
 		{
 			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end())
 			{
@@ -563,7 +563,7 @@ namespace CALUMI {
 		}
 
 		template<class T>
-		void VectorContainer<T>::insert(size_t pos, size_t count, T item)
+		void VectorContainer<T>::insert(std::size_t pos, std::size_t count, T item)
 		{
 			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end())
 			{
@@ -572,7 +572,7 @@ namespace CALUMI {
 		}
 
 		template<class T>
-		size_t VectorContainer<T>::end() const
+		std::size_t VectorContainer<T>::end() const
 		{
 			return (pImpl->vector.end() - pImpl->vector.begin());
 		}
@@ -606,14 +606,14 @@ namespace CALUMI {
 		}
 
 		template<class T>
-		VectorContainer<T> VectorContainer<T>::range(size_t first, size_t last) const
+		VectorContainer<T> VectorContainer<T>::range(std::size_t first, std::size_t last) const
 		{
 			if (first > last) return VectorContainer<T>();
 
 			VectorContainer<T> output;
 			output.reserve(last + 1 - first);
 
-			for (size_t i = first; i < last + 1 && i < size(); i++)
+			for (std::size_t i = first; i < last + 1 && i < size(); i++)
 			{
 				output.push_back(at(i));
 			}
@@ -630,7 +630,7 @@ namespace CALUMI {
 		struct StringMap::Entry
 		{
 			std::string string;
-			size_t offset = 0;
+			std::size_t offset = 0;
 			bool hasOffset = false;
 			Entry() = default;
 			Entry(Entry& source) noexcept
@@ -645,7 +645,7 @@ namespace CALUMI {
 				offset = source.offset;
 				hasOffset = source.hasOffset;
 			}
-			Entry(const char* cStr, size_t ofs) noexcept
+			Entry(const char* cStr, std::size_t ofs) noexcept
 			{
 				string = cStr;
 				offset = ofs;
@@ -662,7 +662,7 @@ namespace CALUMI {
 		struct StringMap::Impl
 		{
 			std::vector<Entry> strings;
-			size_t finalOffset = 0;
+			std::size_t finalOffset = 0;
 		};
 		
 		StringMap::StringMap()
@@ -674,7 +674,7 @@ namespace CALUMI {
 			if (pImpl)
 				delete pImpl;
 		}
-		void StringMap::push_back(const char* string, size_t offset)
+		void StringMap::push_back(const char* string, std::size_t offset)
 		{
 			pImpl->strings.push_back(Entry(string, offset));
 		}
@@ -682,37 +682,37 @@ namespace CALUMI {
 		{
 			pImpl->strings.push_back(Entry(string));
 		}
-		size_t StringMap::GetOffset(size_t idx)
+		std::size_t StringMap::GetOffset(std::size_t idx)
 		{
 			return pImpl->strings.at(idx).offset;
 		}
-		size_t StringMap::GetFinalOffset()
+		std::size_t StringMap::GetFinalOffset()
 		{
 			return pImpl->finalOffset;
 		}
-		bool StringMap::HasOffset(size_t idx)
+		bool StringMap::HasOffset(std::size_t idx)
 		{
 			return pImpl->strings.at(idx).hasOffset;
 		}
-		void StringMap::SetFinalOffset(size_t offset)
+		void StringMap::SetFinalOffset(std::size_t offset)
 		{
 			pImpl->finalOffset = offset;
 		}
-		void StringMap::Reserve(size_t size)
+		void StringMap::Reserve(std::size_t size)
 		{
 			pImpl->strings.reserve(size);
 		}
-		const char* StringMap::GetString(size_t idx)
+		const char* StringMap::GetString(std::size_t idx)
 		{
 			return pImpl->strings.at(idx).string.c_str();
 		}
-		size_t StringMap::StringLength(size_t idx, bool includeNull)
+		std::size_t StringMap::StringLength(std::size_t idx, bool includeNull)
 		{
-			size_t output = includeNull ? 1 : 0;
+			std::size_t output = includeNull ? 1 : 0;
 			output += pImpl->strings.at(idx).string.length();
 			return output;
 		}
-		size_t StringMap::Size()
+		std::size_t StringMap::Size()
 		{
 			return pImpl->strings.size();
 		}
@@ -881,7 +881,7 @@ namespace CALUMI {
 		return source->c_str();
 	}
 
-	size_t GetStringContainerSizeC(StringContainer* source)
+	std::size_t GetStringContainerSizeC(StringContainer* source)
 	{
 		return source->Length();
 	}

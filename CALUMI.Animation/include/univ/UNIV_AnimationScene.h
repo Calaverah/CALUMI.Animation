@@ -26,7 +26,7 @@ namespace CALUMI{namespace UNIV{
 		bool RemoveAnimationFromScene(unsigned int idx);
 		
 		Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension);
-		Utilities::StringContainer ToJSON(size_t indents) const;
+		Utilities::StringContainer ToJSON(std::size_t indents) const;
 
 		AnimationScene();
 		AnimationScene(const Utilities::StringContainer& sceneName);
@@ -49,7 +49,7 @@ namespace CALUMI{namespace UNIV{
 		CALUMIANIMATION_API bool AddAnimationToAnimationSceneC(AnimationScene* scene, Animation* animation, bool overwrite, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API bool DeleteAnimationSceneC(AnimationScene* ptr);
 		CALUMIANIMATION_API Animation* GetAnimationC(AnimationScene* source, int index, Utilities::StringContainer* errorMessage);
-		CALUMIANIMATION_API size_t GetAnimationCountC(AnimationScene* source);
+		CALUMIANIMATION_API std::size_t GetAnimationCountC(AnimationScene* source);
 		CALUMIANIMATION_API const char* GetAnimationSceneNameC(AnimationScene* source);
 		CALUMIANIMATION_API SkeletonRig* GetSkeletonRigC(AnimationScene* source);
 		CALUMIANIMATION_API bool HasSkeletonRigC(AnimationScene* source);

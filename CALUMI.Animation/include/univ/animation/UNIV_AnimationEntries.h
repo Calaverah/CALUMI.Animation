@@ -26,7 +26,7 @@ namespace CALUMI {namespace UNIV {
 
 		UNIV::Translation& operator=(const UNIV::Translation& other);
 
-		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
+		Utilities::StringContainer ToJSON(const std::size_t indents = 0) const;
 
 	private:
 		struct Impl;
@@ -55,7 +55,7 @@ namespace CALUMI {namespace UNIV {
 
 		UNIV::Rotation& operator=(const UNIV::Rotation& other);
 
-		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
+		Utilities::StringContainer ToJSON(const std::size_t indents = 0) const;
 	private:
 		struct Impl;
 		Impl* pImpl;
@@ -84,7 +84,7 @@ namespace CALUMI {namespace UNIV {
 
 		UNIV::Scalar& operator=(const UNIV::Scalar& other);
 
-		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
+		Utilities::StringContainer ToJSON(const std::size_t indents = 0) const;
 	private:
 		struct Impl;
 		Impl* pImpl;
@@ -111,7 +111,7 @@ namespace CALUMI {namespace UNIV {
 
 		UNIV::Priority& operator=(const UNIV::Priority& other);
 
-		Utilities::StringContainer ToJSON(const size_t indents = 0) const;
+		Utilities::StringContainer ToJSON(const std::size_t indents = 0) const;
 
 	private:
 		struct Impl;

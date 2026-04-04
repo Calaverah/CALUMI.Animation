@@ -98,7 +98,7 @@ namespace CALUMI {
             return animationFilePaths;
         }
 
-        Utilities::StringContainer AnimationScene::ToJSON(const size_t indents = 0) const {
+        Utilities::StringContainer AnimationScene::ToJSON(const std::size_t indents = 0) const {
             Utilities::StringContainer output;
             output += Utilities::Indent(indents).c_str();
             output += "{\n";
@@ -145,7 +145,7 @@ namespace CALUMI {
             }
             return &source->Animations().at(index);
         }
-        size_t GetAnimationCountC(AnimationScene* source)
+        std::size_t GetAnimationCountC(AnimationScene* source)
         {
             return source->Animations().size();
         }

@@ -285,7 +285,7 @@ namespace CALUMI{
 		}
 
 		//Preamble Defs
-		Preamble::Preamble(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, size_t frameCount) : Preamble()
+		Preamble::Preamble(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, std::size_t frameCount) : Preamble()
 		{
 			CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 2, 2, &pImpl->count);
 
@@ -663,7 +663,7 @@ namespace CALUMI{
 		struct Animation::Impl
 		{
 			CALUMI::Utilities::StringContainer animationFileName; //Not present in file. For file tracking. Should be unique without extension
-			size_t fileSize = 0; //Not present in file. For debugging
+			std::size_t fileSize = 0; //Not present in file. For debugging
 			// 
 			//9x4bytes, 2 blanks (CONFIRMED), 4 Quat Components (or all zero), 3 unknown (possibly xyz values)
 			uint64_t _magicNumber = 0;
@@ -720,7 +720,7 @@ namespace CALUMI{
 			*pImpl = *(input.pImpl);
 		}
 
-		size_t Animation::getSourceFileSize() const
+		std::size_t Animation::getSourceFileSize() const
 		{
 			return pImpl->fileSize;
 		}
@@ -838,13 +838,13 @@ namespace CALUMI{
 		CALUMI::Utilities::VectorContainer<float> Animation::getNZeroFloats() const
 		{
 			Utilities::VectorContainer<float> output(3);
-			for (size_t i = 0; i < 3; i++) { output.at(i) = pImpl->_nZeroFloats[i]; }
+			for (std::size_t i = 0; i < 3; i++) { output.at(i) = pImpl->_nZeroFloats[i]; }
 			return output;
 		}
 
 		void Animation::setNZeroFloats(float input[3])
 		{
-			for (size_t i = 0; i < 3; i++) { pImpl->_nZeroFloats[i] = input[i]; }
+			for (std::size_t i = 0; i < 3; i++) { pImpl->_nZeroFloats[i] = input[i]; }
 		}
 
 		uint32_t Animation::getPreambleCount() const
@@ -1009,12 +1009,12 @@ namespace CALUMI{
 
 
 			//Evaluate Preamble
-			size_t newOffset = addressIndex + pImpl->_preambleOffset;
+			std::size_t newOffset = addressIndex + pImpl->_preambleOffset;
 			if (pImpl->_preambleOffset > 0)
 			{
 				CALUMI::Utilities::AlignBufferAndRead(buffer.value(), addressIndex, 4, 4, &pImpl->_preambleCount);
 				pImpl->_preamble.reserve(pImpl->_preambleCount);
-				for (size_t i = 0; i < pImpl->_preambleCount; i++)
+				for (std::size_t i = 0; i < pImpl->_preambleCount; i++)
 				{
 
 					pImpl->_preamble.push_back(Preamble(buffer.value(), addressIndex, pImpl->_frameCount));
@@ -1025,7 +1025,7 @@ namespace CALUMI{
 			//FILL PAD????
 			//addressIndex += 4 * static_cast<unsigned long long>(_amendedBlockCount);
 			pImpl->_amendedHashSet.resize(pImpl->_amendedBlockCount);
-			for (size_t i = 0; i < pImpl->_amendedBlockCount; i++)
+			for (std::size_t i = 0; i < pImpl->_amendedBlockCount; i++)
 			{
 				CALUMI::Utilities::AlignBufferAndRead(buffer.value(), addressIndex, 4, 4, &pImpl->_amendedHashSet.at(i));
 			}

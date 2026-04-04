@@ -304,7 +304,7 @@ namespace CALUMI {
 			 * @param indents 
 			 * @return 
 			 */
-			Utilities::StringContainer ToJSON(size_t indents) const override;
+			Utilities::StringContainer ToJSON(std::size_t indents) const override;
 
 		protected:
 			/**
@@ -314,7 +314,7 @@ namespace CALUMI {
 			 * @param idx 
 			 * @return 
 			 */
-			bool HandleBoneRename(const char* oldBone, const char* newName, size_t idx) override;
+			bool HandleBoneRename(const char* oldBone, const char* newName, std::size_t idx) override;
 			/**
 			 * @brief Creates shallow copies of this package's elements without worry of ptr handling
 			 * @return 
@@ -465,7 +465,7 @@ namespace CALUMI {
 			 * @brief Returns the size of the Rig BoneMap which is always 157 (or *Pi* / 0.02 :) )
 			 * @return 157
 			 */
-			CALUMIANIMATION_API size_t SFBGSRigPackage_GetRigMapSize();
+			CALUMIANIMATION_API std::size_t SFBGSRigPackage_GetRigMapSize();
 
 			/**
 			 * @brief Sets the rig to process all relative translations with the *Default* precision set

@@ -237,7 +237,7 @@ namespace CALUMI{ namespace SFBGS{
 
         if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(anim.getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
         {
-            for (size_t i = 0; i < pkg->getAmendedBlockCount(); i++)
+            for (std::size_t i = 0; i < pkg->getAmendedBlockCount(); i++)
             {
                 AnimationBlock toAdd;
                 _ConvertRotationSq(pkg->getAmendedBlock(i)->RotationSequence(), toAdd);
@@ -291,7 +291,7 @@ namespace CALUMI{ namespace SFBGS{
 
             if(auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(output.getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
             {
-                for (size_t i = 0; i < amendedBlocks.size(); i++)
+                for (std::size_t i = 0; i < amendedBlocks.size(); i++)
                 {
                     uint32_t hash = hashSet.at(i);
                     CALUMI::UNIV::AnimationBlock toAdd;
@@ -448,7 +448,7 @@ namespace CALUMI{ namespace SFBGS{
     }
 
     //Warning, desired directory path array must be in the same order as the animations in the scene. .rig file must be present and can be placed anywhere within the array. 
-    bool SFBGS::SaveAnimationSceneToSFBGSFormatPathOverrideC(UNIV::AnimationScene* scene, const wchar_t** directoryPathArray, size_t arraySize, Utilities::StringContainer* errorMessage)
+    bool SFBGS::SaveAnimationSceneToSFBGSFormatPathOverrideC(UNIV::AnimationScene* scene, const wchar_t** directoryPathArray, std::size_t arraySize, Utilities::StringContainer* errorMessage)
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
@@ -503,7 +503,7 @@ namespace CALUMI{ namespace SFBGS{
             return false;
         }
 
-        size_t minSize = std::min(translatedScene.Animations().size(), (arraySize - 1));
+        std::size_t minSize = std::min(translatedScene.Animations().size(), (arraySize - 1));
 
         for (int i = 0; i < minSize; i++)
         {
@@ -523,7 +523,7 @@ namespace CALUMI{ namespace SFBGS{
     }
 
     //Warning, desired directory path array must be in the same order as the animations in the scene.
-    bool SFBGS::SaveAnimationSceneToSFBGSFormatUsingRigReferencePathOverrideC(UNIV::AnimationScene* scene, const wchar_t** directoryPathArray, size_t arraySize, const wchar_t* sfbgsRigPath, Utilities::StringContainer* errorMessage)
+    bool SFBGS::SaveAnimationSceneToSFBGSFormatUsingRigReferencePathOverrideC(UNIV::AnimationScene* scene, const wchar_t** directoryPathArray, std::size_t arraySize, const wchar_t* sfbgsRigPath, Utilities::StringContainer* errorMessage)
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
@@ -571,7 +571,7 @@ namespace CALUMI{ namespace SFBGS{
             return false;
         }
         
-        size_t minSize = std::min(translatedScene.Animations().size(), (arraySize - 1));
+        std::size_t minSize = std::min(translatedScene.Animations().size(), (arraySize - 1));
         for (unsigned int i = 0; i < minSize; i++)
         {
             auto animResult = translatedScene.Animations().at(i).WriteToFile(animationFilePaths.at(i).c_str());
