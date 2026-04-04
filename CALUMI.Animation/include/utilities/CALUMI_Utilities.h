@@ -217,8 +217,8 @@ namespace CALUMI { namespace Utilities {
 	void AlignFillBufferAndWrite(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, const void* Source);
 
 	//Json Stuff
-	template <typename T>
-	Utilities::StringContainer VectorToJSON(const Utilities::VectorContainer<T>& vec, const std::size_t indents = 0);
+    //template <typename T>
+    //Utilities::StringContainer VectorToJSON(const Utilities::VectorContainer<T>& vec, const std::size_t indents = 0);
 
 #pragma region TemplateExplicits
 #pragma warning(disable: 4661)

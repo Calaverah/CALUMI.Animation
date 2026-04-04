@@ -38,28 +38,28 @@ namespace CALUMI {
 			buffer.insert(buffer.end(), (currentIndex - startingIndex), 0);
 		}
 
-		template<typename T>
-        CALUMI::Utilities::StringContainer VectorToJSON(const CALUMI::Utilities::VectorContainer<T>& vec, const std::size_t indents)
-		{
-			if (vec.empty()) {
-				return " []";
-			}
+        // template<typename T>
+        // CALUMI::Utilities::StringContainer VectorToJSON(const CALUMI::Utilities::VectorContainer<T>& vec, const std::size_t indents)
+        // {
+        // 	if (vec.empty()) {
+        // 		return " []";
+        // 	}
 
-			Utilities::StringContainer output = "[\n";
-			for (std::size_t i = 0; i < vec.size(); i++) {
+        // 	Utilities::StringContainer output = "[\n";
+        // 	for (std::size_t i = 0; i < vec.size(); i++) {
 
-				if constexpr (std::is_pointer_v<T>) 
-				{ output += vec.at(i)->ToJSON(indents + 1).c_str(); }
-				else
-				{ output += vec.at(i).ToJSON(indents + 1).c_str(); }
+        // 		if constexpr (std::is_pointer_v<T>)
+        // 		{ output += vec.at(i)->ToJSON(indents + 1).c_str(); }
+        // 		else
+        // 		{ output += vec.at(i).ToJSON(indents + 1).c_str(); }
 				
-				if (i < vec.size() - 1) {
-					output += ",\n";
-				}
-			}
-			output += std::format("\n{}]", Indent(indents).c_str()).c_str();
-			return output;
-		}
+        // 		if (i < vec.size() - 1) {
+        // 			output += ",\n";
+        // 		}
+        // 	}
+        // 	output += std::format("\n{}]", Indent(indents).c_str()).c_str();
+        // 	return output;
+        // }
 
 
 		/// <summary>
