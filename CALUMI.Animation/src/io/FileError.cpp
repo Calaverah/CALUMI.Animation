@@ -38,11 +38,11 @@ namespace CALUMI {
 			}
 
 			std::string em;
-			if (!pImpl->errorMessage.Empty()) em = std::format("({})", pImpl->errorMessage.c_str());
+			if (!pImpl->errorMessage.empty()) em = std::format("({})", pImpl->errorMessage.c_str());
 			else em = "";
 
 			CALUMI::Utilities::StringContainer output("FILE ERROR: [");
-			output += pImpl->path.StringContainer();
+			output += pImpl->path.strContainer();
 			output += "]: ";
 			output += fileCodeString.c_str();
 			output += em.c_str();

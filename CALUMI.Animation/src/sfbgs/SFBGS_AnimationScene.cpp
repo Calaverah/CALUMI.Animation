@@ -386,7 +386,7 @@ namespace CALUMI{ namespace SFBGS{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
 
         if (scene->Rig().BoneEntries().empty())
         {
@@ -396,7 +396,7 @@ namespace CALUMI{ namespace SFBGS{
 
         const char* rigExt = ".rig";
         const char* afExt  = ".af";
-        if (scene->Rig().RigName().Empty())
+        if (scene->Rig().RigName().empty())
         {
             *errorMessageHolder += "[CALUMI.Animation API] Empty string found for Rig Name";
             return false;
@@ -452,7 +452,7 @@ namespace CALUMI{ namespace SFBGS{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
 
         if (scene->Rig().BoneEntries().empty())
         {
@@ -527,7 +527,7 @@ namespace CALUMI{ namespace SFBGS{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
 
         std::filesystem::path rigPath(sfbgsRigPath);
         //const char* afExt = ".af";
@@ -592,7 +592,7 @@ namespace CALUMI{ namespace SFBGS{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
         
         std::filesystem::path rigPath(sfbgsRigPath);
         const char* afExt = ".af";
@@ -642,7 +642,7 @@ namespace CALUMI{ namespace SFBGS{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
 
         if (numberOfFiles < 1 || !filePathsArray)
         {
@@ -727,7 +727,7 @@ namespace CALUMI{ namespace SFBGS{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
 
         if (!filePath)
         {
@@ -761,7 +761,7 @@ namespace CALUMI{ namespace SFBGS{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
         
         if (!filePath)
         {
@@ -803,7 +803,7 @@ namespace CALUMI{ namespace SFBGS{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
 
         if (!filePath)
         {
@@ -854,7 +854,7 @@ namespace CALUMI{ namespace SFBGS{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
 
         if (!filePath)
         {

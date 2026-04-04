@@ -84,7 +84,7 @@ namespace CALUMI {
                 if (SCOMPARE(pImpl->animations.at(i).AnimationTitle(), "") == 0)
                 {
                     Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> tempOutput;
-                    tempOutput.SetErrorValue("[CALUMI.Animation API] Empty string found for Animation Title");
+                    tempOutput.setErrorValue("[CALUMI.Animation API] Empty string found for Animation Title");
                     return tempOutput;
                 }
                 Utilities::PathContainer pathToAdd(directoryPath);
@@ -136,7 +136,7 @@ namespace CALUMI {
         {
             Utilities::StringContainer tempErrorMessage;
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->Clear();
+            errorMessageHolder->clear();
 
             if (source->Animations().size() <= index)
             {
@@ -172,7 +172,7 @@ namespace CALUMI {
         {
             Utilities::StringContainer tempErrorMessage;
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->Clear();
+            errorMessageHolder->clear();
 
             if (rig->BoneEntries().empty())
             {
@@ -191,7 +191,7 @@ namespace CALUMI {
         {
             Utilities::StringContainer tempErrorMessage;
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->Clear();
+            errorMessageHolder->clear();
 
             if (SCOMPARE(animation->AnimationTitle(), "") == 0)
             {

@@ -26,14 +26,14 @@ namespace CALUMI {
 		//Checking if file exists
 		if (!std::filesystem::exists(inputPath.w_str()))
 		{
-			output.SetErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::FileNotFound, inputPath.w_str(), ec.message().c_str() });
+			output.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::FileNotFound, inputPath.w_str(), ec.message().c_str() });
 			return output;
 		}
 
 		//Checking if file is file
 		if (!std::filesystem::is_regular_file(inputPath.w_str(), ec))
 		{
-			output.SetErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::NotAFile, inputPath.w_str(), ec.message().c_str() });
+			output.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::NotAFile, inputPath.w_str(), ec.message().c_str() });
 			return output;
 		}
 
@@ -41,19 +41,19 @@ namespace CALUMI {
 		const auto size = std::filesystem::file_size(inputPath.w_str(), ec);
 		if (ec)
 		{
-			output.SetErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::ReadFailure, inputPath.w_str(), ec.message().c_str() });
+			output.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::ReadFailure, inputPath.w_str(), ec.message().c_str() });
 			return output;
 		}
 		if (size < 4) //no file should be less than 4 bytes, if so it is too small to contain any useful information worth reading
 		{
-			output.SetErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::FileTooSmall, inputPath.w_str(), ec.message().c_str() });
+			output.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::FileTooSmall, inputPath.w_str(), ec.message().c_str() });
 			return output;
 		}
 
 		std::ifstream file(inputPath.w_str(), std::ios::binary);
 		if (!file)
 		{
-			output.SetErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::PermissionDenied, inputPath.w_str(), ec.message().c_str() });
+			output.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::PermissionDenied, inputPath.w_str(), ec.message().c_str() });
 			return output;
 		}
 
@@ -80,7 +80,7 @@ namespace CALUMI {
 		if (!file.read(buffer.data(), buffer.size()))
 		{
 			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.SetErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::ReadFailure, inputPath.w_str(), ec.message().c_str() });
+			tempOutput.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::ReadFailure, inputPath.w_str(), ec.message().c_str() });
 			return tempOutput;
 		}
 		
@@ -147,7 +147,7 @@ namespace CALUMI {
 		if (!result.has_value())
 		{
 			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.SetErrorValue(result.error());
+			tempOutput.setErrorValue(result.error());
 			return tempOutput;
 		}
 
@@ -161,7 +161,7 @@ namespace CALUMI {
 		if (!result.has_value())
 		{
 			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.SetErrorValue(result.error());
+			tempOutput.setErrorValue(result.error());
 			return tempOutput;
 		}
 
@@ -170,7 +170,7 @@ namespace CALUMI {
 		if (!extResult.has_value())
 		{
 			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.SetErrorValue(extResult.error());
+			tempOutput.setErrorValue(extResult.error());
 			return tempOutput;
 		}
 
@@ -183,7 +183,7 @@ namespace CALUMI {
 		if (!result.has_value())
 		{
 			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.SetErrorValue(result.error());
+			tempOutput.setErrorValue(result.error());
 			return tempOutput;
 		}
 
@@ -192,7 +192,7 @@ namespace CALUMI {
 		if (!extResult.has_value()) 
 		{
 			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.SetErrorValue(extResult.error());
+			tempOutput.setErrorValue(extResult.error());
 			return tempOutput;
 		}
 
@@ -201,7 +201,7 @@ namespace CALUMI {
 		if (!sizeResult.has_value())
 		{
 			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.SetErrorValue(sizeResult.error());
+			tempOutput.setErrorValue(sizeResult.error());
 			return tempOutput;
 		}
 
@@ -214,7 +214,7 @@ namespace CALUMI {
 		if (!result.has_value())
 		{
 			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.SetErrorValue(result.error());
+			tempOutput.setErrorValue(result.error());
 			return tempOutput;
 		}
 
@@ -223,7 +223,7 @@ namespace CALUMI {
 		if (!sizeResult.has_value())
 		{
 			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.SetErrorValue(sizeResult.error());
+			tempOutput.setErrorValue(sizeResult.error());
 			return tempOutput;
 		}
 
@@ -247,7 +247,7 @@ namespace CALUMI {
 			if (!std::filesystem::is_regular_file(outputPath.w_str(), ec))
 			{
 				Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> tempOutput;
-				tempOutput.SetErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::NotAFile, outputPath.w_str(), ec.message().c_str() });
+				tempOutput.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::NotAFile, outputPath.w_str(), ec.message().c_str() });
 				return tempOutput; //We found an entry with this path and it is not a file to be written to
 			}
 
@@ -255,7 +255,7 @@ namespace CALUMI {
 			if(!file.is_open())
 			{
 				Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> tempOutput;
-				tempOutput.SetErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::PermissionDenied, outputPath.w_str(), ec.message().c_str() });
+				tempOutput.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::PermissionDenied, outputPath.w_str(), ec.message().c_str() });
 				return tempOutput;
 			}
 		}
@@ -265,7 +265,7 @@ namespace CALUMI {
 			if (!file.is_open())
 			{
 				Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> tempOutput;
-				tempOutput.SetErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::UnknownErrorCode, outputPath.w_str(), ec.message().c_str() });
+				tempOutput.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::UnknownErrorCode, outputPath.w_str(), ec.message().c_str() });
 				return tempOutput;
 			}
 		}
@@ -275,7 +275,7 @@ namespace CALUMI {
 		{
 			file.close();
 			Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> tempOutput;
-			tempOutput.SetErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::WriteFailure, outputPath.w_str(), ec.message().c_str() });
+			tempOutput.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::WriteFailure, outputPath.w_str(), ec.message().c_str() });
 			return tempOutput;
 		}
 		file.close();
@@ -285,8 +285,8 @@ namespace CALUMI {
 	Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToBinaryFile(const Utilities::PathContainer& outputPath, const Utilities::StringContainer& buffer)
 	{
 		Utilities::VectorContainer<char> vBuffer;
-		vBuffer.reserve(buffer.Length(true));
-		for (std::size_t i = 0; i < buffer.Length(); i++)
+		vBuffer.reserve(buffer.length(true));
+		for (std::size_t i = 0; i < buffer.length(); i++)
 		{
 			vBuffer.push_back(buffer.at(i));
 		}

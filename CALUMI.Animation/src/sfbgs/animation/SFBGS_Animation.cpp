@@ -952,7 +952,7 @@ namespace CALUMI{
 			if (!buffer.has_value())
 			{
 				Utilities::ExpectedContainer<bool, Utilities::FileError> tempOutput;
-				tempOutput.SetErrorValue(buffer.error());
+				tempOutput.setErrorValue(buffer.error());
 				return tempOutput;
 			}
 

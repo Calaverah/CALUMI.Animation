@@ -150,7 +150,7 @@ namespace CALUMI {
 			/**
 			 * @brief Serialization of the Starfield Animation Package
 			 * @param indents Amount of spaces for formatting
-			 * @return The serialized struct as a StringContainer
+			 * @return The serialized struct as a strContainer
 			 */
 			Utilities::StringContainer ToJSON(std::size_t indents) const override;
 
@@ -209,7 +209,7 @@ namespace CALUMI {
 			/**
 			 * @brief 
 			 * @param animation 
-			 * @return Size of amended block vector 
+			 * @return size of amended block vector 
 			 */
 			CALUMIANIMATION_API uint16_t SFBGSAnimationPackage_GetAmendedBlockCountC(UNIV::Animation* animation);
 

@@ -45,7 +45,7 @@ namespace CALUMI{ namespace UNIV{
         if (pImpl->_boneEntries.size() == 0)
         {
             Utilities::ExpectedContainer<bool, Utilities::StringContainer> tempOutput;
-            tempOutput.SetErrorValue("No Bone Entries For This Rig Have Been Found");
+            tempOutput.setErrorValue("No Bone Entries For This Rig Have Been Found");
             return tempOutput;
         }
 
@@ -56,7 +56,7 @@ namespace CALUMI{ namespace UNIV{
             if (!result.second)
             {
                 Utilities::ExpectedContainer<bool, Utilities::StringContainer> tempOutput;
-                tempOutput.SetErrorValue("Two Bone Entries Share The Same Name In This Rig"); //Duplicate name found
+                tempOutput.setErrorValue("Two Bone Entries Share The Same Name In This Rig"); //Duplicate name found
                 return tempOutput;
             }
         }
@@ -69,7 +69,7 @@ namespace CALUMI{ namespace UNIV{
         if (pImpl->_boneEntries.size() < 2)
         {
             Utilities::ExpectedContainer<bool, Utilities::StringContainer> tempOutput;
-            tempOutput.SetErrorValue("Not Enough Bone Entries To Validate Parent Entries");
+            tempOutput.setErrorValue("Not Enough Bone Entries To Validate Parent Entries");
             return tempOutput;
         }
 
@@ -78,7 +78,7 @@ namespace CALUMI{ namespace UNIV{
             if (pImpl->_boneEntries.at(i).GetParentBoneIndex() >= i)
             {
                 Utilities::ExpectedContainer<bool, Utilities::StringContainer> tempOutput;
-                tempOutput.SetErrorValue(std::format("Bone Index: {} Has Parent Index: {}. Parent Index Cannot Be Greater Than Or Equal To Bone's Index", i, pImpl->_boneEntries.at(i).GetParentBoneIndex()).c_str());
+                tempOutput.setErrorValue(std::format("Bone Index: {} Has Parent Index: {}. Parent Index Cannot Be Greater Than Or Equal To Bone's Index", i, pImpl->_boneEntries.at(i).GetParentBoneIndex()).c_str());
                 return tempOutput;
             }
         }
@@ -439,7 +439,7 @@ namespace CALUMI{ namespace UNIV{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
 
         if (boneName == "")
         {
@@ -495,7 +495,7 @@ namespace CALUMI{ namespace UNIV{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
 
         if (bone->GetBoneTypeProperty()->GetType() != UNIV::BoneType::Twist)
         {
@@ -528,7 +528,7 @@ namespace CALUMI{ namespace UNIV{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
 
         if (bone->GetBoneTypeProperty()->GetType() != UNIV::BoneType::Twist)
         {
@@ -544,7 +544,7 @@ namespace CALUMI{ namespace UNIV{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
 
         if (bone->GetBoneTypeProperty()->GetType() != UNIV::BoneType::Twist)
         {
@@ -592,7 +592,7 @@ namespace CALUMI{ namespace UNIV{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
 
         if (source->BoneEntries().size() <= index)
         {
@@ -636,7 +636,7 @@ namespace CALUMI{ namespace UNIV{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
         auto result = source->ValidateNames();
         if (!result.has_value())
         {
@@ -649,7 +649,7 @@ namespace CALUMI{ namespace UNIV{
     {
         Utilities::StringContainer tempErrorMessage;
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->Clear();
+        errorMessageHolder->clear();
         auto result = source->ValidateParentIndices();
         if (!result.has_value())
         {

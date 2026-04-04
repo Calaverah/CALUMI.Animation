@@ -216,7 +216,7 @@ namespace CALUMI {
         {
             Utilities::StringContainer tempErrorMessage;
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->Clear();
+            errorMessageHolder->clear();
 
             *errorMessageHolder += "[CALUMI.Animation API] ";
             *errorMessageHolder += SFBGS_ANIM_PACKAGE;
@@ -241,7 +241,7 @@ namespace CALUMI {
         {
             Utilities::StringContainer tempErrorMessage;
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->Clear();
+            errorMessageHolder->clear();
 
             *errorMessageHolder += "[CALUMI.Animation API] ";
             *errorMessageHolder += SFBGS_ANIM_PACKAGE;
@@ -363,7 +363,7 @@ namespace CALUMI {
         {
             Utilities::StringContainer tempErrorMessage;
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->Clear();
+            errorMessageHolder->clear();
 
             *errorMessageHolder += "[CALUMI.Animation API] ";
 
@@ -400,7 +400,7 @@ namespace CALUMI {
         {
             Utilities::StringContainer tempErrorMessage;
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->Clear();
+            errorMessageHolder->clear();
 
             *errorMessageHolder += "[CALUMI.Animation API] ";
 
@@ -436,7 +436,7 @@ namespace CALUMI {
         {
             Utilities::StringContainer tempErrorMessage;
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->Clear();
+            errorMessageHolder->clear();
 
             *errorMessageHolder += "[CALUMI.Animation API] ";
 
@@ -468,7 +468,7 @@ namespace CALUMI {
         {
             Utilities::StringContainer tempErrorMessage;
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->Clear();
+            errorMessageHolder->clear();
 
             *errorMessageHolder += "[CALUMI.Animation API] ";
 
@@ -499,7 +499,7 @@ namespace CALUMI {
         {
             Utilities::StringContainer tempErrorMessage;
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->Clear();
+            errorMessageHolder->clear();
 
             *errorMessageHolder += "[CALUMI.Animation API] ";
 

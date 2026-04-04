@@ -614,7 +614,7 @@ namespace CALUMI {
 		{
 			Utilities::StringContainer tempErrorMessage;
 			Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-			errorMessageHolder->Clear();
+			errorMessageHolder->clear();
 
 			if (source->AnimationBlocks().size() <= index || index < 0)
 			{
@@ -653,7 +653,7 @@ namespace CALUMI {
 		{
 			Utilities::StringContainer tempErrorMessage;
 			Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-			errorMessageHolder->Clear();
+			errorMessageHolder->clear();
 
 			if (!anim->AddAnimationBlock(*blockToAdd, overwrite))
 			{
@@ -668,7 +668,7 @@ namespace CALUMI {
 		{
 			Utilities::StringContainer tempErrorMessage;
 			Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-			errorMessageHolder->Clear();
+			errorMessageHolder->clear();
 
 			if (boneName == "")
 			{
@@ -727,7 +727,7 @@ namespace CALUMI {
 		{
 			Utilities::StringContainer tempErrorMessage;
 			Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-			errorMessageHolder->Clear();
+			errorMessageHolder->clear();
 
 			if (index >= source->RotationSequence().size() || index < 0)
 			{
@@ -765,7 +765,7 @@ namespace CALUMI {
 		{
 			Utilities::StringContainer tempErrorMessage;
 			Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-			errorMessageHolder->Clear();
+			errorMessageHolder->clear();
 
 			if (index >= source->TranslationSequence().size() || index < 0)
 			{
@@ -803,7 +803,7 @@ namespace CALUMI {
 		{
 			Utilities::StringContainer tempErrorMessage;
 			Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-			errorMessageHolder->Clear();
+			errorMessageHolder->clear();
 
 			if (index >= source->ScalarSequence().size() || index < 0)
 			{
@@ -841,7 +841,7 @@ namespace CALUMI {
 		{
 			Utilities::StringContainer tempErrorMessage;
 			Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-			errorMessageHolder->Clear();
+			errorMessageHolder->clear();
 
 			if (index >= source->PrioritySequence().size() || index < 0)
 			{

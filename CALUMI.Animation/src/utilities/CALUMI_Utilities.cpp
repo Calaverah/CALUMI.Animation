@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <cctype>
 
 namespace CALUMI {
 	namespace Utilities {
@@ -101,7 +102,7 @@ namespace CALUMI {
 
 		bool IsNumeric(const Utilities::StringContainer& str)
 		{
-			for (std::size_t i = 0; i < str.Length(); i++)
+			for (std::size_t i = 0; i < str.length(); i++)
 			{
 				char _char = str.at(i);
 				if (_char != '-' && _char != '.' && !std::isdigit(_char)) return false;
@@ -113,13 +114,17 @@ namespace CALUMI {
 		struct PathContainer::Impl
 		{
 			std::filesystem::path path;
+#ifdef _WIN32
 			std::string cStringHolder;
+#else
+			std::wstring wStringHolder;
+#endif
 		};
-		void PathContainer::Clear()
+		void PathContainer::clear()
 		{
 			pImpl->path.clear();
 		}
-		bool PathContainer::Empty()
+		bool PathContainer::empty()
 		{
 			return pImpl->path.empty();
 		}
@@ -161,7 +166,7 @@ namespace CALUMI {
 			return *this;
 		}
 
-		StringContainer PathContainer::StringContainer() const
+		StringContainer PathContainer::strContainer() const
 		{
 			Utilities::StringContainer output(pImpl->path.string().c_str());
 			return output;
@@ -169,13 +174,22 @@ namespace CALUMI {
 
 		const wchar_t* PathContainer::w_str() const
 		{
+#ifdef _WIN32
 			return pImpl->path.c_str();
+#else
+			pImpl->wStringHolder = pImpl->path.c_str();
+			return pImpl->wStringHolder.c_str();
+#endif
 		}
 
 		const char* PathContainer::c_str() const
 		{
+#ifdef _WIN32
 			pImpl->cStringHolder = pImpl->path.string();
 			return pImpl->cStringHolder.c_str();
+#else
+			return pImpl->path.c_str();
+#endif
 		}
 
 		PathContainer::PathContainer()
@@ -299,11 +313,11 @@ namespace CALUMI {
 		{
 			return pImpl->string > other.pImpl->string;
 		}
-		void StringContainer::Clear()
+		void StringContainer::clear()
 		{
 			pImpl->string.clear();
 		}
-		bool StringContainer::Empty()
+		bool StringContainer::empty()
 		{
 			return pImpl->string.empty();
 		}
@@ -311,7 +325,7 @@ namespace CALUMI {
 		{
 			return pImpl->string.at(idx);
 		}
-		std::size_t StringContainer::Length(bool includeNull) const
+		std::size_t StringContainer::length(bool includeNull) const
 		{
 			std::size_t output = includeNull ? 1 : 0;
 			output += pImpl->string.length();
@@ -682,37 +696,37 @@ namespace CALUMI {
 		{
 			pImpl->strings.push_back(Entry(string));
 		}
-		std::size_t StringMap::GetOffset(std::size_t idx)
+		std::size_t StringMap::getOffset(std::size_t idx)
 		{
 			return pImpl->strings.at(idx).offset;
 		}
-		std::size_t StringMap::GetFinalOffset()
+		std::size_t StringMap::getFinalOffset()
 		{
 			return pImpl->finalOffset;
 		}
-		bool StringMap::HasOffset(std::size_t idx)
+		bool StringMap::hasOffset(std::size_t idx)
 		{
 			return pImpl->strings.at(idx).hasOffset;
 		}
-		void StringMap::SetFinalOffset(std::size_t offset)
+		void StringMap::setFinalOffset(std::size_t offset)
 		{
 			pImpl->finalOffset = offset;
 		}
-		void StringMap::Reserve(std::size_t size)
+		void StringMap::reserve(std::size_t size)
 		{
 			pImpl->strings.reserve(size);
 		}
-		const char* StringMap::GetString(std::size_t idx)
+		const char* StringMap::c_str(std::size_t idx)
 		{
 			return pImpl->strings.at(idx).string.c_str();
 		}
-		std::size_t StringMap::StringLength(std::size_t idx, bool includeNull)
+		std::size_t StringMap::stringLength(std::size_t idx, bool includeNull)
 		{
 			std::size_t output = includeNull ? 1 : 0;
 			output += pImpl->strings.at(idx).string.length();
 			return output;
 		}
-		std::size_t StringMap::Size()
+		std::size_t StringMap::size()
 		{
 			return pImpl->strings.size();
 		}
@@ -778,7 +792,7 @@ namespace CALUMI {
 			pImpl->expected = std::unexpected(uValue);
 		}*/
 		template<typename T, typename U>
-		void ExpectedContainer<T, U>::SetErrorValue(U uValue)
+		void ExpectedContainer<T, U>::setErrorValue(U uValue)
 		{
 			pImpl->expected = std::unexpected(uValue);
 		}
@@ -883,7 +897,7 @@ namespace CALUMI {
 
 	std::size_t GetStringContainerSizeC(StringContainer* source)
 	{
-		return source->Length();
+		return source->length();
 	}
 
 	void DeleteStringContainerC(StringContainer* ptr)

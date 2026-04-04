@@ -336,7 +336,7 @@ namespace CALUMI {namespace SFBGS{
 		if (!BoneTagExists(key) || static_cast<uint8_t>(key) >= SFBGSMAPSIZE)
 			return false;
 
-		return !pImpl->rigMap[static_cast<uint8_t>(key)].Empty();
+		return !pImpl->rigMap[static_cast<uint8_t>(key)].empty();
 	}
 
 	bool SFBGS_RigPackage::AddBoneToMap(BoneMapKey key, const char* boneName, bool overwrite)
@@ -366,7 +366,7 @@ namespace CALUMI {namespace SFBGS{
 		if (!BoneTagExists(key) || static_cast<uint8_t>(key) >= SFBGSMAPSIZE)
 			return false;
 
-		pImpl->rigMap[static_cast<uint8_t>(key)].Clear();
+		pImpl->rigMap[static_cast<uint8_t>(key)].clear();
 		return true;
 	}
 
@@ -434,7 +434,7 @@ namespace CALUMI {namespace SFBGS{
 	{
 		Utilities::StringContainer tempErrorMessage;
 		Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-		errorMessageHolder->Clear();
+		errorMessageHolder->clear();
 
 		*errorMessageHolder += "[CALUMI.Animation API] ";
 		*errorMessageHolder += SFBGS_RIG_PACKAGE;
@@ -458,7 +458,7 @@ namespace CALUMI {namespace SFBGS{
 	{
 		Utilities::StringContainer tempErrorMessage;
 		Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-		errorMessageHolder->Clear();
+		errorMessageHolder->clear();
 
 		*errorMessageHolder += "[CALUMI.Animation API] ";
 		*errorMessageHolder += SFBGS_RIG_PACKAGE;
@@ -498,7 +498,7 @@ namespace CALUMI {namespace SFBGS{
 	{
 		Utilities::StringContainer tempErrorMessage;
 		Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-		errorMessageHolder->Clear();
+		errorMessageHolder->clear();
 		if(SFBGS_RigPackage* rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig->getPackageManager().getPackage(SFBGS_RIG_PACKAGE)))
 		{
 			if (rigPackage->AddBoneToMap(static_cast<SFBGS_RigPackage::BoneMapKey>(key), boneName, overwrite))

@@ -21,7 +21,7 @@ namespace CALUMI { namespace Utilities {
 		ExpectedContainer(T&& expectedValue) noexcept;
 		ExpectedContainer();
 		~ExpectedContainer();
-		void SetErrorValue(U uValue);
+		void setErrorValue(U uValue);
 		void SetValue(T tValue);
 
 		bool has_value() const noexcept;
@@ -45,9 +45,9 @@ namespace CALUMI { namespace Utilities {
 		
 		const char* c_str() const;
 		const char* data() const;
-		void Clear();
-		bool Empty();
-		std::size_t Length(bool includeNull = false) const;
+		void clear();
+		bool empty();
+		std::size_t length(bool includeNull = false) const;
 
 		std::size_t find(const char* s, std::size_t pos = 0) const;
 
@@ -90,11 +90,11 @@ namespace CALUMI { namespace Utilities {
 		PathContainer(const PathContainer&& source) noexcept;
 		~PathContainer();
 
-		StringContainer StringContainer() const;
+		StringContainer strContainer() const;
 		const wchar_t* w_str() const;
 		const char* c_str() const;
-		void Clear();
-		bool Empty();
+		void clear();
+		bool empty();
 
 		bool has_extension() const;
 		bool has_filename() const;
@@ -129,14 +129,14 @@ namespace CALUMI { namespace Utilities {
 		void push_back(const char* string, std::size_t offset);
 		void push_back(const char* string);
 
-		std::size_t GetOffset(std::size_t idx);
-		std::size_t GetFinalOffset();
-		bool HasOffset(std::size_t idx);
-		void SetFinalOffset(std::size_t offset);
-		void Reserve(std::size_t size);
-		const char* GetString(std::size_t idx);
-		std::size_t StringLength(std::size_t idx, bool includeNull = false);
-		std::size_t Size();
+		std::size_t getOffset(std::size_t idx);
+		std::size_t getFinalOffset();
+		bool hasOffset(std::size_t idx);
+		void setFinalOffset(std::size_t offset);
+		void reserve(std::size_t size);
+		const char* c_str(std::size_t idx);
+		std::size_t stringLength(std::size_t idx, bool includeNull = false);
+		std::size_t size();
 
 	private:
 		struct Impl;
@@ -183,9 +183,6 @@ namespace CALUMI { namespace Utilities {
 		VectorContainer<T> range(std::size_t first, std::size_t last) const;
 
 		std::size_t end() const;
-		
-		/*template<typename T>
-		friend void fill(VectorContainer<T>& vector, T fillValue);*/
 
 	private:
 		struct Impl;

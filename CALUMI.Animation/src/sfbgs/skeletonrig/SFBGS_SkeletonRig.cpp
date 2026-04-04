@@ -15,14 +15,14 @@ namespace CALUMI {namespace SFBGS {
 	static Utilities::StringMap CreateStringVectorFromRig(const CALUMI::UNIV::SkeletonRig& inputRig)
 	{
 		Utilities::StringMap stringMap;
-		stringMap.Reserve(inputRig.BoneEntries().size());
+		stringMap.reserve(inputRig.BoneEntries().size());
 		std::size_t iOffset = 0;
 		for (int i = 0; i < inputRig.BoneEntries().size(); i++)
 		{
 			stringMap.push_back(inputRig.BoneEntries().at(i).Name().c_str(), iOffset);
-			iOffset += inputRig.BoneEntries().at(i).Name().Length(true);
+			iOffset += inputRig.BoneEntries().at(i).Name().length(true);
 		}
-		stringMap.SetFinalOffset(iOffset);
+		stringMap.setFinalOffset(iOffset);
 		return stringMap;
 	}
 
@@ -36,7 +36,7 @@ namespace CALUMI {namespace SFBGS {
 		for (unsigned int i = 0; i < stringEntries.size(); i++)
 		{
 			output.push_back(offset);
-			offset += static_cast<unsigned int>(stringEntries.at(i).Length(true));
+			offset += static_cast<unsigned int>(stringEntries.at(i).length(true));
 		}
 		return output;
 	}
@@ -445,7 +445,7 @@ namespace CALUMI {namespace SFBGS {
 		LowPrecision(sfbgsRigPackage.getPrecisionSet().low());
 		HighPrecision(sfbgsRigPackage.getPrecisionSet().high());
 
-		FileSize(FileSize() + static_cast<unsigned int>(stringResult.GetFinalOffset()));
+		FileSize(FileSize() + static_cast<unsigned int>(stringResult.getFinalOffset()));
 		BoneMapOffset(BoneMapOffset() + static_cast<unsigned int>(80 + 96 * input.BoneEntries().size()));
 		FileSize(FileSize() + BoneMapOffset() + SFBGSMAPSIZE * 2);
 
@@ -459,7 +459,7 @@ namespace CALUMI {namespace SFBGS {
 			toAdd.pImpl->_localRotation = input.BoneEntries().at(i).LocalRotation();
 			toAdd.pImpl->_globalRotation = input.BoneEntries().at(i).GlobalRotation();
 			toAdd.pImpl->_position = input.BoneEntries().at(i).LocalPosition();
-			toAdd.pImpl->_nameOffset = static_cast<uint64_t>(stringResult.GetOffset(i));
+			toAdd.pImpl->_nameOffset = static_cast<uint64_t>(stringResult.getOffset(i));
 			toAdd.pImpl->_parentBoneIndex = input.BoneEntries().at(i).GetParentBoneIndex();
 
 			toAdd.pImpl->_mirrorBoneIndex = (toAdd.pImpl->_mirrorBoneIndex < 0 || toAdd.pImpl->_mirrorBoneIndex >= input.BoneEntries().size()) ? i : input.BoneEntries().at(i).GetMirrorBoneIndex();
@@ -483,10 +483,10 @@ namespace CALUMI {namespace SFBGS {
 		BoneMapArray(vecPackage);
 
 
-		StringArray().reserve(stringResult.Size());
-		for (int j = 0; j < stringResult.Size(); j++)
+		StringArray().reserve(stringResult.size());
+		for (int j = 0; j < stringResult.size(); j++)
 		{
-			StringArray().push_back(stringResult.GetString(j));
+			StringArray().push_back(stringResult.c_str(j));
 		}
 	}
 
@@ -647,7 +647,7 @@ namespace CALUMI {namespace SFBGS {
 		if (!buffer.has_value())
 		{
 			Utilities::ExpectedContainer<bool, Utilities::FileError> tempOutput;
-			tempOutput.SetErrorValue(buffer.error());
+			tempOutput.setErrorValue(buffer.error());
 			return tempOutput;
 		}
 
@@ -718,7 +718,7 @@ namespace CALUMI {namespace SFBGS {
 		for (uint16_t i = 0; i < pImpl->_boneCount; i++)
 		{
 			pImpl->_stringArray.push_back(&buffer.value().at(pImpl->_boneEntries.at(i).getNameOffset()));
-			addressIndex += (pImpl->_stringArray.at(i).Length(true));
+			addressIndex += (pImpl->_stringArray.at(i).length(true));
 		}
 
 #ifdef DEBUG_BUILD
@@ -824,12 +824,12 @@ namespace CALUMI {namespace SFBGS {
 		{
 			for (uint16_t i = 0; i < pImpl->_stringArray.size(); i++)
 			{
-				for (int j = 0; j < pImpl->_stringArray.at(i).Length(); j++)
+				for (int j = 0; j < pImpl->_stringArray.at(i).length(); j++)
 				{
 					buffer.push_back(pImpl->_stringArray.at(i).at(j));
 				}
 				buffer.push_back('\0');
-				addressIndex += pImpl->_stringArray.at(i).Length(true);
+				addressIndex += pImpl->_stringArray.at(i).length(true);
 			}
 		}
 
