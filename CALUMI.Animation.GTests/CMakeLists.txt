@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.26)
 project(CALUMI.Animation.GTests)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -21,15 +21,36 @@ enable_testing()
 add_executable(run_tests test_main.cpp
   math/quaternion.cpp
   math/vector3.cpp
-  datacompression/sequence_compression.cpp)
+  datacompression/sequence_compression.cpp 
+  mockdata/mock_sfbgs.cpp)
 
 if(UNIX)
-  set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/linux-release/libCALUMI.Animation.so)
+
+    #lib path
+  set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/linux-debug/libCALUMI.Animation.so)
+
 elseif(APPLE)
+
   set(LIB_PATH )
+
 elseif(WIN32)
-  set(LIB_PATH )
+
+    #lib path
+  set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/win-debug/CALUMI.Animation.lib)
+    #copy dll
+  add_custom_command(TARGET run_tests POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/win-debug/CALUMI.Animation.dll"
+        $<TARGET_FILE_DIR:run_tests>
+)
+
 endif()
+
+add_custom_command(TARGET run_tests POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+    "${PROJECT_SOURCE_DIR}/mockdata/assets"
+    "$<TARGET_FILE_DIR:run_tests>/assets"
+)
 
 target_link_libraries(run_tests PRIVATE ${LIB_PATH})
 

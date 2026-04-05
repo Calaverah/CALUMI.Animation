@@ -231,12 +231,14 @@ namespace CALUMI { namespace Utilities {
 	template struct CALUMIANIMATION_API VectorContainer<const char*>;
 	template struct CALUMIANIMATION_API VectorContainer<uint8_t>;
 	template struct CALUMIANIMATION_API VectorContainer<int8_t>;
-    // template struct CALUMIANIMATION_API VectorContainer<uint16_t>;
-    // template struct CALUMIANIMATION_API VectorContainer<int16_t>;
+#ifdef _WIN32
+    template struct CALUMIANIMATION_API VectorContainer<uint16_t>;
+    template struct CALUMIANIMATION_API VectorContainer<int16_t>;
+    template struct CALUMIANIMATION_API VectorContainer<int64_t>;
+    template struct CALUMIANIMATION_API VectorContainer<uint64_t>;
+#endif
 	template struct CALUMIANIMATION_API VectorContainer<uint32_t>;
 	template struct CALUMIANIMATION_API VectorContainer<int32_t>;
-    // template struct CALUMIANIMATION_API VectorContainer<int64_t>;
-    // template struct CALUMIANIMATION_API VectorContainer<uint64_t>;
 	template struct CALUMIANIMATION_API VectorContainer<float>;
 	template struct CALUMIANIMATION_API VectorContainer<double>;
 	template struct CALUMIANIMATION_API VectorContainer<StringContainer>;

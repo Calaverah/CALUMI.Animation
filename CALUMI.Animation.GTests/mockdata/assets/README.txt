@@ -1,0 +1,1 @@
+The data in this file is not meant to be game accurate, it's general purpose is to test if expected inputs are parsed correctly. Do not attempt to load these assets into game.
