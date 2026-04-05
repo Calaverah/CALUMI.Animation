@@ -463,7 +463,7 @@ namespace CALUMI {namespace SFBGS {
 			toAdd.pImpl->_nameOffset = static_cast<uint64_t>(stringResult.getOffset(i));
 			toAdd.pImpl->_parentBoneIndex = input.BoneEntries().at(i).GetParentBoneIndex();
 
-			toAdd.pImpl->_mirrorBoneIndex = (toAdd.pImpl->_mirrorBoneIndex < 0 || toAdd.pImpl->_mirrorBoneIndex >= input.BoneEntries().size()) ? i : input.BoneEntries().at(i).GetMirrorBoneIndex();
+			toAdd.pImpl->_mirrorBoneIndex = (input.BoneEntries().at(i).GetMirrorBoneIndex() < 0 || input.BoneEntries().at(i).GetMirrorBoneIndex() >= input.BoneEntries().size()) ? i : input.BoneEntries().at(i).GetMirrorBoneIndex();
 
 			if (!toAdd.SetBoneTypeFromUNIV(input.BoneEntries().at(i)))
 			{
@@ -473,7 +473,10 @@ namespace CALUMI {namespace SFBGS {
 			{
 				toAdd.pImpl->_twistDriverMqnIndex = toAdd.pImpl->_parentBoneIndex;
 			}
-			else { animatedBoneCount++; }
+			else 
+			{ 
+				animatedBoneCount++; 
+			}
 
 			BoneEntries().push_back(toAdd);
 		}

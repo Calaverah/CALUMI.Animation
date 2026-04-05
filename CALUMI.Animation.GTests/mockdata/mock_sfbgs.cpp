@@ -82,7 +82,6 @@ GTEST(Rig_00)
 	for (uint8_t i = 0; i < rig00Bones.size() && i < str00.size(); i++)
 	{
 		//Rotations
-
 		EXPECT_TRUE(rig00Bones.at(i).LocalRotation().AreEqual(q00Locals[i], 0.000001f));
 		EXPECT_TRUE(rig00Bones.at(i).GlobalRotation().AreEqual(q00Locals[0], 0.000001f));
 
@@ -96,7 +95,7 @@ GTEST(Rig_00)
 		EXPECT_TRUE(rig00Bones.at(i).getTwistDriverMqnIndex() == -1);
 		EXPECT_TRUE(rig00Bones.at(i).getTwistDriverIndex() == -1);
 		EXPECT_TRUE(rig00Bones.at(i).getTwistDriverWeight() == twistW00[i]);
-		EXPECT_TRUE(rig00Bones.at(i).getMirrorBoneIndex() == -1);
+		EXPECT_TRUE(rig00Bones.at(i).getMirrorBoneIndex() == i);
 
 		//Padding 
 #ifdef _DEBUG
