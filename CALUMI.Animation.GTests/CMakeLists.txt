@@ -4,6 +4,7 @@ project(CALUMI.Animation.GTests)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
 # Setup GTest via FetchContent
 include(FetchContent)
 FetchContent_Declare(
@@ -24,6 +25,8 @@ add_executable(run_tests test_main.cpp
   datacompression/sequence_compression.cpp 
   mockdata/mock_sfbgs.cpp)
 
+target_compile_definitions(run_tests PRIVATE DEBUG_BUILD)
+
 if(UNIX)
 
     #lib path
@@ -42,7 +45,7 @@ elseif(WIN32)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/win-debug/CALUMI.Animation.dll"
         $<TARGET_FILE_DIR:run_tests>
-)
+      )
 
 endif()
 

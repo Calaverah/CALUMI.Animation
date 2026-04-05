@@ -36,7 +36,7 @@ GTEST(Rig_00)
 
 	EXPECT_TRUE(rig00.DEBUG_CheckAssumedHeaderEntries() == 0);
 
-#ifdef _DEBUG
+#ifdef DEBUG_BUILD
 	//End Of Header
 	auto rig00EOH = rig00.EndOfHeader();
 	bool rig00EOHsize = rig00EOH.size() == stdEOH.size();
@@ -98,8 +98,8 @@ GTEST(Rig_00)
 		EXPECT_TRUE(rig00Bones.at(i).getMirrorBoneIndex() == i);
 
 		//Padding 
-#ifdef _DEBUG
-		EXPECT_TRUE(rig00Bones.at(i).getPad01() == -1);
+#ifdef DEBUG_BUILD
+        EXPECT_TRUE(rig00Bones.at(i).getPad01() == -1);
 		EXPECT_TRUE(rig00Bones.at(i).getPad02() == 0);
 #endif
 		//Strings
@@ -110,10 +110,14 @@ GTEST(Rig_00)
 	//Bone Names
 	if (str00.size() == 3)
 	{
-		str00.at(0) == "Fountain_Root";
-		str00.at(1) == "PlanetObject";
-		str00.at(2) == "RingObject";
+        EXPECT_TRUE(str00.at(0) == "Fountain_Root");
+        EXPECT_TRUE(str00.at(1) == "PlanetObject");
+        EXPECT_TRUE(str00.at(2) == "RingObject");
 	}
+    else
+    {
+        ADD_FAILURE() << "Bone Name Array Size Does Not Match";
+    }
 
 	//Bone Map
 	bool boneMapSize = rig00.BoneMapArray().size() == 157;

@@ -148,16 +148,16 @@ namespace CALUMI { namespace Utilities {
 	template<class T>
 	struct CALUMIANIMATION_API VectorContainer
 	{
-		constexpr VectorContainer() noexcept;
-		constexpr ~VectorContainer();
+        VectorContainer() noexcept;
+        ~VectorContainer();
 		explicit VectorContainer(std::size_t count);
-		constexpr VectorContainer(std::size_t count, const T& value);
-		constexpr VectorContainer(const VectorContainer& source);
-		constexpr VectorContainer(VectorContainer&& source) noexcept;
+        VectorContainer(std::size_t count, const T& value);
+        VectorContainer(const VectorContainer& source);
+        VectorContainer(VectorContainer&& source) noexcept;
 
 
-		constexpr VectorContainer& operator= (const VectorContainer& other);
-		constexpr VectorContainer& operator= (VectorContainer&& other) noexcept;
+        VectorContainer& operator= (const VectorContainer& other);
+        VectorContainer& operator= (VectorContainer&& other) noexcept;
 
 
 		void push_back(const T& input);

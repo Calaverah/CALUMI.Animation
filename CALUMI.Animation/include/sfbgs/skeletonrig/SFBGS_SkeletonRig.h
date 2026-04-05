@@ -60,7 +60,7 @@ namespace CALUMI {namespace SFBGS {
 		int32_t getTerm08() const;
 		void setTerm08(int32_t value);
 
-#ifdef _DEBUG
+#ifdef DEBUG_BUILD
 		int32_t getPad01() const;
 		int32_t getPad02() const;
 #endif
@@ -124,7 +124,7 @@ namespace CALUMI {namespace SFBGS {
 		Utilities::VectorContainer<int16_t> BoneMapArray() const;
 		void BoneMapArray(Utilities::VectorContainer<int16_t>& input);
 		Utilities::VectorContainer<Utilities::StringContainer>& StringArray() const;
-#ifdef _DEBUG
+#ifdef DEBUG_BUILD
 		Utilities::VectorContainer<char> EndOfHeader() const;
 #endif
 

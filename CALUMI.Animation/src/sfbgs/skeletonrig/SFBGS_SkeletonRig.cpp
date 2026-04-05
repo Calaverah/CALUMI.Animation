@@ -88,7 +88,7 @@ namespace CALUMI {namespace SFBGS {
 		Impl() = default;
 	};
 
-#ifdef _DEBUG
+#ifdef DEBUG_BUILD
 	int32_t SkeletonBone::getPad01() const
 	{
 		return pImpl->_pad01;
@@ -618,7 +618,7 @@ namespace CALUMI {namespace SFBGS {
 		return output;
 	}
 
-#ifdef _DEBUG
+#ifdef DEBUG_BUILD
 	Utilities::VectorContainer<char> CALUMI::SFBGS::SkeletonRig::EndOfHeader() const
 	{
 		Utilities::VectorContainer<char> output(16);

@@ -441,13 +441,14 @@ namespace CALUMI {
 			template<class InputIt>
 			Impl(InputIt f, InputIt l) { std::vector<T> temp(f, l); vector = temp; }
 		};
+
 		template<class T>
-		constexpr VectorContainer<T>::VectorContainer() noexcept
+        VectorContainer<T>::VectorContainer() noexcept
 		{
 			pImpl = new Impl;
 		}
 		template<class T>
-		constexpr VectorContainer<T>::~VectorContainer()
+        VectorContainer<T>::~VectorContainer()
 		{
 			if (pImpl)
 				delete pImpl;
@@ -458,17 +459,17 @@ namespace CALUMI {
 			pImpl = new Impl(count);
 		}
 		template<class T>
-		constexpr VectorContainer<T>::VectorContainer(std::size_t count, const T& value)
+        VectorContainer<T>::VectorContainer(std::size_t count, const T& value)
 		{
 			pImpl = new Impl(count, value);
 		}
 		template<class T>
-		constexpr VectorContainer<T>::VectorContainer(const VectorContainer<T>& source)
+        VectorContainer<T>::VectorContainer(const VectorContainer<T>& source)
 		{
 			pImpl = new Impl(source.pImpl->vector);
 		}
 		template<class T>
-		constexpr VectorContainer<T>::VectorContainer(VectorContainer&& source) noexcept
+        VectorContainer<T>::VectorContainer(VectorContainer&& source) noexcept
 		{
 			pImpl = new Impl(source.pImpl->vector);
 		}
@@ -479,13 +480,13 @@ namespace CALUMI {
 			pImpl = new Impl(first, last);
 		}*/
 		template<class T>
-		constexpr VectorContainer<T>& VectorContainer<T>::operator=(const VectorContainer<T>& other)
+        VectorContainer<T>& VectorContainer<T>::operator=(const VectorContainer<T>& other)
 		{
 			pImpl->vector = other.pImpl->vector;
 			return *this;
 		}
 		template<class T>
-		constexpr VectorContainer<T>& VectorContainer<T>::operator=(VectorContainer&& other) noexcept
+        VectorContainer<T>& VectorContainer<T>::operator=(VectorContainer&& other) noexcept
 		{
 			pImpl->vector = other.pImpl->vector;
 			return *this;
