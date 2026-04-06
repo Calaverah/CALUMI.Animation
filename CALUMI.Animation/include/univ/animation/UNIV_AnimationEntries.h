@@ -132,6 +132,11 @@ namespace CALUMI {namespace UNIV {
 	VECTORDEC(ScalarSequence, Scalar)
 	VECTORDEC(PrioritySequence, Priority)
 
+    void SortTranslationSequence(TranslationSequence& sq, bool highToLow = false);
+    void SortRotationSequence(RotationSequence& sq, bool highToLow = false);
+    void SortScalarSequence(ScalarSequence& sq, bool highToLow = false);
+    void SortPrioritySequence(PrioritySequence& sq, bool highToLow = false);
+
 	extern  "C" {
 		CALUMIANIMATION_API Rotation* CreateRotationEntryC(uint16_t frame, float x, float y, float z, float w);
 

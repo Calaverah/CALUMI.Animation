@@ -153,10 +153,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @param indents Spaces for formatting
 		 * @return The strContainer of the serialized struct
 		 */
-		Utilities::StringContainer ToJSON(uint64_t indents) const;
-
-		//Dummy operator for vector
-		bool operator<(const SkeletonBone& other);
+        Utilities::StringContainer ToJSON(uint64_t indents) const;
 
 		/// @}
 

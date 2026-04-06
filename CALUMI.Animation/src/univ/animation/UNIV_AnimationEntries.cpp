@@ -1,4 +1,4 @@
-//Copyright © 2025-2026 Calaverah. All rights reserved.
+//Copyright ï¿½ 2025-2026 Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -322,6 +322,54 @@ namespace CALUMI {
         VECTORDEF(RotationSequence, Rotation)
         VECTORDEF(ScalarSequence, Scalar)
         VECTORDEF(PrioritySequence, Priority)
+
+        void SortTranslationSequence(TranslationSequence &sq, bool highToLow)
+        {
+            if (highToLow)
+                {
+                    std::sort(&sq.at(0), &sq.at(sq.size()));
+                }
+                else
+            {
+                    std::sort(&sq.at(sq.size()), &sq.at(0));
+            }
+        }
+
+        void SortRotationSequence(RotationSequence& sq, bool highToLow)
+        {
+            if (highToLow)
+            {
+                std::sort(&sq.at(0), &sq.at(sq.size()));
+            }
+            else
+            {
+                std::sort(&sq.at(sq.size()), &sq.at(0));
+            }
+        }
+
+        void SortScalarSequence(ScalarSequence& sq, bool highToLow)
+        {
+            if (highToLow)
+            {
+                std::sort(&sq.at(0), &sq.at(sq.size()));
+            }
+            else
+            {
+                std::sort(&sq.at(sq.size()), &sq.at(0));
+            }
+        }
+
+        void SortPrioritySequence(PrioritySequence& sq, bool highToLow)
+        {
+            if (highToLow)
+            {
+                std::sort(&sq.at(0), &sq.at(sq.size()));
+            }
+            else
+            {
+                std::sort(&sq.at(sq.size()), &sq.at(0));
+            }
+        }
 
 }
 }

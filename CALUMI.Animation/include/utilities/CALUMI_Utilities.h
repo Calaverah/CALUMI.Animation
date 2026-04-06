@@ -183,7 +183,7 @@ struct CALUMIANIMATION_API CLASS \
 		void insert(uint64_t pos, uint64_t count, T item);\
 		T* data() noexcept;\
 		const T* data() const noexcept; \
-		void sort(bool highToLow = false); \
+        /* void sort(bool highToLow = false);*/ \
 		\
 		CLASS range(uint64_t first, uint64_t last) const; \
 		\

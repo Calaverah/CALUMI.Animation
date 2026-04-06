@@ -73,9 +73,6 @@ namespace CALUMI {namespace SFBGS {
 
 		SkeletonBone& operator=(const SkeletonBone& input);
 
-		//dummy operator
-		bool operator<(const SkeletonBone& input);
-
 		/// <summary>
 		/// Fills end of buffer with 96 bytes and copies the information into the vector.
 		/// </summary>

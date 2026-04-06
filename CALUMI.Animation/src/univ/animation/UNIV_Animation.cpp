@@ -105,12 +105,7 @@ namespace CALUMI {
 			output += Utilities::Indent(indents).c_str();
 			output += "}";
 			return output;
-		}
-
-		bool Animation::operator<(const Animation& other)
-		{
-			return false;
-		}
+        }
 
 #pragma endregion
 

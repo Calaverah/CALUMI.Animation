@@ -79,17 +79,6 @@
 		{ \
 			return pImpl->vector.data(); \
 		} \
-		void CLASS::sort(bool highToLow) \
-		{ \
-			if (highToLow) \
-			{ \
-				std::sort(pImpl->vector.end(), pImpl->vector.begin()); \
-			} \
-			else \
-			{ \
-				std::sort(pImpl->vector.begin(), pImpl->vector.end()); \
-			} \
-		} \
 		CLASS CLASS::range(uint64_t first, uint64_t last) const \
 		{ \
 			if (first > last) return CLASS(); \
@@ -106,3 +95,15 @@
 			\
 			return output;	\
 		}
+
+        /* void CLASS::sort(bool highToLow) \
+        { \
+                if (highToLow) \
+            { \
+                    std::sort(pImpl->vector.end(), pImpl->vector.begin()); \
+            } \
+                else \
+            { \
+                    std::sort(pImpl->vector.begin(), pImpl->vector.end()); \
+            } \
+        } \ */

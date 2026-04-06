@@ -109,7 +109,7 @@ namespace CALUMI{ namespace SFBGS{
             CALUMI::UNIV::Scalar toAdd(inputBlock.ScalarKeyFrames().at(i), inputBlock.ScalarEntries().at(i)/5000.0f);
             output.push_back(toAdd);
         }
-        output.sort();
+        SortScalarSequence(output);
         return output;
     }
 
@@ -134,7 +134,7 @@ namespace CALUMI{ namespace SFBGS{
             CALUMI::UNIV::Priority toAdd(inputBlock.BonePriorityKeyFrames().at(i), inputBlock.BonePriorityEntries().at(i));
             output.push_back(toAdd);
         }
-        output.sort();
+        SortPrioritySequence(output);
         return output;
     }
 
@@ -166,7 +166,7 @@ namespace CALUMI{ namespace SFBGS{
             CALUMI::UNIV::Rotation toAdd(inputBlock.RotationKeyFrames().at(i), GetUniversalRotation(unfoldedPrefixes.at(i), inputBlock.RotationEntries().at(i)));
             output.push_back(toAdd);
         }
-        output.sort(false);
+        SortRotationSequence(output,false);
         return output;
     }
 
@@ -197,7 +197,7 @@ namespace CALUMI{ namespace SFBGS{
             CALUMI::UNIV::Translation toAdd(inputBlock.TranslationKeyFrames().at(i), GetUniversalTranslation(unfoldedPrefixes.at(i), inputBlock.TranslationEntries().at(i), highPrecision, lowPrecision));
             output.push_back(toAdd);
         }
-        output.sort();
+        SortTranslationSequence(output);
         return output;
     }
 

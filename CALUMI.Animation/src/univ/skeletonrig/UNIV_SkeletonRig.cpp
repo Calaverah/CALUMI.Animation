@@ -400,10 +400,6 @@ namespace CALUMI{ namespace UNIV{
         output += (Utilities::Indent(indents) + "}").c_str();
         return output.c_str();
     }
-    bool SkeletonBone::operator<(const SkeletonBone& other)
-    {
-        return false;
-    }
 #pragma endregion
 
 #pragma region EXTERN"C"

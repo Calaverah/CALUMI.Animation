@@ -96,9 +96,6 @@ namespace CALUMI {namespace UNIV {
 
 		Utilities::StringContainer ToJSON(const uint64_t indents = 0) const;
 
-		//Dummy operator for vector
-		bool operator<(const Animation& other);
-
 	private:
 		struct Impl;
 		Impl* pImpl;

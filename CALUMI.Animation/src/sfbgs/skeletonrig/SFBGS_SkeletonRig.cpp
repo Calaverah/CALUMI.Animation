@@ -186,11 +186,7 @@ namespace CALUMI {namespace SFBGS {
 	SkeletonBone::SkeletonBone(const SkeletonBone& input) : SkeletonBone()
 	{
 		*pImpl = *(input.pImpl);
-	}
-	bool SkeletonBone::operator<(const SkeletonBone& input)
-	{
-		return false;
-	}
+    }
 	SkeletonBone& SkeletonBone::operator=(const SkeletonBone& input)
 	{
 		*pImpl = *(input.pImpl);
