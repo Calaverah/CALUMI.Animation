@@ -27,14 +27,13 @@ add_executable(run_tests test_main.cpp
 
 target_compile_definitions(run_tests PRIVATE DEBUG_BUILD)
 
-if(UNIX)
+if(LINUX)
 
-    #lib path
   set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/linux-debug/libCALUMI.Animation.so)
 
 elseif(APPLE)
 
-  set(LIB_PATH )
+  set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/mac-debug/libCALUMI.Animation.dylib)
 
 elseif(WIN32)
 
