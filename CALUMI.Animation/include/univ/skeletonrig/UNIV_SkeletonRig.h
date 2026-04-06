@@ -153,7 +153,10 @@ namespace CALUMI{ namespace UNIV{
 		 * @param indents Spaces for formatting
 		 * @return The strContainer of the serialized struct
 		 */
-		Utilities::StringContainer ToJSON(std::size_t indents) const;
+		Utilities::StringContainer ToJSON(uint64_t indents) const;
+
+		//Dummy operator for vector
+		bool operator<(const SkeletonBone& other);
 
 		/// @}
 
@@ -164,6 +167,8 @@ namespace CALUMI{ namespace UNIV{
 	private:
 		friend struct SkeletonRig;
 	};
+
+	VECTORDEC(SkeletonBoneVector, SkeletonBone)
 
 	/**
 	 * @brief Universal method of representing a skeleton/rig/armature.
@@ -204,7 +209,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @brief The entry list for this rig's bones
 		 * @return Vector container, currently allows full control of the listing until further implementation is added
 		 */
-		Utilities::VectorContainer<SkeletonBone>& BoneEntries() const;
+		SkeletonBoneVector& BoneEntries() const;
 		/**
 		 * @brief 
 		 * @return Reference to this rig's package manager 
@@ -217,14 +222,14 @@ namespace CALUMI{ namespace UNIV{
 
 		/**
 		 * @brief Checks whether all of the bone names in this rig are unique
-		 * @return Whether all names in the rig are unique and valid, includes an error message in the "Expected" container
+		 * @return Whether all names in the rig are unique and valid
 		 */
-		Utilities::ExpectedContainer< bool, Utilities::StringContainer> ValidateNames() const;
+		bool ValidateNames() const;
 		/**
 		 * @brief Checks whether all of the bones in this rig have a parent index that is lower than the respective bone's index
-		 * @return Whether all parent indices in the rig are valid, includes an error message in the "Expected" container
+		 * @return Whether all parent indices in the rig are valid
 		 */
-		Utilities::ExpectedContainer< bool, Utilities::StringContainer> ValidateParentIndices();
+		bool ValidateParentIndices();
 		/**
 		 * @brief Checks if each bone mirror's another exclusively, or not at all
 		 * @return Whether each bone has an exclusive mirror, or no mirror at all
@@ -270,7 +275,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @param newBoneName The new name for the bone
 		 * @return Whether the operation was a success
 		 */
-		bool RenameBone(std::size_t boneIndex, const char* newBoneName);
+		bool RenameBone(uint64_t boneIndex, const char* newBoneName);
 		/**
 		 * @brief Pairs two bones to mirror eachother
 		 * @param i1 Index of the first bone
@@ -294,12 +299,12 @@ namespace CALUMI{ namespace UNIV{
 		 * @brief Returns the bones that are animation driven, rather than dynamically controlled
 		 * @return The number of animated bones (ie not in-game twist)
 		 */
-		std::size_t GetAnimatedBoneCount();
+		uint64_t GetAnimatedBoneCount();
 		/**
 		 * @brief Returns the total amount of bones, whether they are driven by curves or dynamically in game
 		 * @return The total number of bones on this rig
 		 */
-		std::size_t GetBoneCount() const;
+		uint64_t GetBoneCount() const;
 		/**
 		 * @brief Finds the 
 		 * @param boneName 
@@ -318,7 +323,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @param indents Spaces for formatting
 		 * @return The strContainer of the serialized struct
 		 */
-		Utilities::StringContainer ToJSON(std::size_t indents) const;
+		Utilities::StringContainer ToJSON(uint64_t indents) const;
 		
 		/// @}
 		/** @name Static Members
@@ -373,7 +378,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @param boneName Name of the bone, must be unique
 		 * @param parentIndex Index of this bone's parent
 		 * @param usingLocalValues Whether the given transform is relative to the origin (false) or the bone's parent (true)
-		 * @param errorMessage Ptr to a string container, if not null a status message is given here
+		 * @param _message Ptr to a string container, if not null a status message is given here
 		 * @return Whether the operation was successful
 		 */
 		CALUMIANIMATION_API bool AddBoneToSkeletonRigC(
@@ -399,7 +404,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @param boneName Name of the bone, must be unique
 		 * @param parentIndex Index of this bone's parent
 		 * @param usingLocalValues Whether the given transform is relative to the origin (false) or the bone's parent (true)
-		 * @param errorMessage Ptr to a string container, if not null a status message is given here
+		 * @param _message Ptr to a string container, if not null a status message is given here
 		 * @return Whether the operation was successful
 		 */
 		CALUMIANIMATION_API bool AddBoneToSkeletonRigWithEulerC(
@@ -449,7 +454,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @param reassign True if the type should be set if not already set as twist type
 		 * @param twistDriverIndex 
 		 * @param twistDriverWeight 
-		 * @param errorMessage Error message container
+		 * @param _message Error message container
 		 * @return Wether the operation was successful
 		 */
 		CALUMIANIMATION_API bool SetTwistBonePropertiesC(SkeletonBone* bone, bool reassign, int32_t twistDriverIndex, float twistDriverWeight, Utilities::StringContainer* errorMessage);
@@ -457,7 +462,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @brief 
 		 
 		 * @param bone 
-		 * @param errorMessage 
+		 * @param _message 
 		 * @return Index of the bone that dynamically drives this bone, in game, -1 if none exists or is not set
 		 */
 		CALUMIANIMATION_API int GetTwistBoneDriverIndexC(SkeletonBone* bone, Utilities::StringContainer* errorMessage);
@@ -465,7 +470,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @brief 
 		 
 		 * @param bone 
-		 * @param errorMessage 
+		 * @param _message 
 		 * @return Drive parameter of the twist bone interaction, each game may have a different amount of weightedness for this value
 		 */
 		CALUMIANIMATION_API float GetTwistBoneDriverWeightC(SkeletonBone* bone, Utilities::StringContainer* errorMessage);
@@ -514,14 +519,14 @@ namespace CALUMI{ namespace UNIV{
 		 * @param source Ptr to skeleton rig to check
 		 * @return The total number of bones belonging to this rig
 		 */
-		CALUMIANIMATION_API std::size_t GetSkeletonRigBoneCountC(SkeletonRig* source);
+		CALUMIANIMATION_API uint64_t GetSkeletonRigBoneCountC(SkeletonRig* source);
 		/**
 		 * @brief Animated bones that are not driven dynamically in game
 		 
 		 * @param source Ptr to rig 
 		 * @return The total number of animated bones that driven by animation's data prior to runtime
 		 */
-		CALUMIANIMATION_API std::size_t GetSkeletonRigAnimatedBoneCountC(SkeletonRig* source);
+		CALUMIANIMATION_API uint64_t GetSkeletonRigAnimatedBoneCountC(SkeletonRig* source);
 		/**
 		 * @brief 
 		 
@@ -534,7 +539,7 @@ namespace CALUMI{ namespace UNIV{
 		 
 		 * @param source Ptr to rig
 		 * @param index Index of the skeleton bone in question
-		 * @param errorMessage optional error message container
+		 * @param _message optional error message container
 		 * @return Ptr, if one exists, to the skeleton bone at the given index
 		 */
 		CALUMIANIMATION_API SkeletonBone* GetSkeletonBoneC(SkeletonRig* source, int index, Utilities::StringContainer* errorMessage);
@@ -572,18 +577,16 @@ namespace CALUMI{ namespace UNIV{
 		 * @brief Checks whether all of the bone names in this rig are unique
 		 
 		 * @param source Ptr to the skeleton rig in question
-		 * @param errorMessage Optional: Ptr to an emptry string container for error messages
 		 * @return Whether all names in the rig are unique and valid
 		 */
-		CALUMIANIMATION_API bool ValidateSkeletonRigNamesC(SkeletonRig* source, Utilities::StringContainer* errorMessage);
+		CALUMIANIMATION_API bool ValidateSkeletonRigNamesC(SkeletonRig* source);
 		/**
 		 * @brief Checks whether all of the bones in this rig have a parent index that is lower than the respective bone's index
 		 
 		 * @param source Ptr to the skeleton rig in question
-		 * @param errorMessage Optional: Ptr to an empty string container for error messages
 		 * @return Whether the parent bone indices are valid
 		 */
-		CALUMIANIMATION_API bool ValidateSkeletonRigParentIndicesC(SkeletonRig* source, Utilities::StringContainer* errorMessage);
+		CALUMIANIMATION_API bool ValidateSkeletonRigParentIndicesC(SkeletonRig* source);
 	}
 
 	/**
@@ -591,8 +594,3 @@ namespace CALUMI{ namespace UNIV{
 	* @}
 	*/
 }}
-
-#pragma warning(disable: 4661)
-_VECTORTEMPLATE(CALUMI::UNIV::SkeletonBone);
-_VECTORTEMPLATE(CALUMI::UNIV::IRigPackage*);
-#pragma warning(default: 4661)

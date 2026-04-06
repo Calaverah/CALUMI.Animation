@@ -3,6 +3,8 @@
 //Contact: Calaverahmedia@gmail.com
 
 #include "internalplatform.h"
+#include "internalvectordef.h"
+#include <io/FileValidation.h>
 #include <AnimStarfield>
 #include <print>
 #include <AnimFile>
@@ -10,14 +12,15 @@
 #include <iostream>
 #include <vector>
 #include <cstring>
+#include <utilities/CALUMI_Utilities.h>
 
 namespace CALUMI {namespace SFBGS {
 
-	static Utilities::StringMap CreateStringVectorFromRig(const CALUMI::UNIV::SkeletonRig& inputRig)
+	static Utilities::StringList CreateStringVectorFromRig(const CALUMI::UNIV::SkeletonRig& inputRig)
 	{
-		Utilities::StringMap stringMap;
+		Utilities::StringList stringMap;
 		stringMap.reserve(inputRig.BoneEntries().size());
-		std::size_t iOffset = 0;
+		uint64_t iOffset = 0;
 		for (int i = 0; i < inputRig.BoneEntries().size(); i++)
 		{
 			stringMap.push_back(inputRig.BoneEntries().at(i).Name().c_str(), iOffset);
@@ -27,7 +30,7 @@ namespace CALUMI {namespace SFBGS {
 		return stringMap;
 	}
 
-	static std::vector<unsigned int> _getSFBGSRigStringOffsets(const Utilities::VectorContainer<Utilities::StringContainer>& stringEntries)
+	static std::vector<unsigned int> _getSFBGSRigStringOffsets(const Utilities::StringList& stringEntries)
 	{
 		std::vector<unsigned int> output;
 		//offset should be 80 + 96+boneCount + 314... Yes we are static casting twice, it's just to prevent an overflow message and clean up compiler messages
@@ -37,7 +40,7 @@ namespace CALUMI {namespace SFBGS {
 		for (unsigned int i = 0; i < stringEntries.size(); i++)
 		{
 			output.push_back(offset);
-			offset += static_cast<unsigned int>(stringEntries.at(i).length(true));
+			offset += static_cast<unsigned int>(stringEntries.stringLength(i, true));
 		}
 		return output;
 	}
@@ -101,7 +104,7 @@ namespace CALUMI {namespace SFBGS {
 
 	SkeletonBone::SkeletonBone() { pImpl = new Impl; }
 	SkeletonBone::~SkeletonBone() { if (pImpl) delete pImpl; }
-	SkeletonBone::SkeletonBone(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex) : SkeletonBone() 
+	SkeletonBone::SkeletonBone(Utilities::BufferObject& buffer, unsigned long long& addressIndex) : SkeletonBone() 
 	{
 		//QUAT UNITS ARE SERIALIZED AS WXYZ AND NEED TO BE READ INTO XYZW
 
@@ -184,6 +187,10 @@ namespace CALUMI {namespace SFBGS {
 	{
 		*pImpl = *(input.pImpl);
 	}
+	bool SkeletonBone::operator<(const SkeletonBone& input)
+	{
+		return false;
+	}
 	SkeletonBone& SkeletonBone::operator=(const SkeletonBone& input)
 	{
 		*pImpl = *(input.pImpl);
@@ -214,9 +221,9 @@ namespace CALUMI {namespace SFBGS {
 	int32_t SkeletonBone::getTerm08() const { return pImpl->_pad03; }
 	void SkeletonBone::setTerm08(int32_t value) { pImpl->_pad03 = value; }
 
-	void SkeletonBone::SerializeIntoBuffer(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex) const
+	void SkeletonBone::SerializeIntoBuffer(Utilities::BufferObject& buffer, unsigned long long& addressIndex) const
 	{
-		buffer.insert(buffer.end(), 96, 0);
+		buffer.insert(buffer.endPos(), 96, 0);
 
 		//QUAT UNITS ARE SERIALIZED AS WXYZ AND NEED TO BE WRITTEN FROM XYZW
 		{
@@ -407,7 +414,7 @@ namespace CALUMI {namespace SFBGS {
 		/// </summary>
 		uint8_t _endOfHeader[16] = { 0x0, 0x0, 0x43, 0x41, 0x4C, 0x55, 0x4D, 0x49, 0x44, 0x56, 0x52, 0x53, 0x4A, 0x4F, 0x4A, 0x4F };
 
-		Utilities::VectorContainer<SkeletonBone> _boneEntries;
+		SkeletonBoneVector _boneEntries;
 
 		//Don't ask why I'm initializing like this... let's just move on.
 		int16_t _boneMapArray[SFBGSMAPSIZE] =
@@ -421,7 +428,7 @@ namespace CALUMI {namespace SFBGS {
 		/// <summary>
 		/// String array for the bone names
 		/// </summary>
-		Utilities::VectorContainer<Utilities::StringContainer> _stringArray;
+		Utilities::StringList _stringArray;
 		Impl() = default;
 	};
 
@@ -483,7 +490,7 @@ namespace CALUMI {namespace SFBGS {
 
 		BoneCountAnimated(animatedBoneCount);
 
-		Utilities::VectorContainer<int16_t> vecPackage = SFBGS_RigPackage::ConvertSFBGSRigPackage(input);
+		Utilities::S16Vector vecPackage = SFBGS_RigPackage::ConvertSFBGSRigPackage(input);
 		BoneMapArray(vecPackage);
 
 
@@ -494,7 +501,7 @@ namespace CALUMI {namespace SFBGS {
 		}
 	}
 
-	void SkeletonRig::BoneMapArray(Utilities::VectorContainer<int16_t>& input)
+	void SkeletonRig::BoneMapArray(Utilities::S16Vector& input)
 	{
 		for (uint8_t j = 0; j < input.size(); j++)
 		{
@@ -502,7 +509,7 @@ namespace CALUMI {namespace SFBGS {
 		}
 	}
 
-	Utilities::VectorContainer<Utilities::StringContainer>& SkeletonRig::StringArray() const
+	Utilities::StringList& SkeletonRig::StringArray() const
 	{
 		return pImpl->_stringArray;
 	}
@@ -547,9 +554,10 @@ namespace CALUMI {namespace SFBGS {
 		pImpl->_boneMapOffset = offset;
 	}
 
-	Utilities::VectorContainer<uint64_t> SkeletonRig::getMatchingThree() const
+	Utilities::U64Vector SkeletonRig::getMatchingThree() const
 	{
-		Utilities::VectorContainer<uint64_t> output(3);
+		Utilities::U64Vector output;
+		output.resize(3);
 		output.at(0) = pImpl->_matchingThree[0];
 		output.at(1) = pImpl->_matchingThree[1];
 		output.at(2) = pImpl->_matchingThree[2];
@@ -603,14 +611,15 @@ namespace CALUMI {namespace SFBGS {
 		pImpl->_boneCountAnimated = count;
 	}
 
-	Utilities::VectorContainer<SkeletonBone>& SkeletonRig::BoneEntries() const
+	SkeletonBoneVector& SkeletonRig::BoneEntries() const
 	{
 		return pImpl->_boneEntries;
 	}
 
-	Utilities::VectorContainer<int16_t> SkeletonRig::BoneMapArray() const
+	Utilities::S16Vector SkeletonRig::BoneMapArray() const
 	{
-		Utilities::VectorContainer<int16_t> output; output.reserve(SFBGSMAPSIZE);
+		Utilities::S16Vector output; 
+		output.reserve(SFBGSMAPSIZE);
 		for (uint8_t i = 0; i < SFBGSMAPSIZE; i++)
 		{
 			output.push_back(pImpl->_boneMapArray[i]);
@@ -619,9 +628,10 @@ namespace CALUMI {namespace SFBGS {
 	}
 
 #ifdef DEBUG_BUILD
-	Utilities::VectorContainer<char> CALUMI::SFBGS::SkeletonRig::EndOfHeader() const
+	Utilities::CharVector CALUMI::SFBGS::SkeletonRig::EndOfHeader() const
 	{
-		Utilities::VectorContainer<char> output(16);
+		Utilities::CharVector output;
+		output.resize(16);
 		for (uint8_t i = 0; i < 16; i++)
 		{
 			output.at(i) = pImpl->_endOfHeader[i];
@@ -630,29 +640,29 @@ namespace CALUMI {namespace SFBGS {
 	}
 #endif 
 
-    Utilities::ExpectedContainer<bool, Utilities::FileError> SkeletonRig::ReadFromFile(Utilities::PathContainer&& inputFilePath)
+    Utilities::FileResult SkeletonRig::ReadFromFile(Utilities::PathContainer&& inputFilePath)
 	{
 		Utilities::PathContainer output(inputFilePath);
 		return ReadFromFile(output);
 	}
 	bool SkeletonRig::IsMarkedMannequin() const
 	{
-		for (std::size_t i = 0; i < pImpl->_boneEntries.size(); i++)
+		for (uint64_t i = 0; i < pImpl->_boneEntries.size(); i++)
 		{
 			if (pImpl->_boneEntries.at(i).getTwistDriverMqnIndex() > 0)
 				return true;
 		}
 		return false;
 	}
-	Utilities::ExpectedContainer<bool, Utilities::FileError> SkeletonRig::ReadFromFile(Utilities::PathContainer& inputFilePath)
+	Utilities::FileResult SkeletonRig::ReadFromFile(Utilities::PathContainer& inputFilePath)
 	{
-		Utilities::VectorContainer<Utilities::StringContainer>vec; vec.push_back(".rig");
+		Utilities::StringList vec; 
+		vec.push_back(".rig");
+
 		auto buffer = CALUMI::ValidateFile(inputFilePath, vec, 80, 0, true);
-		if (!buffer.has_value())
+		if (buffer.result().hasError())
 		{
-			Utilities::ExpectedContainer<bool, Utilities::FileError> tempOutput;
-			tempOutput.setErrorValue(buffer.error());
-			return tempOutput;
+			return buffer.result();
 		}
 
 		//iterator tracking
@@ -660,80 +670,83 @@ namespace CALUMI {namespace SFBGS {
 
 		//HEADER READING
 		{
-			std::memcpy(&pImpl->_versionNumber, &buffer.value().at(addressIndex), sizeof(pImpl->_versionNumber));
+			std::memcpy(&pImpl->_versionNumber, &buffer.at(addressIndex), sizeof(pImpl->_versionNumber));
 			addressIndex += sizeof(pImpl->_versionNumber);
 
-			std::memcpy(&pImpl->_fileSize, &buffer.value().at(addressIndex), sizeof(pImpl->_fileSize));
+			std::memcpy(&pImpl->_fileSize, &buffer.at(addressIndex), sizeof(pImpl->_fileSize));
 			addressIndex += sizeof(pImpl->_fileSize);
 
-			std::memcpy(&pImpl->_headerSize, &buffer.value().at(addressIndex), sizeof(pImpl->_headerSize));
+			std::memcpy(&pImpl->_headerSize, &buffer.at(addressIndex), sizeof(pImpl->_headerSize));
 			addressIndex += sizeof(pImpl->_headerSize);
 
-			std::memcpy(&pImpl->_headerEmpty01, &buffer.value().at(addressIndex), sizeof(pImpl->_headerEmpty01));
+			std::memcpy(&pImpl->_headerEmpty01, &buffer.at(addressIndex), sizeof(pImpl->_headerEmpty01));
 			addressIndex += sizeof(pImpl->_headerEmpty01);
 
-			std::memcpy(&pImpl->_boneMapOffset, &buffer.value().at(addressIndex), sizeof(pImpl->_boneMapOffset));
+			std::memcpy(&pImpl->_boneMapOffset, &buffer.at(addressIndex), sizeof(pImpl->_boneMapOffset));
 			addressIndex += sizeof(pImpl->_boneMapOffset);
 
-			std::memcpy(&pImpl->_headerEmpty02, &buffer.value().at(addressIndex), sizeof(pImpl->_headerEmpty02));
+			std::memcpy(&pImpl->_headerEmpty02, &buffer.at(addressIndex), sizeof(pImpl->_headerEmpty02));
 			addressIndex += sizeof(pImpl->_headerEmpty02);
 
-			std::memcpy(&pImpl->_matchingThree, &buffer.value().at(addressIndex), sizeof(pImpl->_matchingThree));
+			std::memcpy(&pImpl->_matchingThree, &buffer.at(addressIndex), sizeof(pImpl->_matchingThree));
 			addressIndex += sizeof(pImpl->_matchingThree);
 
-			std::memcpy(&pImpl->_lowPrecision, &buffer.value().at(addressIndex), sizeof(pImpl->_lowPrecision));
+			std::memcpy(&pImpl->_lowPrecision, &buffer.at(addressIndex), sizeof(pImpl->_lowPrecision));
 			addressIndex += sizeof(pImpl->_lowPrecision);
 
-			std::memcpy(&pImpl->_highPrecision, &buffer.value().at(addressIndex), sizeof(pImpl->_highPrecision));
+			std::memcpy(&pImpl->_highPrecision, &buffer.at(addressIndex), sizeof(pImpl->_highPrecision));
 			addressIndex += sizeof(pImpl->_highPrecision);
 
-			std::memcpy(&pImpl->_boneCount, &buffer.value().at(addressIndex), sizeof(pImpl->_boneCount));
+			std::memcpy(&pImpl->_boneCount, &buffer.at(addressIndex), sizeof(pImpl->_boneCount));
 			addressIndex += sizeof(pImpl->_boneCount);
 
-			std::memcpy(&pImpl->_boneCountAnimated, &buffer.value().at(addressIndex), sizeof(pImpl->_boneCountAnimated));
+			std::memcpy(&pImpl->_boneCountAnimated, &buffer.at(addressIndex), sizeof(pImpl->_boneCountAnimated));
 			addressIndex += sizeof(pImpl->_boneCountAnimated);
 
-			std::memcpy(&pImpl->_headerEmpty03, &buffer.value().at(addressIndex), sizeof(pImpl->_headerEmpty03));
+			std::memcpy(&pImpl->_headerEmpty03, &buffer.at(addressIndex), sizeof(pImpl->_headerEmpty03));
 			addressIndex += sizeof(pImpl->_headerEmpty03);
 
-			std::memcpy(&pImpl->_endOfHeader, &buffer.value().at(addressIndex), sizeof(pImpl->_endOfHeader));
+			std::memcpy(&pImpl->_endOfHeader, &buffer.at(addressIndex), sizeof(pImpl->_endOfHeader));
 			addressIndex += sizeof(pImpl->_endOfHeader);
 		}
 
+#ifdef DEBUG_BUILD
 		//WARN IF FILE SIZE VAR != BUFFER
-		if (pImpl->_fileSize != buffer.value().size()) std::println("WARNING: THE VARIABLE, FILE SIZE = {} DOES NOT MATCH THE BUFFER SIZE OF {}", pImpl->_fileSize, buffer.value().size());
+		if (pImpl->_fileSize != buffer.size()) 
+			std::println("WARNING: THE VARIABLE, FILE SIZE = {} DOES NOT MATCH THE BUFFER SIZE OF {}", pImpl->_fileSize, buffer.size());
+#endif
 
 		//READ BONE ENTRIES IN ORDER
 		{
 			pImpl->_boneEntries.reserve(pImpl->_boneCount);
 			for (unsigned short i = 0; i < pImpl->_boneCount; i++)
 			{
-				pImpl->_boneEntries.push_back(SkeletonBone(buffer.value(), addressIndex));
+				pImpl->_boneEntries.push_back(SkeletonBone(buffer, addressIndex));
 			}
 		}
 
 
 		//READ SUFFIX
-		std::memcpy(&pImpl->_boneMapArray, &buffer.value().at(addressIndex), sizeof(pImpl->_boneMapArray));
+		std::memcpy(&pImpl->_boneMapArray, &buffer.at(addressIndex), sizeof(pImpl->_boneMapArray));
 		addressIndex += sizeof(pImpl->_boneMapArray);
 
 		//READ STRINGS
 		pImpl->_stringArray.reserve(pImpl->_boneCount);
 		for (uint16_t i = 0; i < pImpl->_boneCount; i++)
 		{
-			pImpl->_stringArray.push_back(&buffer.value().at(pImpl->_boneEntries.at(i).getNameOffset()));
-			addressIndex += (pImpl->_stringArray.at(i).length(true));
+			pImpl->_stringArray.push_back(&buffer.at(pImpl->_boneEntries.at(i).getNameOffset()));
+			addressIndex += (pImpl->_stringArray.stringLength(i, true));
 		}
 
 #ifdef DEBUG_BUILD
-		if (buffer.value().size() != addressIndex)
+		if (buffer.size() != addressIndex)
 		{
 			std::println("===========================================================");
 			std::println("===========================================================");
 			std::println("==WARNING CURRENT BUFFER ADDRESS IS NOT AT FINAL POSITION==");
-			std::println("BUFFER  SIZE: {}", buffer.value().size());
-			std::println("BUFFER START: {}", (void*)buffer.value().data());
-			std::println("Size+Start: {}", (void*)(buffer.value().size() + buffer.value().data()));
+			std::println("BUFFER  SIZE: {}", buffer.size());
+			std::println("BUFFER START: {}", (void*)buffer.data());
+			std::println("Size+Start: {}", (void*)(buffer.size() + buffer.data()));
 			std::println("===========================================================");
 			std::cout << "Press ENTER to continue running the program." << std::endl;
 			std::cin.get();
@@ -741,20 +754,20 @@ namespace CALUMI {namespace SFBGS {
 		}
 #endif
 
-		return true;
+		return {Utilities::FileResult::FileErrorCode::Success, inputFilePath.w_str(), ""};
 	}
 
-    Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> SkeletonRig::WriteToFile(Utilities::PathContainer&& outputFilePath)
+    Utilities::FileResult SkeletonRig::WriteToFile(Utilities::PathContainer&& outputFilePath)
 	{
 		Utilities::PathContainer output(outputFilePath);
 		return WriteToFile(output);
 	}
 
-	Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> SkeletonRig::WriteToFile(Utilities::PathContainer& outputFilePath)
+	Utilities::FileResult SkeletonRig::WriteToFile(Utilities::PathContainer& outputFilePath)
 	{
 		//LARGEST FILE: "D:/ModOrganizer/Starfield_Mod_Authoring_01/mods/ExtractedData/meshes/furniture/armillary/characterassets/skeleton.rig" at 18301 bytes
 
-		Utilities::VectorContainer<char> buffer;
+		Utilities::FileBufferResult buffer;
 		buffer.reserve(18500);
 
 		unsigned long long addressIndex = 0;
@@ -762,7 +775,7 @@ namespace CALUMI {namespace SFBGS {
 
 		//HEADER
 		{
-			buffer.insert(buffer.end(), 80, 0);
+			buffer.insert(buffer.endPos(), 80, 0);
 			std::memcpy(&buffer.at(addressIndex), &pImpl->_versionNumber, sizeof(pImpl->_versionNumber));
 			addressIndex += sizeof(pImpl->_versionNumber);
 
@@ -814,7 +827,7 @@ namespace CALUMI {namespace SFBGS {
 
 		//SUFFIX (PI SIZED SECTION)
 		{
-			buffer.insert(buffer.end(), sizeof(pImpl->_boneMapArray), -1);
+			buffer.insert(buffer.endPos(), sizeof(pImpl->_boneMapArray), -1);
 
 			//Setting header value to confirm offset. In case the SFBGS Rig Values were changed incorrectly by the user
 			pImpl->_boneMapOffset = static_cast<unsigned int>(addressIndex);
@@ -828,12 +841,12 @@ namespace CALUMI {namespace SFBGS {
 		{
 			for (uint16_t i = 0; i < pImpl->_stringArray.size(); i++)
 			{
-				for (int j = 0; j < pImpl->_stringArray.at(i).length(); j++)
+				for (int j = 0; j < pImpl->_stringArray.stringLength(i); j++)
 				{
-					buffer.push_back(pImpl->_stringArray.at(i).at(j));
+					buffer.push_back(*(pImpl->_stringArray.c_str(i) + j));
 				}
 				buffer.push_back('\0');
-				addressIndex += pImpl->_stringArray.at(i).length(true);
+				addressIndex += pImpl->_stringArray.stringLength(i, true);
 			}
 		}
 
@@ -879,7 +892,7 @@ namespace CALUMI {namespace SFBGS {
 			output += 0b100000;
 
 		int aCount = 0;
-		for (std::size_t i = 0; i < pImpl->_boneEntries.size(); i++)
+		for (uint64_t i = 0; i < pImpl->_boneEntries.size(); i++)
 		{
 			if (pImpl->_boneEntries.at(i).getBoneType() == SFBGS::SkeletonBone::BoneType::Default)
 			{
@@ -907,7 +920,7 @@ namespace CALUMI {namespace SFBGS {
 		for (unsigned int i = 0; i < pImpl->_boneEntries.size(); i++)
 		{
 			SFBGS::SkeletonBone& bone = pImpl->_boneEntries.at(i);
-			output.AddBoneToRig(bone.pImpl->_localRotation,bone.pImpl->_position,pImpl->_stringArray.at(i).c_str(), bone.pImpl->_parentBoneIndex, true);
+			output.AddBoneToRig(bone.pImpl->_localRotation,bone.pImpl->_position,pImpl->_stringArray.c_str(i), bone.pImpl->_parentBoneIndex, true);
 			bone.SetBoneTypeToUNIV(output.BoneEntries().at(i));
 			int setter = bone.pImpl->_mirrorBoneIndex == i ? -1 : bone.pImpl->_mirrorBoneIndex;
 			output.BoneEntries().at(i).SetMirrorBoneIndex(setter);
@@ -933,6 +946,7 @@ namespace CALUMI {namespace SFBGS {
 		return output;
 	}
 
+	VECTORDEF(SkeletonBoneVector, SkeletonBone)
 
 }
 }

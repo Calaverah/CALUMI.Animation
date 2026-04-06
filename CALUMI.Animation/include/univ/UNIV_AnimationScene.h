@@ -16,7 +16,10 @@ namespace CALUMI{namespace UNIV{
 	{
 	public:
 		SkeletonRig& Rig() const;
-		Utilities::VectorContainer<Animation>& Animations() const;
+
+		Animation& animation(uint64_t idx) const;
+		uint64_t animationCount() const;
+
 		const char* SceneName() const;
 		void SceneName(const char* name);
 		void SceneName(const Utilities::StringContainer& input);
@@ -25,8 +28,9 @@ namespace CALUMI{namespace UNIV{
 		bool RemoveAnimationFromScene(Utilities::StringContainer& sceneToRemove);
 		bool RemoveAnimationFromScene(unsigned int idx);
 		
-		Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension);
-		Utilities::StringContainer ToJSON(std::size_t indents) const;
+		//Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension);
+
+		Utilities::StringContainer ToJSON(uint64_t indents) const;
 
 		AnimationScene();
 		AnimationScene(const Utilities::StringContainer& sceneName);
@@ -54,7 +58,7 @@ CALUMIANIMATION_API bool AddRigToAnimationSceneC(CALUMI::UNIV::AnimationScene* s
 CALUMIANIMATION_API bool AddAnimationToAnimationSceneC(CALUMI::UNIV::AnimationScene* scene, CALUMI::UNIV::Animation* animation, bool overwrite, CALUMI::Utilities::StringContainer* errorMessage);
 CALUMIANIMATION_API bool DeleteAnimationSceneC(CALUMI::UNIV::AnimationScene* ptr);
 CALUMIANIMATION_API CALUMI::UNIV::Animation* GetAnimationC(CALUMI::UNIV::AnimationScene* source, int index, CALUMI::Utilities::StringContainer* errorMessage);
-CALUMIANIMATION_API std::size_t GetAnimationCountC(CALUMI::UNIV::AnimationScene* source);
+CALUMIANIMATION_API uint64_t GetAnimationCountC(CALUMI::UNIV::AnimationScene* source);
 CALUMIANIMATION_API const char* GetAnimationSceneNameC(CALUMI::UNIV::AnimationScene* source);
 CALUMIANIMATION_API CALUMI::UNIV::SkeletonRig* GetSkeletonRigC(CALUMI::UNIV::AnimationScene* source);
 CALUMIANIMATION_API bool HasSkeletonRigC(CALUMI::UNIV::AnimationScene* source);

@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <vector>
 #include <string>
+#include "internal/internalvectordef.h"
 
 namespace CALUMI {
     namespace UNIV {
@@ -59,7 +60,7 @@ namespace CALUMI {
         bool operator==(const UNIV::Translation& A, const UNIV::Translation& B) { return A.Frame() == B.Frame(); }
         bool operator!=(const UNIV::Translation& A, const UNIV::Translation& B) { return A.Frame() != B.Frame(); }
 
-        Utilities::StringContainer Translation::ToJSON(const std::size_t indents) const {
+        Utilities::StringContainer Translation::ToJSON(const uint64_t indents) const {
             std::string output(Utilities::Indent(indents + 1).c_str());
             output += ("{\"frame\": " + std::to_string(Frame()) + ", \"value\": [" + std::to_string(TranslationVector().getX()) + ", " + std::to_string(TranslationVector().getY()) + ", " + std::to_string(TranslationVector().getZ()) + "]}");
             return output.c_str();
@@ -119,7 +120,7 @@ namespace CALUMI {
         bool operator==(const UNIV::Rotation& A, const UNIV::Rotation& B)   { return A.Frame() == B.Frame();}
         bool operator!=(const UNIV::Rotation& A, const UNIV::Rotation& B)   { return A.Frame() != B.Frame();}
 
-        Utilities::StringContainer Rotation::ToJSON(const std::size_t indents) const {
+        Utilities::StringContainer Rotation::ToJSON(const uint64_t indents) const {
             std::string output(Utilities::Indent(indents).c_str());
             output += ("{\"frame\": " + std::to_string(pImpl->frame) + ", \"value\": [" + std::to_string(pImpl->rotation.getW()) + ", " + std::to_string(pImpl->rotation.getX()) + ", " + std::to_string(pImpl->rotation.getY()) + ", " + std::to_string(pImpl->rotation.getZ()) + "]}");
             return output.c_str();
@@ -163,7 +164,7 @@ namespace CALUMI {
         bool operator==(const UNIV::Scalar& A, const UNIV::Scalar& B)   { return A.Frame()== B.Frame(); }
         bool operator!=(const UNIV::Scalar& A, const UNIV::Scalar& B)   { return A.Frame()!= B.Frame(); }
 
-        Utilities::StringContainer Scalar::ToJSON(const std::size_t indents) const {
+        Utilities::StringContainer Scalar::ToJSON(const uint64_t indents) const {
             std::string output(Utilities::Indent(indents + 1).c_str());
             output += ("{\"frame\": " + std::to_string(pImpl->frame) + ", \"value\": " + std::to_string(pImpl->scalar) + "}").c_str();
             return output.c_str();
@@ -196,7 +197,7 @@ namespace CALUMI {
         bool operator==(const UNIV::Priority& A, const UNIV::Priority& B)   { return A.Frame() == B.Frame(); }
         bool operator!=(const UNIV::Priority& A, const UNIV::Priority& B)   { return A.Frame() != B.Frame(); }
 
-        Utilities::StringContainer Priority::ToJSON(const std::size_t indents) const {
+        Utilities::StringContainer Priority::ToJSON(const uint64_t indents) const {
             std::string output(Utilities::Indent(indents + 1).c_str());
             output += ("{\"frame\": " + std::to_string(pImpl->frame) + ", \"value\": " + std::to_string(pImpl->priority) + "}");
             return output.c_str();
@@ -316,6 +317,11 @@ namespace CALUMI {
             return source->PriorityValue();
         }
 #pragma endregion        
+
+        VECTORDEF(TranslationSequence, Translation)
+        VECTORDEF(RotationSequence, Rotation)
+        VECTORDEF(ScalarSequence, Scalar)
+        VECTORDEF(PrioritySequence, Priority)
 
 }
 }

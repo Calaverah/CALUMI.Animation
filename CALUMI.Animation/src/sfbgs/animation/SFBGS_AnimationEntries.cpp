@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cstring>
 #include <cmath>
+#include "internal/internalvectordef.h"
 
 
 namespace CALUMI { namespace SFBGS{
@@ -411,7 +412,7 @@ namespace CALUMI { namespace SFBGS{
 	/// </summary>
 	/// <param name="input"></param>
 	/// <returns></returns>
-	Utilities::PairContainer<RotationPrefix, RotationEntry> GetSFBGSRotationPair(const CALUMI::Math::Quaternion& input)
+	CompressedRotation GetSFBGSRotationPair(const CALUMI::Math::Quaternion& input)
 	{
 		RotationPrefix prefix;
 		CALUMI::Math::Quaternion tempInput = input;
@@ -448,7 +449,7 @@ namespace CALUMI { namespace SFBGS{
 		RotationEntry suffix(std::get<1>(first), std::get<1>(second), std::get<1>(third) );
 
 		
-		return Utilities::PairContainer<RotationPrefix, RotationEntry>(prefix, suffix);
+		return { prefix, suffix };
 	}
 
 	CALUMI::Math::Quaternion GetUniversalRotation(const CALUMI::SFBGS::RotationPrefix& prefix, const CALUMI::SFBGS::RotationEntry& suffix)
@@ -490,7 +491,7 @@ namespace CALUMI { namespace SFBGS{
 		return std::make_pair(lVal, sVal);
 	}
 
-	Utilities::PairContainer<TranslationPrefix, TranslationEntry> GetSFBGSTranslationPair(const CALUMI::Math::Vector3D& input, const float& highPrecision, const float& lowPrecision)
+	CompressedTranslation GetSFBGSTranslationPair(const CALUMI::Math::Vector3D& input, const float& highPrecision, const float& lowPrecision)
 	{
 		auto x = GetSFBGSTranslationComponents(input.getX(), highPrecision, lowPrecision);
 		auto y = GetSFBGSTranslationComponents(input.getY(), highPrecision, lowPrecision);
@@ -499,7 +500,7 @@ namespace CALUMI { namespace SFBGS{
 		TranslationPrefix prefix(x.first, y.first, z.first, static_cast < uint16_t>(1));
 		TranslationEntry suffix(x.second, y.second, z.second);
 
-		return Utilities::PairContainer<TranslationPrefix, TranslationEntry>(prefix, suffix);
+		return { prefix, suffix };
 	}
 
 	CALUMI::Math::Vector3D GetUniversalTranslation(const CALUMI::SFBGS::TranslationPrefix& prefix, const CALUMI::SFBGS::TranslationEntry& suffix, const float& highPrecision, const float& lowPrecision)
@@ -510,9 +511,9 @@ namespace CALUMI { namespace SFBGS{
 		return output;
 	}
 	
-	Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> UnfoldTranslationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix>& input)
+	SFBGS::TranslationPrefixSequence UnfoldTranslationPrefixSequence(const SFBGS::TranslationPrefixSequence& input)
 	{
-		Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> output;
+		SFBGS::TranslationPrefixSequence output;
 		uint16_t totalSize = 0;
 		for (int i = 0; i<input.size();i++)
 		{
@@ -535,11 +536,11 @@ namespace CALUMI { namespace SFBGS{
 		return output;
 	}
 
-	Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> FoldTranslationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix>& input)
+	SFBGS::TranslationPrefixSequence FoldTranslationPrefixSequence(const SFBGS::TranslationPrefixSequence& input)
 	{
 		if (input.size() < 2)return input;
 
-		Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> outputList; outputList.reserve(input.size());
+		SFBGS::TranslationPrefixSequence outputList; outputList.reserve(input.size());
 		CALUMI::SFBGS::TranslationPrefix referencePrefix = input.at(0);
 		for (uint16_t i = 1; i < input.size(); i++)
 		{
@@ -558,9 +559,9 @@ namespace CALUMI { namespace SFBGS{
 		return outputList;
 	}
 
-	Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> UnfoldRotationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& input)
+	SFBGS::RotationPrefixSequence UnfoldRotationPrefixSequence(const SFBGS::RotationPrefixSequence& input)
 	{
-		Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> output;
+		SFBGS::RotationPrefixSequence output;
 		uint16_t totalSize = 0;
 		for (int i =0; i < input.size(); i++)
 		{
@@ -582,11 +583,11 @@ namespace CALUMI { namespace SFBGS{
 		return output;
 	}
 
-	Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> FoldRotationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& input)
+	SFBGS::RotationPrefixSequence FoldRotationPrefixSequence(const SFBGS::RotationPrefixSequence& input)
 	{
 		if (input.size() < 2)return input;
 		
-		Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> outputList;
+		SFBGS::RotationPrefixSequence outputList;
 		outputList.reserve(input.size());
 		
 		CALUMI::SFBGS::RotationPrefix referencePrefix = input.at(0);
@@ -608,6 +609,73 @@ namespace CALUMI { namespace SFBGS{
 		outputList.shrink_to_fit();
 		return outputList;
 	}
+
+	struct CompressedRotation::Impl
+	{
+		RotationPrefix _prefix;
+		RotationEntry _suffix;
+	};
+
+	CompressedRotation::CompressedRotation(const RotationPrefix& prefix, const RotationEntry& entry) : pImpl(new Impl())
+	{
+		pImpl->_prefix = prefix;
+		pImpl->_suffix = entry;
+	}
+
+	CompressedRotation::~CompressedRotation()
+	{
+		if (pImpl)
+		{
+			delete pImpl;
+			pImpl = nullptr;
+		}
+	}
+
+	const RotationPrefix& CompressedRotation::prefix() const
+	{
+		return pImpl->_prefix;
+	}
+
+	const RotationEntry& CompressedRotation::suffix() const
+	{
+		return pImpl->_suffix;
+	}
+
+	struct CompressedTranslation::Impl 
+	{
+		TranslationPrefix _prefix;
+		TranslationEntry _suffix;
+	};
+
+	CompressedTranslation::CompressedTranslation(const TranslationPrefix& prefix, const TranslationEntry& entry) : pImpl(new Impl())
+	{
+		pImpl->_prefix = prefix;
+		pImpl->_suffix = entry;
+	}
+
+	CompressedTranslation::~CompressedTranslation()
+	{
+		if (pImpl)
+		{
+			delete pImpl;
+			pImpl = nullptr;
+		}
+	}
+
+	const TranslationPrefix& CompressedTranslation::prefix() const
+	{
+		return pImpl->_prefix;
+	}
+
+	const TranslationEntry& CompressedTranslation::suffix() const
+	{
+		return pImpl->_suffix;
+	}
+
+	VECTORDEF(RotationEntrySequence, RotationEntry)
+	VECTORDEF(TranslationEntrySequence, TranslationEntry)
+	VECTORDEF(RotationPrefixSequence, RotationPrefix)
+	VECTORDEF(TranslationPrefixSequence, TranslationPrefix)
 
 }
 }

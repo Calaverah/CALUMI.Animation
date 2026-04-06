@@ -304,7 +304,7 @@ namespace CALUMI {
 			 * @param indents 
 			 * @return 
 			 */
-			Utilities::StringContainer ToJSON(std::size_t indents) const override;
+			Utilities::StringContainer ToJSON(uint64_t indents) const override;
 
 		protected:
 			/**
@@ -314,7 +314,7 @@ namespace CALUMI {
 			 * @param idx 
 			 * @return 
 			 */
-			bool HandleBoneRename(const char* oldBone, const char* newName, std::size_t idx) override;
+			bool HandleBoneRename(const char* oldBone, const char* newName, uint64_t idx) override;
 			/**
 			 * @brief Creates shallow copies of this package's elements without worry of ptr handling
 			 * @return 
@@ -349,7 +349,7 @@ namespace CALUMI {
 			 * @param rig 
 			 * @return 
 			 */
-			static Utilities::VectorContainer<int16_t> ConvertSFBGSRigPackage(const UNIV::SkeletonRig& rig);
+			static Utilities::S16Vector ConvertSFBGSRigPackage(const UNIV::SkeletonRig& rig);
 			/// @}
 		};
 
@@ -369,7 +369,7 @@ namespace CALUMI {
 			/**
 			 * @brief Adds a Starfield Rig Package to the UNIV Skeleton Rig
 			 * @param rig UNIV Rig
-			 * @param errorMessage *optional* error message container for returning error statements 
+			 * @param _message *optional* error message container for returning error statements 
 			 * @param overwrite If set to true, will replace the Starfield Rig package, if one exists
 			 * @return Whether the operation was successful
 			 */
@@ -377,7 +377,7 @@ namespace CALUMI {
 			/**
 			 * @brief 
 			 * @param rig UNIV Rig
-			 * @param errorMessage *optional* error message container for returning error statements 
+			 * @param _message *optional* error message container for returning error statements 
 			 * @return Whether the operation was successful
 			 */
 			CALUMIANIMATION_API bool SFBGSRigPackage_RemoveRigPackageFromSkeletonRigC(UNIV::SkeletonRig* rig, Utilities::StringContainer* errorMessage);
@@ -402,7 +402,7 @@ namespace CALUMI {
 			 * @param rig UNIV Rig
 			 * @param key uint8_t form of the BoneMapKey
 			 * @param boneName Bone to add
-			 * @param errorMessage *optional* error message container for returning error statements 
+			 * @param _message *optional* error message container for returning error statements 
 			 * @param overwrite If set to true, will replace the bone that currently is assigned to this key/tag, if one exists
 			 * @return Whether the operation was successful
 			 */
@@ -412,7 +412,7 @@ namespace CALUMI {
 			 * @param rig UNIV Rig
 			 * @param key uint8_t form of the BoneMapKey
 			 * @param bone Bone to add, will use the bone's given name
-			 * @param errorMessage *optional* error message container for returning error statements 
+			 * @param _message *optional* error message container for returning error statements 
 			 * @param overwrite If set to true, will overwrite the bone assigned to this key/tag, if one exists
 			 * @return Whether the operation was successful
 			 */
@@ -465,7 +465,7 @@ namespace CALUMI {
 			 * @brief Returns the size of the Rig BoneMap which is always 157 (or *Pi* / 0.02 :) )
 			 * @return 157
 			 */
-			CALUMIANIMATION_API std::size_t SFBGSRigPackage_GetRigMapSize();
+			CALUMIANIMATION_API uint64_t SFBGSRigPackage_GetRigMapSize();
 
 			/**
 			 * @brief Sets the rig to process all relative translations with the *Default* precision set
@@ -517,6 +517,3 @@ namespace CALUMI {
 		/// @}
 		/// @}
 } }
-#pragma warning(disable: 4661)
-_VECTORTEMPLATE(CALUMI::SFBGS::SFBGS_RigPackage);
-#pragma warning(default: 4661)

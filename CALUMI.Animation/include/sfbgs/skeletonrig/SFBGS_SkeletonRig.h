@@ -7,7 +7,7 @@
 #include "interfaces/IReadWritable.h"
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
 #include "SFBGS_RigPackage.h"
-#include "io/FileError.h"
+#include "io/FileResult.h"
 
 
 
@@ -69,16 +69,19 @@ namespace CALUMI {namespace SFBGS {
 		SkeletonBone();
 		SkeletonBone(const SkeletonBone& input);
 		~SkeletonBone();
-		SkeletonBone(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex);
+		SkeletonBone(Utilities::BufferObject& buffer, unsigned long long& addressIndex);
 
 		SkeletonBone& operator=(const SkeletonBone& input);
+
+		//dummy operator
+		bool operator<(const SkeletonBone& input);
 
 		/// <summary>
 		/// Fills end of buffer with 96 bytes and copies the information into the vector.
 		/// </summary>
 		/// <param name="buffer"></param>
 		/// <param name="addressIndex"></param>
-		void SerializeIntoBuffer(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex) const;
+		void SerializeIntoBuffer(Utilities::BufferObject& buffer, unsigned long long& addressIndex) const;
 
 		/// <summary>
 		/// Returns the converted UNIV Bone Type
@@ -100,6 +103,8 @@ namespace CALUMI {namespace SFBGS {
 		friend struct SkeletonRig;
 	};
 
+	VECTORDEC(SkeletonBoneVector, SkeletonBone)
+
 	struct CALUMIANIMATION_API SkeletonRig : CALUMI::IReadWritable
 	{
 		int VersionNumber() const;
@@ -110,7 +115,7 @@ namespace CALUMI {namespace SFBGS {
 		void HeaderSize(uint32_t size);
 		uint32_t BoneMapOffset() const;
 		void BoneMapOffset(uint32_t offset);
-		Utilities::VectorContainer<uint64_t> getMatchingThree() const;
+		Utilities::U64Vector getMatchingThree() const;
 		void setMatchingThree(uint64_t m1, uint64_t m2, uint64_t m3);
 		float LowPrecision() const;
 		void LowPrecision(float value);
@@ -120,21 +125,21 @@ namespace CALUMI {namespace SFBGS {
 		void BoneCount(uint16_t count);
 		uint16_t BoneCountAnimated() const;
 		void BoneCountAnimated(uint16_t count);
-		Utilities::VectorContainer<SkeletonBone>& BoneEntries() const;
-		Utilities::VectorContainer<int16_t> BoneMapArray() const;
-		void BoneMapArray(Utilities::VectorContainer<int16_t>& input);
-		Utilities::VectorContainer<Utilities::StringContainer>& StringArray() const;
+		SkeletonBoneVector& BoneEntries() const;
+		Utilities::S16Vector BoneMapArray() const;
+		void BoneMapArray(Utilities::S16Vector& input);
+		Utilities::StringList& StringArray() const;
 #ifdef DEBUG_BUILD
-		Utilities::VectorContainer<char> EndOfHeader() const;
+		Utilities::CharVector EndOfHeader() const;
 #endif
 
 		bool IsMarkedMannequin() const;
 
 		// Inherited via IReadWritable
-		Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
-        Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(Utilities::PathContainer&& inputFilePath) override;
-		Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
-        Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(Utilities::PathContainer&& outputFilePath) override;
+		Utilities::FileResult ReadFromFile(Utilities::PathContainer& inputFilePath) override;
+        Utilities::FileResult ReadFromFile(Utilities::PathContainer&& inputFilePath) override;
+		Utilities::FileResult WriteToFile(Utilities::PathContainer& outputFilePath) override;
+        Utilities::FileResult WriteToFile(Utilities::PathContainer&& outputFilePath) override;
 
 		~SkeletonRig();
 		SkeletonRig();
@@ -156,9 +161,6 @@ namespace CALUMI {namespace SFBGS {
 
     }
 
-#pragma warning(disable: 4661)
-    template struct CALUMIANIMATION_API Utilities::VectorContainer <SFBGS::SkeletonBone>;
-#pragma warning(default: 4661)
 }
 
 

@@ -8,6 +8,7 @@
 #include <expected>
 #include <fstream>
 
+
 namespace CALUMI {
 
 
@@ -18,22 +19,22 @@ namespace CALUMI {
 	/// </summary>
 	/// <param name="inputPath"></param>
 	/// <returns></returns>
-	static Utilities::ExpectedContainer<bool, Utilities::FileError> _CommonValidation(const Utilities::PathContainer& inputPath)
+	static Utilities::FileResult _CommonValidation(const Utilities::PathContainer& inputPath)
 	{
 		std::error_code ec;
-		Utilities::ExpectedContainer<bool, Utilities::FileError> output;
+		Utilities::FileResult output;
 
 		//Checking if file exists
 		if (!std::filesystem::exists(inputPath.w_str()))
 		{
-			output.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::FileNotFound, inputPath.w_str(), ec.message().c_str() });
+			output = { Utilities::FileResult::FileErrorCode::FileNotFound, inputPath.w_str(), ec.message().c_str() };
 			return output;
 		}
 
 		//Checking if file is file
 		if (!std::filesystem::is_regular_file(inputPath.w_str(), ec))
 		{
-			output.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::NotAFile, inputPath.w_str(), ec.message().c_str() });
+			output = { Utilities::FileResult::FileErrorCode::NotAFile, inputPath.w_str(), ec.message().c_str() };
 			return output;
 		}
 
@@ -41,12 +42,12 @@ namespace CALUMI {
 		const auto size = std::filesystem::file_size(inputPath.w_str(), ec);
 		if (ec)
 		{
-			output.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::ReadFailure, inputPath.w_str(), ec.message().c_str() });
+			output = { Utilities::FileResult::FileErrorCode::ReadFailure, inputPath.w_str(), ec.message().c_str() };
 			return output;
 		}
 		if (size < 4) //no file should be less than 4 bytes, if so it is too small to contain any useful information worth reading
 		{
-			output.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::FileTooSmall, inputPath.w_str(), ec.message().c_str() });
+			output = { Utilities::FileResult::FileErrorCode::FileTooSmall, inputPath.w_str(), ec.message().c_str() };
 			return output;
 		}
 
@@ -58,13 +59,13 @@ namespace CALUMI {
 
         if (!file)
 		{
-			output.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::PermissionDenied, inputPath.w_str(), ec.message().c_str() });
+			output = { Utilities::FileResult::FileErrorCode::PermissionDenied, inputPath.w_str(), ec.message().c_str() };
 			return output;
 		}
 
 		//additional common file checks go here
 
-		output.SetValue(true);
+		output = { Utilities::FileResult::FileErrorCode::Success, inputPath.w_str(), "" };
 		//finally we return that the check was a success
 		return output;
 	}
@@ -74,7 +75,7 @@ namespace CALUMI {
 	/// </summary>
 	/// <param name="inputPath"></param>
 	/// <returns></returns>
-	static Utilities::ExpectedContainer<Utilities::VectorContainer<char>, Utilities::FileError> _GetBuffer(const Utilities::PathContainer& inputPath)
+	static Utilities::FileBufferResult _GetBuffer(const Utilities::PathContainer& inputPath)
 	{
 		std::error_code ec;
 		const auto size = std::filesystem::file_size(inputPath.w_str());
@@ -85,65 +86,68 @@ namespace CALUMI {
         std::ifstream file(inputPath.c_str(), std::ios::binary);
 #endif
 
-		Utilities::VectorContainer<char> buffer(static_cast<size_t>(size));
+		Utilities::FileBufferResult output;
+		output.resize(size);
 
-		if (!file.read(buffer.data(), buffer.size()))
+		if (!file.read(output.data(), output.size()))
 		{
-			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::ReadFailure, inputPath.w_str(), ec.message().c_str() });
-			return tempOutput;
+			
+			output.setResult({Utilities::FileResult::FileErrorCode::ReadFailure, inputPath.w_str(), ec.message().c_str()});
+			return output;
 		}
 		
-		return Utilities::ExpectedContainer<Utilities::VectorContainer<char>,Utilities::FileError>(buffer);
+		output.setResult({ Utilities::FileResult::FileErrorCode::Success, inputPath.w_str(), "" });
+
+		return output;
 	}
 
-	static std::expected<bool, Utilities::FileError> _FileExtValidation(const Utilities::PathContainer& inputPath, const Utilities::VectorContainer<Utilities::StringContainer>& fileExtensions, bool allowFiles)
+	static std::expected<bool, Utilities::FileResult> _FileExtValidation(const Utilities::PathContainer& inputPath, const Utilities::StringList& fileExtensions, bool allowFiles)
 	{
 		std::error_code ec;
 
 		//Ensure input extension isn't empty for some reason
 		if (!inputPath.has_extension())
-			return std::unexpected(Utilities::FileError{ Utilities::FileError::FileErrorCode::IncorrectFileType, inputPath.w_str(), ec.message().c_str() });
+			return std::unexpected(Utilities::FileResult{ Utilities::FileResult::FileErrorCode::IncorrectFileType, inputPath.w_str(), ec.message().c_str() });
 
 		//If ban list is empty, allow the file to move forward
 		if (fileExtensions.empty() && !allowFiles)
 			return true;
 		//If approve list is empty, the file cannot be approved
 		else if (fileExtensions.empty())
-			return std::unexpected(Utilities::FileError{ Utilities::FileError::FileErrorCode::IncorrectFileType, inputPath.w_str(), ec.message().c_str() });
+			return std::unexpected(Utilities::FileResult{ Utilities::FileResult::FileErrorCode::IncorrectFileType, inputPath.w_str(), ec.message().c_str() });
 
 
 		//Check each extension in the list, if a match is found, determine whether to approve or reject
 		for (int i = 0; i < fileExtensions.size(); i++)
 		{
-			Utilities::PathContainer subjectAsPath(std::format("filteringFileName{}",fileExtensions.at(i).c_str()).c_str());
+			Utilities::PathContainer subjectAsPath(std::format("filteringFileName{}",fileExtensions.c_str(i)).c_str());
 			if ((inputPath.extension() == subjectAsPath.extension()) && (inputPath.extension() != ".")) //check to see if extensions match as well if there is a non "." value
 			{
 				//A match has been found, determine response
 				if (allowFiles)
 					return true;
 				else
-					return std::unexpected(Utilities::FileError{ Utilities::FileError::FileErrorCode::IncorrectFileType, inputPath.w_str(), ec.message().c_str() });
+					return std::unexpected(Utilities::FileResult{ Utilities::FileResult::FileErrorCode::IncorrectFileType, inputPath.w_str(), ec.message().c_str() });
 			}
 		}
 
 		if (!allowFiles) {
 			return true;
 		}
-		return std::unexpected(Utilities::FileError{ Utilities::FileError::FileErrorCode::IncorrectFileType, inputPath.w_str(), ec.message().c_str() });
+		return std::unexpected(Utilities::FileResult{ Utilities::FileResult::FileErrorCode::IncorrectFileType, inputPath.w_str(), ec.message().c_str() });
 	}
 
-	static std::expected<bool, Utilities::FileError> _ValidateFileSize(const Utilities::PathContainer& inputPath, unsigned int& minFileSize, unsigned long long& maxFileSize)
+	static std::expected<bool, Utilities::FileResult> _ValidateFileSize(const Utilities::PathContainer& inputPath, unsigned int& minFileSize, unsigned long long& maxFileSize)
 	{
 		std::error_code ec;
 		const auto size = std::filesystem::file_size(inputPath.w_str(), ec);
 
 		//If max size is 0, then we skip that step
 		if (maxFileSize != 0 && size > maxFileSize)
-			return std::unexpected(Utilities::FileError{ Utilities::FileError::FileErrorCode::FileTooLarge, inputPath.w_str(), ec.message().c_str() });
+			return std::unexpected(Utilities::FileResult{ Utilities::FileResult::FileErrorCode::FileTooLarge, inputPath.w_str(), ec.message().c_str() });
 
 		if (size < minFileSize)
-			return std::unexpected(Utilities::FileError{ Utilities::FileError::FileErrorCode::FileTooSmall, inputPath.w_str(), ec.message().c_str() });
+			return std::unexpected(Utilities::FileResult{ Utilities::FileResult::FileErrorCode::FileTooSmall, inputPath.w_str(), ec.message().c_str() });
 
 		return true;
 	}
@@ -151,13 +155,13 @@ namespace CALUMI {
 #pragma endregion
 
 	//Input Path Only
-	Utilities::ExpectedContainer<Utilities::VectorContainer<char>, Utilities::FileError> ValidateFile(const Utilities::PathContainer& inputPath)
+	Utilities::FileBufferResult ValidateFile(const Utilities::PathContainer& inputPath)
 	{
 		auto result = _CommonValidation(inputPath);
-		if (!result.has_value())
+		if (result.hasError())
 		{
-			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.setErrorValue(result.error());
+			Utilities::FileBufferResult tempOutput;
+			tempOutput.setResult(result);
 			return tempOutput;
 		}
 
@@ -165,13 +169,13 @@ namespace CALUMI {
 	}
 
 	
-	Utilities::ExpectedContainer<Utilities::VectorContainer<char>, Utilities::FileError> ValidateFile(const Utilities::PathContainer& inputPath, const Utilities::VectorContainer<Utilities::StringContainer> fileExtensions, bool allowFiles)
+	Utilities::FileBufferResult ValidateFile(const Utilities::PathContainer& inputPath, const Utilities::StringList fileExtensions, bool allowFiles)
 	{
 		auto result = _CommonValidation(inputPath);
-		if (!result.has_value())
+		if (result.hasError())
 		{
-			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.setErrorValue(result.error());
+			Utilities::FileBufferResult tempOutput;
+			tempOutput.setResult(result);
 			return tempOutput;
 		}
 
@@ -179,21 +183,21 @@ namespace CALUMI {
 		auto extResult = _FileExtValidation(inputPath, fileExtensions, allowFiles);
 		if (!extResult.has_value())
 		{
-			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.setErrorValue(extResult.error());
+			Utilities::FileBufferResult tempOutput;
+			tempOutput.setResult(extResult.error());
 			return tempOutput;
 		}
 
 		return _GetBuffer(inputPath);
 	}
 
-	Utilities::ExpectedContainer<Utilities::VectorContainer<char>, Utilities::FileError> ValidateFile(const Utilities::PathContainer& inputPath, const Utilities::VectorContainer<Utilities::StringContainer> fileExtensions, unsigned int minFileSize, unsigned long long maxFileSize, bool allowFiles)
+	Utilities::FileBufferResult ValidateFile(const Utilities::PathContainer& inputPath, const Utilities::StringList fileExtensions, unsigned int minFileSize, unsigned long long maxFileSize, bool allowFiles)
 	{
 		auto result = _CommonValidation(inputPath);
-		if (!result.has_value())
+		if (result.hasError())
 		{
-			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.setErrorValue(result.error());
+			Utilities::FileBufferResult tempOutput;
+			tempOutput.setResult(result);
 			return tempOutput;
 		}
 
@@ -201,8 +205,8 @@ namespace CALUMI {
 		auto extResult = _FileExtValidation(inputPath, fileExtensions, allowFiles);
 		if (!extResult.has_value()) 
 		{
-			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.setErrorValue(extResult.error());
+			Utilities::FileBufferResult tempOutput;
+			tempOutput.setResult(extResult.error());
 			return tempOutput;
 		}
 
@@ -210,21 +214,21 @@ namespace CALUMI {
 		auto sizeResult = _ValidateFileSize(inputPath, minFileSize, maxFileSize);
 		if (!sizeResult.has_value())
 		{
-			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.setErrorValue(sizeResult.error());
+			Utilities::FileBufferResult tempOutput;
+			tempOutput.setResult(sizeResult.error());
 			return tempOutput;
 		}
 
 		return _GetBuffer(inputPath);
 	}
 
-	Utilities::ExpectedContainer<Utilities::VectorContainer<char>, Utilities::FileError> ValidateFile(const Utilities::PathContainer& inputPath, unsigned int minFileSize, unsigned long long maxFileSize)
+	Utilities::FileBufferResult ValidateFile(const Utilities::PathContainer& inputPath, unsigned int minFileSize, unsigned long long maxFileSize)
 	{
 		auto result = _CommonValidation(inputPath);
-		if (!result.has_value())
+		if (result.hasError())
 		{
-			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.setErrorValue(result.error());
+			Utilities::FileBufferResult tempOutput;
+			tempOutput.setResult(result);
 			return tempOutput;
 		}
 
@@ -232,15 +236,15 @@ namespace CALUMI {
 		auto sizeResult = _ValidateFileSize(inputPath, minFileSize, maxFileSize);
 		if (!sizeResult.has_value())
 		{
-			Utilities::ExpectedContainer < Utilities::VectorContainer<char>, Utilities::FileError> tempOutput;
-			tempOutput.setErrorValue(sizeResult.error());
+			Utilities::FileBufferResult tempOutput;
+			tempOutput.setResult(sizeResult.error());
 			return tempOutput;
 		}
 
 		return _GetBuffer(inputPath);
 	}
 
-	Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToBinaryFile(const Utilities::PathContainer& outputPath, Utilities::VectorContainer<char>& buffer)
+	Utilities::FileResult WriteToBinaryFile(const Utilities::PathContainer& outputPath, Utilities::BufferObject& buffer)
 	{
 		std::ofstream file;
 		std::error_code ec;
@@ -256,9 +260,8 @@ namespace CALUMI {
 
 			if (!std::filesystem::is_regular_file(outputPath.w_str(), ec))
 			{
-				Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> tempOutput;
-				tempOutput.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::NotAFile, outputPath.w_str(), ec.message().c_str() });
-				return tempOutput; //We found an entry with this path and it is not a file to be written to
+				Utilities::FileResult tempOutput(Utilities::FileResult::FileErrorCode::NotAFile, outputPath.w_str(), ec.message().c_str());
+				return tempOutput; //We found an entry with this _path and it is not a file to be written to
 			}
 
 #ifdef _WIN32
@@ -269,8 +272,7 @@ namespace CALUMI {
 
             if(!file.is_open())
 			{
-				Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> tempOutput;
-				tempOutput.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::PermissionDenied, outputPath.w_str(), ec.message().c_str() });
+				Utilities::FileResult tempOutput(Utilities::FileResult::FileErrorCode::PermissionDenied, outputPath.w_str(), ec.message().c_str());
 				return tempOutput;
 			}
 		}
@@ -283,8 +285,7 @@ namespace CALUMI {
 #endif
             if (!file.is_open())
 			{
-				Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> tempOutput;
-				tempOutput.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::UnknownErrorCode, outputPath.w_str(), ec.message().c_str() });
+				Utilities::FileResult tempOutput(Utilities::FileResult::FileErrorCode::UnknownErrorCode, outputPath.w_str(), ec.message().c_str());
 				return tempOutput;
 			}
 		}
@@ -293,19 +294,18 @@ namespace CALUMI {
 		if (!file)
 		{
 			file.close();
-			Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> tempOutput;
-			tempOutput.setErrorValue(Utilities::FileError{ Utilities::FileError::FileErrorCode::WriteFailure, outputPath.w_str(), ec.message().c_str() });
+			Utilities::FileResult tempOutput(Utilities::FileResult::FileErrorCode::WriteFailure, outputPath.w_str(), ec.message().c_str());
 			return tempOutput;
 		}
 		file.close();
-		return Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError>(Utilities::StringContainer(std::format("Output successful, written to {}", outputPath.c_str()).c_str()));
+		return Utilities::FileResult(Utilities::FileResult::FileErrorCode::Success, outputPath.w_str(), "Output Successful!");
 	}
 
-	Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToBinaryFile(const Utilities::PathContainer& outputPath, const Utilities::StringContainer& buffer)
+	Utilities::FileResult WriteToBinaryFile(const Utilities::PathContainer& outputPath, const Utilities::StringContainer& buffer)
 	{
-		Utilities::VectorContainer<char> vBuffer;
+		Utilities::BufferObject vBuffer;
 		vBuffer.reserve(buffer.length(true));
-		for (std::size_t i = 0; i < buffer.length(); i++)
+		for (uint64_t i = 0; i < buffer.length(); i++)
 		{
 			vBuffer.push_back(buffer.at(i));
 		}

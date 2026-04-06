@@ -6,6 +6,7 @@
 #include "utilities/CALUMI_Hashes.h"
 #include <unordered_map>
 #include <string>
+#include <utilities/CALUMI_Utilities.h>
 
 namespace CALUMI {
     namespace Utilities {
@@ -347,9 +348,9 @@ namespace CALUMI {
 
             return hash;
         }
-        Utilities::VectorContainer<Utilities::StringContainer> HashRegistry::getRegisteredStrings() const
+        Utilities::StringList HashRegistry::getRegisteredStrings() const
         {
-            Utilities::VectorContainer<Utilities::StringContainer> output;
+            Utilities::StringList output;
             
             output.reserve(pImpl->_registeredHashes.size());
 

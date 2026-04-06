@@ -26,7 +26,7 @@ namespace CALUMI {namespace UNIV {
 
 		UNIV::Translation& operator=(const UNIV::Translation& other);
 
-		Utilities::StringContainer ToJSON(const std::size_t indents = 0) const;
+		Utilities::StringContainer ToJSON(const uint64_t indents = 0) const;
 
 	private:
 		struct Impl;
@@ -55,7 +55,7 @@ namespace CALUMI {namespace UNIV {
 
 		UNIV::Rotation& operator=(const UNIV::Rotation& other);
 
-		Utilities::StringContainer ToJSON(const std::size_t indents = 0) const;
+		Utilities::StringContainer ToJSON(const uint64_t indents = 0) const;
 	private:
 		struct Impl;
 		Impl* pImpl;
@@ -67,6 +67,7 @@ namespace CALUMI {namespace UNIV {
 	bool operator>=(const UNIV::Rotation& A, const UNIV::Rotation& B);
 	bool operator==(const UNIV::Rotation& A, const UNIV::Rotation& B);
 	bool operator!=(const UNIV::Rotation& A, const UNIV::Rotation& B);
+
 
 	struct CALUMIANIMATION_API Scalar
 	{
@@ -84,7 +85,7 @@ namespace CALUMI {namespace UNIV {
 
 		UNIV::Scalar& operator=(const UNIV::Scalar& other);
 
-		Utilities::StringContainer ToJSON(const std::size_t indents = 0) const;
+		Utilities::StringContainer ToJSON(const uint64_t indents = 0) const;
 	private:
 		struct Impl;
 		Impl* pImpl;
@@ -96,6 +97,7 @@ namespace CALUMI {namespace UNIV {
 	bool operator>=(const UNIV::Scalar& A, const UNIV::Scalar& B);
 	bool operator==(const UNIV::Scalar& A, const UNIV::Scalar& B);
 	bool operator!=(const UNIV::Scalar& A, const UNIV::Scalar& B);
+
 
 	struct CALUMIANIMATION_API Priority
 	{
@@ -111,7 +113,7 @@ namespace CALUMI {namespace UNIV {
 
 		UNIV::Priority& operator=(const UNIV::Priority& other);
 
-		Utilities::StringContainer ToJSON(const std::size_t indents = 0) const;
+		Utilities::StringContainer ToJSON(const uint64_t indents = 0) const;
 
 	private:
 		struct Impl;
@@ -124,6 +126,11 @@ namespace CALUMI {namespace UNIV {
 	bool operator>=(const UNIV::Priority& A, const UNIV::Priority& B);
 	bool operator==(const UNIV::Priority& A, const UNIV::Priority& B);
 	bool operator!=(const UNIV::Priority& A, const UNIV::Priority& B);
+
+	VECTORDEC(TranslationSequence, Translation)
+	VECTORDEC(RotationSequence, Rotation)
+	VECTORDEC(ScalarSequence, Scalar)
+	VECTORDEC(PrioritySequence, Priority)
 
 	extern  "C" {
 		CALUMIANIMATION_API Rotation* CreateRotationEntryC(uint16_t frame, float x, float y, float z, float w);
@@ -188,9 +195,9 @@ namespace CALUMI {namespace UNIV {
 
 }}
 
-#pragma warning(disable: 4661)
-_VECTORTEMPLATE(CALUMI::UNIV::Rotation);
-_VECTORTEMPLATE(CALUMI::UNIV::Translation);
-_VECTORTEMPLATE(CALUMI::UNIV::Scalar);
-_VECTORTEMPLATE(CALUMI::UNIV::Priority);
-#pragma warning(default: 4661)
+//#pragma warning(disable: 4661)
+//_VECTORTEMPLATE(CALUMI::UNIV::Rotation);
+//_VECTORTEMPLATE(CALUMI::UNIV::Translation);
+//_VECTORTEMPLATE(CALUMI::UNIV::Scalar);
+//_VECTORTEMPLATE(CALUMI::UNIV::Priority);
+//#pragma warning(default: 4661)

@@ -17,11 +17,13 @@
 #include <vector>
 #include <filesystem>
 #include <cctype>
+#include <cstdint>
+#include "internal/internalvectordef.h"
 
 namespace CALUMI {
 	namespace Utilities {
 
-		void AlignBuffer(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize)
+		void AlignBuffer(BufferObject& buffer, unsigned long long& currentIndex, int alignmentSize)
 		{
 			if (alignmentSize < 1) return; //if alignment size is for some reason 0, we skip this output and move on
 			if (currentIndex % alignmentSize < 1) return; //we are aligned, move on
@@ -31,22 +33,22 @@ namespace CALUMI {
 			currentIndex += offset;
 		}
 
-		static void _AlignFillBuffer(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize)
+		static void _AlignFillBuffer(BufferObject& buffer, unsigned long long& currentIndex, int alignmentSize)
 		{
 			unsigned long long startingIndex = currentIndex;
 			AlignBuffer(buffer, currentIndex, alignmentSize);
-			buffer.insert(buffer.end(), (currentIndex - startingIndex), 0);
+			buffer.insert(buffer.endPos(), (currentIndex - startingIndex), 0);
 		}
 
         // template<typename T>
-        // CALUMI::Utilities::StringContainer VectorToJSON(const CALUMI::Utilities::VectorContainer<T>& vec, const std::size_t indents)
+        // CALUMI::Utilities::StringContainer VectorToJSON(const CALUMI::Utilities::VectorContainer<T>& vec, const uint64_t indents)
         // {
         // 	if (vec.empty()) {
         // 		return " []";
         // 	}
 
         // 	Utilities::StringContainer output = "[\n";
-        // 	for (std::size_t i = 0; i < vec.size(); i++) {
+        // 	for (uint64_t i = 0; i < vec.size(); i++) {
 
         // 		if constexpr (std::is_pointer_v<T>)
         // 		{ output += vec.at(i)->ToJSON(indents + 1).c_str(); }
@@ -70,7 +72,7 @@ namespace CALUMI {
 		/// <param name="currentIndex"></param>
 		/// <param name="alignmentSize"></param>
 		/// <param name="Destination"></param>
-		void AlignBufferAndRead(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, void* Destination)
+		void AlignBufferAndRead(BufferObject& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, void* Destination)
 		{
 			AlignBuffer(buffer, currentIndex, alignmentSize);
 			std::memcpy(Destination, &buffer.at(currentIndex), variableSize);
@@ -87,23 +89,23 @@ namespace CALUMI {
 		/// <param name="currentIndex"></param>
 		/// <param name="alignmentSize"></param>
 		/// <param name="Destination"></param>
-		void AlignFillBufferAndWrite(Utilities::VectorContainer<char>& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, const void* Source)
+		void AlignFillBufferAndWrite(BufferObject& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, const void* Source)
 		{
 			_AlignFillBuffer(buffer, currentIndex, alignmentSize);
 			//if source is a short but needs to be a byte, the variableSize will take only the first byte which in Little Endian, is any value under 255
-			buffer.insert(buffer.end(), static_cast<size_t>(variableSize), 0);
+			buffer.insert(buffer.endPos(), static_cast<size_t>(variableSize), 0);
 			std::memcpy(&buffer.at(currentIndex), Source, variableSize);
 
 			currentIndex += variableSize;
 		}
 
-		Utilities::StringContainer Indent(const std::size_t indents) {
+		Utilities::StringContainer Indent(const uint64_t indents) {
 			return Utilities::StringContainer(indents * 2, ' ');
 		}
 
 		bool IsNumeric(const Utilities::StringContainer& str)
 		{
-			for (std::size_t i = 0; i < str.length(); i++)
+			for (uint64_t i = 0; i < str.length(); i++)
 			{
 				char _char = str.at(i);
 				if (_char != '-' && _char != '.' && !std::isdigit(_char)) return false;
@@ -322,17 +324,17 @@ namespace CALUMI {
 		{
 			return pImpl->string.empty();
 		}
-		char StringContainer::at(std::size_t idx) const
+		char StringContainer::at(uint64_t idx) const
 		{
 			return pImpl->string.at(idx);
 		}
-		std::size_t StringContainer::length(bool includeNull) const
+		uint64_t StringContainer::length(bool includeNull) const
 		{
-			std::size_t output = includeNull ? 1 : 0;
+			uint64_t output = includeNull ? 1 : 0;
 			output += pImpl->string.length();
 			return output;
 		}
-		std::size_t StringContainer::find(const char* s, std::size_t pos) const
+		uint64_t StringContainer::find(const char* s, uint64_t pos) const
 		{
 			return pImpl->string.find(s,pos);
 		}
@@ -345,11 +347,11 @@ namespace CALUMI {
 
 			return pImpl->string.compare(other.pImpl->string);
 		}
-		int StringContainer::compare(std::size_t pos, std::size_t len, const StringContainer& other) const
+		int StringContainer::compare(uint64_t pos, uint64_t len, const StringContainer& other) const
 		{
 			return pImpl->string.compare(pos,len,other.pImpl->string);
 		}
-		int StringContainer::compare(std::size_t pos, std::size_t len, const StringContainer& other, std::size_t subpos, std::size_t sublen) const
+		int StringContainer::compare(uint64_t pos, uint64_t len, const StringContainer& other, uint64_t subpos, uint64_t sublen) const
 		{
 			return pImpl->string.compare(pos,len,other.pImpl->string,subpos,sublen);
 		}
@@ -367,7 +369,7 @@ namespace CALUMI {
 			pImpl = new Impl;
 			pImpl->string = cString;
 		}
-		StringContainer::StringContainer(std::size_t count, char c)
+		StringContainer::StringContainer(uint64_t count, char c)
 		{
 			pImpl = new Impl;
 			pImpl->string = std::string(count, c);
@@ -417,251 +419,44 @@ namespace CALUMI {
 #pragma endregion
 
 
-		template<typename T>
-		concept HasLessThan = requires(T t, T other)
-		{
-			{ t < other } -> std::same_as<bool>;
-		};
+		
 
 #pragma region Vectors
 
-		template<class T>
-		struct VectorContainer<T>::Impl
-		{
-			std::vector<T> vector;
-			constexpr Impl() noexcept = default;
-			explicit Impl(std::size_t count)
-			{
-				std::vector<T> temp(count);
-				vector = temp;
-			}
-			constexpr Impl(std::size_t count, const T& value) { std::vector<T> temp(count, value); vector = temp; }
-			constexpr Impl(std::vector<T>&& source) noexcept { std::vector<T> temp(source); vector = temp; }
-			constexpr Impl(const std::vector<T>& source) noexcept { std::vector<T> temp(source); vector = temp; }
-			template<class InputIt>
-			Impl(InputIt f, InputIt l) { std::vector<T> temp(f, l); vector = temp; }
-		};
 
-		template<class T>
-        VectorContainer<T>::VectorContainer() noexcept
-		{
-			pImpl = new Impl;
-		}
-		template<class T>
-        VectorContainer<T>::~VectorContainer()
-		{
-			if (pImpl)
-				delete pImpl;
-		}
-		template<class T>
-		VectorContainer<T>::VectorContainer(std::size_t count)
-		{
-			pImpl = new Impl(count);
-		}
-		template<class T>
-        VectorContainer<T>::VectorContainer(std::size_t count, const T& value)
-		{
-			pImpl = new Impl(count, value);
-		}
-		template<class T>
-        VectorContainer<T>::VectorContainer(const VectorContainer<T>& source)
-		{
-			pImpl = new Impl(source.pImpl->vector);
-		}
-		template<class T>
-        VectorContainer<T>::VectorContainer(VectorContainer&& source) noexcept
-		{
-			pImpl = new Impl(source.pImpl->vector);
-		}
-		/*template<class T>
-		template<class InputIt>
-		constexpr VectorContainer<T>::VectorContainer(InputIt first, InputIt last)
-		{
-			pImpl = new Impl(first, last);
-		}*/
-		template<class T>
-        VectorContainer<T>& VectorContainer<T>::operator=(const VectorContainer<T>& other)
-		{
-			pImpl->vector = other.pImpl->vector;
-			return *this;
-		}
-		template<class T>
-        VectorContainer<T>& VectorContainer<T>::operator=(VectorContainer&& other) noexcept
-		{
-			pImpl->vector = other.pImpl->vector;
-			return *this;
-		}
-		template<class T>
-		void VectorContainer<T>::resize(std::size_t n)
-		{
-			pImpl->vector.resize(n);
-		}
-		template<class T>
-		void VectorContainer<T>::reserve(std::size_t n)
-		{
-			pImpl->vector.reserve(n);
-		}
-		template<class T>
-		void VectorContainer<T>::shrink_to_fit()
-		{
-			pImpl->vector.shrink_to_fit();
-		}
-		template<class T>
-		const T& VectorContainer<T>::at(std::size_t i) const
-		{
-			return pImpl->vector.at(i);
-		}
-		template<class T>
-		T& VectorContainer<T>::at(std::size_t i)
-		{
-			return pImpl->vector.at(i);
-		}
-		template<class T>
-		void VectorContainer<T>::push_back(const T& input)
-		{
-			pImpl->vector.push_back(input);
-		}
-		template<class T>
-		void VectorContainer<T>::push_back(const T&& input)
-		{
-			pImpl->vector.push_back(input);
-		}
-		template<class T>
-		void VectorContainer<T>::clear()
-		{
-			pImpl->vector.clear();
-		}
-		template<class T>
-		std::size_t VectorContainer<T>::size() const
-		{
-			return pImpl->vector.size();
-		}
-		template<class T>
-		bool VectorContainer<T>::empty() const
-		{
-			return pImpl->vector.empty();
-		}
+		VECTORDEF(U8Vector, uint8_t)
+		VECTORDEF(S8Vector, int8_t)
+		VECTORDEF(U16Vector, uint16_t)
+		VECTORDEF(S16Vector, int16_t)
+		VECTORDEF(U32Vector, uint32_t)
+		VECTORDEF(S32Vector, int32_t)
+		VECTORDEF(U64Vector, uint64_t)
+		VECTORDEF(S64Vector, int64_t)
+		VECTORDEF(FloatVector, float)
+		VECTORDEF(DoubleVector, double)
+		VECTORDEF(CharVector, char)
 
-		template<class T>
-		void VectorContainer<T>::erase(std::size_t pos)
-		{
-			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) < pImpl->vector.end())
-			{
-				pImpl->vector.erase((pImpl->vector.begin() + pos));
-			}
-		}
-
-		template<class T>
-		void VectorContainer<T>::insert_r(std::size_t pos, T& item)
-		{
-			if ((pImpl->vector.begin()+pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end())
-			{
-				pImpl->vector.insert((pImpl->vector.begin() + pos), item);
-			}
-		}
-
-		template<class T>
-		void VectorContainer<T>::insert(std::size_t pos, T item)
-		{
-			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end())
-			{
-				pImpl->vector.insert((pImpl->vector.begin() + pos), item);
-			}
-		}
-
-		template<class T>
-		void VectorContainer<T>::insert(std::size_t pos, std::size_t count, T& item)
-		{
-			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end())
-			{
-				pImpl->vector.insert((pImpl->vector.begin() + pos), count, item);
-			}
-		}
-
-		template<class T>
-		void VectorContainer<T>::insert(std::size_t pos, std::size_t count, T item)
-		{
-			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end())
-			{
-				pImpl->vector.insert((pImpl->vector.begin() + pos), count, item);
-			}
-		}
-
-		template<class T>
-		std::size_t VectorContainer<T>::end() const
-		{
-			return (pImpl->vector.end() - pImpl->vector.begin());
-		}
-
-		template<class T>
-		T* VectorContainer<T>::data() noexcept
-		{
-			return pImpl->vector.data();
-		}
-
-		template<class T>
-		const T* VectorContainer<T>::data() const noexcept
-		{
-			return pImpl->vector.data();
-		}
-
-		template<class T>
-		void VectorContainer<T>::sort(bool highToLow)
-		{
-			if constexpr (HasLessThan<T>)
-			{
-				if (highToLow)
-				{
-					std::sort(pImpl->vector.end(), pImpl->vector.begin());
-				}
-				else
-				{
-					std::sort(pImpl->vector.begin(), pImpl->vector.end());
-				}
-			}
-		}
-
-		template<class T>
-		VectorContainer<T> VectorContainer<T>::range(std::size_t first, std::size_t last) const
-		{
-			if (first > last) return VectorContainer<T>();
-
-			VectorContainer<T> output;
-			output.reserve(last + 1 - first);
-
-			for (std::size_t i = first; i < last + 1 && i < size(); i++)
-			{
-				output.push_back(at(i));
-			}
-
-			output.shrink_to_fit();
-
-			return output;
-		}
+		
 
 
 #pragma endregion
 
-#pragma region StringMap
-		struct StringMap::Entry
+#pragma region StringList
+		struct StringList::Entry
 		{
 			std::string string;
-			std::size_t offset = 0;
+			uint64_t offset = 0;
 			bool hasOffset = false;
 			Entry() = default;
-			Entry(Entry& source) noexcept
+			Entry(const Entry& source)
 			{
-				string = source.string;
-				offset = source.offset;
-				hasOffset = source.hasOffset;
+				*this = source;
 			}
 			Entry(Entry&& source) noexcept
 			{
-				string = source.string;
-				offset = source.offset;
-				hasOffset = source.hasOffset;
+				*this = source;
 			}
-			Entry(const char* cStr, std::size_t ofs) noexcept
+			Entry(const char* cStr, uint64_t ofs) noexcept
 			{
 				string = cStr;
 				offset = ofs;
@@ -673,214 +468,244 @@ namespace CALUMI {
 				offset = 0;
 				hasOffset = false;
 			}
+			Entry& operator=(const Entry& other)
+			{
+				string = other.string;
+				offset = other.offset;
+				hasOffset = other.hasOffset;
+				return *this;
+			}
 		};
 
-		struct StringMap::Impl
+		struct StringList::Impl
 		{
 			std::vector<Entry> strings;
-			std::size_t finalOffset = 0;
+			uint64_t finalOffset = 0;
 		};
 		
-		StringMap::StringMap()
+		StringList::StringList()
 		{
 			pImpl = new Impl;
 		}
-		StringMap::~StringMap()
+		StringList::StringList(const StringList& other) : StringList()
+		{
+			*this = other;
+		}
+		StringList::~StringList()
 		{
 			if (pImpl)
+			{
 				delete pImpl;
+				pImpl = nullptr;
+			}
 		}
-		void StringMap::push_back(const char* string, std::size_t offset)
+		StringList& StringList::operator=(const StringList& other)
+		{
+			pImpl->strings.reserve(other.pImpl->strings.size());
+
+			for (const auto& entry : other.pImpl->strings)
+			{
+				pImpl->strings.push_back(entry);
+			}
+
+			pImpl->finalOffset = other.pImpl->finalOffset;
+			return *this;
+		}
+		void StringList::push_back(const char* string, uint64_t offset)
 		{
 			pImpl->strings.push_back(Entry(string, offset));
 		}
-		void StringMap::push_back(const char* string)
+		void StringList::push_back(const char* string)
 		{
 			pImpl->strings.push_back(Entry(string));
 		}
-		std::size_t StringMap::getOffset(std::size_t idx)
+		uint64_t StringList::getOffset(uint64_t idx)
 		{
 			return pImpl->strings.at(idx).offset;
 		}
-		std::size_t StringMap::getFinalOffset()
+		uint64_t StringList::getFinalOffset()
 		{
 			return pImpl->finalOffset;
 		}
-		bool StringMap::hasOffset(std::size_t idx)
+		bool StringList::hasOffset(uint64_t idx)
 		{
 			return pImpl->strings.at(idx).hasOffset;
 		}
-		void StringMap::setFinalOffset(std::size_t offset)
+		void StringList::setFinalOffset(uint64_t offset)
 		{
 			pImpl->finalOffset = offset;
 		}
-		void StringMap::reserve(std::size_t size)
+		void StringList::reserve(uint64_t size)
 		{
 			pImpl->strings.reserve(size);
 		}
-		const char* StringMap::c_str(std::size_t idx)
+		const char* StringList::c_str(uint64_t idx) const
 		{
 			return pImpl->strings.at(idx).string.c_str();
 		}
-		std::size_t StringMap::stringLength(std::size_t idx, bool includeNull)
+		uint64_t StringList::stringLength(uint64_t idx, bool includeNull) const
 		{
-			std::size_t output = includeNull ? 1 : 0;
+			uint64_t output = includeNull ? 1 : 0;
 			output += pImpl->strings.at(idx).string.length();
 			return output;
 		}
-		std::size_t StringMap::size()
+		uint64_t StringList::size() const
 		{
 			return pImpl->strings.size();
+		}
+		bool StringList::empty() const
+		{
+			return pImpl->strings.empty();
 		}
 #pragma endregion
 
 #pragma region ExpectedContainer
-
-		template<typename T, typename U>
-		struct ExpectedContainer<T, U>::Impl
-		{
-			std::expected<T, U> expected;
-			Impl() = default;
-			Impl(T& tValue)
-			{
-				expected = std::expected<T,U>(tValue);
-			}
-		};
-
-
-		template<typename T, typename U>
-		ExpectedContainer<T, U>::ExpectedContainer(T& expectedValue)
-		{
-			pImpl = new Impl(expectedValue);
-		}
-
-		template<typename T, typename U>
-		ExpectedContainer<T, U>::ExpectedContainer(T&& expectedValue) noexcept
-		{
-			pImpl = new Impl(expectedValue);
-		}
-
-		template<typename T, typename U>
-		ExpectedContainer<T, U>::ExpectedContainer()
-		{
-			pImpl = new Impl;
-		}
-
-		template<typename T, typename U>
-		bool ExpectedContainer<T, U>::has_value() const noexcept
-		{
-			return pImpl->expected.has_value();
-		}
-		template<typename T, typename U>
-		U& ExpectedContainer<T, U>::error() const
-		{
-			return pImpl->expected.error();
-		}
-		template<typename T, typename U>
-		T& ExpectedContainer<T, U>::value() const
-		{
-			return pImpl->expected.value();
-		}
-
-		template<typename T, typename U>
-		ExpectedContainer<T, U>::~ExpectedContainer()
-		{
-			if (pImpl)
-				delete pImpl;
-		}
-		/*template<typename T, typename U>
-		void ExpectedContainer<T, U>::SetErrorValue_R(const U& uValue)
-		{
-			pImpl->expected = std::unexpected(uValue);
-		}*/
-		template<typename T, typename U>
-		void ExpectedContainer<T, U>::setErrorValue(U uValue)
-		{
-			pImpl->expected = std::unexpected(uValue);
-		}
-		template<typename T, typename U>
-		void ExpectedContainer<T, U>::SetValue(T tValue)
-		{
-			pImpl->expected = tValue;
-		}
+//
+//		template<typename T, typename U>
+//		struct ExpectedContainer<T, U>::Impl
+//		{
+//			std::expected<T, U> expected;
+//			Impl() = default;
+//			Impl(T& tValue)
+//			{
+//				expected = std::expected<T,U>(tValue);
+//			}
+//		};
+//
+//
+//		template<typename T, typename U>
+//		ExpectedContainer<T, U>::ExpectedContainer(T& expectedValue)
+//		{
+//			pImpl = new Impl(expectedValue);
+//		}
+//
+//		template<typename T, typename U>
+//		ExpectedContainer<T, U>::ExpectedContainer(T&& expectedValue) noexcept
+//		{
+//			pImpl = new Impl(expectedValue);
+//		}
+//
+//		template<typename T, typename U>
+//		ExpectedContainer<T, U>::ExpectedContainer()
+//		{
+//			pImpl = new Impl;
+//		}
+//
+//		template<typename T, typename U>
+//		bool ExpectedContainer<T, U>::has_value() const noexcept
+//		{
+//			return pImpl->expected.has_value();
+//		}
+//		template<typename T, typename U>
+//		U& ExpectedContainer<T, U>::error() const
+//		{
+//			return pImpl->expected.error();
+//		}
+//		template<typename T, typename U>
+//		T& ExpectedContainer<T, U>::value() const
+//		{
+//			return pImpl->expected.value();
+//		}
+//
+//		template<typename T, typename U>
+//		ExpectedContainer<T, U>::~ExpectedContainer()
+//		{
+//			if (pImpl)
+//				delete pImpl;
+//		}
+//		/*template<typename T, typename U>
+//		void ExpectedContainer<T, U>::SetErrorValue_R(const U& uValue)
+//		{
+//			pImpl->expected = std::unexpected(uValue);
+//		}*/
+//		template<typename T, typename U>
+//		void ExpectedContainer<T, U>::setErrorValue(U uValue)
+//		{
+//			pImpl->expected = std::unexpected(uValue);
+//		}
+//		template<typename T, typename U>
+//		void ExpectedContainer<T, U>::SetValue(T tValue)
+//		{
+//			pImpl->expected = tValue;
+//		}
 #pragma endregion
 
 #pragma region PAIR
-	template<typename A, typename B>
-	struct PairContainer<A, B>::Impl
-	{
-		A first;
-		B second;
-	};
+	//template<typename A, typename B>
+	//struct PairContainer<A, B>::Impl
+	//{
+	//	A first;
+	//	B second;
+	//};
 
-	template<typename A, typename B>
-	PairContainer<A, B>::PairContainer()
-	{
-		pImpl = new Impl;
-	}
+	//template<typename A, typename B>
+	//PairContainer<A, B>::PairContainer()
+	//{
+	//	pImpl = new Impl;
+	//}
 
-	template<typename A, typename B>
-	PairContainer<A, B>::PairContainer(A a, B b)
-	{
-		pImpl = new Impl;
-		pImpl->first = a;
-		pImpl->second = b;
-	}
+	//template<typename A, typename B>
+	//PairContainer<A, B>::PairContainer(A a, B b)
+	//{
+	//	pImpl = new Impl;
+	//	pImpl->first = a;
+	//	pImpl->second = b;
+	//}
 
-	template<typename A, typename B>
-	PairContainer<A, B>::PairContainer(const PairContainer& input)
-	{
-		pImpl = new Impl;
-		pImpl->first = input.pImpl->first;
-		pImpl->second = input.pImpl->second;
-	}
+	//template<typename A, typename B>
+	//PairContainer<A, B>::PairContainer(const PairContainer& input)
+	//{
+	//	pImpl = new Impl;
+	//	pImpl->first = input.pImpl->first;
+	//	pImpl->second = input.pImpl->second;
+	//}
 
-	template<typename A, typename B>
-	PairContainer<A, B>::PairContainer(PairContainer&& input) noexcept
-	{
-		pImpl = new Impl;
-		pImpl->first = input.pImpl->first;
-		pImpl->second = input.pImpl->second;
-	}
+	//template<typename A, typename B>
+	//PairContainer<A, B>::PairContainer(PairContainer&& input) noexcept
+	//{
+	//	pImpl = new Impl;
+	//	pImpl->first = input.pImpl->first;
+	//	pImpl->second = input.pImpl->second;
+	//}
 
-	template<typename A, typename B>
-	PairContainer<A, B>::~PairContainer()
-	{
-		if (pImpl)
-			delete pImpl;
-	}
+	//template<typename A, typename B>
+	//PairContainer<A, B>::~PairContainer()
+	//{
+	//	if (pImpl)
+	//		delete pImpl;
+	//}
 
-	template<typename A, typename B>
-	PairContainer<A, B>& PairContainer<A, B>::operator=(const PairContainer& input)
-	{
-		pImpl->first = input.pImpl->first;
-		pImpl->second = input.pImpl->second;
-		return *this;
-	}
+	//template<typename A, typename B>
+	//PairContainer<A, B>& PairContainer<A, B>::operator=(const PairContainer& input)
+	//{
+	//	pImpl->first = input.pImpl->first;
+	//	pImpl->second = input.pImpl->second;
+	//	return *this;
+	//}
 
-	template<typename A, typename B>
-	A PairContainer<A, B>::getFirst() const
-	{
-		return pImpl->first;
-	}
+	//template<typename A, typename B>
+	//A PairContainer<A, B>::getFirst() const
+	//{
+	//	return pImpl->first;
+	//}
 
-	template<typename A, typename B>
-	B PairContainer<A, B>::getSecond() const
-	{
-		return pImpl->second;
-	}
+	//template<typename A, typename B>
+	//B PairContainer<A, B>::getSecond() const
+	//{
+	//	return pImpl->second;
+	//}
 
-	template<typename A, typename B>
-	void PairContainer<A, B>::setFirst(const A& a)
-	{
-		pImpl->first = a;
-	}
+	//template<typename A, typename B>
+	//void PairContainer<A, B>::setFirst(const A& a)
+	//{
+	//	pImpl->first = a;
+	//}
 
-	template<typename A, typename B>
-	void PairContainer<A, B>::setSecond(const B& b)
-	{
-		pImpl->second = b;
-	}
+	//template<typename A, typename B>
+	//void PairContainer<A, B>::setSecond(const B& b)
+	//{
+	//	pImpl->second = b;
+	//}
 
 #pragma endregion
 
@@ -897,7 +722,7 @@ namespace CALUMI {
 		return source->c_str();
 	}
 
-	std::size_t GetStringContainerSizeC(StringContainer* source)
+	uint64_t GetStringContainerSizeC(StringContainer* source)
 	{
 		return source->length();
 	}
@@ -912,7 +737,74 @@ namespace CALUMI {
 	}
 #pragma endregion
 
+	struct BufferObject::PrivateBuffer
+	{
+		std::vector<char> _buffer;
+	};
 
+	BufferObject::BufferObject() : pBuffer(new PrivateBuffer()) { }
+
+	BufferObject::~BufferObject()
+	{
+		if (pBuffer)
+		{
+			delete pBuffer;
+			pBuffer = nullptr;
+		}
+	}
+
+	char* BufferObject::data() const
+	{
+		return pBuffer->_buffer.data();
+	}
+
+	uint64_t BufferObject::endPos() const
+	{
+		return pBuffer->_buffer.end() - pBuffer->_buffer.begin();
+	}
+
+	uint64_t BufferObject::size() const
+	{
+		return pBuffer->_buffer.size();
+	}
+
+	const char& BufferObject::at(uint64_t idx) const
+	{
+		return pBuffer->_buffer.at(idx);
+	}
+
+	char& BufferObject::at(uint64_t idx)
+	{
+		return pBuffer->_buffer.at(idx);
+	}
+
+	void BufferObject::insert(uint64_t pos, uint64_t size, char item)
+	{
+		if ((pBuffer->_buffer.begin() + pos) >= pBuffer->_buffer.begin() && (pBuffer->_buffer.begin() + pos) <= pBuffer->_buffer.end())
+		{
+			pBuffer->_buffer.insert((pBuffer->_buffer.begin() + pos), size, item);
+		}
+	}
+
+	void BufferObject::reserve(uint64_t size)
+	{
+		pBuffer->_buffer.reserve(size);
+	}
+
+	void BufferObject::resize(uint64_t size)
+	{
+		pBuffer->_buffer.resize(size);
+	}
+
+	void BufferObject::push_back(const char& c)
+	{
+		pBuffer->_buffer.push_back(c);
+	}
+
+	void BufferObject::push_back(char&& c)
+	{
+		pBuffer->_buffer.push_back(c);
+	}
 
 }
 

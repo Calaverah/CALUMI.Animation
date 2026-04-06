@@ -8,6 +8,7 @@
 #include "univ/UNIV_AnimationScene.h"
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
 
+#include <vector>
 
 namespace CALUMI {
     namespace UNIV {
@@ -16,7 +17,7 @@ namespace CALUMI {
         struct AnimationScene::Impl
         {
             Utilities::StringContainer sceneName = "MyAnimationScene";
-            Utilities::VectorContainer<Animation> animations;
+            std::vector<Animation> animations;
             SkeletonRig rig;
             Impl() = default;
         };
@@ -30,14 +31,15 @@ namespace CALUMI {
         AnimationScene& AnimationScene::operator=(const AnimationScene& input) { *pImpl = *(input.pImpl); return *this; }
 
         SkeletonRig& AnimationScene::Rig() const { return pImpl->rig; }
-        Utilities::VectorContainer<Animation>& AnimationScene::Animations() const { return pImpl->animations; }
+        Animation& AnimationScene::animation(uint64_t idx) const { return pImpl->animations.at(idx); }
+        uint64_t AnimationScene::animationCount() const { return pImpl->animations.size(); }
         const char* AnimationScene::SceneName() const { return pImpl->sceneName.c_str(); }
         void AnimationScene::SceneName(const char* name) { pImpl->sceneName = name; }
         void AnimationScene::SceneName(const Utilities::StringContainer& input) { pImpl->sceneName = input; }
 
         bool AnimationScene::AddAnimationToScene(UNIV::Animation& animation, bool overwrite)
         {
-            for (unsigned int i = 0; i < Animations().size(); i++)
+            for (unsigned int i = 0; i < pImpl->animations.size(); i++)
             {
                 if (SCOMPARE(pImpl->animations.at(i).AnimationTitle(), animation.AnimationTitle()) == 0)
                 {
@@ -45,7 +47,7 @@ namespace CALUMI {
                         return false;
                     else
                     {
-                        pImpl->animations.erase(i);
+                        pImpl->animations.erase(pImpl->animations.begin() + i);
                         break;
                     }
                 }
@@ -60,7 +62,7 @@ namespace CALUMI {
             {
                 if (SCOMPARE(pImpl->animations.at(i).AnimationTitle(), sceneToRemove.c_str()) == 0)
                 {
-                    pImpl->animations.erase(i);
+                    pImpl->animations.erase(pImpl->animations.begin() + i);
                     return true;
                 }
             }
@@ -71,34 +73,34 @@ namespace CALUMI {
         {
             if (idx >= pImpl->animations.size() || idx < 0) return false;
 
-            pImpl->animations.erase(idx);
+            pImpl->animations.erase(pImpl->animations.begin() + idx);
             return true;
         }
 
-        Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> AnimationScene::GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension)
-        {
-            Utilities::VectorContainer<Utilities::PathContainer> animationFilePaths;
-            animationFilePaths.reserve(pImpl->animations.size());
-            for (unsigned int i = 0; i < pImpl->animations.size(); i++)
-            {
-                if (SCOMPARE(pImpl->animations.at(i).AnimationTitle(), "") == 0)
-                {
-                    Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> tempOutput;
-                    tempOutput.setErrorValue("[CALUMI.Animation API] Empty string found for Animation Title");
-                    return tempOutput;
-                }
-                Utilities::PathContainer pathToAdd(directoryPath);
-                //pathToAdd /= "animations";
-                //pathToAdd /= pImpl->sceneName.c_str();
-                pathToAdd /= pImpl->animations.at(i).AnimationTitle();
-                pathToAdd.replace_extension(extension);
-                animationFilePaths.push_back(pathToAdd);
-            }
+        //Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> AnimationScene::GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension)
+        //{
+        //    //Utilities::VectorContainer<Utilities::PathContainer> animationFilePaths;
+        //    //animationFilePaths.reserve(pImpl->animations.size());
+        //    //for (unsigned int i = 0; i < pImpl->animations.size(); i++)
+        //    //{
+        //    //    if (SCOMPARE(pImpl->animations.at(i).AnimationTitle(), "") == 0)
+        //    //    {
+        //    //        Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> tempOutput;
+        //    //        tempOutput.setErrorValue("[CALUMI.Animation API] Empty string found for Animation Title");
+        //    //        return tempOutput;
+        //    //    }
+        //    //    Utilities::PathContainer pathToAdd(directoryPath);
+        //    //    //pathToAdd /= "animations";
+        //    //    //pathToAdd /= pImpl->sceneName.c_str();
+        //    //    pathToAdd /= pImpl->animations.at(i).AnimationTitle();
+        //    //    pathToAdd.replace_extension(extension);
+        //    //    animationFilePaths.push_back(pathToAdd);
+        //    //}
+        //
+        //    return animationFilePaths;
+        //}
 
-            return animationFilePaths;
-        }
-
-        Utilities::StringContainer AnimationScene::ToJSON(const std::size_t indents = 0) const {
+        Utilities::StringContainer AnimationScene::ToJSON(const uint64_t indents = 0) const {
             Utilities::StringContainer output;
             output += Utilities::Indent(indents).c_str();
             output += "{\n";
@@ -138,16 +140,16 @@ namespace CALUMI {
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
             errorMessageHolder->clear();
 
-            if (source->Animations().size() <= index)
+            if (source->animationCount() <= index)
             {
                 *errorMessageHolder += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
                 return nullptr;
             }
-            return &source->Animations().at(index);
+            return &source->animation(index);
         }
-        std::size_t GetAnimationCountC(AnimationScene* source)
+        uint64_t GetAnimationCountC(AnimationScene* source)
         {
-            return source->Animations().size();
+            return source->animationCount();
         }
         const char* GetAnimationSceneNameC(AnimationScene* source)
         {
@@ -198,9 +200,9 @@ namespace CALUMI {
                 *errorMessageHolder += "[CALUMI.Animation API] Must Have Animation Title!";
                 return false;
             }
-            for (unsigned int i = 0; i < scene->Animations().size(); i++)
+            for (unsigned int i = 0; i < scene->animationCount(); i++)
             {
-                if (SCOMPARE(animation->AnimationTitle(), scene->Animations().at(i).AnimationTitle()) == 0)
+                if (SCOMPARE(animation->AnimationTitle(), scene->animation(i).AnimationTitle()) == 0)
                 {
                     if (!overwrite)
                     {
@@ -209,13 +211,13 @@ namespace CALUMI {
                     }
                     else
                     {
-                        scene->Animations().erase(i);
+                        scene->RemoveAnimationFromScene(i);
                         break;
                     }
 
                 }
             }
-            scene->Animations().push_back(*animation);
+            scene->AddAnimationToScene(*animation);
             if (animation)
                 delete animation;
 

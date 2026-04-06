@@ -56,7 +56,7 @@ namespace CALUMI {
 			 * @brief A simple way to get a list of the user's registered strings for storage/cache outside of the application
 			 * @return 
 			 */
-			CALUMIANIMATION_API Utilities::VectorContainer<Utilities::StringContainer> getRegisteredStrings() const;
+			CALUMIANIMATION_API Utilities::StringList getRegisteredStrings() const;
 
 		private:
 			struct Impl;

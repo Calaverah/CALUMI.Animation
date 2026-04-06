@@ -32,7 +32,7 @@ namespace CALUMI {
 			 * @param idx Index of the interaction
 			 * @return Whether the operation was successful
 			 */
-			virtual bool HandleBoneRename(const char* oldBone, const char* newName, std::size_t idx) = 0;
+			virtual bool HandleBoneRename(const char* oldBone, const char* newName, uint64_t idx) = 0;
 
 		private:
 			friend struct RigPackageManager;
@@ -57,7 +57,7 @@ namespace CALUMI {
 			 * @param indents Spaces for formatting
 			 * @return The strContainer of the serialized struct
 			 */
-			Utilities::StringContainer ToJSON(std::size_t indents) const;
+			Utilities::StringContainer ToJSON(uint64_t indents) const;
 
 		private:
 			/**
@@ -67,7 +67,7 @@ namespace CALUMI {
 			 * @param idx Index of the bone
 			 * @return Whether the operation was a success
 			 */
-			bool HandleBoneRename(const char* oldBone, const char* newName, std::size_t idx);
+			bool HandleBoneRename(const char* oldBone, const char* newName, uint64_t idx);
 			friend struct SkeletonRig;
 		};
 

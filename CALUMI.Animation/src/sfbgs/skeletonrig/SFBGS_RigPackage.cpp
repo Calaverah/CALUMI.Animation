@@ -6,6 +6,7 @@
 #include <AnimStarfield>
 #include "internalplatform.h"
 #include <cmath>
+#include "sfbgs/skeletonrig/SFBGS_SkeletonRig.h"
 
 namespace CALUMI {namespace SFBGS{
 
@@ -147,9 +148,10 @@ namespace CALUMI {namespace SFBGS{
 		return rig.getPackageManager().RemovePackage(SFBGS_RIG_PACKAGE);
 	}
 
-	Utilities::VectorContainer<int16_t> SFBGS_RigPackage::ConvertSFBGSRigPackage(const UNIV::SkeletonRig& rig)
+	Utilities::S16Vector SFBGS_RigPackage::ConvertSFBGSRigPackage(const UNIV::SkeletonRig& rig)
 	{
-		Utilities::VectorContainer<int16_t> output(SFBGSMAPSIZE);
+		Utilities::S16Vector output;
+		output.resize(SFBGSMAPSIZE);
 
 		for (int i = 0; i < output.size(); i++) 
 		{ 
@@ -409,12 +411,12 @@ namespace CALUMI {namespace SFBGS{
 	// Inherited via IRigPackage
 	const char* SFBGS_RigPackage::getPackageType() const { return SFBGS_RIG_PACKAGE; }
 
-	Utilities::StringContainer SFBGS_RigPackage::ToJSON(std::size_t indents) const
+	Utilities::StringContainer SFBGS_RigPackage::ToJSON(uint64_t indents) const
 	{
 		return Utilities::StringContainer();
 	}
 
-	bool SFBGS_RigPackage::HandleBoneRename(const char* oldBone, const char* newName, std::size_t idx)
+	bool SFBGS_RigPackage::HandleBoneRename(const char* oldBone, const char* newName, uint64_t idx)
 	{
 		for (int i = 0; i < SFBGSMAPSIZE; i++)
 		{
@@ -573,7 +575,7 @@ namespace CALUMI {namespace SFBGS{
 		return false;
 	}
 
-	std::size_t SFBGSRigPackage_GetRigMapSize()
+	uint64_t SFBGSRigPackage_GetRigMapSize()
 	{
 		return SFBGSMAPSIZE;
 	}

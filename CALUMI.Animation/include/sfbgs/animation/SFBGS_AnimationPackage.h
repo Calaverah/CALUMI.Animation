@@ -154,7 +154,7 @@ namespace CALUMI {
 			 * @param indents Amount of spaces for formatting
 			 * @return The serialized struct as a strContainer
 			 */
-			Utilities::StringContainer ToJSON(std::size_t indents) const override;
+			Utilities::StringContainer ToJSON(uint64_t indents) const override;
 
 		private:
 			struct Impl;
@@ -180,7 +180,7 @@ namespace CALUMI {
 			/**
 			 * @brief Adds a new Starfield Animation Package to the given animation
 			 * @param animation UNIV Animation
-			 * @param errorMessage *optional* Error message container
+			 * @param _message *optional* Error message container
 			 * @param overwrite Will reset the existing package to it's initial state if found
 			 * @return Whether the package was successfully added
 			 */
@@ -188,7 +188,7 @@ namespace CALUMI {
 			/**
 			 * @brief Removes a Starfield Animation Package from the given animation
 			 * @param animation UNIV Animation
-			 * @param errorMessage *optional* Error message container
+			 * @param _message *optional* Error message container
 			 * @return Whether the package was successfully removed
 			 */
 			CALUMIANIMATION_API bool SFBGSAnimationPackage_RemovePackageFromAnimationC(UNIV::Animation* animation, Utilities::StringContainer* errorMessage);
@@ -271,7 +271,7 @@ namespace CALUMI {
 			 * @brief Adds an amended block to the animation to represent a non rig based animation block
 			 * @param animation 
 			 * @param block Ptr to block to add, once added, ptr will then point to the package-owned block
-			 * @param errorMessage *optional* Error message container
+			 * @param _message *optional* Error message container
 			 * @param overwrite If a block with the same name generated hash is found, setting this to true will overwrite it
 			 * @return 
 			 */
@@ -281,7 +281,7 @@ namespace CALUMI {
 			 * @param animation 
 			 * @param hash Hash used to store the animation block during export
 			 * @param block Ptr to block to add, once added, ptr will then point to the package-owned block
-			 * @param errorMessage *optional* Error message container
+			 * @param _message *optional* Error message container
 			 * @param overwrite If a block with the same hash is found, setting this to true will overwrite it
 			 * @return 
 			 */
@@ -291,7 +291,7 @@ namespace CALUMI {
 			 * @brief Will remove an animation block with a matching hash generated from the given name
 			 * @param animation 
 			 * @param name Generates hash
-			 * @param errorMessage *optional* Error message container
+			 * @param _message *optional* Error message container
 			 * @return Whether the block was removed
 			 */
 			CALUMIANIMATION_API bool SFBGSAnimationPackage_RemoveAmendedBlockWithNameC(UNIV::Animation* animation, const char* name, Utilities::StringContainer* errorMessage);
@@ -299,7 +299,7 @@ namespace CALUMI {
 			 * @brief Will remove an animation block with a matching hash
 			 * @param animation 
 			 * @param hash Hash used to store block
-			 * @param errorMessage *optional* Error message container
+			 * @param _message *optional* Error message container
 			 * @return 
 			 */
 			CALUMIANIMATION_API bool SFBGSAnimationPackage_RemoveAmendedBlockWithHashC(UNIV::Animation* animation, uint32_t hash, Utilities::StringContainer* errorMessage);
@@ -307,7 +307,7 @@ namespace CALUMI {
 			 * @brief Will remove an animation block with at the given index
 			 * @param animation 
 			 * @param index Index of block
-			 * @param errorMessage *optional* Error message container
+			 * @param _message *optional* Error message container
 			 * @return 
 			 */
 			CALUMIANIMATION_API bool SFBGSAnimationPackage_RemoveAmendedBlockWithIndexC(UNIV::Animation* animation, uint16_t index, Utilities::StringContainer* errorMessage);

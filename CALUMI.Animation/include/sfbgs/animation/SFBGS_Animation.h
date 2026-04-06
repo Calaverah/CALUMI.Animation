@@ -5,6 +5,7 @@
 #pragma once
 #include "interfaces/IReadWritable.h"
 #include "SFBGS_AnimationEntries.h"
+#include <io/FileResult.h>
 
 
 namespace CALUMI{
@@ -129,7 +130,7 @@ namespace CALUMI{
 			
 			AnimationBlock();
 			AnimationBlock(const AnimationBlock& input);
-			AnimationBlock(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, const HeaderFlags& flags);
+			AnimationBlock(Utilities::BufferObject& buffer, unsigned long long& addressIndex, const HeaderFlags& flags);
 			~AnimationBlock();
 
 			/// @}
@@ -193,22 +194,22 @@ namespace CALUMI{
 			 * @brief Vector of Keyframes of size [RotationCount]
 			 * @return 
 			 */
-			Utilities::VectorContainer<uint16_t>& RotationKeyFrames() const;
+			Utilities::U16Vector& RotationKeyFrames() const;
 			/**
 			 * @brief Vector of Keyframes of size [TranslationCount] 
 			 * @return 
 			 */
-			Utilities::VectorContainer<uint16_t>& TranslationKeyFrames() const;
+			Utilities::U16Vector& TranslationKeyFrames() const;
 			/**
 			 * @brief Vector of Keyframes of size [ScalarCount]
 			 * @return 
 			 */
-			Utilities::VectorContainer<uint16_t>& ScalarKeyFrames() const;
+			Utilities::U16Vector& ScalarKeyFrames() const;
 			/**
 			 * @brief Vector of Keyframes of size [PriorityCount]
 			 * @return 
 			 */
-			Utilities::VectorContainer<uint16_t>& BonePriorityKeyFrames() const;
+			Utilities::U16Vector& BonePriorityKeyFrames() const;
 
 			/// @}
 			/**
@@ -219,36 +220,36 @@ namespace CALUMI{
 			 * @brief "Suffix" of the compressed Rotation entries, one for each frame
 			 * @return 
 			 */
-			Utilities::VectorContainer<CALUMI::SFBGS::RotationEntry>& RotationEntries() const;
+			RotationEntrySequence& RotationEntries() const;
 			/**
 			 * @brief "Prefix" of the compress Rotation entries, RLE sequence
 			 * @details The "prefix" entries are folded into an RLE sequence where there is a counter on the bitfield that describes how many frames this entries applies to using the programitc counting method (0,1,2...)
 			 * @return 
 			 */
-			Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& RotationPrefixEntries() const;
+			SFBGS::RotationPrefixSequence& RotationPrefixEntries() const;
 			/**
 			 * @brief "Suffix" of the compressed Translation entries, one for each frame
 			 * @return 
 			 */
-			Utilities::VectorContainer<CALUMI::SFBGS::TranslationEntry>& TranslationEntries() const;
+			SFBGS::TranslationEntrySequence& TranslationEntries() const;
 			/**
 			 * @brief "Prefix" of the compress Translation entries, RLE sequence
 			 * @details The "prefix" entries are folded into an RLE sequence where there is a counter on the bitfield that describes how many frames this entries applies to using the common counting method (1,2, 3...)
 			 * @return
 			 */
-			Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix>& TranslationPrefixEntries() const;
+			SFBGS::TranslationPrefixSequence& TranslationPrefixEntries() const;
 			/**
 			 * @brief Scalar entries
 			 * @details Value described with a signed short (2 Bytes) where 5000 is the base scale of 1.0f
 			 * @return 
 			 */
-			Utilities::VectorContainer<int16_t>& ScalarEntries() const;
+			Utilities::S16Vector& ScalarEntries() const;
 			/**
 			 * @brief "Priority" entries
 			 * @details Not much is known about these. It is believed that they are used by additive animations to determine which animation take precedence when transforming this bone
 			 * @return 
 			 */
-			Utilities::VectorContainer<uint8_t>& BonePriorityEntries() const;
+			Utilities::U8Vector& BonePriorityEntries() const;
 
 			/// @}
 			/// @name Serialization
@@ -259,9 +260,27 @@ namespace CALUMI{
 			 * @param addressIndex 
 			 * @param flags 
 			 */
-			void SerializeIntoBuffer(Utilities::VectorContainer<char>&buffer, unsigned long long& addressIndex, const HeaderFlags & flags);
+			void SerializeIntoBuffer(Utilities::BufferObject& buffer, unsigned long long& addressIndex, const HeaderFlags & flags);
 			/// @}
 			
+
+		private:
+			struct Impl;
+			Impl* pImpl;
+		};
+
+		struct CALUMIANIMATION_API AnimationBlockVector
+		{
+			AnimationBlockVector();
+			~AnimationBlockVector();
+
+			void push_back(const AnimationBlock& val);
+			uint64_t size() const;
+			bool empty() const;
+			void reserve(uint64_t size);
+			void resize(uint64_t size);
+
+			AnimationBlock& at(uint64_t idx) const;
 
 		private:
 			struct Impl;
@@ -276,21 +295,39 @@ namespace CALUMI{
 			uint16_t getCount() const;
 			void setCount(uint16_t sz);
 
-			Utilities::VectorContainer<float>& getPreSet() const;
-			void setPreSet(const Utilities::VectorContainer<float>& input);
-			Utilities::VectorContainer<float>& getMainSet() const;
-			void setMainSet(const Utilities::VectorContainer<float>& input);
-			Utilities::VectorContainer<int16_t>& getFooter1() const;
-			void setFooter1(const Utilities::VectorContainer<int16_t>& input);
-			Utilities::VectorContainer<int8_t>& getFooter2() const;
-			void setFooter2(const Utilities::VectorContainer<int8_t>& input);
+			Utilities::FloatVector& getPreSet() const;
+			void setPreSet(const Utilities::FloatVector& input);
+			Utilities::FloatVector& getMainSet() const;
+			void setMainSet(const Utilities::FloatVector& input);
+			Utilities::S16Vector& getFooter1() const;
+			void setFooter1(const Utilities::S16Vector& input);
+			Utilities::S8Vector& getFooter2() const;
+			void setFooter2(const Utilities::S8Vector& input);
 
 
 			Preamble();
 			~Preamble();
-			Preamble(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, std::size_t frameCount);
+			Preamble(Utilities::BufferObject& buffer, unsigned long long& addressIndex, uint64_t frameCount);
 			Preamble& operator=(const Preamble& other);
 			Preamble(const Preamble& other);
+
+		private:
+			struct Impl;
+			Impl* pImpl;
+		};
+
+		struct CALUMIANIMATION_API PreambleVector
+		{
+			PreambleVector();
+			~PreambleVector();
+
+			void push_back(const Preamble& val);
+			uint64_t size() const;
+			bool empty() const;
+			void reserve(uint64_t size);
+			void resize(uint64_t size);
+
+			Preamble& at(uint64_t idx) const;
 
 		private:
 			struct Impl;
@@ -333,7 +370,7 @@ namespace CALUMI{
 			/// @name Meta
 			/// @{
 			/// 
-			std::size_t getSourceFileSize() const;
+			uint64_t getSourceFileSize() const;
 			
 			CALUMI::Utilities::StringContainer& getAnimationFileName() const;
 			void setAnimationFileName(const CALUMI::Utilities::StringContainer& input);
@@ -376,20 +413,20 @@ namespace CALUMI{
 			uint16_t getPreambleOffset() const;
 			void setPreambleOffset(uint16_t input);
 
-			CALUMI::Utilities::VectorContainer<float> getNZeroFloats() const;
+			CALUMI::Utilities::FloatVector getNZeroFloats() const;
 			void setNZeroFloats(float input[3]);
 
 			/**
 			 * @brief Hash values to apply the amended animation blocks. The original string is lost during export and must be retraced
 			 * @return 
 			 */
-			Utilities::VectorContainer<uint32_t>& getAmendedHashSet() const;
-			void setAmendedHashSet(const Utilities::VectorContainer<uint32_t>& input);
+			Utilities::U32Vector& getAmendedHashSet() const;
+			void setAmendedHashSet(const Utilities::U32Vector& input);
 
 			uint32_t getPreambleCount() const;
 			void setPreambleCount(uint32_t input);
-			Utilities::VectorContainer<Preamble>& getPreamble() const;
-			void setPreamble(const Utilities::VectorContainer<Preamble>& input);
+			PreambleVector& getPreamble() const;
+			void setPreamble(const PreambleVector& input);
 
 			
 			/// @}
@@ -404,25 +441,25 @@ namespace CALUMI{
 			 * and then finally apply the final blocks to the bone at index 21
 			 * @return 
 			 */
-			Utilities::VectorContainer<uint16_t>& getIndexAtlas() const;
+			Utilities::U16Vector& getIndexAtlas() const;
 			/**
 			 * @brief 
 			 * @param input An evenly sized array of unsigned values
 			 */
-			void setIndexAtlast(const Utilities::VectorContainer<uint16_t>& input);
+			void setIndexAtlast(const Utilities::U16Vector& input);
 
 			/**
 			 * @brief The array of animation blocks to apply to the given Starfield skeleton rig
 			 * @return 
 			 */
-			Utilities::VectorContainer<AnimationBlock>& getAnimationBlocks() const;
-			void setAnimationBlocks(const Utilities::VectorContainer<AnimationBlock>& input);
+			AnimationBlockVector& getAnimationBlocks() const;
+			void setAnimationBlocks(const AnimationBlockVector& input);
 			/**
 			 * @brief The array of animation blocks that are applied by hash value in game, to some form of AnimObject
 			 * @return 
 			 */
-			Utilities::VectorContainer<AnimationBlock>& getAmendedAnimationBlocks() const;
-			void setAmendedAnimationBlocks(const Utilities::VectorContainer<AnimationBlock>& input);
+			AnimationBlockVector& getAmendedAnimationBlocks() const;
+			void setAmendedAnimationBlocks(const AnimationBlockVector& input);
 
 			/// @}
 
@@ -430,10 +467,10 @@ namespace CALUMI{
 			/// @name IReadWritable
 			/// @{
 			
-			Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(Utilities::PathContainer& inputFilePath) override;
-            Utilities::ExpectedContainer<bool, Utilities::FileError> ReadFromFile(Utilities::PathContainer&& inputFilePath) override;
-			Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(Utilities::PathContainer& outputFilePath) override;
-            Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> WriteToFile(Utilities::PathContainer&& outputFilePath) override;
+			Utilities::FileResult ReadFromFile(Utilities::PathContainer& inputFilePath) override;
+            Utilities::FileResult ReadFromFile(Utilities::PathContainer&& inputFilePath) override;
+			Utilities::FileResult WriteToFile(Utilities::PathContainer& outputFilePath) override;
+			Utilities::FileResult WriteToFile(Utilities::PathContainer&& outputFilePath) override;
 
 			/// @}
 
@@ -457,11 +494,11 @@ namespace CALUMI{
 			friend class AnimationScene;
 		};
         }
-#pragma warning(disable: 4661)
-        template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::AnimationBlock>;
-        template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::Animation>;
-        template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::Preamble>;
-#pragma warning(default: 4661)
+//#pragma warning(disable: 4661)
+//        template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::AnimationBlock>;
+//        template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::Animation>;
+//        template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::Preamble>;
+//#pragma warning(default: 4661)
 
 }
 

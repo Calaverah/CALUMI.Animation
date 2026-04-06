@@ -2,7 +2,7 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
-
+#include "internalvectordef.h"
 #include "internalplatform.h"
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
 #include "utilities/CALUMI_Utilities.h"
@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <algorithm>
 
 
 namespace CALUMI{ namespace UNIV{
@@ -23,13 +24,13 @@ namespace CALUMI{ namespace UNIV{
         /// Optional name for your skeleton rig.
         /// </summary>
         Utilities::StringContainer _rigName = "MySkeletonRig";
-        Utilities::VectorContainer<SkeletonBone> _boneEntries;
+        SkeletonBoneVector _boneEntries;
 
         RigPackageManager _rigPackageManager;
         Impl() = default;
     };
     Utilities::StringContainer& SkeletonRig::RigName() const { return pImpl->_rigName; }
-    Utilities::VectorContainer<SkeletonBone>& SkeletonRig::BoneEntries() const { return pImpl->_boneEntries; }
+    SkeletonBoneVector& SkeletonRig::BoneEntries() const { return pImpl->_boneEntries; }
     RigPackageManager& SkeletonRig::getPackageManager() const { return pImpl->_rigPackageManager; }
 
 
@@ -39,47 +40,30 @@ namespace CALUMI{ namespace UNIV{
     SkeletonRig::SkeletonRig(Utilities::StringContainer& _rigName) : SkeletonRig() { pImpl->_rigName = _rigName; }
     SkeletonRig::SkeletonRig(const char* _rigName) : SkeletonRig() { pImpl->_rigName = _rigName; }
 
-    Utilities::ExpectedContainer< bool, Utilities::StringContainer> SkeletonRig::ValidateNames() const
+    bool SkeletonRig::ValidateNames() const
     {
-        
-        if (pImpl->_boneEntries.size() == 0)
-        {
-            Utilities::ExpectedContainer<bool, Utilities::StringContainer> tempOutput;
-            tempOutput.setErrorValue("No Bone Entries For This Rig Have Been Found");
-            return tempOutput;
-        }
-
         std::set<std::string> uniqueNames;
+
         for (unsigned int i = 0; i < pImpl->_boneEntries.size(); i++)
         {
             auto result = uniqueNames.insert(pImpl->_boneEntries.at(i).Name().c_str());
             if (!result.second)
             {
-                Utilities::ExpectedContainer<bool, Utilities::StringContainer> tempOutput;
-                tempOutput.setErrorValue("Two Bone Entries Share The Same Name In This Rig"); //Duplicate name found
-                return tempOutput;
+                return false;
             }
         }
 
         return true;
     }
 
-    Utilities::ExpectedContainer< bool, Utilities::StringContainer> SkeletonRig::ValidateParentIndices()
+    bool SkeletonRig::ValidateParentIndices()
     {
-        if (pImpl->_boneEntries.size() < 2)
-        {
-            Utilities::ExpectedContainer<bool, Utilities::StringContainer> tempOutput;
-            tempOutput.setErrorValue("Not Enough Bone Entries To Validate Parent Entries");
-            return tempOutput;
-        }
-
         for (int i = 0; i < pImpl->_boneEntries.size(); i++)
         {
             if (pImpl->_boneEntries.at(i).GetParentBoneIndex() >= i)
             {
-                Utilities::ExpectedContainer<bool, Utilities::StringContainer> tempOutput;
-                tempOutput.setErrorValue(std::format("Bone Index: {} Has Parent Index: {}. Parent Index Cannot Be Greater Than Or Equal To Bone's Index", i, pImpl->_boneEntries.at(i).GetParentBoneIndex()).c_str());
-                return tempOutput;
+                //tempOutput.setErrorValue(std::format("Bone Index: {} Has Parent Index: {}. Parent Index Cannot Be Greater Than Or Equal To Bone's Index", i, pImpl->_boneEntries.at(i).GetParentBoneIndex()).c_str());
+                return false;
             }
         }
         return true;
@@ -120,7 +104,7 @@ namespace CALUMI{ namespace UNIV{
             return false;
         }
 
-        for (std::size_t i = 0; i < pImpl->_boneEntries.size(); i++)
+        for (uint64_t i = 0; i < pImpl->_boneEntries.size(); i++)
         {
             if (boneName.compare(pImpl->_boneEntries.at(i).Name(), false) == 0)
             {
@@ -178,7 +162,7 @@ namespace CALUMI{ namespace UNIV{
 
         return RenameBone(result, newBoneName);
     }
-    bool SkeletonRig::RenameBone(std::size_t boneIndex, const char* newBoneName)
+    bool SkeletonRig::RenameBone(uint64_t boneIndex, const char* newBoneName)
     {
         Utilities::StringContainer oldName = pImpl->_boneEntries.at(boneIndex).Name();
         pImpl->_boneEntries.at(boneIndex).Name() = newBoneName;
@@ -226,7 +210,7 @@ namespace CALUMI{ namespace UNIV{
         return true;
     }
 
-    std::size_t UNIV::SkeletonRig::GetAnimatedBoneCount()
+    uint64_t UNIV::SkeletonRig::GetAnimatedBoneCount()
     {
         unsigned int AnimatedBoneCount = 0;
 
@@ -241,7 +225,7 @@ namespace CALUMI{ namespace UNIV{
         return AnimatedBoneCount;
     }
 
-    std::size_t SkeletonRig::GetBoneCount() const
+    uint64_t SkeletonRig::GetBoneCount() const
     {
         return pImpl->_boneEntries.size();
     }
@@ -251,7 +235,7 @@ namespace CALUMI{ namespace UNIV{
         int output = -1;
         if (boneName == "") return output;
 
-        for (std::size_t i = 0; i < pImpl->_boneEntries.size() && i < MaxBoneCount; i++)
+        for (uint64_t i = 0; i < pImpl->_boneEntries.size() && i < MaxBoneCount; i++)
         {
             if (pImpl->_boneEntries.at(i).Name() == boneName)
             {
@@ -263,7 +247,7 @@ namespace CALUMI{ namespace UNIV{
 
     }
 
-    Utilities::StringContainer SkeletonRig::ToJSON(const std::size_t indents = 0) const {
+    Utilities::StringContainer SkeletonRig::ToJSON(const uint64_t indents = 0) const {
         Utilities::StringContainer output = Utilities::Indent(indents).c_str();
         output += "{\n";
         output += std::format("{0}\"rigName\":\"{1}\",\n{0}\"boneEntries\":", Utilities::Indent(indents + 1).c_str(), pImpl->_rigName.c_str()).c_str();
@@ -391,7 +375,7 @@ namespace CALUMI{ namespace UNIV{
 
     int SkeletonBone::GetParentBoneIndex() const { return pImpl->parentBoneIndex; }
 
-    Utilities::StringContainer SkeletonBone::ToJSON(const std::size_t indents = 0) const {
+    Utilities::StringContainer SkeletonBone::ToJSON(const uint64_t indents = 0) const {
 
         std::string output = (
             Utilities::Indent(indents) + "{\n" +  
@@ -415,6 +399,10 @@ namespace CALUMI{ namespace UNIV{
         
         output += (Utilities::Indent(indents) + "}").c_str();
         return output.c_str();
+    }
+    bool SkeletonBone::operator<(const SkeletonBone& other)
+    {
+        return false;
     }
 #pragma endregion
 
@@ -576,11 +564,11 @@ namespace CALUMI{ namespace UNIV{
     {
         return rig->VerifyExclusiveBoneMirrors();
     }
-    std::size_t GetSkeletonRigBoneCountC(SkeletonRig* source)
+    uint64_t GetSkeletonRigBoneCountC(SkeletonRig* source)
     {
         return source->GetBoneCount();
     }
-    std::size_t GetSkeletonRigAnimatedBoneCountC(SkeletonRig* source)
+    uint64_t GetSkeletonRigAnimatedBoneCountC(SkeletonRig* source)
     {
         return source->GetAnimatedBoneCount();
     }
@@ -632,34 +620,17 @@ namespace CALUMI{ namespace UNIV{
 
         return &source->LocalPosition();
     }
-    bool ValidateSkeletonRigNamesC(SkeletonRig* source, Utilities::StringContainer* errorMessage)
+    bool ValidateSkeletonRigNamesC(SkeletonRig* source)
     {
-        Utilities::StringContainer tempErrorMessage;
-        Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->clear();
-        auto result = source->ValidateNames();
-        if (!result.has_value())
-        {
-            *errorMessageHolder += result.error().c_str();
-            return false;
-        }
-        return true;
+        return source->ValidateNames();
     }
-    bool ValidateSkeletonRigParentIndicesC(SkeletonRig* source, Utilities::StringContainer* errorMessage)
+    bool ValidateSkeletonRigParentIndicesC(SkeletonRig* source)
     {
-        Utilities::StringContainer tempErrorMessage;
-        Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->clear();
-        auto result = source->ValidateParentIndices();
-        if (!result.has_value())
-        {
-            *errorMessageHolder += result.error().c_str();
-            return false;
-        }
-        return true;
+        return source->ValidateParentIndices();        
     }
 #pragma endregion
 
+    VECTORDEF(SkeletonBoneVector, SkeletonBone)
 
 }}
 

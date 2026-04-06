@@ -4,17 +4,18 @@
 
 #include "internalplatform.h"
 #include "interfaces/IPackageManager.h"
+#include <vector>
 
 namespace CALUMI {
 	namespace UNIV{
 
         struct IPackageManager::Impl
         {
-            Utilities::VectorContainer<IPackage*> _packages;
+            std::vector<IPackage*> _packages;
 
             void clear()
             {
-                for (std::size_t i = 0; i < _packages.size(); i++)
+                for (uint64_t i = 0; i < _packages.size(); i++)
                 {
                     if (_packages.at(i))
                     {
@@ -39,7 +40,7 @@ namespace CALUMI {
         IPackageManager& IPackageManager::operator=(const IPackageManager& other)
         {
             pImpl->clear();
-            for (std::size_t i = 0; i < other.pImpl->_packages.size(); i++)
+            for (uint64_t i = 0; i < other.pImpl->_packages.size(); i++)
             {
                 if (auto ptr = other.pImpl->_packages.at(i))
                 {
@@ -101,7 +102,7 @@ namespace CALUMI {
             {
                 delete pImpl->_packages.at(index);
                 pImpl->_packages.at(index) = nullptr;
-                pImpl->_packages.erase(index);
+                pImpl->_packages.erase(pImpl->_packages.begin()+index);
                 return true;
             }
 
@@ -125,7 +126,7 @@ namespace CALUMI {
             return true;
         }
 
-        std::size_t IPackageManager::packageCount() const
+        uint64_t IPackageManager::packageCount() const
         {
             return pImpl->_packages.size();
         }

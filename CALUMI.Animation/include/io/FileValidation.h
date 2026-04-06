@@ -3,7 +3,7 @@
 //Contact: Calaverahmedia@gmail.com
 
 #pragma once
-#include "FileError.h"
+#include "FileResult.h"
 
 
 namespace CALUMI{
@@ -20,7 +20,7 @@ namespace CALUMI{
 	 * @param inputPath 
 	 * @return Expected container with the value being a char based buffer of the file if the operation was a success, and/or an error code
 	 */
-	Utilities::ExpectedContainer<Utilities::VectorContainer<char>, Utilities::FileError> CALUMIANIMATION_API ValidateFile(const Utilities::PathContainer& inputPath);
+	Utilities::FileBufferResult CALUMIANIMATION_API ValidateFile(const Utilities::PathContainer& inputPath);
 	
 	/**
 	 * @brief Checks the file with the standard validation criteria
@@ -29,7 +29,7 @@ namespace CALUMI{
 	 * @param allowFiles If true the list of extensions acts as a allowed extension list, if false then acts as an exclusion list
 	 * @return Expected container with the value being a char based buffer of the file if the operation was a success, and/or an error code
 	 */
-	Utilities::ExpectedContainer<Utilities::VectorContainer<char>, Utilities::FileError> CALUMIANIMATION_API ValidateFile(const Utilities::PathContainer& inputPath, const Utilities::VectorContainer<Utilities::StringContainer> fileExtensions, bool allowFiles = true);
+	Utilities::FileBufferResult CALUMIANIMATION_API ValidateFile(const Utilities::PathContainer& inputPath, const Utilities::StringList fileExtensions, bool allowFiles = true);
 
 	/**
 	 * @brief This method checks the file's size as well as validates the file's extension against a list.
@@ -40,17 +40,17 @@ namespace CALUMI{
 	 * @param allowFiles If true the list of extensions acts as a allowed extension list, if false then acts as an exclusion list
 	 * @return 
 	 */
-	Utilities::ExpectedContainer<Utilities::VectorContainer<char>, Utilities::FileError> CALUMIANIMATION_API ValidateFile(const Utilities::PathContainer& inputPath, const Utilities::VectorContainer<Utilities::StringContainer> fileExtensions, unsigned int minFileSize, unsigned long long maxFileSize = 0, bool allowFiles = true);
-	Utilities::ExpectedContainer<Utilities::VectorContainer<char>, Utilities::FileError> CALUMIANIMATION_API ValidateFile(const Utilities::PathContainer& inputPath, unsigned int minFileSize, unsigned long long maxFileSize = 0);
+	Utilities::FileBufferResult CALUMIANIMATION_API ValidateFile(const Utilities::PathContainer& inputPath, const Utilities::StringList fileExtensions, unsigned int minFileSize, unsigned long long maxFileSize = 0, bool allowFiles = true);
+	Utilities::FileBufferResult CALUMIANIMATION_API ValidateFile(const Utilities::PathContainer& inputPath, unsigned int minFileSize, unsigned long long maxFileSize = 0);
 
 	/**
 	 * @brief Writes a buffer to a binary file
-	 * @param outputPath The path to write to
+	 * @param outputPath The _path to write to
 	 * @param buffer char based buffer or string container to write from
 	 * @return Success/Error status message
 	 */
-	Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> CALUMIANIMATION_API WriteToBinaryFile(const Utilities::PathContainer& outputPath, Utilities::VectorContainer<char>& buffer);
-	Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> CALUMIANIMATION_API WriteToBinaryFile(const Utilities::PathContainer& outputPath, const Utilities::StringContainer& buffer);
+	Utilities::FileResult CALUMIANIMATION_API WriteToBinaryFile(const Utilities::PathContainer& outputPath, Utilities::BufferObject& buffer);
+	Utilities::FileResult CALUMIANIMATION_API WriteToBinaryFile(const Utilities::PathContainer& outputPath, const Utilities::StringContainer& buffer);
 
 	/** 
 	 * @} 

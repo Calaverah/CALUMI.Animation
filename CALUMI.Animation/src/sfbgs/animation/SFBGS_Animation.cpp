@@ -9,6 +9,8 @@
 #include <iostream>
 #include <print>
 #include <cstring>
+#include <io/FileResult.h>
+#include <vector>
 
 namespace CALUMI{
 	namespace SFBGS {
@@ -226,10 +228,10 @@ namespace CALUMI{
 		struct Preamble::Impl 
 		{
 			uint16_t count = 0;
-			Utilities::VectorContainer<float> preSet;
-			Utilities::VectorContainer<float> mainSet;
-			Utilities::VectorContainer<int16_t> footer1;
-			Utilities::VectorContainer<int8_t> footer2;
+			Utilities::FloatVector preSet;
+			Utilities::FloatVector mainSet;
+			Utilities::S16Vector footer1;
+			Utilities::S8Vector footer2;
 
 			Impl() = default;
 		};
@@ -247,35 +249,35 @@ namespace CALUMI{
 		{
 			pImpl->count = sz;
 		}
-		Utilities::VectorContainer<float>& Preamble::getPreSet() const
+		Utilities::FloatVector& Preamble::getPreSet() const
 		{
 			return pImpl->preSet;
 		}
-		void Preamble::setPreSet(const Utilities::VectorContainer<float>& input)
+		void Preamble::setPreSet(const Utilities::FloatVector& input)
 		{
 			pImpl->preSet = input;
 		}
-		Utilities::VectorContainer<float>& Preamble::getMainSet() const
+		Utilities::FloatVector& Preamble::getMainSet() const
 		{
 			return pImpl->mainSet;
 		}
-		void Preamble::setMainSet(const Utilities::VectorContainer<float>& input)
+		void Preamble::setMainSet(const Utilities::FloatVector& input)
 		{
 			pImpl->mainSet = input;
 		}
-		Utilities::VectorContainer<int16_t>& Preamble::getFooter1() const
+		Utilities::S16Vector& Preamble::getFooter1() const
 		{
 			return pImpl->footer1;
 		}
-		void Preamble::setFooter1(const Utilities::VectorContainer<int16_t>& input)
+		void Preamble::setFooter1(const Utilities::S16Vector& input)
 		{
 			pImpl->footer1 = input;
 		}
-		Utilities::VectorContainer<int8_t>& Preamble::getFooter2() const
+		Utilities::S8Vector& Preamble::getFooter2() const
 		{
 			return pImpl->footer2;
 		}
-		void Preamble::setFooter2(const Utilities::VectorContainer<int8_t>& input)
+		void Preamble::setFooter2(const Utilities::S8Vector& input)
 		{
 			pImpl->footer2 = input;
 		}
@@ -285,7 +287,7 @@ namespace CALUMI{
 		}
 
 		//Preamble Defs
-		Preamble::Preamble(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, std::size_t frameCount) : Preamble()
+		Preamble::Preamble(Utilities::BufferObject& buffer, unsigned long long& addressIndex, uint64_t frameCount) : Preamble()
 		{
 			CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 2, 2, &pImpl->count);
 
@@ -349,23 +351,23 @@ namespace CALUMI{
 			uint16_t _scalarCount = 0;
 			uint16_t _bonePriorityCount = 0; //Never appears to have a count of more than 1, if at all
 
-			Utilities::VectorContainer<uint16_t> _rotationKeyFrames;
-			Utilities::VectorContainer<uint16_t> _translationKeyFrames;
-			Utilities::VectorContainer<uint16_t> _scalarKeyFrames;
-			Utilities::VectorContainer<uint16_t> _bonePriorityKeyFrames; //Usually just a single entry for the 0th frame
+			Utilities::U16Vector _rotationKeyFrames;
+			Utilities::U16Vector _translationKeyFrames;
+			Utilities::U16Vector _scalarKeyFrames;
+			Utilities::U16Vector _bonePriorityKeyFrames; //Usually just a single entry for the 0th frame
 
 
 			//ROTATIONS SECTION
-			Utilities::VectorContainer<CALUMI::SFBGS::RotationEntry> _rotationEntries;
-			Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> _rotationPrefixEntries;
+			SFBGS::RotationEntrySequence _rotationEntries;
+			SFBGS::RotationPrefixSequence _rotationPrefixEntries;
 
 			//TRANSLATIONS SECTION
-			Utilities::VectorContainer<CALUMI::SFBGS::TranslationEntry> _translationEntries;
-			Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> _translationPrefixEntries;
+			SFBGS::TranslationEntrySequence _translationEntries;
+			SFBGS::TranslationPrefixSequence _translationPrefixEntries;
 
 			//ADDITIONALS SECTION
-			Utilities::VectorContainer<int16_t> _scalarEntries;
-			Utilities::VectorContainer<uint8_t> _bonePriorityEntries; //Unsure how to process this information as of now. Appears to be in units/100 for a scalar of 0-100%
+			Utilities::S16Vector _scalarEntries;
+			Utilities::U8Vector _bonePriorityEntries; //Unsure how to process this information as of now. Appears to be in units/100 for a scalar of 0-100%
 
 			Impl() = default;
 		};
@@ -417,43 +419,43 @@ namespace CALUMI{
 		{
 			pImpl->_bonePriorityCount = input;
 		}
-		Utilities::VectorContainer<uint16_t>& AnimationBlock::RotationKeyFrames() const
+		Utilities::U16Vector& AnimationBlock::RotationKeyFrames() const
 		{
 			return pImpl->_rotationKeyFrames;
 		}
-		Utilities::VectorContainer<uint16_t>& AnimationBlock::TranslationKeyFrames() const
+		Utilities::U16Vector& AnimationBlock::TranslationKeyFrames() const
 		{
 			return pImpl->_translationKeyFrames;
 		}
-		Utilities::VectorContainer<uint16_t>& AnimationBlock::ScalarKeyFrames() const
+		Utilities::U16Vector& AnimationBlock::ScalarKeyFrames() const
 		{
 			return pImpl->_scalarKeyFrames;
 		}
-		Utilities::VectorContainer<uint16_t>& AnimationBlock::BonePriorityKeyFrames() const
+		Utilities::U16Vector& AnimationBlock::BonePriorityKeyFrames() const
 		{
 			return pImpl->_bonePriorityKeyFrames;
 		}
-		Utilities::VectorContainer<CALUMI::SFBGS::RotationEntry>& AnimationBlock::RotationEntries() const
+		SFBGS::RotationEntrySequence& AnimationBlock::RotationEntries() const
 		{
 			return pImpl->_rotationEntries;
 		}
-		Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& AnimationBlock::RotationPrefixEntries() const
+		SFBGS::RotationPrefixSequence& AnimationBlock::RotationPrefixEntries() const
 		{
 			return pImpl->_rotationPrefixEntries;
 		}
-		Utilities::VectorContainer<CALUMI::SFBGS::TranslationEntry>& AnimationBlock::TranslationEntries() const
+		SFBGS::TranslationEntrySequence& AnimationBlock::TranslationEntries() const
 		{
 			return pImpl->_translationEntries;
 		}
-		Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix>& AnimationBlock::TranslationPrefixEntries() const
+		SFBGS::TranslationPrefixSequence& AnimationBlock::TranslationPrefixEntries() const
 		{
 			return pImpl->_translationPrefixEntries;
 		}
-		Utilities::VectorContainer<int16_t>& AnimationBlock::ScalarEntries() const
+		Utilities::S16Vector& AnimationBlock::ScalarEntries() const
 		{
 			return pImpl->_scalarEntries;
 		}
-		Utilities::VectorContainer<uint8_t>& AnimationBlock::BonePriorityEntries() const
+		Utilities::U8Vector& AnimationBlock::BonePriorityEntries() const
 		{
 			return pImpl->_bonePriorityEntries;
 		}
@@ -476,7 +478,7 @@ namespace CALUMI{
 				delete pImpl;
 		}
 
-		AnimationBlock::AnimationBlock(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, const HeaderFlags& flags) : AnimationBlock()
+		AnimationBlock::AnimationBlock(Utilities::BufferObject& buffer, unsigned long long& addressIndex, const HeaderFlags& flags) : AnimationBlock()
 		{
 			//address index can help with alignment when working with a raw buffer of bytes
 			//eg. if the current index is at 0x07 and we have an aligned float
@@ -580,7 +582,7 @@ namespace CALUMI{
 
 		}
 
-		void AnimationBlock::SerializeIntoBuffer(Utilities::VectorContainer<char>& buffer, unsigned long long& addressIndex, const HeaderFlags& flags)
+		void AnimationBlock::SerializeIntoBuffer(Utilities::BufferObject& buffer, unsigned long long& addressIndex, const HeaderFlags& flags)
 		{
 			uint8_t cSize = 1 + (int)flags.areKeyCounters2Byte();
 			uint8_t kSize = 1 + (int)flags.areKeyFrameEntries2Byte(); //alignment and sizing helpers
@@ -663,7 +665,7 @@ namespace CALUMI{
 		struct Animation::Impl
 		{
 			CALUMI::Utilities::StringContainer animationFileName; //Not present in file. For file tracking. Should be unique without extension
-			std::size_t fileSize = 0; //Not present in file. For debugging
+			uint64_t fileSize = 0; //Not present in file. For debugging
 			// 
 			//9x4bytes, 2 blanks (CONFIRMED), 4 Quat Components (or all zero), 3 unknown (possibly xyz values)
 			uint64_t _magicNumber = 0;
@@ -684,17 +686,17 @@ namespace CALUMI{
 			float _nZeroFloats[3] = { 0.0,-0.0,0.0 }; //UNKNOWN:
 
 			uint32_t _preambleCount = 0;
-			Utilities::VectorContainer<Preamble> _preamble;
+			PreambleVector _preamble;
 
-			Utilities::VectorContainer<uint32_t> _amendedHashSet;
+			Utilities::U32Vector _amendedHashSet;
 
 			//animation index atlas goes here
-			Utilities::VectorContainer<uint16_t> _indexAtlas; //NOTE: this index is the size of the indexAtlasCounter, it is unknown if the entries are one byte only or if they can be expanded to two bytes, 
+			Utilities::U16Vector _indexAtlas; //NOTE: this index is the size of the indexAtlasCounter, it is unknown if the entries are one byte only or if they can be expanded to two bytes, 
 			//so we will keep our entries as a short (2 bytes) and cast them if they can be casted as 1 byte
 
 			//animation blocks go here
-			Utilities::VectorContainer<AnimationBlock> _animationBlocks;
-			Utilities::VectorContainer<AnimationBlock> _amendedAnimationBlocks;
+			AnimationBlockVector _animationBlocks;
+			AnimationBlockVector _amendedAnimationBlocks;
 
 			Impl() = default;
 		};
@@ -720,7 +722,7 @@ namespace CALUMI{
 			*pImpl = *(input.pImpl);
 		}
 
-		std::size_t Animation::getSourceFileSize() const
+		uint64_t Animation::getSourceFileSize() const
 		{
 			return pImpl->fileSize;
 		}
@@ -835,16 +837,22 @@ namespace CALUMI{
 			pImpl->_preambleOffset = input;
 		}
 
-		CALUMI::Utilities::VectorContainer<float> Animation::getNZeroFloats() const
+		CALUMI::Utilities::FloatVector Animation::getNZeroFloats() const
 		{
-			Utilities::VectorContainer<float> output(3);
-			for (std::size_t i = 0; i < 3; i++) { output.at(i) = pImpl->_nZeroFloats[i]; }
+			Utilities::FloatVector output;
+
+			output.resize(3);
+
+			for (uint64_t i = 0; i < 3; i++) 
+			{ 
+				output.at(i) = pImpl->_nZeroFloats[i]; 
+			}
 			return output;
 		}
 
 		void Animation::setNZeroFloats(float input[3])
 		{
-			for (std::size_t i = 0; i < 3; i++) { pImpl->_nZeroFloats[i] = input[i]; }
+			for (uint64_t i = 0; i < 3; i++) { pImpl->_nZeroFloats[i] = input[i]; }
 		}
 
 		uint32_t Animation::getPreambleCount() const
@@ -857,57 +865,57 @@ namespace CALUMI{
 			pImpl->_preambleCount = input;
 		}
 
-		Utilities::VectorContainer<Preamble>& Animation::getPreamble() const
+		PreambleVector& Animation::getPreamble() const
 		{
 			return pImpl->_preamble;
 		}
 
-		void Animation::setPreamble(const Utilities::VectorContainer<Preamble>& input)
+		void Animation::setPreamble(const PreambleVector& input)
 		{
 			pImpl->_preamble = input;
 		}
 
-		Utilities::VectorContainer<uint32_t>& Animation::getAmendedHashSet() const
+		Utilities::U32Vector& Animation::getAmendedHashSet() const
 		{
 			return pImpl->_amendedHashSet;
 		}
 
-		void Animation::setAmendedHashSet(const Utilities::VectorContainer<uint32_t>& input)
+		void Animation::setAmendedHashSet(const Utilities::U32Vector& input)
 		{
 			pImpl->_amendedHashSet = input;
 		}
 
-		Utilities::VectorContainer<uint16_t>& Animation::getIndexAtlas() const
+		Utilities::U16Vector& Animation::getIndexAtlas() const
 		{
 			return pImpl->_indexAtlas;
 		}
 
-		void Animation::setIndexAtlast(const Utilities::VectorContainer<uint16_t>& input)
+		void Animation::setIndexAtlast(const Utilities::U16Vector& input)
 		{
 			pImpl->_indexAtlas = input;
 		}
 
-		Utilities::VectorContainer<AnimationBlock>& Animation::getAnimationBlocks() const
+		AnimationBlockVector& Animation::getAnimationBlocks() const
 		{
 			return pImpl->_animationBlocks;
 		}
 
-		Utilities::VectorContainer<AnimationBlock>& Animation::getAmendedAnimationBlocks() const
+		AnimationBlockVector& Animation::getAmendedAnimationBlocks() const
 		{
 			return pImpl->_amendedAnimationBlocks;
 		}
 
-		void Animation::setAnimationBlocks(const Utilities::VectorContainer<AnimationBlock>& input)
+		void Animation::setAnimationBlocks(const AnimationBlockVector& input)
 		{
 			pImpl->_animationBlocks = input;
 		}
 
-		void Animation::setAmendedAnimationBlocks(const Utilities::VectorContainer<AnimationBlock>& input)
+		void Animation::setAmendedAnimationBlocks(const AnimationBlockVector& input)
 		{
 			pImpl->_amendedAnimationBlocks = input;
 		}
 
-		static unsigned short _SumIndices(Utilities::VectorContainer<unsigned short>inputVector, Animation::IndexCountingSolution type)
+		static unsigned short _SumIndices(Utilities::U16Vector inputVector, Animation::IndexCountingSolution type)
 		{
 			unsigned short sum = 0;
 			for (int i = 0; i < inputVector.size(); i++)
@@ -939,69 +947,69 @@ namespace CALUMI{
 			pImpl->_headerFlags = newFlags;
 		}
 
-        Utilities::ExpectedContainer<bool, Utilities::FileError> Animation::ReadFromFile(Utilities::PathContainer&& inputFilePath)
+		Utilities::FileResult Animation::ReadFromFile(Utilities::PathContainer&& inputFilePath)
 		{
 			Utilities::PathContainer output(inputFilePath);
 			return ReadFromFile(output);
 		}
-		Utilities::ExpectedContainer<bool, Utilities::FileError> Animation::ReadFromFile(Utilities::PathContainer& inputFilePath)
+		Utilities::FileResult Animation::ReadFromFile(Utilities::PathContainer& inputFilePath)
 		{
 			//Check to see if file exists and is valid
-			Utilities::VectorContainer<Utilities::StringContainer>vec; vec.push_back(".af");
+			Utilities::StringList vec; 
+			vec.push_back(".af");
+			
 			auto buffer = CALUMI::ValidateFile(inputFilePath, vec, 64, 0, true);
-			if (!buffer.has_value())
+			if (buffer.result().hasError())
 			{
-				Utilities::ExpectedContainer<bool, Utilities::FileError> tempOutput;
-				tempOutput.setErrorValue(buffer.error());
-				return tempOutput;
+				return buffer.result();
 			}
 
-			pImpl->fileSize = buffer.value().size();
+			pImpl->fileSize = buffer.size();
 			pImpl->animationFileName = inputFilePath.stem().c_str();
 			//iterator tracking
-			//char* currentAddress = buffer.value().data();
+			//char* currentAddress = buffer.data();
 			unsigned long long addressIndex = 0;
 
 			//Evaluate header
 			{
-				std::memcpy(&pImpl->_magicNumber, &buffer.value().at(addressIndex), sizeof(pImpl->_magicNumber));
+				std::memcpy(&pImpl->_magicNumber, &buffer.at(addressIndex), sizeof(pImpl->_magicNumber));
 				addressIndex += sizeof(pImpl->_magicNumber);
 
 				{
 					float qBuffer[4] = {}; float vBuffer[3] = {};
-					std::memcpy(&qBuffer, &buffer.value().at(addressIndex), sizeof(qBuffer));
+					std::memcpy(&qBuffer, &buffer.at(addressIndex), sizeof(qBuffer));
 					addressIndex += sizeof(qBuffer);
 					pImpl->_headerRotation = Math::Quaternion(qBuffer[1], qBuffer[2], qBuffer[3], qBuffer[0]);
 
-					std::memcpy(&vBuffer, &buffer.value().at(addressIndex), sizeof(vBuffer));
+					std::memcpy(&vBuffer, &buffer.at(addressIndex), sizeof(vBuffer));
 					addressIndex += sizeof(vBuffer);
 					pImpl->_headerTranslation = vBuffer;
 				}
 
 				char flagBuff[4] = {};
-				std::memcpy(&flagBuff, &buffer.value().at(addressIndex), sizeof(flagBuff));
+				std::memcpy(&flagBuff, &buffer.at(addressIndex), sizeof(flagBuff));
 				pImpl->_headerFlags = HeaderFlags(flagBuff);
 				addressIndex += sizeof(flagBuff);
 
-				std::memcpy(&pImpl->_versionNumber, &buffer.value().at(addressIndex), sizeof(pImpl->_versionNumber));
+				std::memcpy(&pImpl->_versionNumber, &buffer.at(addressIndex), sizeof(pImpl->_versionNumber));
 				addressIndex += sizeof(pImpl->_versionNumber);
 
-				std::memcpy(&pImpl->_boneCount, &buffer.value().at(addressIndex), sizeof(pImpl->_boneCount));
+				std::memcpy(&pImpl->_boneCount, &buffer.at(addressIndex), sizeof(pImpl->_boneCount));
 				addressIndex += sizeof(pImpl->_boneCount);
 
-				std::memcpy(&pImpl->_frameCount, &buffer.value().at(addressIndex), sizeof(pImpl->_frameCount));
+				std::memcpy(&pImpl->_frameCount, &buffer.at(addressIndex), sizeof(pImpl->_frameCount));
 				addressIndex += sizeof(pImpl->_frameCount);
 
-				std::memcpy(&pImpl->_indexAtlasCounter, &buffer.value().at(addressIndex), sizeof(pImpl->_indexAtlasCounter));
+				std::memcpy(&pImpl->_indexAtlasCounter, &buffer.at(addressIndex), sizeof(pImpl->_indexAtlasCounter));
 				addressIndex += sizeof(pImpl->_indexAtlasCounter);
 
-				std::memcpy(&pImpl->_amendedBlockCount, &buffer.value().at(addressIndex), sizeof(pImpl->_amendedBlockCount));
+				std::memcpy(&pImpl->_amendedBlockCount, &buffer.at(addressIndex), sizeof(pImpl->_amendedBlockCount));
 				addressIndex += sizeof(pImpl->_amendedBlockCount);
 
-				std::memcpy(&pImpl->_preambleOffset, &buffer.value().at(addressIndex), sizeof(pImpl->_preambleOffset));
+				std::memcpy(&pImpl->_preambleOffset, &buffer.at(addressIndex), sizeof(pImpl->_preambleOffset));
 				addressIndex += sizeof(pImpl->_preambleOffset);
 
-				std::memcpy(&pImpl->_nZeroFloats, &buffer.value().at(addressIndex), sizeof(pImpl->_nZeroFloats));
+				std::memcpy(&pImpl->_nZeroFloats, &buffer.at(addressIndex), sizeof(pImpl->_nZeroFloats));
 				addressIndex += sizeof(pImpl->_nZeroFloats);
 			}
 			//Validate header?
@@ -1009,15 +1017,15 @@ namespace CALUMI{
 
 
 			//Evaluate Preamble
-			std::size_t newOffset = addressIndex + pImpl->_preambleOffset;
+			uint64_t newOffset = addressIndex + pImpl->_preambleOffset;
 			if (pImpl->_preambleOffset > 0)
 			{
-				CALUMI::Utilities::AlignBufferAndRead(buffer.value(), addressIndex, 4, 4, &pImpl->_preambleCount);
+				CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 4, 4, &pImpl->_preambleCount);
 				pImpl->_preamble.reserve(pImpl->_preambleCount);
-				for (std::size_t i = 0; i < pImpl->_preambleCount; i++)
+				for (uint64_t i = 0; i < pImpl->_preambleCount; i++)
 				{
 
-					pImpl->_preamble.push_back(Preamble(buffer.value(), addressIndex, pImpl->_frameCount));
+					pImpl->_preamble.push_back(Preamble(buffer, addressIndex, pImpl->_frameCount));
 
 				}
 			}
@@ -1025,13 +1033,13 @@ namespace CALUMI{
 			//FILL PAD????
 			//addressIndex += 4 * static_cast<unsigned long long>(_amendedBlockCount);
 			pImpl->_amendedHashSet.resize(pImpl->_amendedBlockCount);
-			for (std::size_t i = 0; i < pImpl->_amendedBlockCount; i++)
+			for (uint64_t i = 0; i < pImpl->_amendedBlockCount; i++)
 			{
-				CALUMI::Utilities::AlignBufferAndRead(buffer.value(), addressIndex, 4, 4, &pImpl->_amendedHashSet.at(i));
+				CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 4, 4, &pImpl->_amendedHashSet.at(i));
 			}
 
 			//Aligning To 4 before hitting the Animation Block Evalutation
-			CALUMI::Utilities::AlignBuffer(buffer.value(), addressIndex, 4);
+			CALUMI::Utilities::AlignBuffer(buffer, addressIndex, 4);
 
 			//Evaluate Animation Blocks
 			//INDEX ATLAS
@@ -1041,7 +1049,7 @@ namespace CALUMI{
 				int8_t atlasEntrySize = 1; //possible need to be able to switch between byte and short sizing here
 				for (int i = 0; i < pImpl->_indexAtlasCounter; i++)
 				{
-					std::memcpy(&pImpl->_indexAtlas.at(i), &buffer.value().at(addressIndex), atlasEntrySize);
+					std::memcpy(&pImpl->_indexAtlas.at(i), &buffer.at(addressIndex), atlasEntrySize);
 					addressIndex += atlasEntrySize;
 				}
 			}
@@ -1063,7 +1071,7 @@ namespace CALUMI{
 				}
 				else
 				{
-					pImpl->_animationBlocks.push_back(AnimationBlock(buffer.value(), addressIndex, pImpl->_headerFlags));
+					pImpl->_animationBlocks.push_back(AnimationBlock(buffer, addressIndex, pImpl->_headerFlags));
 				}
 
 				k++; //increment counter
@@ -1075,33 +1083,35 @@ namespace CALUMI{
 			pImpl->_amendedAnimationBlocks.reserve(pImpl->_amendedBlockCount);
 			for (unsigned short i = 0; i < pImpl->_amendedBlockCount; i++)
 			{
-				pImpl->_amendedAnimationBlocks.push_back(AnimationBlock(buffer.value(), addressIndex, pImpl->_headerFlags));
+				pImpl->_amendedAnimationBlocks.push_back(AnimationBlock(buffer, addressIndex, pImpl->_headerFlags));
 			}
 
-			if (buffer.value().size() != addressIndex)
+#ifdef DEBUG_BUILD
+			if (buffer.size() != addressIndex)
 			{
 				std::println("===========================================================");
 				std::println("===========================================================");
 				std::println("==WARNING CURRENT BUFFER ADDRESS IS NOT AT FINAL POSITION==");
 				//std::println("CURRENT  POS: {}",(void*)currentAddress);
 				//std::println("CURRENT ITER: {}",addressIndex);
-				std::println("BUFFER  SIZE: {}", buffer.value().size());
-				std::println("BUFFER START: {}", (void*)buffer.value().data());
-				std::println("Size+Start: {}", (void*)(buffer.value().size() + buffer.value().data()));
+				std::println("BUFFER  SIZE: {}", buffer.size());
+				std::println("BUFFER START: {}", (void*)buffer.data());
+				std::println("Size+Start: {}", (void*)(buffer.size() + buffer.data()));
 				std::println("===========================================================");
 				std::cout << "Press ENTER to continue running the program." << std::endl;
 				std::cin.get();
 				std::println("===========================================================");
 			}
-			return true;
+#endif
+			return {Utilities::FileResult::FileErrorCode::Success, inputFilePath.w_str(), ""};
 		}
 
-		Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> Animation::WriteToFile(Utilities::PathContainer& outputFilePath)
+		Utilities::FileResult Animation::WriteToFile(Utilities::PathContainer& outputFilePath)
 		{
 			//D:/ModOrganizer/Starfield_Mod_Authoring_01/mods/ExtractedData/meshes/actors/human/animations/scenes/mq101_001_miningscene/female/animstart_lin.af has the largest size of 780896 bytes
 
 
-			Utilities::VectorContainer<char> buffer;
+			Utilities::BufferObject buffer;
 			buffer.reserve(781000); //temp optimization based on largest BGS file size
 
 			//We write as little endian by default, can include a bswap in the future
@@ -1110,7 +1120,7 @@ namespace CALUMI{
 
 			//Header Section
 			{
-				buffer.insert(buffer.end(), 64, 0); //Prepares empty entries for the header. Header is always 64 bytes long as of file version 05
+				buffer.insert(buffer.endPos(), 64, 0); //Prepares empty entries for the header. Header is always 64 bytes long as of file version 05
 				std::memcpy(&buffer.at(addressIndex), &pImpl->_magicNumber, sizeof(pImpl->_magicNumber));
 				addressIndex += sizeof(pImpl->_magicNumber);
 
@@ -1154,7 +1164,7 @@ namespace CALUMI{
 
 			//Index Atlas
 			int8_t atlasEntrySize = 1; //possible need to be able to switch between byte and short sizing here
-			buffer.insert(buffer.end(), static_cast<size_t>(atlasEntrySize * pImpl->_indexAtlasCounter), 0);
+			buffer.insert(buffer.endPos(), static_cast<size_t>(atlasEntrySize * pImpl->_indexAtlasCounter), 0);
 			for (int i = 0; i < pImpl->_indexAtlasCounter; i++)
 			{
 				std::memcpy( &buffer.at(addressIndex), &pImpl->_indexAtlas.at(i), atlasEntrySize);
@@ -1171,7 +1181,7 @@ namespace CALUMI{
 			//Skipping additional block entries until we know more
 
 
-
+#ifdef DEBUG_BUILD
 			if (pImpl->fileSize != addressIndex && pImpl->fileSize > 0)
 			{
 				std::println("===========================================================");
@@ -1186,14 +1196,14 @@ namespace CALUMI{
 				std::cin.get();
 				std::println("===========================================================");
 			}
-
+#endif
 			//Writing to file
 			
 
 			return CALUMI::WriteToBinaryFile(outputFilePath, buffer);
 		}
 
-        Utilities::ExpectedContainer<Utilities::StringContainer, Utilities::FileError> Animation::WriteToFile(Utilities::PathContainer&& outputFilePath)
+        Utilities::FileResult Animation::WriteToFile(Utilities::PathContainer&& outputFilePath)
 		{
 			Utilities::PathContainer output(outputFilePath);
 			return WriteToFile(output);
@@ -1203,5 +1213,85 @@ namespace CALUMI{
 			return pImpl->_amendedBlockCount == pImpl->_amendedHashSet.size() && pImpl->_amendedBlockCount == pImpl->_amendedAnimationBlocks.size();
 		}
 #pragma endregion
+		
+		struct AnimationBlockVector::Impl
+		{
+			std::vector< AnimationBlock> _vector;
+		};
+
+		AnimationBlockVector::AnimationBlockVector() : pImpl(new Impl()) {}
+
+		AnimationBlockVector::~AnimationBlockVector()
+		{
+			if (pImpl)
+			{
+				delete pImpl;
+				pImpl = nullptr;
+			}
+		}
+		void AnimationBlockVector::push_back(const AnimationBlock & val)
+		{
+			pImpl->_vector.push_back(val);
+		}
+		uint64_t AnimationBlockVector::size() const
+		{
+			return pImpl->_vector.size();
+		}
+		bool AnimationBlockVector::empty() const
+		{
+			return pImpl->_vector.empty();
+		}
+		void AnimationBlockVector::reserve(uint64_t size)
+		{
+			pImpl->_vector.reserve(size);
+		}
+		void AnimationBlockVector::resize(uint64_t size)
+		{
+			pImpl->_vector.resize(size);
+		}
+		AnimationBlock& AnimationBlockVector::at(uint64_t idx) const
+		{
+			return pImpl->_vector.at(idx);
+		}
+
+		struct PreambleVector::Impl
+		{
+			std::vector<Preamble> _vector;
+		};
+
+		PreambleVector::PreambleVector() : pImpl(new Impl()) {}
+
+		PreambleVector::~PreambleVector()
+		{
+			if (pImpl)
+			{
+				delete pImpl;
+				pImpl = nullptr;
+			}
+		}
+		void PreambleVector::push_back(const Preamble & val)
+		{
+			pImpl->_vector.push_back(val);
+		}
+		uint64_t PreambleVector::size() const
+		{
+			return pImpl->_vector.size();
+		}
+		bool PreambleVector::empty() const
+		{
+			return pImpl->_vector.empty();
+		}
+		void PreambleVector::reserve(uint64_t size)
+		{
+			pImpl->_vector.reserve(size);
+		}
+		void PreambleVector::resize(uint64_t size)
+		{
+			pImpl->_vector.resize(size);
+		}
+		Preamble& PreambleVector::at(uint64_t idx) const
+		{
+			return pImpl->_vector.at(idx);
+		}
 }
 }

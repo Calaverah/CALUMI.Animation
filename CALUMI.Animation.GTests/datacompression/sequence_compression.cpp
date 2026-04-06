@@ -30,12 +30,12 @@ GTEST(RDP_Rotation)
     ROTATIONENTRY(input1, 4, 1.0f, 0.0f, 0.0f, 0.0); //""
     ROTATIONENTRY(input1, 5, 1.0f, 0.0f, 0.0f, 0.0);
 
-    auto first1 = input1.RotationSequence().at(0);
-    auto last1 = input1.RotationSequence().at(input1.RotationSequence().size() - 1);
+    auto first1 = input1.rotationSequence().at(0);
+    auto last1 = input1.rotationSequence().at(input1.rotationSequence().size() - 1);
 
     input1.ExecuteRDPReduction_Rotation();
 
-    EXPECT_TRUE(input1.RotationSequence().size() == 2 && first1.IsIdentical(input1.RotationSequence().at(0)) && last1.IsIdentical(input1.RotationSequence().at(input1.RotationSequence().size()-1)));
+    EXPECT_TRUE(input1.rotationSequence().size() == 2 && first1.IsIdentical(input1.rotationSequence().at(0)) && last1.IsIdentical(input1.rotationSequence().at(input1.rotationSequence().size()-1)));
 
 
     //GTEST(RDP_Rotation2)
@@ -49,12 +49,12 @@ GTEST(RDP_Rotation)
     ROTATIONENTRY(input2, 4, 1.0f, 0.0f, 0.0f, 0.0); //should be culled
     ROTATIONENTRY(input2, 5, 1.0f, 0.0f, 0.0f, 0.0);
 
-    auto first2 = input2.RotationSequence().at(0);
-    auto last2 = input2.RotationSequence().at(input2.RotationSequence().size() - 1);
+    auto first2 = input2.rotationSequence().at(0);
+    auto last2 = input2.rotationSequence().at(input2.rotationSequence().size() - 1);
 
     input2.ExecuteRDPReduction_Rotation();
 
-    EXPECT_TRUE(input2.RotationSequence().size() == 5 && first2.IsIdentical(input2.RotationSequence().at(0)) && last2.IsIdentical(input2.RotationSequence().at(input2.RotationSequence().size() - 1)));
+    EXPECT_TRUE(input2.rotationSequence().size() == 5 && first2.IsIdentical(input2.rotationSequence().at(0)) && last2.IsIdentical(input2.rotationSequence().at(input2.rotationSequence().size() - 1)));
 
 
     //GTEST(RDP_Rotation3)
@@ -68,12 +68,12 @@ GTEST(RDP_Rotation)
     ROTATIONENTRY(input3, 4, 1.0f, 0.0f, 0.0f, 60.0); //should be culled
     ROTATIONENTRY(input3, 5, 1.0f, 0.0f, 0.0f, 0.0);
 
-    auto first3 = input3.RotationSequence().at(0);
-    auto last3 = input3.RotationSequence().at(input3.RotationSequence().size() - 1);
+    auto first3 = input3.rotationSequence().at(0);
+    auto last3 = input3.rotationSequence().at(input3.rotationSequence().size() - 1);
 
     input3.ExecuteRDPReduction_Rotation();
 
-    EXPECT_TRUE(input3.RotationSequence().size() == 5 && first3.IsIdentical(input3.RotationSequence().at(0)) && last3.IsIdentical(input3.RotationSequence().at(input3.RotationSequence().size() - 1)));
+    EXPECT_TRUE(input3.rotationSequence().size() == 5 && first3.IsIdentical(input3.rotationSequence().at(0)) && last3.IsIdentical(input3.rotationSequence().at(input3.rotationSequence().size() - 1)));
 
 
     //GTEST(RDP_Rotation4)
@@ -84,12 +84,12 @@ GTEST(RDP_Rotation)
     ROTATIONENTRY(input4, 1, 1.0f, 0.0f, 0.0f, 60.0);  //Should NOT be culled
     ROTATIONENTRY(input4, 3, 1.0f, 0.0f, 0.0f, 180.0);
 
-    auto first4 = input4.RotationSequence().at(0);
-    auto last4 = input4.RotationSequence().at(input4.RotationSequence().size() - 1);
+    auto first4 = input4.rotationSequence().at(0);
+    auto last4 = input4.rotationSequence().at(input4.rotationSequence().size() - 1);
 
     input4.ExecuteRDPReduction_Rotation();
 
-    EXPECT_TRUE(input4.RotationSequence().size() == 3 && first4.IsIdentical(input4.RotationSequence().at(0)) && last4.IsIdentical(input4.RotationSequence().at(input4.RotationSequence().size() - 1)));
+    EXPECT_TRUE(input4.rotationSequence().size() == 3 && first4.IsIdentical(input4.rotationSequence().at(0)) && last4.IsIdentical(input4.rotationSequence().at(input4.rotationSequence().size() - 1)));
 
 
     //GTEST(RDP_Rotation5)
@@ -100,12 +100,12 @@ GTEST(RDP_Rotation)
     ROTATIONENTRY(input5, 1, 1.0f, 0.0f, 0.0f, 89.95);  //Should be culled
     ROTATIONENTRY(input5, 2, 1.0f, 0.0f, 0.0f, 179.9);
 
-    auto first5 = input5.RotationSequence().at(0);
-    auto last5 = input5.RotationSequence().at(input5.RotationSequence().size() - 1);
+    auto first5 = input5.rotationSequence().at(0);
+    auto last5 = input5.rotationSequence().at(input5.rotationSequence().size() - 1);
 
     input5.ExecuteRDPReduction_Rotation();
 
-    EXPECT_TRUE(input5.RotationSequence().size() == 2 && first5.IsIdentical(input5.RotationSequence().at(0)) && last5.IsIdentical(input5.RotationSequence().at(input5.RotationSequence().size() - 1)));
+    EXPECT_TRUE(input5.rotationSequence().size() == 2 && first5.IsIdentical(input5.rotationSequence().at(0)) && last5.IsIdentical(input5.rotationSequence().at(input5.rotationSequence().size() - 1)));
 
 
     //GTEST(RDP_Rotation6)
@@ -118,12 +118,12 @@ GTEST(RDP_Rotation)
     ROTATIONENTRY(input6, 6, 1.0f, 0.0f, 0.0f, 270.0);
     ROTATIONENTRY(input6, 8, 1.0f, 0.0f, 0.0f, 360.0);
 
-    auto first6 = input6.RotationSequence().at(0);
-    auto last6 = input6.RotationSequence().at(input6.RotationSequence().size() - 1);
+    auto first6 = input6.rotationSequence().at(0);
+    auto last6 = input6.rotationSequence().at(input6.rotationSequence().size() - 1);
 
     input6.ExecuteRDPReduction_Rotation();
 
-    EXPECT_TRUE(input6.RotationSequence().size() == 5 && first6.IsIdentical(input6.RotationSequence().at(0)) && last6.IsIdentical(input6.RotationSequence().at(input6.RotationSequence().size() - 1)));
+    EXPECT_TRUE(input6.rotationSequence().size() == 5 && first6.IsIdentical(input6.rotationSequence().at(0)) && last6.IsIdentical(input6.rotationSequence().at(input6.rotationSequence().size() - 1)));
 
 
     //GTEST(RDP_Rotation7)
@@ -140,12 +140,12 @@ GTEST(RDP_Rotation)
     ROTATIONENTRY(input7, 7, 1.0f, 0.0f, 0.0f, 315.0); //culled
     ROTATIONENTRY(input7, 8, 1.0f, 0.0f, 0.0f, 360.0);
 
-    auto first7 = input7.RotationSequence().at(0);
-    auto last7 = input7.RotationSequence().at(input7.RotationSequence().size() - 1);
+    auto first7 = input7.rotationSequence().at(0);
+    auto last7 = input7.rotationSequence().at(input7.rotationSequence().size() - 1);
 
     input7.ExecuteRDPReduction_Rotation();
 
-    EXPECT_TRUE(input7.RotationSequence().size() == 5 && first7.IsIdentical(input7.RotationSequence().at(0)) && last7.IsIdentical(input7.RotationSequence().at(input7.RotationSequence().size() - 1)));
+    EXPECT_TRUE(input7.rotationSequence().size() == 5 && first7.IsIdentical(input7.rotationSequence().at(0)) && last7.IsIdentical(input7.rotationSequence().at(input7.rotationSequence().size() - 1)));
 
 
     //GTEST(RDP_Rotation8)
@@ -167,12 +167,12 @@ GTEST(RDP_Rotation)
     ROTATIONENTRY(input8,15, 1.0f, 0.0f, 0.0f, 360.333333333); //culled
     ROTATIONENTRY(input8,16, 1.0f, 0.0f, 0.0f, 360.0);
 
-    auto first8 = input8.RotationSequence().at(0);
-    auto last8 = input8.RotationSequence().at(input8.RotationSequence().size() - 1);
+    auto first8 = input8.rotationSequence().at(0);
+    auto last8 = input8.rotationSequence().at(input8.rotationSequence().size() - 1);
 
     input8.ExecuteRDPReduction_Rotation();
 
-    EXPECT_TRUE(input8.RotationSequence().size() == 7 && first8.IsIdentical(input8.RotationSequence().at(0)) && last8.IsIdentical(input8.RotationSequence().at(input8.RotationSequence().size() - 1)));
+    EXPECT_TRUE(input8.rotationSequence().size() == 7 && first8.IsIdentical(input8.rotationSequence().at(0)) && last8.IsIdentical(input8.rotationSequence().at(input8.rotationSequence().size() - 1)));
 }
 
 GTEST(RDP_Translation)
@@ -184,12 +184,12 @@ GTEST(RDP_Translation)
     TRANSLATIONENTRY(block1, 2, 0.0, 0.0, 0.0);
     TRANSLATIONENTRY(block1, 3, 0.0, 0.0, 0.0);
 
-    auto first1 = block1.TranslationSequence().at(0);
-    auto last1 = block1.TranslationSequence().at(block1.TranslationSequence().size() - 1);
+    auto first1 = block1.translationSequence().at(0);
+    auto last1 = block1.translationSequence().at(block1.translationSequence().size() - 1);
 
     block1.ExecuteRDPReduction_Translation();
 
-    EXPECT_TRUE(block1.TranslationSequence().size() == 2 && first1.IsIdentical(block1.TranslationSequence().at(0)) && last1.IsIdentical(block1.TranslationSequence().at(block1.TranslationSequence().size()-1)));
+    EXPECT_TRUE(block1.translationSequence().size() == 2 && first1.IsIdentical(block1.translationSequence().at(0)) && last1.IsIdentical(block1.translationSequence().at(block1.translationSequence().size()-1)));
 
 
     //GTEST(RDP_2)
@@ -200,12 +200,12 @@ GTEST(RDP_Translation)
     TRANSLATIONENTRY(block2, 4, 2.0, 0.2, 1.0);
     TRANSLATIONENTRY(block2, 5, 3.0, 0.3, 1.5);
 
-    auto first2 = block2.TranslationSequence().at(0);
-    auto last2 = block2.TranslationSequence().at(block2.TranslationSequence().size() - 1);
+    auto first2 = block2.translationSequence().at(0);
+    auto last2 = block2.translationSequence().at(block2.translationSequence().size() - 1);
 
     block2.ExecuteRDPReduction_Translation();
 
-    EXPECT_TRUE(block2.TranslationSequence().size() == 2 && first2.IsIdentical(block2.TranslationSequence().at(0)) && last2.IsIdentical(block2.TranslationSequence().at(block2.TranslationSequence().size() - 1)));
+    EXPECT_TRUE(block2.translationSequence().size() == 2 && first2.IsIdentical(block2.translationSequence().at(0)) && last2.IsIdentical(block2.translationSequence().at(block2.translationSequence().size() - 1)));
 }
 
 GTEST(RDP_Scalar)
@@ -222,10 +222,10 @@ GTEST(RDP_Scalar)
     SCALARENTRY(input1, 9, 1.0f);
     SCALARENTRY(input1, 10, 1.0f);
 
-    auto first1 = input1.ScalarSequence().at(0);
-    auto last1 = input1.ScalarSequence().at(input1.ScalarSequence().size() - 1);
+    auto first1 = input1.scalarSequence().at(0);
+    auto last1 = input1.scalarSequence().at(input1.scalarSequence().size() - 1);
 
     input1.ExecuteRDPReduction_Scalar();
 
-    EXPECT_TRUE(input1.ScalarSequence().size() == 4 && first1.IsIdentical(input1.ScalarSequence().at(0)) && last1.IsIdentical(input1.ScalarSequence().at(input1.ScalarSequence().size() - 1)));
+    EXPECT_TRUE(input1.scalarSequence().size() == 4 && first1.IsIdentical(input1.scalarSequence().at(0)) && last1.IsIdentical(input1.scalarSequence().at(input1.scalarSequence().size() - 1)));
 }

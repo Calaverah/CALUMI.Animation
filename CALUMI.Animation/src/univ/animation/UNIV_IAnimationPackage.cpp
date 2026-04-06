@@ -13,7 +13,7 @@ namespace CALUMI {
 
 	AnimationPackageManager::AnimationPackageManager() : IPackageManager() { }
 
-	Utilities::StringContainer AnimationPackageManager::ToJSON(std::size_t indents) const
+	Utilities::StringContainer AnimationPackageManager::ToJSON(uint64_t indents) const
 	{
 		//TODO: Animation Package Manager JSON
 		return Utilities::StringContainer();

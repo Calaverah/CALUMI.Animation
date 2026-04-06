@@ -6,3 +6,4 @@ add_subdirectory(interfaces)
 add_subdirectory(io)
 
 target_sources(${PROJECT_NAME} PRIVATE internal/internalplatform.h)
+target_sources(${PROJECT_NAME} PRIVATE internal/internalvectordef.h)

@@ -74,6 +74,9 @@ namespace CALUMI{ namespace SFBGS{
 		 * @return 
 		 */
 		RotationPrefix& operator=(const unsigned char* buffer);
+
+		inline bool operator<(const RotationPrefix& other) { return false; }
+
 		/// @}
 	private:
 		struct Impl;
@@ -103,6 +106,9 @@ namespace CALUMI{ namespace SFBGS{
 
 		RotationEntry& operator=(const RotationEntry& input);
 		RotationEntry& operator=(const unsigned char* buffer); //warning this method expects a 3 byte buffer. It uses memcpy for quick transfer, caution advised
+
+		inline bool operator<(const RotationEntry& other) { return false; }
+
 	private:
 		struct Impl;
 		Impl* pImpl;
@@ -134,6 +140,9 @@ namespace CALUMI{ namespace SFBGS{
 
 		TranslationPrefix& operator=(const TranslationPrefix& input);
 		TranslationPrefix& operator=(const unsigned char* buffer);
+
+		inline bool operator<(const TranslationPrefix& other) { return false; }
+
 	private:
 		struct Impl;
 		Impl* pImpl;
@@ -157,6 +166,8 @@ namespace CALUMI{ namespace SFBGS{
 		TranslationEntry& operator=(const unsigned char* buffer); //3 bytes expected
 		TranslationEntry& operator=(const TranslationEntry& input);
 
+		inline bool operator<(const TranslationEntry& other) { return false; }
+
 		const void* const getRawData() const;
 
 	private:
@@ -164,29 +175,53 @@ namespace CALUMI{ namespace SFBGS{
 		Impl* pImpl;
 	};
 
-	Utilities::PairContainer<RotationPrefix, RotationEntry> GetSFBGSRotationPair(const CALUMI::Math::Quaternion& input);
+	struct CALUMIANIMATION_API CompressedRotation
+	{
+		CompressedRotation(const RotationPrefix& prefix, const RotationEntry& entry);
+		~CompressedRotation();
+
+		const RotationPrefix& prefix() const;
+		const RotationEntry& suffix() const;
+
+	private:
+		struct Impl;
+		Impl* pImpl;
+	};
+
+	struct CALUMIANIMATION_API CompressedTranslation
+	{
+		CompressedTranslation(const TranslationPrefix& prefix, const TranslationEntry& entry);
+		~CompressedTranslation();
+
+		const TranslationPrefix& prefix() const;
+		const TranslationEntry& suffix() const;
+
+	private:
+		struct Impl;
+		Impl* pImpl;
+	};
+
+	VECTORDEC(RotationEntrySequence, RotationEntry)
+	VECTORDEC(TranslationEntrySequence, TranslationEntry)
+	VECTORDEC(RotationPrefixSequence, RotationPrefix)
+	VECTORDEC(TranslationPrefixSequence, TranslationPrefix)
+
+	
+
+	CompressedRotation GetSFBGSRotationPair(const CALUMI::Math::Quaternion& input);
 	CALUMI::Math::Quaternion GetUniversalRotation(const CALUMI::SFBGS::RotationPrefix& prefix, const CALUMI::SFBGS::RotationEntry& suffix);
 
-	Utilities::PairContainer<TranslationPrefix, TranslationEntry> GetSFBGSTranslationPair(const CALUMI::Math::Vector3D& input, const float& highPrecision, const float& lowPrecision);
+	CompressedTranslation GetSFBGSTranslationPair(const CALUMI::Math::Vector3D& input, const float& highPrecision, const float& lowPrecision);
 	CALUMI::Math::Vector3D GetUniversalTranslation(const CALUMI::SFBGS::TranslationPrefix& prefix, const CALUMI::SFBGS::TranslationEntry& suffix, const float& highPrecision, const float& lowPrecision);
 	
-	Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> UnfoldTranslationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix>& input);
-	Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix> FoldTranslationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::TranslationPrefix>& input);
+	SFBGS::TranslationPrefixSequence UnfoldTranslationPrefixSequence(const SFBGS::TranslationPrefixSequence& input);
+	SFBGS::TranslationPrefixSequence FoldTranslationPrefixSequence(const SFBGS::TranslationPrefixSequence& input);
 
-	Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> UnfoldRotationPrefixSequence(const Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& input);
-	Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix> FoldRotationPrefixSequence (const Utilities::VectorContainer<CALUMI::SFBGS::RotationPrefix>& input);
+	SFBGS::RotationPrefixSequence UnfoldRotationPrefixSequence(const SFBGS::RotationPrefixSequence& input);
+	SFBGS::RotationPrefixSequence FoldRotationPrefixSequence (const SFBGS::RotationPrefixSequence& input);
 
 
 
     }
-
-#pragma warning(disable: 4661)
-    template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::RotationEntry>;
-    template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::RotationPrefix>;
-    template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::TranslationEntry>;
-    template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::TranslationPrefix>;
-    template struct CALUMIANIMATION_API Utilities::PairContainer<struct SFBGS::RotationPrefix, struct SFBGS::RotationEntry>;
-    template struct CALUMIANIMATION_API Utilities::PairContainer<struct SFBGS::TranslationPrefix, struct SFBGS::TranslationEntry>;
-#pragma warning(default: 4661)
 
     }
