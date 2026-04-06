@@ -21,6 +21,8 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE CALUMIANIMATION_EXPORTS)
 
 if(WIN32)
     target_sources(${PROJECT_NAME} PRIVATE CALUMI.Animation.rc resource.h)
+elseif(APPLE)
+
 else()
     target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
 endif()

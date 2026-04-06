@@ -429,7 +429,7 @@ namespace CALUMI{ namespace UNIV{
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
         errorMessageHolder->clear();
 
-        if (boneName == "")
+        if (std::string(boneName) == "")
         {
             *errorMessageHolder += "[CALUMI.Animation API] Bone Entry Must Have Bone Name!\n";
             return false;
