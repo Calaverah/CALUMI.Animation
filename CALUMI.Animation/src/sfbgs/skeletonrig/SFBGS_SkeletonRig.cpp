@@ -8,23 +8,23 @@
 #include <AnimStarfield>
 #include <print>
 #include <AnimFile>
-#include <algorithm>
 #include <iostream>
 #include <vector>
 #include <cstring>
 #include <utilities/CALUMI_Utilities.h>
+#include "sfbgs/skeletonrig/SFBGS_RigPackage.h"
 
 namespace CALUMI {namespace SFBGS {
 
 	static Utilities::StringList CreateStringVectorFromRig(const CALUMI::UNIV::SkeletonRig& inputRig)
 	{
 		Utilities::StringList stringMap;
-		stringMap.reserve(inputRig.BoneEntries().size());
+        stringMap.reserve(inputRig.boneEntries().size());
 		uint64_t iOffset = 0;
-		for (int i = 0; i < inputRig.BoneEntries().size(); i++)
+        for (int i = 0; i < inputRig.boneEntries().size(); i++)
 		{
-			stringMap.push_back(inputRig.BoneEntries().at(i).Name().c_str(), iOffset);
-			iOffset += inputRig.BoneEntries().at(i).Name().length(true);
+            stringMap.push_back(inputRig.boneEntries().at(i).name().c_str(), iOffset);
+            iOffset += inputRig.boneEntries().at(i).name().length(true);
 		}
 		stringMap.setFinalOffset(iOffset);
 		return stringMap;
@@ -193,9 +193,9 @@ namespace CALUMI {namespace SFBGS {
 		return *this;
 	}
 	
-	CALUMI::Math::Quaternion& SFBGS::SkeletonBone::LocalRotation() const { return pImpl->_localRotation; }
-	CALUMI::Math::Quaternion& SkeletonBone::GlobalRotation() const { return pImpl->_globalRotation; }
-	CALUMI::Math::Vector3& SkeletonBone::Position() const { return pImpl->_position; }
+    CALUMI::Math::Quaternion& SFBGS::SkeletonBone::localRotation() const { return pImpl->_localRotation; }
+    CALUMI::Math::Quaternion& SkeletonBone::globalRotation() const { return pImpl->_globalRotation; }
+    CALUMI::Math::Vector3& SkeletonBone::position() const { return pImpl->_position; }
 	SkeletonBone::BoneType SkeletonBone::getBoneType() const { return pImpl->_boneType; }
 	void SkeletonBone::setBoneType(BoneType t) { pImpl->_boneType = t; }
 	uint64_t SkeletonBone::getNameOffset() const { return pImpl->_nameOffset; }
@@ -217,7 +217,7 @@ namespace CALUMI {namespace SFBGS {
 	int32_t SkeletonBone::getTerm08() const { return pImpl->_pad03; }
 	void SkeletonBone::setTerm08(int32_t value) { pImpl->_pad03 = value; }
 
-	void SkeletonBone::SerializeIntoBuffer(Utilities::BufferObject& buffer, unsigned long long& addressIndex) const
+    void SkeletonBone::serializeIntoBuffer(Utilities::BufferObject& buffer, unsigned long long& addressIndex) const
 	{
 		buffer.insert(buffer.endPos(), 96, 0);
 
@@ -283,9 +283,9 @@ namespace CALUMI {namespace SFBGS {
 		addressIndex += sizeof(pImpl->_pad03);
 	}
 
-	bool SFBGS::SkeletonBone::SetBoneTypeFromUNIV(UNIV::SkeletonBone& univBone)
+    bool SFBGS::SkeletonBone::setBoneTypeFromUNIV(UNIV::SkeletonBone& univBone)
 	{
-		switch (univBone.GetBoneTypeProperty()->GetType())
+        switch (univBone.boneTypeProperty()->getType())
 		{
 		case CALUMI::UNIV::BoneType::Default:
 			pImpl->_boneType = SFBGS::SkeletonBone::BoneType::Default;
@@ -298,9 +298,9 @@ namespace CALUMI {namespace SFBGS {
 		{
 			pImpl->_boneType = SFBGS::SkeletonBone::BoneType::Twist;
 			//We are permitting const_casting as we are paying special attention not to delete the struct while modifying
-			UNIV::TwistBoneProperties* tProp = dynamic_cast<UNIV::TwistBoneProperties*>(const_cast<UNIV::BoneTypeProperties*>(univBone.GetBoneTypeProperty()));
-			pImpl->_twistDriverIndex = tProp->TwistDriverIndex();
-			pImpl->_twistDriverWeight = tProp->TwistDriverWeight();
+            UNIV::TwistBoneProperties* tProp = dynamic_cast<UNIV::TwistBoneProperties*>(const_cast<UNIV::BoneTypeProperties*>(univBone.boneTypeProperty()));
+			pImpl->_twistDriverIndex = tProp->twistDriverIndex();
+			pImpl->_twistDriverWeight = tProp->twistDriverWeight();
 		}
 		break;
 		default:
@@ -309,21 +309,21 @@ namespace CALUMI {namespace SFBGS {
 		return true;
 	}
 
-	bool SFBGS::SkeletonBone::SetBoneTypeToUNIV(UNIV::SkeletonBone& univBone)
+    bool SFBGS::SkeletonBone::setBoneTypeToUNIV(UNIV::SkeletonBone& univBone)
 	{
-		if (!univBone.SetBoneTypeProperty(GetBoneTypeAsUNIVEnum()))
+        if (!univBone.setBoneTypeProperty(getBoneTypeAsUNIVEnum()))
 			return false;
 
-		switch (univBone.GetBoneTypeProperty()->GetType())
+        switch (univBone.boneTypeProperty()->getType())
 		{
 		case CALUMI::UNIV::BoneType::Default:
 			break;
 		case CALUMI::UNIV::BoneType::Twist:
 		{
 			//We are permitting const_casting as we are paying special attention not to delete the struct while modifying
-			UNIV::TwistBoneProperties* tProp = dynamic_cast<UNIV::TwistBoneProperties*>(const_cast<UNIV::BoneTypeProperties*>(univBone.GetBoneTypeProperty()));
-			tProp->TwistDriverIndex(pImpl->_twistDriverIndex);
-			tProp->TwistDriverWeight(pImpl->_twistDriverWeight);
+            UNIV::TwistBoneProperties* tProp = dynamic_cast<UNIV::TwistBoneProperties*>(const_cast<UNIV::BoneTypeProperties*>(univBone.boneTypeProperty()));
+            tProp->setTwistDriverIndex(pImpl->_twistDriverIndex);
+			tProp->setTwistDriverWeight(pImpl->_twistDriverWeight);
 		}
 		break;
 		default:
@@ -332,7 +332,7 @@ namespace CALUMI {namespace SFBGS {
 		return true;
 	}
 
-	UNIV::BoneType SFBGS::SkeletonBone::GetBoneTypeAsUNIVEnum()
+    UNIV::BoneType SFBGS::SkeletonBone::getBoneTypeAsUNIVEnum()
 	{
 		switch (pImpl->_boneType)
 		{
@@ -345,7 +345,7 @@ namespace CALUMI {namespace SFBGS {
 		}
 	}
 
-	const char* SkeletonBone::GetBoneTypeAsString()
+    const char* SkeletonBone::getBoneTypeAsString()
 	{
 		switch (pImpl->_boneType)
 		{
@@ -445,32 +445,32 @@ namespace CALUMI {namespace SFBGS {
 			sfbgsRigPackage = *sfbgsRigPackagePtr;
 		}
 
-		isMarkedMannequin = sfbgsRigPackage.IsMannequin();
-		LowPrecision(sfbgsRigPackage.getPrecisionSet().low());
-		HighPrecision(sfbgsRigPackage.getPrecisionSet().high());
+		isMarkedMannequin = sfbgsRigPackage.isMannequin();
+        setLowPrecision(sfbgsRigPackage.precisionSet().low());
+        setHighPrecision(sfbgsRigPackage.precisionSet().high());
 
-		FileSize(FileSize() + static_cast<unsigned int>(stringResult.getFinalOffset()));
-		BoneMapOffset(BoneMapOffset() + static_cast<unsigned int>(80 + 96 * input.BoneEntries().size()));
-		FileSize(FileSize() + BoneMapOffset() + SFBGSMAPSIZE * 2);
+        fileSize(fileSize() + static_cast<unsigned int>(stringResult.getFinalOffset()));
+        boneMapOffset(boneMapOffset() + static_cast<unsigned int>(80 + 96 * input.boneEntries().size()));
+        fileSize(fileSize() + boneMapOffset() + SFBGSMAPSIZE * 2);
 
-		BoneCount(static_cast<uint16_t>(input.BoneEntries().size()));
+        setBoneCount(static_cast<uint16_t>(input.boneEntries().size()));
 
 		uint16_t animatedBoneCount = 0;
-		BoneEntries().reserve(BoneCount());
-		for (unsigned int i = 0; i < BoneCount(); i++)
+        boneEntries().reserve(boneCount());
+        for (unsigned int i = 0; i < boneCount(); i++)
 		{
 			SkeletonBone toAdd;
-			toAdd.pImpl->_localRotation = input.BoneEntries().at(i).LocalRotation();
-			toAdd.pImpl->_globalRotation = input.BoneEntries().at(i).GlobalRotation();
-			toAdd.pImpl->_position = input.BoneEntries().at(i).LocalPosition();
+            toAdd.pImpl->_localRotation = input.boneEntries().at(i).localRotation();
+            toAdd.pImpl->_globalRotation = input.boneEntries().at(i).globalRotation();
+            toAdd.pImpl->_position = input.boneEntries().at(i).localPosition();
 			toAdd.pImpl->_nameOffset = static_cast<uint64_t>(stringResult.getOffset(i));
-			toAdd.pImpl->_parentBoneIndex = input.BoneEntries().at(i).GetParentBoneIndex();
+            toAdd.pImpl->_parentBoneIndex = input.boneEntries().at(i).parentBoneIndex();
 
-			toAdd.pImpl->_mirrorBoneIndex = (input.BoneEntries().at(i).GetMirrorBoneIndex() < 0 || input.BoneEntries().at(i).GetMirrorBoneIndex() >= input.BoneEntries().size()) ? i : input.BoneEntries().at(i).GetMirrorBoneIndex();
+            toAdd.pImpl->_mirrorBoneIndex = (input.boneEntries().at(i).mirrorBoneIndex() < 0 || input.boneEntries().at(i).mirrorBoneIndex() >= input.boneEntries().size()) ? i : input.boneEntries().at(i).mirrorBoneIndex();
 
-			if (!toAdd.SetBoneTypeFromUNIV(input.BoneEntries().at(i)))
+            if (!toAdd.setBoneTypeFromUNIV(input.boneEntries().at(i)))
 			{
-				std::println("[CALUMI.Animation API] UNIV Rig: {} Bone: {} ({}) Bone Type: {} Is Not An Acceptable Type For SFBGS Skeleton Rigs! This Bone Will Remain As The Default Type", input.RigName().c_str(), input.BoneEntries().at(i).Name().c_str(), i, input.BoneEntries().at(i).GetBoneTypeProperty()->GetTypeString());
+                std::println("[CALUMI.Animation API] UNIV Rig: {} Bone: {} ({}) Bone Type: {} Is Not An Acceptable Type For SFBGS Skeleton Rigs! This Bone Will Remain As The Default Type", input.rigName().c_str(), input.boneEntries().at(i).name().c_str(), i, input.boneEntries().at(i).boneTypeProperty()->getTypeString());
 			}
 			if (isMarkedMannequin && toAdd.pImpl->_boneType == SkeletonBone::BoneType::Twist)
 			{
@@ -481,23 +481,23 @@ namespace CALUMI {namespace SFBGS {
 				animatedBoneCount++; 
 			}
 
-			BoneEntries().push_back(toAdd);
+            boneEntries().push_back(toAdd);
 		}
 
-		BoneCountAnimated(animatedBoneCount);
+        setBoneCountAnimated(animatedBoneCount);
 
 		Utilities::S16Vector vecPackage = SFBGS_RigPackage::ConvertSFBGSRigPackage(input);
-		BoneMapArray(vecPackage);
+        setBoneMapArray(vecPackage);
 
 
-		StringArray().reserve(stringResult.size());
+        stringArray().reserve(stringResult.size());
 		for (int j = 0; j < stringResult.size(); j++)
 		{
-			StringArray().push_back(stringResult.c_str(j));
+            stringArray().push_back(stringResult.c_str(j));
 		}
 	}
 
-	void SkeletonRig::BoneMapArray(Utilities::S16Vector& input)
+    void SkeletonRig::setBoneMapArray(Utilities::S16Vector& input)
 	{
 		for (uint8_t j = 0; j < input.size(); j++)
 		{
@@ -505,47 +505,47 @@ namespace CALUMI {namespace SFBGS {
 		}
 	}
 
-	Utilities::StringList& SkeletonRig::StringArray() const
+    Utilities::StringList& SkeletonRig::stringArray() const
 	{
 		return pImpl->_stringArray;
 	}
 
-	int SkeletonRig::VersionNumber() const
+    int SkeletonRig::versionNumber() const
 	{
 		return pImpl->_versionNumber;
 	}
 
-	void SkeletonRig::VersionNumber(int v)
+    void SkeletonRig::versionNumber(int v)
 	{
 		pImpl->_versionNumber = v;
 	}
 
-	uint32_t SkeletonRig::FileSize() const
+    uint32_t SkeletonRig::fileSize() const
 	{
 		return pImpl->_fileSize;
 	}
 
-	void SkeletonRig::FileSize(uint32_t size)
+    void SkeletonRig::fileSize(uint32_t size)
 	{
 		pImpl->_fileSize = size;
 	}
 
-	uint32_t SkeletonRig::HeaderSize() const
+    uint32_t SkeletonRig::headerSize() const
 	{
 		return pImpl->_headerSize;
 	}
 
-	void SkeletonRig::HeaderSize(uint32_t size)
+    void SkeletonRig::headerSize(uint32_t size)
 	{
 		pImpl->_headerSize = size;
 	}
 
-	uint32_t SkeletonRig::BoneMapOffset() const
+    uint32_t SkeletonRig::boneMapOffset() const
 	{
 		return pImpl->_boneMapOffset;
 	}
 
-	void SkeletonRig::BoneMapOffset(uint32_t offset)
+    void SkeletonRig::boneMapOffset(uint32_t offset)
 	{
 		pImpl->_boneMapOffset = offset;
 	}
@@ -567,52 +567,52 @@ namespace CALUMI {namespace SFBGS {
 		pImpl->_matchingThree[2] = m3;
 	}
 
-	float SkeletonRig::LowPrecision() const
+    float SkeletonRig::lowPrecision() const
 	{
 		return pImpl->_lowPrecision;
 	}
 
-	void SkeletonRig::LowPrecision(float value)
+    void SkeletonRig::setLowPrecision(float value)
 	{
 		pImpl->_lowPrecision = value;
 	}
 
-	float SkeletonRig::HighPrecision() const
+    float SkeletonRig::highPrecision() const
 	{
 		return pImpl->_highPrecision;
 	}
 
-	void SkeletonRig::HighPrecision(float value)
+    void SkeletonRig::setHighPrecision(float value)
 	{
 		pImpl->_highPrecision = value;
 	}
 
-	uint16_t SkeletonRig::BoneCount() const
+    uint16_t SkeletonRig::boneCount() const
 	{
 		return pImpl->_boneCount;
 	}
 
-	void SkeletonRig::BoneCount(uint16_t count)
+    void SkeletonRig::setBoneCount(uint16_t count)
 	{
 		pImpl->_boneCount = count;
 	}
 
-	uint16_t SkeletonRig::BoneCountAnimated() const
+    uint16_t SkeletonRig::boneCountAnimated() const
 	{
 		return pImpl->_boneCountAnimated;
 	}
 
-	void SkeletonRig::BoneCountAnimated(uint16_t count)
+    void SkeletonRig::setBoneCountAnimated(uint16_t count)
 	{
 		pImpl->_boneCountAnimated = count;
 	}
 
-	SkeletonBoneVector& SkeletonRig::BoneEntries() const
+    SkeletonBoneVector& SkeletonRig::boneEntries() const
 	{
 		return pImpl->_boneEntries;
 	}
 
-	Utilities::S16Vector SkeletonRig::BoneMapArray() const
+    Utilities::S16Vector SkeletonRig::boneMapArray() const
 	{
 		Utilities::S16Vector output; 
 		output.reserve(SFBGSMAPSIZE);
@@ -624,7 +624,7 @@ namespace CALUMI {namespace SFBGS {
 	}
 
 #ifdef DEBUG_BUILD
-	Utilities::CharVector CALUMI::SFBGS::SkeletonRig::EndOfHeader() const
+    Utilities::CharVector CALUMI::SFBGS::SkeletonRig::endOfHeader() const
 	{
 		Utilities::CharVector output;
 		output.resize(16);
@@ -636,10 +636,10 @@ namespace CALUMI {namespace SFBGS {
 	}
 #endif 
 
-    Utilities::FileResult SkeletonRig::ReadFromFile(Utilities::PathContainer&& inputFilePath)
+    Utilities::FileResult SkeletonRig::readFromFile(Utilities::PathContainer&& inputFilePath)
 	{
 		Utilities::PathContainer output(inputFilePath);
-		return ReadFromFile(output);
+        return readFromFile(output);
 	}
 	bool SkeletonRig::IsMarkedMannequin() const
 	{
@@ -650,7 +650,7 @@ namespace CALUMI {namespace SFBGS {
 		}
 		return false;
 	}
-	Utilities::FileResult SkeletonRig::ReadFromFile(Utilities::PathContainer& inputFilePath)
+    Utilities::FileResult SkeletonRig::readFromFile(Utilities::PathContainer& inputFilePath)
 	{
 		Utilities::StringList vec; 
 		vec.push_back(".rig");
@@ -753,13 +753,13 @@ namespace CALUMI {namespace SFBGS {
 		return {Utilities::FileResult::FileErrorCode::Success, inputFilePath.w_str(), ""};
 	}
 
-    Utilities::FileResult SkeletonRig::WriteToFile(Utilities::PathContainer&& outputFilePath)
+    Utilities::FileResult SkeletonRig::writeToFile(Utilities::PathContainer&& outputFilePath)
 	{
 		Utilities::PathContainer output(outputFilePath);
-		return WriteToFile(output);
+        return writeToFile(output);
 	}
 
-	Utilities::FileResult SkeletonRig::WriteToFile(Utilities::PathContainer& outputFilePath)
+    Utilities::FileResult SkeletonRig::writeToFile(Utilities::PathContainer& outputFilePath)
 	{
 		//LARGEST FILE: "D:/ModOrganizer/Starfield_Mod_Authoring_01/mods/ExtractedData/meshes/furniture/armillary/characterassets/skeleton.rig" at 18301 bytes
 
@@ -817,7 +817,7 @@ namespace CALUMI {namespace SFBGS {
 			for (unsigned int i = 0; i < pImpl->_boneEntries.size(); i++)
 			{
 				pImpl->_boneEntries.at(i).setNameOffset(offsets.at(i));
-				pImpl->_boneEntries.at(i).SerializeIntoBuffer(buffer, addressIndex);
+                pImpl->_boneEntries.at(i).serializeIntoBuffer(buffer, addressIndex);
 			}
 		}
 
@@ -867,7 +867,9 @@ namespace CALUMI {namespace SFBGS {
 		return CALUMI::WriteToBinaryFile(outputFilePath, buffer);
 	}
 
-	uint8_t SkeletonRig::DEBUG_CheckAssumedHeaderEntries()
+
+#ifdef DEBUG_BUILD
+    uint8_t SkeletonRig::checkAssumedHeaderEntries()
 	{
 		uint8_t output = 0;
 
@@ -900,43 +902,44 @@ namespace CALUMI {namespace SFBGS {
 
 		return output;
 	}
+#endif
 
 #pragma endregion
 
-	void SkeletonRig::ConvertFromUniversalRig(const CALUMI::UNIV::SkeletonRig& inputRig)
+    void SkeletonRig::convertFromUniversalRig(const CALUMI::UNIV::SkeletonRig& inputRig)
 	{
 		SkeletonRig rigBuffer(inputRig);
 		*this = rigBuffer;
 	}
 
-	CALUMI::UNIV::SkeletonRig SkeletonRig::ConvertToUniversalRig() const
+    CALUMI::UNIV::SkeletonRig SkeletonRig::convertToUniversalRig() const
 	{
 		CALUMI::UNIV::SkeletonRig output;
 		
 		for (unsigned int i = 0; i < pImpl->_boneEntries.size(); i++)
 		{
 			SFBGS::SkeletonBone& bone = pImpl->_boneEntries.at(i);
-			output.AddBoneToRig(bone.pImpl->_localRotation,bone.pImpl->_position,pImpl->_stringArray.c_str(i), bone.pImpl->_parentBoneIndex, true);
-			bone.SetBoneTypeToUNIV(output.BoneEntries().at(i));
+            output.addBoneToRig(bone.pImpl->_localRotation,bone.pImpl->_position,pImpl->_stringArray.c_str(i), bone.pImpl->_parentBoneIndex, true);
+            bone.setBoneTypeToUNIV(output.boneEntries().at(i));
 			int setter = bone.pImpl->_mirrorBoneIndex == i ? -1 : bone.pImpl->_mirrorBoneIndex;
-			output.BoneEntries().at(i).SetMirrorBoneIndex(setter);
+            output.boneEntries().at(i).setMirrorBoneIndex(setter);
 		}
 		
 		SFBGS_RigPackage::CreateNewSFBGSRigPackage(output);
 		if (SFBGS_RigPackage* sfbgsRigPackage = dynamic_cast<SFBGS_RigPackage*>(output.getPackageManager().getPackage(SFBGS_RIG_PACKAGE)))
 		{
-			auto boneMapArray = BoneMapArray();
+            auto pBoneMapArray = boneMapArray();
 			for (int key = 0; key < SFBGSMAPSIZE; key++)
 			{
-				if (boneMapArray.at(key) >= 0)
+                if (pBoneMapArray.at(key) >= 0)
 				{
-					sfbgsRigPackage->AddBoneToMap(static_cast<SFBGS_RigPackage::BoneMapKey>(key), output.BoneEntries().at(boneMapArray.at(key)).Name().c_str(), true);
+                    sfbgsRigPackage->addBoneToMap(static_cast<SFBGS_RigPackage::BoneMapKey>(key), output.boneEntries().at(pBoneMapArray.at(key)).name().c_str(), true);
 				}
 			}
 			if (IsMarkedMannequin())
-				sfbgsRigPackage->IsMannequin(true);
+				sfbgsRigPackage->setIsMannequin(true);
 
-			sfbgsRigPackage->SetPrecisionValues(SFBGS::PrecisionSet(LowPrecision(), HighPrecision()));
+            sfbgsRigPackage->setPrecisionValues(SFBGS::PrecisionSet(lowPrecision(), highPrecision()));
 		}
 
 		return output;

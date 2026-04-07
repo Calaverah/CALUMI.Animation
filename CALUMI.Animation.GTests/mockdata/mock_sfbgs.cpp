@@ -12,7 +12,7 @@ GTEST(Rig_00)
 	std::vector<char> stdEOH = { '\0','\0','C','A','L','U','M','I','D','V','R','S','J','O','J','O' };
 	SFBGS::SkeletonRig rig00;
 
-	auto result00 = rig00.ReadFromFile("assets/00/skeleton.rig");
+    auto result00 = rig00.readFromFile("assets/00/skeleton.rig");
 
 	//Read Check
 	EXPECT_TRUE(!result00.hasError());
@@ -23,28 +23,28 @@ GTEST(Rig_00)
 	}
 
 	//File version
-	EXPECT_EQ(rig00.VersionNumber(), 5);
+    EXPECT_EQ(rig00.versionNumber(), 5);
 
 	//File Size
-	EXPECT_EQ(rig00.FileSize(), 720);
+    EXPECT_EQ(rig00.fileSize(), 720);
 
 	//Header Size
-	EXPECT_EQ(rig00.HeaderSize(), 0x50);
+    EXPECT_EQ(rig00.headerSize(), 0x50);
 
 	//Map Offset
-	EXPECT_EQ(rig00.BoneMapOffset(), 368);
+    EXPECT_EQ(rig00.boneMapOffset(), 368);
 
 	//Bone Counts
-	EXPECT_EQ(rig00.BoneCount(), 3);
-	EXPECT_EQ(rig00.BoneCountAnimated(), 3);
-	EXPECT_EQ(rig00.BoneEntries().size(), rig00.BoneCount());
+    EXPECT_EQ(rig00.boneCount(), 3);
+    EXPECT_EQ(rig00.boneCountAnimated(), 3);
+    EXPECT_EQ(rig00.boneEntries().size(), rig00.boneCount());
 
-	EXPECT_TRUE(rig00.DEBUG_CheckAssumedHeaderEntries() == 0);
+    EXPECT_TRUE(rig00.checkAssumedHeaderEntries() == 0);
 
 #ifdef DEBUG_BUILD
 	{
 		//End Of Header
-		auto rig00EOH = rig00.EndOfHeader();
+        auto rig00EOH = rig00.endOfHeader();
 
 		EXPECT_EQ(rig00EOH.size(), stdEOH.size());
 		if (rig00EOH.size() == stdEOH.size())
@@ -58,8 +58,8 @@ GTEST(Rig_00)
 #endif
 
 	//Precision
-	EXPECT_EQ(rig00.HighPrecision(), 1.0f / 4000.0f);
-	EXPECT_EQ(rig00.LowPrecision(), 1.0f / 32.000f);
+    EXPECT_EQ(rig00.highPrecision(), 1.0f / 4000.0f);
+    EXPECT_EQ(rig00.lowPrecision(), 1.0f / 32.000f);
 
 	//Matching 3
 	auto match00 = rig00.getMatchingThree();
@@ -73,10 +73,10 @@ GTEST(Rig_00)
 	float unk00Floats[3] = { 0.1f, 0.2f, 60.0f };
 	Math::Quaternion q00Locals[3] = { Math::Quaternion(-0.0f,-0.0f,-0.707107f,0.707107f), Math::Quaternion(), Math::Quaternion() };
 
-	auto& rig00Bones = rig00.BoneEntries();
-	EXPECT_EQ(rig00Bones.size(), rig00.BoneCount());
+    auto& rig00Bones = rig00.boneEntries();
+    EXPECT_EQ(rig00Bones.size(), rig00.boneCount());
 
-	auto& str00 = rig00.StringArray();
+    auto& str00 = rig00.stringArray();
 	EXPECT_EQ(rig00Bones.size(), str00.size());
 
 	uint64_t offsetSum00 = 0;
@@ -89,8 +89,8 @@ GTEST(Rig_00)
 	for (uint8_t i = 0; i < rig00Bones.size() && i < str00.size(); i++)
 	{
 		//Rotations
-		EXPECT_TRUE(rig00Bones.at(i).LocalRotation().AreEqual(q00Locals[i], 0.000001f)) << "Tested " << rig00Bones.at(i).LocalRotation().ToString().c_str() << " \nExpected " << q00Locals[i].ToString().c_str();
-		EXPECT_TRUE(rig00Bones.at(i).GlobalRotation().AreEqual(q00Locals[0], 0.000001f)) << "Tested " << rig00Bones.at(i).LocalRotation().ToString().c_str() << " \nExpected " << q00Locals[i].ToString().c_str();
+        EXPECT_TRUE(rig00Bones.at(i).localRotation().areEqual(q00Locals[i], 0.000001f)) << "Tested " << rig00Bones.at(i).localRotation().toString().c_str() << " \nExpected " << q00Locals[i].toString().c_str();
+        EXPECT_TRUE(rig00Bones.at(i).globalRotation().areEqual(q00Locals[0], 0.000001f)) << "Tested " << rig00Bones.at(i).localRotation().toString().c_str() << " \nExpected " << q00Locals[i].toString().c_str();
 
 		//Unks
 		EXPECT_EQ(rig00Bones.at(i).getUnknownScalar(), unk00Floats[i]);
@@ -128,10 +128,10 @@ GTEST(Rig_00)
 
 	//Bone Map
 	uint8_t boneMapSize = 157;
-	EXPECT_EQ(rig00.BoneMapArray().size(), boneMapSize);
-	if (rig00.BoneMapArray().size() == boneMapSize)
+    EXPECT_EQ(rig00.boneMapArray().size(), boneMapSize);
+    if (rig00.boneMapArray().size() == boneMapSize)
 	{
-		for (size_t i = 0; i < rig00.BoneMapArray().size(); i++)
+        for (size_t i = 0; i < rig00.boneMapArray().size(); i++)
 		{
 			short mapVal = -1;
 
@@ -142,41 +142,41 @@ GTEST(Rig_00)
 			else
 				mapVal = -1;
 
-			EXPECT_EQ(rig00.BoneMapArray().at(i), mapVal);
+            EXPECT_EQ(rig00.boneMapArray().at(i), mapVal);
 		}
 	}
 
-	UNIV::SkeletonRig uRig00 = rig00.ConvertToUniversalRig();
+    UNIV::SkeletonRig uRig00 = rig00.convertToUniversalRig();
 	SFBGS::SkeletonRig rig00COPY;
-	rig00COPY.ConvertFromUniversalRig(uRig00);
+    rig00COPY.convertFromUniversalRig(uRig00);
 
-	EXPECT_EQ(uRig00.BoneEntries().size(), rig00.BoneEntries().size());
+    EXPECT_EQ(uRig00.boneEntries().size(), rig00.boneEntries().size());
 	
-	EXPECT_EQ(uRig00.GetBoneCount(), rig00.BoneCount());
+    EXPECT_EQ(uRig00.boneCount(), rig00.boneCount());
 
 #pragma region COPIED RIG00
 
 	//File version
-	EXPECT_EQ(rig00COPY.VersionNumber(), rig00.VersionNumber());
+    EXPECT_EQ(rig00COPY.versionNumber(), rig00.versionNumber());
 
 	//File Size
-	EXPECT_EQ(rig00COPY.FileSize(), rig00.FileSize());
+    EXPECT_EQ(rig00COPY.fileSize(), rig00.fileSize());
 
 	//Header Size
-	EXPECT_EQ(rig00COPY.HeaderSize(), rig00.HeaderSize());
+    EXPECT_EQ(rig00COPY.headerSize(), rig00.headerSize());
 
 	//Map Offset
-	EXPECT_EQ(rig00COPY.BoneMapOffset(), rig00.BoneMapOffset());
+    EXPECT_EQ(rig00COPY.boneMapOffset(), rig00.boneMapOffset());
 
 	//Bone Counts
-	EXPECT_EQ(rig00COPY.BoneCount(), rig00.BoneCount());
-	EXPECT_EQ(rig00COPY.BoneEntries().size(), rig00.BoneEntries().size());
-	EXPECT_EQ(rig00COPY.BoneCountAnimated(), rig00.BoneCountAnimated());
+    EXPECT_EQ(rig00COPY.boneCount(), rig00.boneCount());
+    EXPECT_EQ(rig00COPY.boneEntries().size(), rig00.boneEntries().size());
+    EXPECT_EQ(rig00COPY.boneCountAnimated(), rig00.boneCountAnimated());
 
 #ifdef DEBUG_BUILD
 	{
 		//End Of Header
-		auto rig00EOH = rig00COPY.EndOfHeader();
+        auto rig00EOH = rig00COPY.endOfHeader();
 
 		EXPECT_EQ(rig00EOH.size(), stdEOH.size());
 		if (rig00EOH.size() == stdEOH.size())
@@ -190,13 +190,13 @@ GTEST(Rig_00)
 #endif
 
 	//Precision
-	EXPECT_EQ(rig00.HighPrecision(), rig00COPY.HighPrecision());
-	EXPECT_EQ(rig00.LowPrecision(), rig00COPY.LowPrecision());
+    EXPECT_EQ(rig00.highPrecision(), rig00COPY.highPrecision());
+    EXPECT_EQ(rig00.lowPrecision(), rig00COPY.lowPrecision());
 
-	auto& rig00COPYBones = rig00COPY.BoneEntries();
-	EXPECT_EQ(rig00COPYBones.size(), rig00COPY.BoneCount());
+    auto& rig00COPYBones = rig00COPY.boneEntries();
+    EXPECT_EQ(rig00COPYBones.size(), rig00COPY.boneCount());
 
-	auto& str00COPY = rig00COPY.StringArray();
+    auto& str00COPY = rig00COPY.stringArray();
 	EXPECT_EQ(rig00COPYBones.size(), str00COPY.size());
 
 	uint64_t offsetSum00COPY = 0;
@@ -208,8 +208,8 @@ GTEST(Rig_00)
 	for (uint8_t i = 0; i < rig00COPYBones.size() && i < str00COPY.size(); i++)
 	{
 		//Rotations
-		EXPECT_TRUE(rig00COPYBones.at(i).LocalRotation().AreEqual(rig00Bones.at(i).LocalRotation(), 0.000001f)) << "Tested " << rig00COPYBones.at(i).LocalRotation().ToString().c_str() << " \nExpected " << rig00Bones.at(i).LocalRotation().ToString().c_str();
-		EXPECT_TRUE(rig00COPYBones.at(i).GlobalRotation().AreEqual(rig00Bones.at(i).GlobalRotation(), 0.000001f)) << "Tested " << rig00COPYBones.at(i).LocalRotation().ToString().c_str() << " \nExpected " << rig00Bones.at(i).GlobalRotation().ToString().c_str();
+        EXPECT_TRUE(rig00COPYBones.at(i).localRotation().areEqual(rig00Bones.at(i).localRotation(), 0.000001f)) << "Tested " << rig00COPYBones.at(i).localRotation().toString().c_str() << " \nExpected " << rig00Bones.at(i).localRotation().toString().c_str();
+        EXPECT_TRUE(rig00COPYBones.at(i).globalRotation().areEqual(rig00Bones.at(i).globalRotation(), 0.000001f)) << "Tested " << rig00COPYBones.at(i).localRotation().toString().c_str() << " \nExpected " << rig00Bones.at(i).globalRotation().toString().c_str();
 
 		//Unks
 		//EXPECT_EQ(rig00COPYBones.at(i).getUnknownScalar(), unk00Floats[i]);
@@ -247,12 +247,12 @@ GTEST(Rig_00)
 	}
 
 	//Bone Map
-	EXPECT_EQ(rig00.BoneMapArray().size(), rig00COPY.BoneMapArray().size());
-	if (rig00.BoneMapArray().size() == rig00COPY.BoneMapArray().size())
+    EXPECT_EQ(rig00.boneMapArray().size(), rig00COPY.boneMapArray().size());
+    if (rig00.boneMapArray().size() == rig00COPY.boneMapArray().size())
 	{
-		for (size_t i = 0; i < rig00COPY.BoneMapArray().size(); i++)
+        for (size_t i = 0; i < rig00COPY.boneMapArray().size(); i++)
 		{
-			EXPECT_EQ(rig00COPY.BoneMapArray().at(i), rig00.BoneMapArray().at(i));
+            EXPECT_EQ(rig00COPY.boneMapArray().at(i), rig00.boneMapArray().at(i));
 		}
 	}
 

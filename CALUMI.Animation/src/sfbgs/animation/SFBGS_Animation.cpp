@@ -947,12 +947,12 @@ namespace CALUMI{
 			pImpl->_headerFlags = newFlags;
 		}
 
-		Utilities::FileResult Animation::ReadFromFile(Utilities::PathContainer&& inputFilePath)
+        Utilities::FileResult Animation::readFromFile(Utilities::PathContainer&& inputFilePath)
 		{
 			Utilities::PathContainer output(inputFilePath);
-			return ReadFromFile(output);
+            return readFromFile(output);
 		}
-		Utilities::FileResult Animation::ReadFromFile(Utilities::PathContainer& inputFilePath)
+        Utilities::FileResult Animation::readFromFile(Utilities::PathContainer& inputFilePath)
 		{
 			//Check to see if file exists and is valid
 			Utilities::StringList vec; 
@@ -1106,7 +1106,7 @@ namespace CALUMI{
 			return {Utilities::FileResult::FileErrorCode::Success, inputFilePath.w_str(), ""};
 		}
 
-		Utilities::FileResult Animation::WriteToFile(Utilities::PathContainer& outputFilePath)
+        Utilities::FileResult Animation::writeToFile(Utilities::PathContainer& outputFilePath)
 		{
 			//D:/ModOrganizer/Starfield_Mod_Authoring_01/mods/ExtractedData/meshes/actors/human/animations/scenes/mq101_001_miningscene/female/animstart_lin.af has the largest size of 780896 bytes
 
@@ -1203,10 +1203,10 @@ namespace CALUMI{
 			return CALUMI::WriteToBinaryFile(outputFilePath, buffer);
 		}
 
-        Utilities::FileResult Animation::WriteToFile(Utilities::PathContainer&& outputFilePath)
+        Utilities::FileResult Animation::writeToFile(Utilities::PathContainer&& outputFilePath)
 		{
 			Utilities::PathContainer output(outputFilePath);
-			return WriteToFile(output);
+            return writeToFile(output);
 		}
 		bool Animation::VerifyAmendedBlocks() const
 		{

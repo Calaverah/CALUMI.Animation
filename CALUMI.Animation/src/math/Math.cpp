@@ -112,7 +112,7 @@ namespace CALUMI
 			pImpl = new Impl(source.pImpl->x, source.pImpl->y, source.pImpl->z);
 		}
 
-		Utilities::StringContainer Math::Vector3::ToString() const
+        Utilities::StringContainer Math::Vector3::toString() const
 		{
 			Utilities::StringContainer output;
 			output += std::format("x: {}, y: {}, z: {}", pImpl->x, pImpl->y, pImpl->z).c_str();
@@ -181,36 +181,36 @@ namespace CALUMI
 
 		Math::Vector3 Math::Vector3::operator-() const { return Math::Vector3(-(pImpl->x), -(pImpl->y), -(pImpl->z)); }
 
-		float Math::Vector3::Length() const
+        float Math::Vector3::length() const
 		{
 
 			return sqrt((pImpl->x * pImpl->x) + (pImpl->y * pImpl->y) + (pImpl->z * pImpl->z));
 		}
-		float Math::Vector3::LengthSquared() const
+        float Math::Vector3::lengthSquared() const
 		{
 			return (pImpl->x * pImpl->x) + (pImpl->y * pImpl->y) + (pImpl->z * pImpl->z);
 		}
 
-		float Math::Vector3::Dot(const Math::Vector3& other) const
+        float Math::Vector3::dot(const Math::Vector3& other) const
 		{
 			return (pImpl->x * other.pImpl->x) + (pImpl->y * other.pImpl->y) + (pImpl->z * other.pImpl->z);
 		}
 
-		void Math::Vector3::Cross(const Math::Vector3& other, Math::Vector3& result) const
+        void Math::Vector3::cross(const Math::Vector3& other, Math::Vector3& result) const
 		{
 			result.pImpl->x = pImpl->y * other.pImpl->z - pImpl->z * other.pImpl->y;
 			result.pImpl->y = pImpl->z * other.pImpl->x - pImpl->x * other.pImpl->z;
 			result.pImpl->z = pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x;
 		}
 
-		Math::Vector3 Math::Vector3::Cross(const Math::Vector3& other) const
+        Math::Vector3 Math::Vector3::cross(const Math::Vector3& other) const
 		{
 			return Math::Vector3(pImpl->y * other.pImpl->z - pImpl->z * other.pImpl->y, pImpl->z * other.pImpl->x - pImpl->x * other.pImpl->z, pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x);
 		}
 
-		void Math::Vector3::Normalize()
+        void Math::Vector3::normalize()
 		{
-			*this /= this->Length();
+            *this /= this->length();
 		}
 
 		double ToRadians(double degrees) noexcept { return degrees * (CLA_PI / 180.0); }
@@ -283,7 +283,7 @@ namespace CALUMI
 		const Math::Vector3D Math::Vector3D::Forward = { 0.0, 1.0, 0.0};
 		const Math::Vector3D Math::Vector3D::Back = { 0.0, -1.0, 0.0};
 
-		Utilities::StringContainer Math::Vector3D::ToString() const
+        Utilities::StringContainer Math::Vector3D::toString() const
 		{
 			Utilities::StringContainer output;
 			output += std::format("x: {}, y: {}, z: {}",getX(), getY(), getZ()).c_str();
@@ -427,39 +427,39 @@ namespace CALUMI
 
 		Math::Vector3D Math::Vector3D::operator-() const { return Math::Vector3D(-(pImpl->x), -(pImpl->y), -(pImpl->z)); };
 
-		double Math::Vector3D::Length() const
+        double Math::Vector3D::length() const
 		{
 
 			return sqrt((pImpl->x * pImpl->x) + (pImpl->y * pImpl->y) + (pImpl->z * pImpl->z));
 		}
-		double Math::Vector3D::LengthSquared() const
+        double Math::Vector3D::lengthSquared() const
 		{
 			return (pImpl->x * pImpl->x) + (pImpl->y * pImpl->y) + (pImpl->z * pImpl->z);
 		}
 
-		double Math::Vector3D::Dot(const Math::Vector3D & other) const
+        double Math::Vector3D::dot(const Math::Vector3D & other) const
 		{
 			return (pImpl->x * other.pImpl->x) + (pImpl->y * other.pImpl->y) + (pImpl->z * other.pImpl->z);
 		}
 
-		void Math::Vector3D::Cross(const Math::Vector3D & other, Math::Vector3D & result) const
+        void Math::Vector3D::cross(const Math::Vector3D & other, Math::Vector3D & result) const
 		{
 			result.pImpl->x = pImpl->y * other.pImpl->z - pImpl->z * other.pImpl->y;
 			result.pImpl->y = pImpl->z * other.pImpl->x - pImpl->x * other.pImpl->z;
 			result.pImpl->z = pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x;
 		}
 
-		Math::Vector3D Math::Vector3D::Cross(const Math::Vector3D & other) const
+        Math::Vector3D Math::Vector3D::cross(const Math::Vector3D & other) const
 		{
 			return Math::Vector3D(pImpl->y * other.pImpl->z - pImpl->z * other.pImpl->y, pImpl->z * other.pImpl->x - pImpl->x * other.pImpl->z, pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x);
 		}
 
-		void Math::Vector3D::Normalize()
+        void Math::Vector3D::normalize()
 		{
-			*this /= this->Length();
+            *this /= this->length();
 		}
 
-		Vector3D Vector3D::Lerp(const Vector3D& input, double t) const
+        Vector3D Vector3D::lerp(const Vector3D& input, double t) const
 		{
 			Vector3D output = (1.0-t)*(*this) + t * input;
 			
@@ -540,16 +540,16 @@ namespace CALUMI
 		}
 
 		//Math::Quaternions (float)
-		Math::Quaternion::Quaternion(float input[4], bool normalize)
+        Math::Quaternion::Quaternion(float input[4], bool normalized)
 		{
 			pImpl = new Impl(input[0], input[1], input[2], input[3]);
-			if(normalize)
-			Normalize();
+            if(normalized)
+            normalize();
 		};
 
-		Math::Quaternion::Quaternion(Vector3 direction, double radians, bool normalize)
+        Math::Quaternion::Quaternion(Vector3 direction, double radians, bool normalized)
 		{
-			direction.Normalize();
+            direction.normalize();
 			float halfTheta = static_cast<float>(radians)/2.0f;
 			float halfThetaSin = std::sin(halfTheta);
 			float halfThetaCos = std::cos(halfTheta);
@@ -559,23 +559,23 @@ namespace CALUMI
 								halfThetaSin * direction.getZ(), 
 								halfThetaCos);
 			
-			if (normalize)
-				Normalize();
+            if (normalized)
+                normalize();
 		};
 
-		Math::Quaternion::Quaternion(double x, double y, double z, double w, bool normalize)
+        Math::Quaternion::Quaternion(double x, double y, double z, double w, bool normalized)
 		{ 
 			pImpl = new Impl(x, y, z, w);
-			if (normalize)
-				Normalize();
+            if (normalized)
+                normalize();
 		}
 
-		Quaternion::Quaternion(float x, float y, float z, float w, bool normalize)
+        Quaternion::Quaternion(float x, float y, float z, float w, bool normalized)
 		{
 			pImpl = new Impl(x, y, z, w);
 
-			if (normalize)
-				Normalize();
+            if (normalized)
+                normalize();
 		}
 		//**Warning**
 		// https://www.andre-gaschler.com/rotationconverter/ is incorrect on euler conversion as of 3/24/2026
@@ -697,9 +697,9 @@ namespace CALUMI
 			pImpl = new Impl(input.pImpl->x, input.pImpl->y, input.pImpl->z, input.pImpl->w);
 		}
 
-		Math::Quaternion::Quaternion(Vector3D direction, double radians, bool normalize)
+        Math::Quaternion::Quaternion(Vector3D direction, double radians, bool normalized)
 		{
-			direction.Normalize();
+            direction.normalize();
 			double halfTheta = radians / 2.0f;
 			double halfThetaSin = std::sin(halfTheta);
 			double halfThetaCos = std::cos(halfTheta);
@@ -709,8 +709,8 @@ namespace CALUMI
 								halfThetaSin * direction.getZ(),
 								halfThetaCos);
 			
-			if (normalize)
-				Normalize();
+            if (normalized)
+                normalize();
 		};
 
 		float Quaternion::getX() const
@@ -773,12 +773,12 @@ namespace CALUMI
 			return !(pImpl->x == input.pImpl->x && pImpl->y == input.pImpl->y && pImpl->z == input.pImpl->z && pImpl->w == input.pImpl->w);
 		}
 
-		bool Quaternion::AreSameRotation(const Quaternion& input, float tolerance) const noexcept
+        bool Quaternion::areSameRotation(const Quaternion& input, float tolerance) const noexcept
 		{
-			return (AreEqual(input,tolerance)|| AreEqual(-input, tolerance));
+            return (areEqual(input,tolerance)|| areEqual(-input, tolerance));
 		}
 
-		bool Quaternion::AreEqual(const Quaternion & input, float tolerance) const noexcept
+        bool Quaternion::areEqual(const Quaternion & input, float tolerance) const noexcept
 		{
             float dx = std::abs(pImpl->x - input.pImpl->x);
             float dy = std::abs(pImpl->y - input.pImpl->y);
@@ -837,17 +837,17 @@ namespace CALUMI
 			return *this;
 		}
 
-		Quaternion Math::Quaternion::Conjugate() noexcept
+        Quaternion Math::Quaternion::conjugate() noexcept
 		{
 			return Quaternion(pImpl->x * -1, pImpl->y * -1, pImpl->z * -1, pImpl->w);
 		}
 
-		float Math::Quaternion::Dot(const Math::Quaternion& input) const noexcept
+        float Math::Quaternion::dot(const Math::Quaternion& input) const noexcept
 		{
 			return (pImpl->x*input.pImpl->x + pImpl->y*input.pImpl->y + pImpl->z*input.pImpl->z + pImpl->w*input.pImpl->w);
 		}
 
-		void Math::Quaternion::Conjugate(Math::Quaternion& result) const noexcept
+        void Math::Quaternion::conjugate(Math::Quaternion& result) const noexcept
 		{
 			result.pImpl->x = -(pImpl->x);
 			result.pImpl->y = -(pImpl->y);
@@ -855,93 +855,93 @@ namespace CALUMI
 			result.pImpl->w = pImpl->w;
 		}
 
-		float Math::Quaternion::LengthSquared() const noexcept
+        float Math::Quaternion::lengthSquared() const noexcept
 		{
 			return (pImpl->x* pImpl->x + pImpl->y* pImpl->y + pImpl->z* pImpl->z + pImpl->w* pImpl->w);
 		}
 
-		float Math::Quaternion::Length() const noexcept
+        float Math::Quaternion::length() const noexcept
 		{
-			return sqrt(LengthSquared());
+            return sqrt(lengthSquared());
 		}
 
-		void Math::Quaternion::Normalize() noexcept
+        void Math::Quaternion::normalize() noexcept
 		{
-			float length = Length();
-			if (length <= 0)
+            float pLength = length();
+            if (pLength <= 0)
 			{
-				length = 1.0;
+                pLength = 1.0;
 			}
 
-			pImpl->x /= length;
-			pImpl->y /= length;
-			pImpl->z /= length;
-			pImpl->w /= length;
+            pImpl->x /= pLength;
+            pImpl->y /= pLength;
+            pImpl->z /= pLength;
+            pImpl->w /= pLength;
 		}
 
-		void Math::Quaternion::Normalize(Math::Quaternion& result) const noexcept
+        void Math::Quaternion::normalize(Math::Quaternion& result) const noexcept
 		{
-			float length = Length();
-			if (length <= 0)
+            float pLength = length();
+            if (pLength <= 0)
 			{
-				length = 1.0;
+                pLength = 1.0;
 			}
-			result.pImpl->x = pImpl->x / length;
-			result.pImpl->y = pImpl->y / length;
-			result.pImpl->z = pImpl->z / length;
-			result.pImpl->w = pImpl->w / length;
+            result.pImpl->x = pImpl->x / pLength;
+            result.pImpl->y = pImpl->y / pLength;
+            result.pImpl->z = pImpl->z / pLength;
+            result.pImpl->w = pImpl->w / pLength;
 		}
 
-		void Math::Quaternion::Inverse(Math::Quaternion& result) const noexcept
+        void Math::Quaternion::inverse(Math::Quaternion& result) const noexcept
 		{
-			float length = Length();
-			if (length <= 0)
+            float pLength = length();
+            if (pLength <= 0)
 			{
-				length = 1;
+                pLength = 1;
 			}
-			Math::Quaternion conjugate;
-			Conjugate(conjugate);
+            Math::Quaternion qConjugate;
+            conjugate(qConjugate);
 
-			result.pImpl->x = conjugate.pImpl->x / length;
-			result.pImpl->y = conjugate.pImpl->y / length;
-			result.pImpl->z = conjugate.pImpl->z / length;
-			result.pImpl->w = conjugate.pImpl->w / length;
+            result.pImpl->x = qConjugate.pImpl->x / pLength;
+            result.pImpl->y = qConjugate.pImpl->y / pLength;
+            result.pImpl->z = qConjugate.pImpl->z / pLength;
+            result.pImpl->w = qConjugate.pImpl->w / pLength;
 		}
 
-		void Math::Quaternion::Inverse() noexcept
+        void Math::Quaternion::inverse() noexcept
 		{
-			float length = Length();
-			if (length <= 0)
+            float pLength = length();
+            if (pLength <= 0)
 			{
-				length = 1;
+                pLength = 1;
 			}
-			Math::Quaternion conjugate;
-			Conjugate(conjugate);
+            Math::Quaternion qConjugate;
+            conjugate(qConjugate);
 
-			pImpl->x = conjugate.pImpl->x / length;
-			pImpl->y = conjugate.pImpl->y / length;
-			pImpl->z = conjugate.pImpl->z / length;
-			pImpl->w = conjugate.pImpl->w / length;
+            pImpl->x = qConjugate.pImpl->x / pLength;
+            pImpl->y = qConjugate.pImpl->y / pLength;
+            pImpl->z = qConjugate.pImpl->z / pLength;
+            pImpl->w = qConjugate.pImpl->w / pLength;
 		}
 
-		float Quaternion::AngularDistance(const Quaternion& input) const
+        float Quaternion::angularDistance(const Quaternion& input) const
 		{
-			Quaternion inverse;
-			Inverse(inverse);
+            Quaternion qInverse;
+            inverse(qInverse);
 
-			Quaternion diffQ = inverse * input;
+            Quaternion diffQ = qInverse * input;
 
 			return 2 * acos(diffQ.getW());
 		}
 
-		Quaternion Quaternion::Slerp(const Quaternion& input, float t) const
+        Quaternion Quaternion::sLerp(const Quaternion& input, float t) const
 		{
-			float dot = Dot(input);
+            float pDot = dot(input);
 
-            if (std::abs(dot) >= 1.0f) return input;
+            if (std::abs(pDot) >= 1.0f) return input;
 
-			float hTheta = acos(dot);
-			float sinhTheta = sqrtf(1.0f - dot * dot);
+            float hTheta = acos(pDot);
+            float sinhTheta = sqrtf(1.0f - pDot * pDot);
 
 			float ratio1 = sin((1 - t) * hTheta) / sinhTheta;
 			float ratio2 = sin(t * hTheta) / sinhTheta;
@@ -958,7 +958,7 @@ namespace CALUMI
 
 		const Math::Quaternion Math::Quaternion::Identity = {0.0f,0.0f,0.0f,1.0f};
 
-		Utilities::StringContainer Math::Quaternion::ToString()
+        Utilities::StringContainer Math::Quaternion::toString()
 		{
 			Utilities::StringContainer output;
 			output += std::format("x: {}, y: {}, z: {}, w: {}", pImpl->x, pImpl->y, pImpl->z, pImpl->w).c_str();
@@ -993,7 +993,7 @@ namespace CALUMI
 		Math::Quaternion operator/ (const Math::Quaternion& A, const Math::Quaternion& B) noexcept
 		{
 			Math::Quaternion nB;
-			B.Inverse(nB);
+            B.inverse(nB);
 			return A * nB;
 		}
 		float GetQuaternionX(Quaternion* source)
@@ -1340,41 +1340,41 @@ namespace CALUMI
 			return Math::Vector2D(-(pImpl->x), -(pImpl->y));
 		}
 
-		double Vector2D::Length() const
+        double Vector2D::length() const
 		{
 			return sqrt((pImpl->x * pImpl->x) + (pImpl->y * pImpl->y));
 		}
-		double Vector2D::LengthSquared() const
+        double Vector2D::lengthSquared() const
 		{
 			return ((pImpl->x * pImpl->x) + (pImpl->y * pImpl->y));
 		}
 
-		double Vector2D::Dot(const Vector2D& other) const
+        double Vector2D::dot(const Vector2D& other) const
 		{
 			return (pImpl->x * other.pImpl->x) + (pImpl->y * other.pImpl->y);
 		}
 
-		void Vector2D::Cross(const Vector2D& other, Vector2D& result) const
+        void Vector2D::cross(const Vector2D& other, Vector2D& result) const
 		{
 			result.pImpl->x = result.pImpl->y = (pImpl->x * other.pImpl->y) - (pImpl->y * other.pImpl->x);
 		}
-		Vector2D Vector2D::Cross(const Vector2D& other) const
+        Vector2D Vector2D::cross(const Vector2D& other) const
 		{
 			double result = (pImpl->x * other.pImpl->y) - (pImpl->y * other.pImpl->x);
 			return Vector2D(result, result);
 		}
 
-		void Vector2D::Normalize()
+        void Vector2D::normalize()
 		{
-			*this /= this->Length();
+            *this /= this->length();
 		}
-		Vector2D Vector2D::Lerp(const Vector2D& input, double t) const
+        Vector2D Vector2D::lerp(const Vector2D& input, double t) const
 		{
 			Vector2D output = (1.0 - t) * (*this) + t * input;
 
 			return output;
 		}
-		Utilities::StringContainer Vector2D::ToString() const
+        Utilities::StringContainer Vector2D::toString() const
 		{
 			Utilities::StringContainer output;
 			output += std::format("x: {}, y: {}", pImpl->x, pImpl->y).c_str();

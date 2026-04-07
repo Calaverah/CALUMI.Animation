@@ -1,4 +1,4 @@
-//Copyright © 2025-2026 Calaverah. All rights reserved.
+//Copyright ï¿½ 2025-2026 Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -17,15 +17,15 @@ namespace CALUMI {
 		 * @param inputFilePath 
 		 * @return Expected container with error status and success result
 		 */
-		virtual Utilities::FileResult ReadFromFile(Utilities::PathContainer& inputFilePath) = 0;
-        virtual Utilities::FileResult ReadFromFile(Utilities::PathContainer&& inputFilePath) = 0;
+        virtual Utilities::FileResult readFromFile(Utilities::PathContainer& inputFilePath) = 0;
+        virtual Utilities::FileResult readFromFile(Utilities::PathContainer&& inputFilePath) = 0;
 		/**
 		 * @brief Writes to a file at a given file _path
 		 * @param outputFilePath
 		 * @return Expected container with error status and file result
 		 */
-		virtual Utilities::FileResult WriteToFile(Utilities::PathContainer& outputFilePath) = 0;
-        virtual Utilities::FileResult WriteToFile(Utilities::PathContainer&& outputFilePath) = 0;
+        virtual Utilities::FileResult writeToFile(Utilities::PathContainer& outputFilePath) = 0;
+        virtual Utilities::FileResult writeToFile(Utilities::PathContainer&& outputFilePath) = 0;
 	};
 }
 

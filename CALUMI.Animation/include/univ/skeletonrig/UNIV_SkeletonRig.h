@@ -40,22 +40,22 @@ namespace CALUMI{ namespace UNIV{
 		 * @brief #Rotation in relation to this bone's parent
 		 * @return #Rotation in the form of a Quaternion
 		 */
-		const Math::Quaternion& LocalRotation() const;
+        const Math::Quaternion& localRotation() const;
 		/**
 		 * @brief #Rotation in relation to the origin of the skeleton rig
 		 * @return #Rotation in the form of a Quaternion
 		 */
-		const Math::Quaternion& GlobalRotation() const;
+        const Math::Quaternion& globalRotation() const;
 		/**
 		 * @brief Position in relation to this bone's parent
 		 * @return Position in the form of a Vector3 (float based)
 		 */
-		const Math::Vector3& LocalPosition() const;
+        const Math::Vector3& localPosition() const;
 		/**
 		 * @brief Position in relation to the origin of the skeleton rig
 		 * @return Position in the form of a Vector3 (float base)
 		 */
-		const Math::Vector3& GlobalPosition() const;
+        const Math::Vector3& globalPosition() const;
 
 	private:
 		/**
@@ -63,13 +63,13 @@ namespace CALUMI{ namespace UNIV{
 		 * @param local Relative to parent bone
 		 * @param global Relative to rig origin
 		 */
-		void SetRotation(Math::Quaternion& local, Math::Quaternion& global);
+        void setRotation(Math::Quaternion& local, Math::Quaternion& global);
 		/**
 		 * @brief Method for skeleton rig, or other privileged classes, to set the transform members of this bone
 		 * @param local Relative to parent bone
 		 * @param global Relative to rig origin
 		 */
-		void SetPosition(Math::Vector3& local, Math::Vector3& global);
+        void setPosition(Math::Vector3& local, Math::Vector3& global);
 
 		/// @}
 
@@ -80,9 +80,9 @@ namespace CALUMI{ namespace UNIV{
 
 		/**
 		 * @brief Identifier for this bone
-		 * @return Name in a string container
+         * @return name in a string container
 		 */
-		Utilities::StringContainer& Name() const;
+        Utilities::StringContainer& name() const;
 
 		/// @}
 		/** @name Properties*/
@@ -94,18 +94,18 @@ namespace CALUMI{ namespace UNIV{
 		 * @param resetExisting If this bone is already set to the given type, will reset to this type's default values
 		 * @return Whether the operation was a success
 		 */
-		bool SetBoneTypeProperty(UNIV::BoneType boneType, bool resetExisting = false);
+        bool setBoneTypeProperty(UNIV::BoneType boneType, bool resetExisting = false);
 		/**
 		 * @brief Gets the unique bone property
 		 * @return Ptr to the bone property type and its values
 		 */
-		const BoneTypeProperties* GetBoneTypeProperty();
+        const BoneTypeProperties* boneTypeProperty();
 		/**
 		 * @brief Reset the bone properties values
 		 * @param boneType Type of bone properties to set this bone to
 		 * @return Whether the operation was a success
 		 */
-		bool ResetBoneTypeProperty(UNIV::BoneType boneType = UNIV::BoneType::Default);
+        bool resetBoneTypeProperty(UNIV::BoneType boneType = UNIV::BoneType::Default);
 
 	public:
 
@@ -113,36 +113,36 @@ namespace CALUMI{ namespace UNIV{
 		 * @brief Pairs this bone with another bone in the rig
 		 * @param idx The bone index in which this bone will mirror
 		 */
-		void SetMirrorBoneIndex(int idx);
+        void setMirrorBoneIndex(int idx);
 		/**
 		 * @brief Resets this bone to no longer mirror any other bones
 		 */
-		void ResetMirrorBoneIndex();
+        void resetMirrorBoneIndex();
 		/**
 		 * @brief Gets the bone index to which this bone is set to mirror
 		 * @return The mirrored index, or -1 if none is set
 		 */
-		int GetMirrorBoneIndex() const;
+        int mirrorBoneIndex() const;
 
 	public:
 		/**
 		 * @brief Sets the index of this bone's parent
 		 * @param idx The index of the parent, or -1 if this is the root bone
 		 */
-		void SetParentBoneIndex(int idx);
+        void setParentBoneIndex(int idx);
 		/**
 		 * @brief Reset's the parent index to the skeleton's root
 		 */
-		void ResetParentBoneIndex();
+        void resetParentBoneIndex();
 		/**
 		 * @brief Sets this bone to have no parent
 		 */
-		void SetAsRootBone();
+        void setAsRootBone();
 		/**
 		 * @brief 
 		 * @return The index of this bone's parent 
 		 */
-		int GetParentBoneIndex() const;
+        int parentBoneIndex() const;
 
 		/// @}
 		/** @name Serialization*/
@@ -153,7 +153,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @param indents Spaces for formatting
 		 * @return The strContainer of the serialized struct
 		 */
-        Utilities::StringContainer ToJSON(uint64_t indents) const;
+        Utilities::StringContainer toJSON(uint64_t indents) const;
 
 		/// @}
 
@@ -201,12 +201,12 @@ namespace CALUMI{ namespace UNIV{
 		 * @brief 
 		 * @return String Container of the rig's name
 		 */
-		Utilities::StringContainer& RigName() const;
+        Utilities::StringContainer& rigName() const;
 		/**
 		 * @brief The entry list for this rig's bones
 		 * @return Vector container, currently allows full control of the listing until further implementation is added
 		 */
-		SkeletonBoneVector& BoneEntries() const;
+        SkeletonBoneVector& boneEntries() const;
 		/**
 		 * @brief 
 		 * @return Reference to this rig's package manager 
@@ -221,17 +221,17 @@ namespace CALUMI{ namespace UNIV{
 		 * @brief Checks whether all of the bone names in this rig are unique
 		 * @return Whether all names in the rig are unique and valid
 		 */
-		bool ValidateNames() const;
+        bool validateNames() const;
 		/**
 		 * @brief Checks whether all of the bones in this rig have a parent index that is lower than the respective bone's index
 		 * @return Whether all parent indices in the rig are valid
 		 */
-		bool ValidateParentIndices();
+        bool validateParentIndices();
 		/**
 		 * @brief Checks if each bone mirror's another exclusively, or not at all
 		 * @return Whether each bone has an exclusive mirror, or no mirror at all
 		 */
-		bool VerifyExclusiveBoneMirrors();
+        bool verifyExclusiveBoneMirrors();
 
 		/// @}
 
@@ -248,7 +248,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @param localValues Determines whether the transform is relative to parent or the rig origin
 		 * @return Whether the operation was a success
 		 */
-		bool AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, Utilities::StringContainer boneName, Utilities::StringContainer parentName, bool localValues = true);
+        bool addBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, Utilities::StringContainer boneName, Utilities::StringContainer parentName, bool localValues = true);
 		/**
 		 * @brief The preferred way to add bones to a universal rig definition
 		 * @param rotation Relative rotational entry as Quaternion
@@ -258,33 +258,33 @@ namespace CALUMI{ namespace UNIV{
 		 * @param localValues Determines whether the transform is relative to parent or the rig origin
 		 * @return Whether the operation was a success
 		 */
-		bool AddBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, Utilities::StringContainer boneName, int parentIndex, bool localValues = true);
+        bool addBoneToRig(CALUMI::Math::Quaternion rotation, CALUMI::Math::Vector3 position, Utilities::StringContainer boneName, int parentIndex, bool localValues = true);
 		/**
 		 * @brief Renames a bone in the rig, if one exists
 		 * @param oldBoneName The name of the bone to rename
 		 * @param newBoneName The new name for the bone
 		 * @return Whether the operation was a success
 		 */
-		bool RenameBone(const char* oldBoneName, const char* newBoneName);
+        bool renameBone(const char* oldBoneName, const char* newBoneName);
 		/**
 		 * @brief Renames a bone in the rig, if one exists
 		 * @param boneIndex The index of the bone to rename
 		 * @param newBoneName The new name for the bone
 		 * @return Whether the operation was a success
 		 */
-		bool RenameBone(uint64_t boneIndex, const char* newBoneName);
+        bool renameBone(uint64_t boneIndex, const char* newBoneName);
 		/**
 		 * @brief Pairs two bones to mirror eachother
 		 * @param i1 Index of the first bone
 		 * @param i2 Index of the second bone
 		 * @return Whether the operation was a success
 		 */
-		bool CreateBoneMirrorPair(int i1, int i2);
+        bool createBoneMirrorPair(int i1, int i2);
 		/**
 		 * @brief Resets all bones in the rig to have no mirrored entry
 		 * @return Whether the operation was a success
 		 */
-		bool ResetAllBoneMirrors();
+        bool resetAllBoneMirrors();
 
 		/// @}
 
@@ -296,18 +296,18 @@ namespace CALUMI{ namespace UNIV{
 		 * @brief Returns the bones that are animation driven, rather than dynamically controlled
 		 * @return The number of animated bones (ie not in-game twist)
 		 */
-		uint64_t GetAnimatedBoneCount();
+        uint64_t animatedBoneCount();
 		/**
 		 * @brief Returns the total amount of bones, whether they are driven by curves or dynamically in game
 		 * @return The total number of bones on this rig
 		 */
-		uint64_t GetBoneCount() const;
+        uint64_t boneCount() const;
 		/**
 		 * @brief Finds the 
 		 * @param boneName 
 		 * @return index of the bone, or -1 if doesn't exist
 		 */
-		int GetBoneIndex(Utilities::StringContainer boneName) const;
+        int boneIndex(Utilities::StringContainer boneName) const;
 
 		/// @}
 
@@ -320,7 +320,7 @@ namespace CALUMI{ namespace UNIV{
 		 * @param indents Spaces for formatting
 		 * @return The strContainer of the serialized struct
 		 */
-		Utilities::StringContainer ToJSON(uint64_t indents) const;
+        Utilities::StringContainer toJSON(uint64_t indents) const;
 		
 		/// @}
 		/** @name Static Members

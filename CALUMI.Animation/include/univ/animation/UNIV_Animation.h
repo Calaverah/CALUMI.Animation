@@ -21,43 +21,43 @@ namespace CALUMI {namespace UNIV {
 		//This will get the final frame entry, not the total number of frames in the sequence
 		unsigned int GetLastFrameInBlock();
 
-		int BoneIndex() const;
-		void BoneIndex(int idx);
+        int boneIndex() const;
+        void setBoneIndex(int idx);
 
-		const char* BoneName() const;
-		void BoneName(const char* name);
+        const char* boneName() const;
+        void setBoneName(const char* name);
 
 		UNIV::RotationSequence& rotationSequence() const;
-		bool AddRotationEntry(CALUMI::UNIV::Rotation& input, bool overwrite = true);
-		bool RemoveRotationEntry(unsigned int frame);
-		void ClearRotationEntries();
-		uint64_t GetRotationEntryCount() const;
+        bool addRotationEntry(CALUMI::UNIV::Rotation& input, bool overwrite = true);
+        bool removeRotationEntry(unsigned int frame);
+        void clearRotationEntries();
+        uint64_t rotationEntryCount() const;
 
-		void ExecuteRDPReduction_Rotation(float tolerance = 0.0000863f);
+        void executeRDPReduction_Rotation(float tolerance = 0.0000863f);
 
 		UNIV::TranslationSequence& translationSequence() const;
-		bool AddTranslationEntry(CALUMI::UNIV::Translation& input, bool overwrite = true);
-		bool RemoveTranslationEntry(unsigned int frame);
-		void ClearTranslationEntries();
-		uint64_t GetTranslationEntryCount() const;
+        bool addTranslationEntry(CALUMI::UNIV::Translation& input, bool overwrite = true);
+        bool removeTranslationEntry(unsigned int frame);
+        void clearTranslationEntries();
+        uint64_t translationEntryCount() const;
 		
-		void ExecuteRDPReduction_Translation(float tolerance = 1.0f / 4000.0f);
+        void executeRDPReduction_Translation(float tolerance = 1.0f / 4000.0f);
 
 		ScalarSequence& scalarSequence() const;
-		bool AddScalarEntry(CALUMI::UNIV::Scalar& input, bool overwrite = true);
-		bool RemoveScalarEntry(unsigned int frame);
-		void ClearScalarEntries();
-		uint64_t GetScalarEntryCount() const;
+        bool addScalarEntry(CALUMI::UNIV::Scalar& input, bool overwrite = true);
+        bool removeScalarEntry(unsigned int frame);
+        void clearScalarEntries();
+        uint64_t scalarEntryCount() const;
 
-		void ExecuteRDPReduction_Scalar(float tolerance = 1.0f / 5000.0f);
+        void executeRDPReduction_Scalar(float tolerance = 1.0f / 5000.0f);
 
 		UNIV::PrioritySequence& prioritySequence();
-		bool AddPriorityEntry(CALUMI::UNIV::Priority& input, bool overwrite = true);
-		bool RemovePriorityEntry(unsigned int frame);
-		void ClearPriorityEntries();
-		uint64_t GetPriorityEntryCount() const;
+        bool addPriorityEntry(CALUMI::UNIV::Priority& input, bool overwrite = true);
+        bool removePriorityEntry(unsigned int frame);
+        void clearPriorityEntries();
+        uint64_t priorityEntryCount() const;
 
-		Utilities::StringContainer ToJSON(const uint64_t indents = 0) const;
+        Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
 
 		bool operator<(const AnimationBlock& other) const;
 		bool operator>(const AnimationBlock& other) const;
@@ -80,21 +80,21 @@ namespace CALUMI {namespace UNIV {
 		Animation(const Animation& input);
 		Animation& operator=(const Animation& input);
 		
-		const char* AnimationTitle() const;
-		void AnimationTitle(const char* title);
-		void AnimationTitle(const Utilities::StringContainer& title);
+        const char* animationTitle() const;
+        void setAnimationTitle(const char* title);
+        void setAnimationTitle(const Utilities::StringContainer& title);
 
-		UNIV::AnimationBlockVector& AnimationBlocks() const;
-		bool AddAnimationBlock(AnimationBlock& blockToAdd, bool overwrite = true);
-		void ClearAnimationBlocks();
-		uint64_t GetAnimationBlockCount() const;
+        UNIV::AnimationBlockVector& animationBlocks() const;
+        bool addAnimationBlock(AnimationBlock& blockToAdd, bool overwrite = true);
+        void clearAnimationBlocks();
+        uint64_t animationBlockCount() const;
 
 		AnimationPackageManager& getPackageManager() const;
 
 		//This will get the final frame entry of all sequences, not the total number of frames in each sequence
-		unsigned int GetFrameCount();
+        unsigned int frameCount();
 
-		Utilities::StringContainer ToJSON(const uint64_t indents = 0) const;
+        Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
 
 	private:
 		struct Impl;

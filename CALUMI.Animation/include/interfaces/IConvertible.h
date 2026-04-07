@@ -1,4 +1,4 @@
-//Copyright © 2025-2026 Calaverah. All rights reserved.
+//Copyright ï¿½ 2025-2026 Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -20,11 +20,11 @@ namespace CALUMI {namespace UNIV
 		 * @param input Universal Animation Scene to pull information from
 		 * @return Whether the operation was a success
 		 */
-		virtual bool ConvertFromUniversalScene(AnimationScene& input) = 0;
+        virtual bool convertFromUniversalScene(AnimationScene& input) = 0;
 		/**
 		 * @brief For creating a new UNIV Animation Scene with this data from this class
 		 * @return Newly constructed Universal Animation Scene
 		 */
-		virtual AnimationScene ConvertToUniversalScene() = 0;
+        virtual AnimationScene convertToUniversalScene() = 0;
 	};
 }}

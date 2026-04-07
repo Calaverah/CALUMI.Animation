@@ -44,7 +44,7 @@ namespace CALUMI {
 			 * @param indents Spaces for formatting
 			 * @return The strContainer of the serialized struct
 			 */
-			Utilities::StringContainer ToJSON(uint64_t indents) const override;
+            Utilities::StringContainer toJSON(uint64_t indents) const override;
 
 		private:
 			friend class Animation;

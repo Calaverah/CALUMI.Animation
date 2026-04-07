@@ -34,7 +34,7 @@ namespace CALUMI {
 			 * @param indents Amount of spaces for formatting
 			 * @return The serialized struct as a strContainer
 			 */
-			virtual Utilities::StringContainer ToJSON(uint64_t indents) const = 0;
+			virtual Utilities::StringContainer toJSON(uint64_t indents) const = 0;
 
 		protected:
 
@@ -43,7 +43,7 @@ namespace CALUMI {
 			 * @details This function should only be used by the package manager as a simple way to copy data without sharing the struct or using pvt/shared ptrs
 			 * @return The new dynamically allocated clone of the package
 			 */
-			virtual IPackage* Clone() const = 0;
+			virtual IPackage* clone() const = 0;
 
 		private:
 			friend struct IPackageManager;
@@ -126,7 +126,7 @@ namespace CALUMI {
 			 * @param indents Spaces for formatting
 			 * @return The strContainer of the serialized struct
 			 */
-			virtual Utilities::StringContainer ToJSON(uint64_t indents) const = 0;
+			virtual Utilities::StringContainer toJSON(uint64_t indents) const = 0;
 		
 		
 		

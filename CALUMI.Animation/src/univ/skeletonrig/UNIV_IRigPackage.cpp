@@ -14,13 +14,13 @@ namespace CALUMI {
         RigPackageManager::RigPackageManager() : IPackageManager() {} 
 
 
-        Utilities::StringContainer RigPackageManager::ToJSON(uint64_t indents) const
+        Utilities::StringContainer RigPackageManager::toJSON(uint64_t indents) const
         {
             //TODO: RigPackageManager JSON
             return Utilities::StringContainer();
         }
 
-        bool RigPackageManager::HandleBoneRename(const char* oldBone, const char* newName, uint64_t idx)
+        bool RigPackageManager::onBoneRename(const char* oldBone, const char* newName, uint64_t idx)
         {
             bool output = true;
 
@@ -28,7 +28,7 @@ namespace CALUMI {
             {
                 if (auto pkg = dynamic_cast<IRigPackage*>(getPackage(i)))
                 {
-                    if (!pkg->HandleBoneRename(oldBone, newName, idx))
+                    if (!pkg->handleBoneRename(oldBone, newName, idx))
                         output = false;
                 }
             }

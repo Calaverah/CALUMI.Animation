@@ -1,4 +1,4 @@
-//Copyright © 2025-2026 Calaverah. All rights reserved.
+//Copyright ï¿½ 2025-2026 Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -194,7 +194,7 @@ namespace CALUMI {
 			 * @param input 
 			 * @return 
 			 */
-			static bool BoneTagExists(BoneMapKey input);
+            static bool BoneTagExists(BoneMapKey input);
 			/// @}
 			/// @name Constructors
 			/// @{
@@ -209,12 +209,12 @@ namespace CALUMI {
 			 * @details Some rigs in game have specific features that are only seen on Mannequins
 			 * @return 
 			 */
-			bool IsMannequin() const;
+            bool isMannequin() const;
 			/**
 			 * @brief Marks this rig for Mannequin processing
 			 * @param mqn 
 			 */
-			void IsMannequin(bool mqn);
+            void setIsMannequin(bool mqn);
 			/// @}
 			/// @name Bone Maps
 			/// @{
@@ -224,13 +224,13 @@ namespace CALUMI {
 			 * @param boneName 
 			 * @return 
 			 */
-			bool BoneIsMapped(const char* boneName) const;
+            bool boneIsMapped(const char* boneName) const;
 			/**
 			 * @brief Checks to see if a bone is mapped to the given key
 			 * @param key 
 			 * @return 
 			 */
-			bool KeyIsMapped(BoneMapKey key);
+            bool keyIsMapped(BoneMapKey key);
 			/**
 			 * @brief Adds a bone to the map by name alone
 			 * @param key Tag/Key to map to
@@ -238,7 +238,7 @@ namespace CALUMI {
 			 * @param overwrite Whether to replace an existing bone, if found
 			 * @return Whether the operation was a success
 			 */
-			bool AddBoneToMap(BoneMapKey key, const char* boneName, bool overwrite = true);
+            bool addBoneToMap(BoneMapKey key, const char* boneName, bool overwrite = true);
 			/**
 			 * @brief Adds a bone to the map by instnace
 			 * @param key Tag/Key to map to
@@ -246,32 +246,32 @@ namespace CALUMI {
 			 * @param overwrite Whether to replace an existing bone, if found
 			 * @return Whether the operation was a success
 			 */
-			bool AddBoneToMap(BoneMapKey key, UNIV::SkeletonBone& bone, bool overwrite = true);
+            bool addBoneToMap(BoneMapKey key, UNIV::SkeletonBone& bone, bool overwrite = true);
 			/**
 			 * @brief Removes the bone assigned to this key/tag
 			 * @param key 
 			 * @return Whether the operation was successful
 			 */
-			bool RemoveBoneFromMap(BoneMapKey key);
+            bool removeBoneFromMap(BoneMapKey key);
 			/**
 			 * @brief Removes a bone with the given name from it's assigned key/tag
 			 * @param boneName 
 			 * @return Whether the operation was successful
 			 */
-			bool RemoveBoneFromMap(const char* boneName);
+            bool removeBoneFromMap(const char* boneName);
 
 			/**
 			 * @brief Returns the key/tag that this bone is assigned to
 			 * @param boneName 
 			 * @return 
 			 */
-			BoneMapKey GetBoneKey(const char* boneName) const;
+            BoneMapKey boneKey(const char* boneName) const;
 			/**
 			 * @brief Returns the name of the bone assigned to this key, if any
 			 * @param key 
 			 * @return 
 			 */
-			const char* GetBoneNameFromKey(BoneMapKey key);
+            const char* boneNameFromKey(BoneMapKey key);
 			/// @}
 			/// @name Precision
 			/// @{
@@ -280,12 +280,12 @@ namespace CALUMI {
 			 * @brief Sets the precision values to be used by this rig and its animations when compressing translations
 			 * @param setting 
 			 */
-			void SetPrecisionValues(PrecisionSet setting = PrecisionSet::DefaultPrecision());
+            void setPrecisionValues(PrecisionSet setting = PrecisionSet::DefaultPrecision());
 			/**
 			 * @brief Returns the precision set used by this rig and its animation when compressing translations
 			 * @return 
 			 */
-			PrecisionSet getPrecisionSet() const;
+            PrecisionSet precisionSet() const;
 			/// @}
 			/// @name Operators
 			/// @{
@@ -304,7 +304,7 @@ namespace CALUMI {
 			 * @param indents 
 			 * @return 
 			 */
-			Utilities::StringContainer ToJSON(uint64_t indents) const override;
+            Utilities::StringContainer toJSON(uint64_t indents) const override;
 
 		protected:
 			/**
@@ -314,12 +314,12 @@ namespace CALUMI {
 			 * @param idx 
 			 * @return 
 			 */
-			bool HandleBoneRename(const char* oldBone, const char* newName, uint64_t idx) override;
+            bool handleBoneRename(const char* oldBone, const char* newName, uint64_t idx) override;
 			/**
 			 * @brief Creates shallow copies of this package's elements without worry of ptr handling
 			 * @return 
 			 */
-			SFBGS_RigPackage* Clone() const override;
+            SFBGS_RigPackage* clone() const override;
 			/// @}
 
 		private:

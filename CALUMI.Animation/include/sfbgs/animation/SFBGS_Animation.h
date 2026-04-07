@@ -1,4 +1,4 @@
-//Copyright © 2025-2026 Calaverah. All rights reserved.
+//Copyright ï¿½ 2025-2026 Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -467,10 +467,10 @@ namespace CALUMI{
 			/// @name IReadWritable
 			/// @{
 			
-			Utilities::FileResult ReadFromFile(Utilities::PathContainer& inputFilePath) override;
-            Utilities::FileResult ReadFromFile(Utilities::PathContainer&& inputFilePath) override;
-			Utilities::FileResult WriteToFile(Utilities::PathContainer& outputFilePath) override;
-			Utilities::FileResult WriteToFile(Utilities::PathContainer&& outputFilePath) override;
+            Utilities::FileResult readFromFile(Utilities::PathContainer& inputFilePath) override;
+            Utilities::FileResult readFromFile(Utilities::PathContainer&& inputFilePath) override;
+            Utilities::FileResult writeToFile(Utilities::PathContainer& outputFilePath) override;
+            Utilities::FileResult writeToFile(Utilities::PathContainer&& outputFilePath) override;
 
 			/// @}
 

@@ -30,18 +30,18 @@ namespace CALUMI {
 
         AnimationScene& AnimationScene::operator=(const AnimationScene& input) { *pImpl = *(input.pImpl); return *this; }
 
-        SkeletonRig& AnimationScene::Rig() const { return pImpl->rig; }
+        SkeletonRig& AnimationScene::rig() const { return pImpl->rig; }
         Animation& AnimationScene::animation(uint64_t idx) const { return pImpl->animations.at(idx); }
         uint64_t AnimationScene::animationCount() const { return pImpl->animations.size(); }
-        const char* AnimationScene::SceneName() const { return pImpl->sceneName.c_str(); }
-        void AnimationScene::SceneName(const char* name) { pImpl->sceneName = name; }
-        void AnimationScene::SceneName(const Utilities::StringContainer& input) { pImpl->sceneName = input; }
+        const char* AnimationScene::sceneName() const { return pImpl->sceneName.c_str(); }
+        void AnimationScene::setSceneName(const char* name) { pImpl->sceneName = name; }
+        void AnimationScene::setSceneName(const Utilities::StringContainer& input) { pImpl->sceneName = input; }
 
-        bool AnimationScene::AddAnimationToScene(UNIV::Animation& animation, bool overwrite)
+        bool AnimationScene::addAnimationToScene(UNIV::Animation& animation, bool overwrite)
         {
             for (unsigned int i = 0; i < pImpl->animations.size(); i++)
             {
-                if (SCOMPARE(pImpl->animations.at(i).AnimationTitle(), animation.AnimationTitle()) == 0)
+                if (SCOMPARE(pImpl->animations.at(i).animationTitle(), animation.animationTitle()) == 0)
                 {
                     if (!overwrite)
                         return false;
@@ -56,11 +56,11 @@ namespace CALUMI {
             return true;
         }
 
-        bool AnimationScene::RemoveAnimationFromScene(Utilities::StringContainer& sceneToRemove)
+        bool AnimationScene::removeAnimationFromScene(Utilities::StringContainer& sceneToRemove)
         {
             for (unsigned int i = 0; i < pImpl->animations.size(); i++)
             {
-                if (SCOMPARE(pImpl->animations.at(i).AnimationTitle(), sceneToRemove.c_str()) == 0)
+                if (SCOMPARE(pImpl->animations.at(i).animationTitle(), sceneToRemove.c_str()) == 0)
                 {
                     pImpl->animations.erase(pImpl->animations.begin() + i);
                     return true;
@@ -69,7 +69,7 @@ namespace CALUMI {
             return false;
         }
 
-        bool AnimationScene::RemoveAnimationFromScene(unsigned int idx)
+        bool AnimationScene::removeAnimationFromScene(unsigned int idx)
         {
             if (idx >= pImpl->animations.size() || idx < 0) return false;
 
@@ -100,7 +100,7 @@ namespace CALUMI {
         //    return animationFilePaths;
         //}
 
-        Utilities::StringContainer AnimationScene::ToJSON(const uint64_t indents = 0) const {
+        Utilities::StringContainer AnimationScene::toJSON(const uint64_t indents = 0) const {
             Utilities::StringContainer output;
             output += Utilities::Indent(indents).c_str();
             output += "{\n";
@@ -114,7 +114,7 @@ namespace CALUMI {
             output += ",\n";
             output += Utilities::Indent(indents + 1).c_str();
             output += "\"rig\":\n";
-            output += pImpl->rig.ToJSON(indents + 1).c_str();
+            output += pImpl->rig.toJSON(indents + 1).c_str();
             output += Utilities::Indent(indents + 1).c_str();
             output += "\n}";
             return output;
@@ -153,20 +153,20 @@ namespace CALUMI {
         }
         const char* GetAnimationSceneNameC(AnimationScene* source)
         {
-            return source->SceneName();
+            return source->sceneName();
         }
         SkeletonRig* GetSkeletonRigC(AnimationScene* source)
         {
-            return &source->Rig();
+            return &source->rig();
         }
         bool HasSkeletonRigC(AnimationScene* source)
         {
-            return !source->Rig().BoneEntries().empty();
+            return !source->rig().boneEntries().empty();
         }
         AnimationScene* CreateAnimationSceneC(const char* sceneName)
         {
             UNIV::AnimationScene* univAnimationScene = new UNIV::AnimationScene;
-            univAnimationScene->SceneName(sceneName);
+            univAnimationScene->setSceneName(sceneName);
 
             return univAnimationScene;
         }
@@ -176,12 +176,12 @@ namespace CALUMI {
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
             errorMessageHolder->clear();
 
-            if (rig->BoneEntries().empty())
+            if (rig->boneEntries().empty())
             {
                 *errorMessageHolder += "[CALUMI.Animation API] No Bone Entries Found In Rig!";
                 return false;
             }
-            scene->Rig() = *rig;
+            scene->rig() = *rig;
 
             if (rig)
                 DeleteSkeletonRigC(rig);
@@ -195,14 +195,14 @@ namespace CALUMI {
             Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
             errorMessageHolder->clear();
 
-            if (SCOMPARE(animation->AnimationTitle(), "") == 0)
+            if (SCOMPARE(animation->animationTitle(), "") == 0)
             {
                 *errorMessageHolder += "[CALUMI.Animation API] Must Have Animation Title!";
                 return false;
             }
             for (unsigned int i = 0; i < scene->animationCount(); i++)
             {
-                if (SCOMPARE(animation->AnimationTitle(), scene->animation(i).AnimationTitle()) == 0)
+                if (SCOMPARE(animation->animationTitle(), scene->animation(i).animationTitle()) == 0)
                 {
                     if (!overwrite)
                     {
@@ -211,13 +211,13 @@ namespace CALUMI {
                     }
                     else
                     {
-                        scene->RemoveAnimationFromScene(i);
+                        scene->removeAnimationFromScene(i);
                         break;
                     }
 
                 }
             }
-            scene->AddAnimationToScene(*animation);
+            scene->addAnimationToScene(*animation);
             if (animation)
                 delete animation;
 

@@ -44,7 +44,7 @@ namespace CALUMI {
             {
                 if (auto ptr = other.pImpl->_packages.at(i))
                 {
-                    pImpl->_packages.push_back(ptr->Clone());
+                    pImpl->_packages.push_back(ptr->clone());
                 }
             }
             return *this;

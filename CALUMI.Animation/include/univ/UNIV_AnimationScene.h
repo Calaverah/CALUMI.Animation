@@ -15,22 +15,22 @@ namespace CALUMI{namespace UNIV{
 	class CALUMIANIMATION_API AnimationScene
 	{
 	public:
-		SkeletonRig& Rig() const;
+        SkeletonRig& rig() const;
 
 		Animation& animation(uint64_t idx) const;
 		uint64_t animationCount() const;
 
-		const char* SceneName() const;
-		void SceneName(const char* name);
-		void SceneName(const Utilities::StringContainer& input);
+        const char* sceneName() const;
+        void setSceneName(const char* name);
+        void setSceneName(const Utilities::StringContainer& input);
 
-		bool AddAnimationToScene(UNIV::Animation& animation, bool overwrite = true);
-		bool RemoveAnimationFromScene(Utilities::StringContainer& sceneToRemove);
-		bool RemoveAnimationFromScene(unsigned int idx);
+        bool addAnimationToScene(UNIV::Animation& animation, bool overwrite = true);
+        bool removeAnimationFromScene(Utilities::StringContainer& sceneToRemove);
+        bool removeAnimationFromScene(unsigned int idx);
 		
 		//Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension);
 
-		Utilities::StringContainer ToJSON(uint64_t indents) const;
+        Utilities::StringContainer toJSON(uint64_t indents) const;
 
 		AnimationScene();
 		AnimationScene(const Utilities::StringContainer& sceneName);

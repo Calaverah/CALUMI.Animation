@@ -154,14 +154,14 @@ namespace CALUMI {
 			 * @param indents Amount of spaces for formatting
 			 * @return The serialized struct as a strContainer
 			 */
-			Utilities::StringContainer ToJSON(uint64_t indents) const override;
+            Utilities::StringContainer toJSON(uint64_t indents) const override;
 
 		private:
 			struct Impl;
 			Impl* pImpl;
 
 			// Inherited via IAnimationPackage
-			SFBGS_AnimationPackage* Clone() const override;
+            SFBGS_AnimationPackage* clone() const override;
 };
 
         bool CreateNewSFBGSAnimationPackage(UNIV::Animation& animation, bool overwrite = true);

@@ -31,22 +31,22 @@ namespace CALUMI{ namespace SFBGS{
 		/// @name Data
 		/// @{
 		
-		int8_t First() const;
-		void First(int8_t input);
-		bool FirstFlag() const;
-		void FirstFlag(bool input);
-		int8_t Second() const;
-		void Second(int8_t input);
-		bool SecondFlag() const;
-		void SecondFlag(bool input);
-		int8_t Third() const;
-		void Third(int8_t input);
-		bool ThirdFlag() const;
-		void ThirdFlag(bool input);
-		uint8_t Count() const;
-		void Count(uint8_t input);
-		uint8_t Missing() const;
-		void Missing(uint8_t input);
+        int8_t first() const;
+        void setFirst(int8_t input);
+        bool firstFlag() const;
+        void setFirstFlag(bool input);
+        int8_t second() const;
+        void setSecond(int8_t input);
+        bool secondFlag() const;
+        void setSecondFlag(bool input);
+        int8_t third() const;
+        void setThird(int8_t input);
+        bool thirdFlag() const;
+        void setThirdFlag(bool input);
+        uint8_t count() const;
+        void setCount(uint8_t input);
+        uint8_t missing() const;
+        void setMissing(uint8_t input);
 
 		const void* const getRawData() const;
 
@@ -89,12 +89,12 @@ namespace CALUMI{ namespace SFBGS{
 	struct CALUMIANIMATION_API RotationEntry
 	{
 		//TODO: Documentation for SFBGS Rotation Entry
-		int8_t First() const;
-		void First(int8_t input);
-		int8_t Second() const;
-		void Second(int8_t input);
-		int8_t Third() const;
-		void Third(int8_t input);
+        int8_t first() const;
+        void setFirst(int8_t input);
+        int8_t second() const;
+        void setSecond(int8_t input);
+        int8_t third() const;
+        void setThird(int8_t input);
 
 		RotationEntry();
 		RotationEntry(const RotationEntry& input);

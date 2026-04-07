@@ -16,10 +16,10 @@ namespace CALUMI {
 		class CALUMIANIMATION_API AnimationScene : UNIV::IConvertibleScene
 		{
 		public:
-			Utilities::StringContainer& SceneName() const;
+            Utilities::StringContainer& sceneName() const;
 			Animation& animation(uint64_t idx) const;
 			uint64_t animationCount() const;
-			SkeletonRig& Rig() const;
+            SkeletonRig& rig() const;
 			void setRig(const SkeletonRig& rig);
 
 			AnimationScene();
@@ -28,15 +28,15 @@ namespace CALUMI {
 			AnimationScene(const Utilities::StringContainer& sceneName);
 			AnimationScene(const AnimationScene& input);
 
-			bool AddAnimationToScene(SFBGS::Animation& animation, bool overwrite = true);
-			bool RemoveAnimationFromScene(Utilities::StringContainer& sceneToRemove);
-			bool RemoveAnimationFromScene(const char* sceneToRemove);
-			bool RemoveAnimationFromScene(unsigned int idx);
+            bool addAnimationToScene(SFBGS::Animation& animation, bool overwrite = true);
+            bool removeAnimationFromScene(Utilities::StringContainer& sceneToRemove);
+            bool removeAnimationFromScene(const char* sceneToRemove);
+            bool removeAnimationFromScene(unsigned int idx);
 
 			// Inherited via IConvertibleScene
-			bool ConvertFromUniversalScene(UNIV::AnimationScene& input) override;
-			bool ConvertFromUniversalScene(CALUMI::UNIV::AnimationScene& input, SFBGS::SkeletonRig& rigReference);
-			UNIV::AnimationScene ConvertToUniversalScene() override;
+            bool convertFromUniversalScene(UNIV::AnimationScene& input) override;
+            bool convertFromUniversalScene(CALUMI::UNIV::AnimationScene& input, SFBGS::SkeletonRig& rigReference);
+            UNIV::AnimationScene convertToUniversalScene() override;
 
 			AnimationScene& operator=(const AnimationScene& input);
 

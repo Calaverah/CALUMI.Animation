@@ -26,9 +26,9 @@ namespace CALUMI {
 		//Abstract Parent Struct for Bone Type Data. All Types will have an enum informing the user how to cast the child struct.
 		struct CALUMIANIMATION_API BoneTypeProperties
 		{
-			virtual UNIV::BoneType GetType() const = 0;
+            virtual UNIV::BoneType getType() const = 0;
 
-			virtual const char* GetTypeString() const = 0;
+            virtual const char* getTypeString() const = 0;
 			BoneTypeProperties() = default;
 			virtual ~BoneTypeProperties() {};
 		};
@@ -38,28 +38,28 @@ namespace CALUMI {
 		{
 			DefaultBoneProperties() = default;
 			~DefaultBoneProperties() override {};
-			const char* GetTypeString() const override;
+            const char* getTypeString() const override;
 
 			// Inherited via BoneTypeProperties
-			UNIV::BoneType GetType() const override;
+            UNIV::BoneType getType() const override;
 		};
 
 		//Basic Twist Type
 		struct CALUMIANIMATION_API TwistBoneProperties : BoneTypeProperties
 		{
-			int32_t TwistDriverIndex() const;
-			void TwistDriverIndex(int32_t idx);
-			float TwistDriverWeight() const;
-			void TwistDriverWeight(float wgt);
+            int32_t twistDriverIndex() const;
+            void setTwistDriverIndex(int32_t idx);
+            float twistDriverWeight() const;
+            void setTwistDriverWeight(float wgt);
 
 			TwistBoneProperties();
 			~TwistBoneProperties() override;
 			TwistBoneProperties(const TwistBoneProperties* input);
 
-			const char* GetTypeString() const override;
+            const char* getTypeString() const override;
 
 			// Inherited via BoneTypeProperties
-			UNIV::BoneType GetType() const override;
+            UNIV::BoneType getType() const override;
 
 			TwistBoneProperties& operator=(const TwistBoneProperties& input);
 

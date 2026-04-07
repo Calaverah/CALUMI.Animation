@@ -75,7 +75,7 @@ namespace CALUMI {
 
         bool SFBGS_AnimationPackage::addAmendedBlock(UNIV::AnimationBlock block, bool overwrite)
         {
-            uint32_t hash = Utilities::HashRegistry::getInstance().registerHash(block.BoneName());
+            uint32_t hash = Utilities::HashRegistry::getInstance().registerHash(block.boneName());
 
             return addAmendedBlock(hash, block, overwrite);
         }
@@ -175,12 +175,12 @@ namespace CALUMI {
             return SFBGS_ANIM_PACKAGE;
         }
 
-        Utilities::StringContainer SFBGS_AnimationPackage::ToJSON(uint64_t indents) const
+        Utilities::StringContainer SFBGS_AnimationPackage::toJSON(uint64_t indents) const
         {
             return Utilities::StringContainer();
         }
 
-        SFBGS_AnimationPackage* SFBGS_AnimationPackage::Clone() const
+        SFBGS_AnimationPackage* SFBGS_AnimationPackage::clone() const
         {
             SFBGS_AnimationPackage* output = new SFBGS_AnimationPackage(*this);
             return output;
@@ -225,13 +225,13 @@ namespace CALUMI {
             if (CreateNewSFBGSAnimationPackage(*animation, overwrite))
             {
                 *errorMessageHolder += " Successfully Added To";
-                *errorMessageHolder += animation->AnimationTitle();
+                *errorMessageHolder += animation->animationTitle();
                 return true;
             }
             else
             {
                 *errorMessageHolder += " Was Not Added To ";
-                *errorMessageHolder += animation->AnimationTitle();
+                *errorMessageHolder += animation->animationTitle();
                 *errorMessageHolder += ", It May Already Exist And Was Not Set To Overwrite";
             }
 
@@ -250,13 +250,13 @@ namespace CALUMI {
             if (RemoveSFBGSAnimationPackage(*animation))
             {
                 *errorMessageHolder += " Successfully Removed From ";
-                *errorMessageHolder += animation->AnimationTitle();
+                *errorMessageHolder += animation->animationTitle();
                 return true;
             }
             else
             {
                 *errorMessageHolder += " Was Not Removed From ";
-                *errorMessageHolder += animation->AnimationTitle();
+                *errorMessageHolder += animation->animationTitle();
                 *errorMessageHolder += ", It Either Does Not Exist Or Is Mislabeled";
             }
             return false;
@@ -370,11 +370,11 @@ namespace CALUMI {
 
             if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
             {
-                *errorMessageHolder += block->BoneName();
+                *errorMessageHolder += block->boneName();
                 
                 if (pkg->addAmendedBlock(*block, overwrite))
                 {
-                    uint32_t hash = Utilities::BGS_Str_CRC32(block->BoneName());
+                    uint32_t hash = Utilities::BGS_Str_CRC32(block->boneName());
                     *errorMessageHolder += " added to SFBGS Animation Package with hash: ";
                     *errorMessageHolder += std::to_string(hash).c_str();
 

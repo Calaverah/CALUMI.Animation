@@ -200,16 +200,16 @@ namespace CALUMI
 			/** @name Vector Operations */
 			/// @{
 
-			double Length() const;
-			double LengthSquared() const;
+            double length() const;
+            double lengthSquared() const;
 
-			double Dot(const Vector2D& other) const;
-			void Cross(const Vector2D& other, Vector2D& result) const;
-			Vector2D Cross(const Vector2D& other) const;
+            double dot(const Vector2D& other) const;
+            void cross(const Vector2D& other, Vector2D& result) const;
+            Vector2D cross(const Vector2D& other) const;
 
-			void Normalize();
+            void normalize();
 
-			Vector2D Lerp(const Vector2D& input, double t = 0.5) const;
+            Vector2D lerp(const Vector2D& input, double t = 0.5) const;
 
 			/// @}
 
@@ -224,7 +224,7 @@ namespace CALUMI
 
 			/** @name Print */
 			/// @{
-			Utilities::StringContainer ToString() const;
+            Utilities::StringContainer toString() const;
 			/// @}
 
 		private:
@@ -308,15 +308,15 @@ namespace CALUMI
 			/** @name Vector Operations */
 			/// @{
 			
-			float Length() const;
-			float LengthSquared() const;
+            float length() const;
+            float lengthSquared() const;
 
-			float Dot(const Vector3& other) const;
+            float dot(const Vector3& other) const;
 
-			void Cross(const Vector3& other, Vector3& result) const;
-			Vector3 Cross(const Vector3& other) const;
+            void cross(const Vector3& other, Vector3& result) const;
+            Vector3 cross(const Vector3& other) const;
 
-			void Normalize();
+            void normalize();
 
 			/// @}
 			
@@ -335,7 +335,7 @@ namespace CALUMI
 			/** @name Print */
 			/// @{
 
-			Utilities::StringContainer ToString() const;
+            Utilities::StringContainer toString() const;
 			
 			/// @}
 
@@ -422,16 +422,16 @@ namespace CALUMI
 			/** @name Vector Operations */
 			/// @{
 			
-			double Length() const;
-			double LengthSquared() const;
+            double length() const;
+            double lengthSquared() const;
 
-			double Dot(const Vector3D& other) const;
-			void Cross(const Vector3D& other, Vector3D& result) const;
-			Vector3D Cross(const Vector3D& other) const;
+            double dot(const Vector3D& other) const;
+            void cross(const Vector3D& other, Vector3D& result) const;
+            Vector3D cross(const Vector3D& other) const;
 
-			void Normalize();
+            void normalize();
 
-			Vector3D Lerp(const Vector3D& input, double t = 0.5) const;
+            Vector3D lerp(const Vector3D& input, double t = 0.5) const;
 
 			/// @}
 
@@ -450,7 +450,7 @@ namespace CALUMI
 			/** @name Print */
 			/// @{
 
-			Utilities::StringContainer ToString() const;
+            Utilities::StringContainer toString() const;
 			
 			/// @}
 
@@ -520,11 +520,11 @@ namespace CALUMI
 
 			Quaternion();
 			~Quaternion();
-			Quaternion(float input[4], bool normalize = true);
-			Quaternion(Vector3 direction, double radians, bool normalize = true);
-			Quaternion(Vector3D direction, double radians, bool normalize = true);
-			Quaternion(double x, double y, double z, double w, bool normalize = true);
-			Quaternion(float x, float y, float z, float w, bool normalize = true);
+            Quaternion(float input[4], bool normalized = true);
+            Quaternion(Vector3 direction, double radians, bool normalized = true);
+            Quaternion(Vector3D direction, double radians, bool normalized = true);
+            Quaternion(double x, double y, double z, double w, bool normalized = true);
+            Quaternion(float x, float y, float z, float w, bool normalized = true);
 			Quaternion(float x, float y, float z, EulerOrder order = EulerOrder::XYZ);
 			Quaternion(const Quaternion& input);
 
@@ -564,31 +564,31 @@ namespace CALUMI
 			/** @name Equality */
 			/// @{
 			 
-			bool AreSameRotation(const Quaternion& input, float tolerance = 0.0) const noexcept;
-			bool AreEqual(const Quaternion& input, float tolerance = 0.0) const noexcept;
+            bool areSameRotation(const Quaternion& input, float tolerance = 0.0) const noexcept;
+            bool areEqual(const Quaternion& input, float tolerance = 0.0) const noexcept;
 			 
 			/// @}
 			/** @name Vector Operations */
 			/// @{
 
-			Quaternion Conjugate() noexcept;
-			void Conjugate(Quaternion& result) const noexcept;
+            Quaternion conjugate() noexcept;
+            void conjugate(Quaternion& result) const noexcept;
 
-			float Dot(const Quaternion& input) const noexcept;
+            float dot(const Quaternion& input) const noexcept;
 
-			float LengthSquared() const noexcept;
-			float Length() const noexcept;
+            float lengthSquared() const noexcept;
+            float length() const noexcept;
 
-			void Normalize() noexcept;
-			void Normalize(Quaternion& result) const noexcept;
+            void normalize() noexcept;
+            void normalize(Quaternion& result) const noexcept;
 
-			void Inverse(Quaternion& result) const noexcept;
-			void Inverse() noexcept;
+            void inverse(Quaternion& result) const noexcept;
+            void inverse() noexcept;
 
 			//Returns angle in radians
-			float AngularDistance(const Quaternion& input) const;
+            float angularDistance(const Quaternion& input) const;
 
-			Quaternion Slerp(const Quaternion& input, float t = 0.5f) const;
+            Quaternion sLerp(const Quaternion& input, float t = 0.5f) const;
 
 			static const Quaternion Identity;
 
@@ -596,7 +596,7 @@ namespace CALUMI
 			/** @name Print */
 			/// @{
 
-			Utilities::StringContainer ToString();
+            Utilities::StringContainer toString();
 
 			/// @}
 
