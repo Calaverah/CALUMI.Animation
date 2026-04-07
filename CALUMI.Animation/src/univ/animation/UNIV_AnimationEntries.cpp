@@ -31,7 +31,11 @@ namespace CALUMI {
         }
         UNIV::Translation::~Translation()
         {
-            if (pImpl) delete pImpl;
+            if (pImpl)
+            {
+                delete pImpl;
+                pImpl = nullptr;
+            }
         }
         UNIV::Translation::Translation()
         {
@@ -44,14 +48,19 @@ namespace CALUMI {
         }
         UNIV::Translation::Translation(const Translation& input) : Translation()
         {
-            *pImpl = *(input.pImpl);
+            *this = input;
         }
         bool Translation::isIdentical(const Translation& input) const
         {
             return pImpl->frame == input.pImpl->frame &&
                 pImpl->translation == input.pImpl->translation;
         }
-        UNIV::Translation& UNIV::Translation::operator=(const UNIV::Translation& other) { *pImpl = *(other.pImpl); return *this; }
+        UNIV::Translation& UNIV::Translation::operator=(const UNIV::Translation& other)
+        {
+            pImpl->frame = other.pImpl->frame;
+            pImpl->translation = other.pImpl->translation;
+            return *this;
+        }
 
         bool operator<(const UNIV::Translation& A, const UNIV::Translation& B) { return A.frame() < B.frame(); }
         bool operator<=(const UNIV::Translation& A, const UNIV::Translation& B) { return A.frame() <= B.frame(); }
@@ -98,11 +107,15 @@ namespace CALUMI {
         }
         Rotation::Rotation(const Rotation& input) : Rotation()
         {
-            *pImpl = *(input.pImpl);
+            *this = input;
         }
         Rotation::~Rotation()
         {
-            if (pImpl) delete pImpl;
+            if (pImpl)
+            {
+                delete pImpl;
+                pImpl = nullptr;
+            }
         }
 
         bool Rotation::isIdentical(const Rotation& input) const
@@ -111,7 +124,12 @@ namespace CALUMI {
                    pImpl->rotation == input.pImpl->rotation;
         }
 
-        UNIV::Rotation& UNIV::Rotation::operator=(const UNIV::Rotation& other) { *pImpl = *(other.pImpl); return *this; }
+        UNIV::Rotation& UNIV::Rotation::operator=(const UNIV::Rotation& other)
+        {
+            pImpl->frame = other.pImpl->frame;
+            pImpl->rotation = other.pImpl->rotation;
+            return *this;
+        }
 
         bool operator<(const UNIV::Rotation& A, const UNIV::Rotation& B)    { return A.frame() < B.frame(); }
         bool operator<=(const UNIV::Rotation& A, const UNIV::Rotation& B)   { return A.frame() <= B.frame();}
@@ -140,14 +158,24 @@ namespace CALUMI {
         void Scalar::setScalarValue(float value) { pImpl->scalar = value; }
 
         Scalar::Scalar() { pImpl = new Impl; }
-        Scalar::~Scalar() { if (pImpl) delete pImpl; }
+        Scalar::~Scalar()
+        {
+            if (pImpl)
+            {
+                delete pImpl;
+                pImpl = nullptr;
+            }
+        }
 
         Scalar::Scalar(const uint16_t& frame, float scalar) : Scalar()
         {
             pImpl->frame = frame;
             pImpl->scalar = scalar;
         }
-        Scalar::Scalar(const Scalar& input) : Scalar() { *pImpl = *(input.pImpl); }
+        Scalar::Scalar(const Scalar& input) : Scalar()
+        {
+            *this = input;
+        }
 
         bool Scalar::isIdentical(const Scalar& input) const
         {
@@ -155,7 +183,12 @@ namespace CALUMI {
                    pImpl->scalar == input.pImpl->scalar;
         }
 
-        UNIV::Scalar& UNIV::Scalar::operator=(const UNIV::Scalar& other) { *pImpl = *(other.pImpl); return *this; }
+        UNIV::Scalar& UNIV::Scalar::operator=(const UNIV::Scalar& other)
+        {
+            pImpl->frame = other.pImpl->frame;
+            pImpl->scalar = other.pImpl->scalar;
+            return *this;
+        }
 
         bool operator<(const UNIV::Scalar& A, const UNIV::Scalar& B)    { return A.frame()<  B.frame(); }
         bool operator<=(const UNIV::Scalar& A, const UNIV::Scalar& B)   { return A.frame()<= B.frame(); }
@@ -184,12 +217,26 @@ namespace CALUMI {
         void Priority::setPriorityValue(uint8_t value) { pImpl->priority = value; }
 
         Priority::Priority() { pImpl = new Impl; }
-        Priority::~Priority() { if (pImpl) delete pImpl; }
+        Priority::~Priority()
+        {
+            if (pImpl)
+            {
+                delete pImpl;
+                pImpl = nullptr;
+            }
+        }
         Priority::Priority(const uint16_t& frame, const uint8_t& priority) : Priority() { pImpl->frame = frame; pImpl->priority = priority; }
-        Priority::Priority(const Priority& input) : Priority() { *pImpl = *(input.pImpl);  }
+        Priority::Priority(const Priority& input) : Priority()
+        {
+            *this = input;
+        }
 
-        UNIV::Priority& UNIV::Priority::operator=(const UNIV::Priority& other) { pImpl->frame = other.pImpl->frame; pImpl->priority = other.pImpl->priority; return *this; }
-
+        UNIV::Priority& UNIV::Priority::operator=(const UNIV::Priority& other)
+        {
+            pImpl->frame = other.pImpl->frame;
+            pImpl->priority = other.pImpl->priority;
+            return *this;
+        }
         bool operator<(const UNIV::Priority& A, const UNIV::Priority& B)    { return A.frame() <  B.frame(); }
         bool operator<=(const UNIV::Priority& A, const UNIV::Priority& B)   { return A.frame() <= B.frame(); }
         bool operator>(const UNIV::Priority& A, const UNIV::Priority& B)    { return A.frame() >  B.frame(); }
@@ -325,49 +372,61 @@ namespace CALUMI {
 
         void SortTranslationSequence(TranslationSequence &sq, bool highToLow)
         {
+            if(sq.pImpl->vector.size() < 2)
+                return;
+
             if (highToLow)
                 {
-                    std::sort(&sq.at(0), &sq.at(sq.size()));
+                    std::sort(sq.pImpl->vector.begin(), sq.pImpl->vector.end(), std::greater<Translation>());
                 }
                 else
-            {
-                    std::sort(&sq.at(sq.size()), &sq.at(0));
-            }
+                {
+                    std::sort(sq.pImpl->vector.begin(), sq.pImpl->vector.end());
+                }
         }
 
         void SortRotationSequence(RotationSequence& sq, bool highToLow)
         {
+            if(sq.pImpl->vector.size() < 2)
+                return;
+
             if (highToLow)
             {
-                std::sort(&sq.at(0), &sq.at(sq.size()));
+                std::sort(sq.pImpl->vector.begin(), sq.pImpl->vector.end(), std::greater<Rotation>());
             }
             else
             {
-                std::sort(&sq.at(sq.size()), &sq.at(0));
+                std::sort(sq.pImpl->vector.begin(), sq.pImpl->vector.end());
             }
         }
 
         void SortScalarSequence(ScalarSequence& sq, bool highToLow)
         {
+            if(sq.pImpl->vector.size() < 2)
+                return;
+
             if (highToLow)
             {
-                std::sort(&sq.at(0), &sq.at(sq.size()));
+                std::sort(sq.pImpl->vector.begin(), sq.pImpl->vector.end(), std::greater<Scalar>());
             }
             else
             {
-                std::sort(&sq.at(sq.size()), &sq.at(0));
+                std::sort(sq.pImpl->vector.begin(), sq.pImpl->vector.end());
             }
         }
 
         void SortPrioritySequence(PrioritySequence& sq, bool highToLow)
         {
+            if(sq.pImpl->vector.size() < 2)
+                return;
+
             if (highToLow)
             {
-                std::sort(&sq.at(0), &sq.at(sq.size()));
+                std::sort(sq.pImpl->vector.begin(), sq.pImpl->vector.end(), std::greater<Priority>());
             }
             else
             {
-                std::sort(&sq.at(sq.size()), &sq.at(0));
+                std::sort(sq.pImpl->vector.begin(), sq.pImpl->vector.end());
             }
         }
 

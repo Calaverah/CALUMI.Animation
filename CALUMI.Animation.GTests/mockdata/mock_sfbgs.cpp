@@ -5,9 +5,9 @@
 
 using namespace CALUMI;
 
-#define GTEST(x) TEST(Mock_Starfield, x)
+#define GTEST(x) TEST(MockStarfield, x)
 
-GTEST(Rig_00)
+GTEST(Rig00)
 {
 	std::vector<char> stdEOH = { '\0','\0','C','A','L','U','M','I','D','V','R','S','J','O','J','O' };
 	SFBGS::SkeletonRig rig00;

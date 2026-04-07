@@ -493,12 +493,6 @@ namespace CALUMI{
 		private:
 			friend class AnimationScene;
 		};
-        }
-//#pragma warning(disable: 4661)
-//        template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::AnimationBlock>;
-//        template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::Animation>;
-//        template struct CALUMIANIMATION_API Utilities::VectorContainer<SFBGS::Preamble>;
-//#pragma warning(default: 4661)
-
+    }
 }
 

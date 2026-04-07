@@ -135,8 +135,5 @@ namespace CALUMI {
 			Impl* pImpl;
 		};
 
-} }
-
-//#pragma warning(disable: 4661)
-//_VECTORTEMPLATE(CALUMI::UNIV::IPackage*);
-//#pragma warning(default: 4661)
+    }
+}

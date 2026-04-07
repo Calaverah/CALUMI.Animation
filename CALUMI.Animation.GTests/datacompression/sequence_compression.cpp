@@ -18,7 +18,7 @@ CALUMI::UNIV::Scalar entry(frame,scalar);\
 
 using namespace CALUMI::Math;
 
-GTEST(RDP_Rotation)
+GTEST(RDPRotation)
 {
     CALUMI::UNIV::AnimationBlock input1;
 
@@ -175,7 +175,7 @@ GTEST(RDP_Rotation)
     EXPECT_TRUE(input8.rotationSequence().size() == 7 && first8.isIdentical(input8.rotationSequence().at(0)) && last8.isIdentical(input8.rotationSequence().at(input8.rotationSequence().size() - 1)));
 }
 
-GTEST(RDP_Translation)
+GTEST(RDPTranslation)
 {
     CALUMI::UNIV::AnimationBlock block1;
 
@@ -208,7 +208,7 @@ GTEST(RDP_Translation)
     EXPECT_TRUE(block2.translationSequence().size() == 2 && first2.isIdentical(block2.translationSequence().at(0)) && last2.isIdentical(block2.translationSequence().at(block2.translationSequence().size() - 1)));
 }
 
-GTEST(RDP_Scalar)
+GTEST(RDPScalar)
 {
     CALUMI::UNIV::AnimationBlock input1;
 

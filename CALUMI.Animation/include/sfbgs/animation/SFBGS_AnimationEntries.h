@@ -208,17 +208,17 @@ namespace CALUMI{ namespace SFBGS{
 
 	
 
-	CompressedRotation GetSFBGSRotationPair(const CALUMI::Math::Quaternion& input);
-	CALUMI::Math::Quaternion GetUniversalRotation(const CALUMI::SFBGS::RotationPrefix& prefix, const CALUMI::SFBGS::RotationEntry& suffix);
+    CALUMIANIMATION_API CompressedRotation GetSFBGSRotationPair(const CALUMI::Math::Quaternion& input);
+    CALUMIANIMATION_API CALUMI::Math::Quaternion GetUniversalRotation(const CALUMI::SFBGS::RotationPrefix& prefix, const CALUMI::SFBGS::RotationEntry& suffix);
 
-	CompressedTranslation GetSFBGSTranslationPair(const CALUMI::Math::Vector3D& input, const float& highPrecision, const float& lowPrecision);
-	CALUMI::Math::Vector3D GetUniversalTranslation(const CALUMI::SFBGS::TranslationPrefix& prefix, const CALUMI::SFBGS::TranslationEntry& suffix, const float& highPrecision, const float& lowPrecision);
+    CALUMIANIMATION_API CompressedTranslation GetSFBGSTranslationPair(const CALUMI::Math::Vector3D& input, const float& highPrecision, const float& lowPrecision);
+    CALUMIANIMATION_API CALUMI::Math::Vector3D GetUniversalTranslation(const CALUMI::SFBGS::TranslationPrefix& prefix, const CALUMI::SFBGS::TranslationEntry& suffix, const float& highPrecision, const float& lowPrecision);
 	
-	SFBGS::TranslationPrefixSequence UnfoldTranslationPrefixSequence(const SFBGS::TranslationPrefixSequence& input);
-	SFBGS::TranslationPrefixSequence FoldTranslationPrefixSequence(const SFBGS::TranslationPrefixSequence& input);
+    CALUMIANIMATION_API SFBGS::TranslationPrefixSequence UnfoldTranslationPrefixSequence(const SFBGS::TranslationPrefixSequence& input);
+    CALUMIANIMATION_API SFBGS::TranslationPrefixSequence FoldTranslationPrefixSequence(const SFBGS::TranslationPrefixSequence& input);
 
-	SFBGS::RotationPrefixSequence UnfoldRotationPrefixSequence(const SFBGS::RotationPrefixSequence& input);
-	SFBGS::RotationPrefixSequence FoldRotationPrefixSequence (const SFBGS::RotationPrefixSequence& input);
+    CALUMIANIMATION_API SFBGS::RotationPrefixSequence UnfoldRotationPrefixSequence(const SFBGS::RotationPrefixSequence& input);
+    CALUMIANIMATION_API SFBGS::RotationPrefixSequence FoldRotationPrefixSequence (const SFBGS::RotationPrefixSequence& input);
 
 
 

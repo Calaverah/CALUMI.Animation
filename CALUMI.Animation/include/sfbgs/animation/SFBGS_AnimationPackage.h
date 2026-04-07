@@ -164,8 +164,8 @@ namespace CALUMI {
             SFBGS_AnimationPackage* clone() const override;
 };
 
-        bool CreateNewSFBGSAnimationPackage(UNIV::Animation& animation, bool overwrite = true);
-		bool RemoveSFBGSAnimationPackage(UNIV::Animation& animation);
+        CALUMIANIMATION_API bool CreateNewSFBGSAnimationPackage(UNIV::Animation& animation, bool overwrite = true);
+        CALUMIANIMATION_API bool RemoveSFBGSAnimationPackage(UNIV::Animation& animation);
 
 		/**
 		 * 

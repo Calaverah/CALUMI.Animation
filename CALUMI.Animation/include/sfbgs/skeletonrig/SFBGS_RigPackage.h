@@ -16,7 +16,7 @@ namespace CALUMI {
 		/**
 		 * @brief Simple pair of values used to compress translations on Starfield animations
 		 */
-		struct PrecisionSet{
+        struct CALUMIANIMATION_API PrecisionSet{
 			/// @name Constructors
 			/// @{
 		private:

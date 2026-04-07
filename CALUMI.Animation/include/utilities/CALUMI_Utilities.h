@@ -148,9 +148,10 @@ namespace CALUMI { namespace Utilities {
 		Impl* pImpl;
 	};
 
-	
 
-#define VECTORDEC(CLASS, T) \
+#define VECTORDEC(CLASS, T) VECTORDECF(CLASS, T, )
+
+#define VECTORDECF(CLASS, T, FRIENDDECL) \
 struct CALUMIANIMATION_API CLASS \
 	{ \
         CLASS() noexcept; \
@@ -192,7 +193,9 @@ struct CALUMIANIMATION_API CLASS \
 	private:\
 		struct Impl;\
 		Impl* pImpl;\
-	};
+    private:\
+        FRIENDDECL\
+    };
 
 	VECTORDEC(U8Vector, uint8_t)
 	VECTORDEC(S8Vector, int8_t)

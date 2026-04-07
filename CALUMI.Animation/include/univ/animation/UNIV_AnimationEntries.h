@@ -33,12 +33,12 @@ namespace CALUMI {namespace UNIV {
 		Impl* pImpl;
 	};
 
-	bool operator<(const UNIV::Translation& A, const UNIV::Translation& B);
-	bool operator<=(const UNIV::Translation& A, const UNIV::Translation& B);
-	bool operator>(const UNIV::Translation& A, const UNIV::Translation& B);
-	bool operator>=(const UNIV::Translation& A, const UNIV::Translation& B);
-	bool operator==(const UNIV::Translation& A, const UNIV::Translation& B);
-	bool operator!=(const UNIV::Translation& A, const UNIV::Translation& B);
+    CALUMIANIMATION_API bool operator<(const UNIV::Translation& A, const UNIV::Translation& B);
+    CALUMIANIMATION_API bool operator<=(const UNIV::Translation& A, const UNIV::Translation& B);
+    CALUMIANIMATION_API bool operator>(const UNIV::Translation& A, const UNIV::Translation& B);
+    CALUMIANIMATION_API bool operator>=(const UNIV::Translation& A, const UNIV::Translation& B);
+    CALUMIANIMATION_API bool operator==(const UNIV::Translation& A, const UNIV::Translation& B);
+    CALUMIANIMATION_API bool operator!=(const UNIV::Translation& A, const UNIV::Translation& B);
 
 	struct CALUMIANIMATION_API Rotation
 	{
@@ -61,12 +61,12 @@ namespace CALUMI {namespace UNIV {
 		Impl* pImpl;
 	};
 
-	bool operator<(const UNIV::Rotation& A, const UNIV::Rotation& B);
-	bool operator<=(const UNIV::Rotation& A, const UNIV::Rotation& B);
-	bool operator>(const UNIV::Rotation& A, const UNIV::Rotation& B);
-	bool operator>=(const UNIV::Rotation& A, const UNIV::Rotation& B);
-	bool operator==(const UNIV::Rotation& A, const UNIV::Rotation& B);
-	bool operator!=(const UNIV::Rotation& A, const UNIV::Rotation& B);
+    CALUMIANIMATION_API bool operator<(const UNIV::Rotation& A, const UNIV::Rotation& B);
+    CALUMIANIMATION_API bool operator<=(const UNIV::Rotation& A, const UNIV::Rotation& B);
+    CALUMIANIMATION_API bool operator>(const UNIV::Rotation& A, const UNIV::Rotation& B);
+    CALUMIANIMATION_API bool operator>=(const UNIV::Rotation& A, const UNIV::Rotation& B);
+    CALUMIANIMATION_API bool operator==(const UNIV::Rotation& A, const UNIV::Rotation& B);
+    CALUMIANIMATION_API bool operator!=(const UNIV::Rotation& A, const UNIV::Rotation& B);
 
 
 	struct CALUMIANIMATION_API Scalar
@@ -91,12 +91,12 @@ namespace CALUMI {namespace UNIV {
 		Impl* pImpl;
 	};
 
-	bool operator<(const UNIV::Scalar& A, const UNIV::Scalar& B);
-	bool operator<=(const UNIV::Scalar& A, const UNIV::Scalar& B);
-	bool operator>(const UNIV::Scalar& A, const UNIV::Scalar& B);
-	bool operator>=(const UNIV::Scalar& A, const UNIV::Scalar& B);
-	bool operator==(const UNIV::Scalar& A, const UNIV::Scalar& B);
-	bool operator!=(const UNIV::Scalar& A, const UNIV::Scalar& B);
+    CALUMIANIMATION_API bool operator<(const UNIV::Scalar& A, const UNIV::Scalar& B);
+    CALUMIANIMATION_API bool operator<=(const UNIV::Scalar& A, const UNIV::Scalar& B);
+    CALUMIANIMATION_API bool operator>(const UNIV::Scalar& A, const UNIV::Scalar& B);
+    CALUMIANIMATION_API bool operator>=(const UNIV::Scalar& A, const UNIV::Scalar& B);
+    CALUMIANIMATION_API bool operator==(const UNIV::Scalar& A, const UNIV::Scalar& B);
+    CALUMIANIMATION_API bool operator!=(const UNIV::Scalar& A, const UNIV::Scalar& B);
 
 
 	struct CALUMIANIMATION_API Priority
@@ -120,22 +120,22 @@ namespace CALUMI {namespace UNIV {
 		Impl* pImpl;
 	};
 
-	bool operator<(const UNIV::Priority& A, const UNIV::Priority& B);
-	bool operator<=(const UNIV::Priority& A, const UNIV::Priority& B);
-	bool operator>(const UNIV::Priority& A, const UNIV::Priority& B);
-	bool operator>=(const UNIV::Priority& A, const UNIV::Priority& B);
-	bool operator==(const UNIV::Priority& A, const UNIV::Priority& B);
-	bool operator!=(const UNIV::Priority& A, const UNIV::Priority& B);
+    CALUMIANIMATION_API bool operator<(const UNIV::Priority& A, const UNIV::Priority& B);
+    CALUMIANIMATION_API bool operator<=(const UNIV::Priority& A, const UNIV::Priority& B);
+    CALUMIANIMATION_API bool operator>(const UNIV::Priority& A, const UNIV::Priority& B);
+    CALUMIANIMATION_API bool operator>=(const UNIV::Priority& A, const UNIV::Priority& B);
+    CALUMIANIMATION_API bool operator==(const UNIV::Priority& A, const UNIV::Priority& B);
+    CALUMIANIMATION_API bool operator!=(const UNIV::Priority& A, const UNIV::Priority& B);
 
-	VECTORDEC(TranslationSequence, Translation)
-	VECTORDEC(RotationSequence, Rotation)
-	VECTORDEC(ScalarSequence, Scalar)
-	VECTORDEC(PrioritySequence, Priority)
+    VECTORDECF(TranslationSequence, Translation, friend void SortTranslationSequence(TranslationSequence& sq, bool highToLow);)
+    VECTORDECF(RotationSequence, Rotation, friend void SortRotationSequence(RotationSequence& sq, bool highToLow);)
+    VECTORDECF(ScalarSequence, Scalar, friend void SortScalarSequence(ScalarSequence& sq, bool highToLow);)
+    VECTORDECF(PrioritySequence, Priority, friend void SortPrioritySequence(PrioritySequence& sq, bool highToLow);)
 
-    void SortTranslationSequence(TranslationSequence& sq, bool highToLow = false);
-    void SortRotationSequence(RotationSequence& sq, bool highToLow = false);
-    void SortScalarSequence(ScalarSequence& sq, bool highToLow = false);
-    void SortPrioritySequence(PrioritySequence& sq, bool highToLow = false);
+    void CALUMIANIMATION_API SortTranslationSequence(TranslationSequence& sq, bool highToLow = false);
+    void CALUMIANIMATION_API SortRotationSequence(RotationSequence& sq, bool highToLow = false);
+    void CALUMIANIMATION_API SortScalarSequence(ScalarSequence& sq, bool highToLow = false);
+    void CALUMIANIMATION_API SortPrioritySequence(PrioritySequence& sq, bool highToLow = false);
 
 	extern  "C" {
 		CALUMIANIMATION_API Rotation* CreateRotationEntryC(uint16_t frame, float x, float y, float z, float w);

@@ -23,7 +23,8 @@ add_executable(run_tests test_main.cpp
   math/quaternion.cpp
   math/vector3.cpp
   datacompression/sequence_compression.cpp 
-  mockdata/mock_sfbgs.cpp)
+  mockdata/mock_sfbgs.cpp
+  univ/univ_entries.cpp)
 
 target_compile_definitions(run_tests PRIVATE DEBUG_BUILD)
 

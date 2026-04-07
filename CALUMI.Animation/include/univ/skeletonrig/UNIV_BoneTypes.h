@@ -15,8 +15,8 @@ namespace CALUMI {
 			UNDEFINED = 0xFFFFFFFF
 		};
 
-		inline static const char* DefaultBoneTypeStr = "Default";
-		inline static const char* TwistBoneTypeStr = "Twist";
+        inline static const char* DefaultBoneTypeStr = "Default";
+        inline static const char* TwistBoneTypeStr = "Twist";
 
 
 
