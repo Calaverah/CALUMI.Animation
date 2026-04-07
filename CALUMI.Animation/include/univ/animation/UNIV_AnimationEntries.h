@@ -127,15 +127,22 @@ namespace CALUMI {namespace UNIV {
     CALUMIANIMATION_API bool operator==(const UNIV::Priority& A, const UNIV::Priority& B);
     CALUMIANIMATION_API bool operator!=(const UNIV::Priority& A, const UNIV::Priority& B);
 
+	struct TranslationSequence;
+	struct RotationSequence;
+	struct ScalarSequence;
+	struct PrioritySequence;
+
+	CALUMIANIMATION_API void SortTranslationSequence(TranslationSequence& sq, bool highToLow = false);
+	CALUMIANIMATION_API void SortRotationSequence(RotationSequence& sq, bool highToLow = false);
+	CALUMIANIMATION_API void SortScalarSequence(ScalarSequence& sq, bool highToLow = false);
+	CALUMIANIMATION_API void SortPrioritySequence(PrioritySequence& sq, bool highToLow = false);
+
     VECTORDECF(TranslationSequence, Translation, friend void SortTranslationSequence(TranslationSequence& sq, bool highToLow);)
     VECTORDECF(RotationSequence, Rotation, friend void SortRotationSequence(RotationSequence& sq, bool highToLow);)
     VECTORDECF(ScalarSequence, Scalar, friend void SortScalarSequence(ScalarSequence& sq, bool highToLow);)
     VECTORDECF(PrioritySequence, Priority, friend void SortPrioritySequence(PrioritySequence& sq, bool highToLow);)
 
-    void CALUMIANIMATION_API SortTranslationSequence(TranslationSequence& sq, bool highToLow = false);
-    void CALUMIANIMATION_API SortRotationSequence(RotationSequence& sq, bool highToLow = false);
-    void CALUMIANIMATION_API SortScalarSequence(ScalarSequence& sq, bool highToLow = false);
-    void CALUMIANIMATION_API SortPrioritySequence(PrioritySequence& sq, bool highToLow = false);
+	
 
 	extern  "C" {
 		CALUMIANIMATION_API Rotation* CreateRotationEntryC(uint16_t frame, float x, float y, float z, float w);
@@ -199,10 +206,3 @@ namespace CALUMI {namespace UNIV {
 	}
 
 }}
-
-//#pragma warning(disable: 4661)
-//_VECTORTEMPLATE(CALUMI::UNIV::Rotation);
-//_VECTORTEMPLATE(CALUMI::UNIV::Translation);
-//_VECTORTEMPLATE(CALUMI::UNIV::Scalar);
-//_VECTORTEMPLATE(CALUMI::UNIV::Priority);
-//#pragma warning(default: 4661)
