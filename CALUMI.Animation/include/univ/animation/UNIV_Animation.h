@@ -71,7 +71,7 @@ namespace CALUMI {namespace UNIV {
 	class CALUMIANIMATION_API Animation
 	{
 	public:
-
+		//TODO: Remove index logic as name will now be sufficient
 
 		Animation(const Utilities::StringContainer& title, unsigned int initialBlockCount);
 		Animation();

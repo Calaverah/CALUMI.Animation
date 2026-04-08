@@ -16,6 +16,8 @@ namespace CALUMI{ namespace UNIV{
 	struct CALUMIANIMATION_API SkeletonBone
 	{
 	public:
+		//TODO: Change bone to have global rotation as relative will be calculated by the rig
+		//TODO: Consider parent tracking on the rig instead of the bone itself
 
 		/** @name Initialization*/
 		/// @{

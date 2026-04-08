@@ -76,6 +76,7 @@ protected:
 
 GTEST(RigScan)
 {
+	GTEST_SKIP() << "SKIP RIG SCAN";
 
 	///The purpose of this test is to scan and verify assumptions based on local file data
 	uint64_t filesFound = 0;

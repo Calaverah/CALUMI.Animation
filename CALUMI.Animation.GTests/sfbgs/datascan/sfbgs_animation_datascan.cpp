@@ -41,12 +41,12 @@ using namespace CALUMI;
 			if (!std::filesystem::is_directory(SFBGS_Data::get().dataPath))
 				GTEST_SKIP() << "Data Path Is Not Directory";
 
-			std::cout << "--- STARFIELD DATA SCAN STARTING ---" << std::endl;
+			std::cout << "--- STARFIELD ANIM SCAN STARTING ---" << std::endl;
 		}
 
 		static void TearDownTestSuite() 
 		{
-			std::cout << "--- STARFIELD DATA SCAN COMPLETE ---" << std::endl;
+			std::cout << "--- STARFIELD ANIM SCAN COMPLETE ---" << std::endl;
 		}
 	};
 

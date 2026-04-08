@@ -84,15 +84,27 @@ namespace CALUMI {
         unsigned int UNIV::Animation::frameCount()
 		{
 			unsigned int output = 0;
+			bool entryFound = false;
+			
+
 			for (unsigned int i = 0; i < pImpl->_animationBlocks.size(); i++)
 			{
+				if (pImpl->_animationBlocks.at(i).priorityEntryCount() > 0 ||
+					pImpl->_animationBlocks.at(i).scalarEntryCount() > 0 ||
+					pImpl->_animationBlocks.at(i).rotationEntryCount() > 0 ||
+					pImpl->_animationBlocks.at(i).translationEntryCount() > 0)
+					entryFound = true;
+
 				unsigned int temp = pImpl->_animationBlocks.at(i).GetLastFrameInBlock();
+
 				if (temp > output)
 				{
 					output = temp;
 				}
 			}
-			output++; //adding one to sum up total frames in animation. If final frame is 50, the count is 51
+			if(entryFound)
+				output++; //adding one to sum up total frames in animation. If final frame is 50, the count is 51
+	
 			return output;
 		}
         Utilities::StringContainer Animation::toJSON(const uint64_t indents) const

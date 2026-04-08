@@ -266,3 +266,79 @@ GTEST(Rig00)
 
 	
 }
+
+GTEST(ScratchAnimation)
+{
+	UNIV::Animation uAnim;
+	uAnim.setAnimationTitle("TestAnim");
+
+	//Sanity Checks
+	EXPECT_STREQ(uAnim.animationTitle(), "TestAnim");
+	EXPECT_EQ(uAnim.animationBlockCount(), 0);
+	EXPECT_EQ(uAnim.animationBlockCount(), uAnim.animationBlocks().size());
+	EXPECT_NO_THROW(uAnim.getPackageManager());
+	EXPECT_EQ(uAnim.getPackageManager().packageCount(), 0);
+	EXPECT_EQ(uAnim.frameCount(), 0);
+	EXPECT_NO_THROW(uAnim.clearAnimationBlocks());
+	EXPECT_NO_THROW(uAnim.setAnimationTitle("NewTitle"));
+	EXPECT_STREQ(uAnim.animationTitle(), "NewTitle");
+
+	//Block 1
+	{
+		UNIV::AnimationBlock block;
+		block.setBoneName("Base");
+		EXPECT_STREQ(block.boneName(), "Base");
+
+		UNIV::Rotation r5(5, Math::Quaternion(0.0, 0.0, 1.0, 1.0));
+		UNIV::Rotation r0(0, Math::Quaternion(1.0, 0.0, 0.0, 0.0));
+		UNIV::Rotation r2(2, Math::Quaternion(0.0, 1.0, 0.0, 1.0));
+		UNIV::Rotation r2n(2, Math::Quaternion(1.0, 0.0, 0.0, 1.0));
+		
+		EXPECT_TRUE(block.addRotationEntry(r5));
+		EXPECT_TRUE(block.addRotationEntry(r0));
+		EXPECT_TRUE(block.addRotationEntry(r2));
+
+		EXPECT_EQ(block.rotationEntryCount(), 3);
+		
+		EXPECT_EQ(block.rotationSequence().at(0).frame(), 0);
+		EXPECT_EQ(block.rotationSequence().at(1).frame(), 2);
+		EXPECT_EQ(block.rotationSequence().at(2).frame(), 5);
+
+		EXPECT_EQ(block.rotationSequence().at(0).rotationQuaternion(), Math::Quaternion(1.0, 0.0, 0.0, 0.0));
+		EXPECT_EQ(block.rotationSequence().at(1).rotationQuaternion(), Math::Quaternion(0.0, 1.0, 0.0, 1.0));
+		EXPECT_EQ(block.rotationSequence().at(2).rotationQuaternion(), Math::Quaternion(0.0, 0.0, 1.0, 1.0));
+
+		EXPECT_TRUE(block.addRotationEntry(r2n));
+
+		EXPECT_EQ(block.rotationEntryCount(), 3);
+
+		EXPECT_EQ(block.rotationSequence().at(0).rotationQuaternion(), Math::Quaternion(1.0, 0.0, 0.0, 0.0));
+		EXPECT_EQ(block.rotationSequence().at(1).rotationQuaternion(), Math::Quaternion(1.0, 0.0, 0.0, 1.0));
+		EXPECT_EQ(block.rotationSequence().at(2).rotationQuaternion(), Math::Quaternion(0.0, 0.0, 1.0, 1.0));
+
+		EXPECT_TRUE(uAnim.addAnimationBlock(block));
+	}
+
+	EXPECT_EQ(uAnim.animationBlockCount(), 1);
+
+	//Block 2
+	{
+		UNIV::AnimationBlock block;
+		block.setBoneName("Table");
+		block.setBoneIndex(5);
+		EXPECT_STREQ(block.boneName(), "Table");
+
+		UNIV::Rotation r0(0, Math::Quaternion(0.0, 0.0, 0.0, 1.0));
+		UNIV::Rotation r1(15, Math::Quaternion(0.0, 0.0, 0.5, 1.0));
+		UNIV::Rotation r2(30, Math::Quaternion(0.0, 0.0, 1.0, 1.0));
+
+		EXPECT_TRUE(block.addRotationEntry(r0));
+		EXPECT_TRUE(block.addRotationEntry(r1));
+		EXPECT_TRUE(block.addRotationEntry(r2));
+
+		EXPECT_TRUE(uAnim.addAnimationBlock(block));
+	}
+
+	EXPECT_EQ(uAnim.animationBlockCount(), 2);
+	EXPECT_EQ(uAnim.frameCount(), 31);
+}
