@@ -225,15 +225,10 @@ namespace CALUMI{ namespace SFBGS{
             _ConvertScalarSq(anim.animationBlocks().at(i).scalarSequence(), toAdd);
             _ConvertPrioritySq(anim.animationBlocks().at(i).prioritySequence(), toAdd);
 
-#ifdef DEBUG_BUILD
-            if (SCOMPARE(rig.stringArray().c_str(anim.animationBlocks().at(i).boneIndex()), anim.animationBlocks().at(i).boneName()) != 0)
-            {
-                std::println("UNIV Bone Entry Name Does Not Match SFBGS RIG Bone Index Name");
-                std::cin.get();
-            }
-#endif // DEBUG_BUILD
+            int boneIdx = rig.findBoneIndex(anim.animationBlocks().at(i).boneName());
 
-            output.getAnimationBlocks().at(anim.animationBlocks().at(i).boneIndex()) = toAdd; //Fill block for the correct index
+            if(boneIdx >= 0 && boneIdx < output.getAnimationBlocks().size())
+                output.getAnimationBlocks().at(boneIdx) = toAdd; //Fill block for the correct index
         }
 
         if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(anim.getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
@@ -269,7 +264,7 @@ namespace CALUMI{ namespace SFBGS{
             if (anim.getAnimationBlocks().at(i).getRotationCount() || anim.getAnimationBlocks().at(i).getTranslationCount() || anim.getAnimationBlocks().at(i).getScalarCount()|| anim.getAnimationBlocks().at(i).getPriorityCount())
             {
                 CALUMI::UNIV::AnimationBlock toAdd;
-                toAdd.setBoneIndex(i);
+                //toAdd.setBoneIndex(i);
                 toAdd.setBoneName(rig.stringArray().c_str(i));
                 
                 toAdd.scalarSequence() = _ConvertScalarSq(anim.getAnimationBlocks().at(i));
@@ -297,7 +292,7 @@ namespace CALUMI{ namespace SFBGS{
                     uint32_t hash = hashSet.at(i);
                     CALUMI::UNIV::AnimationBlock toAdd;
                     
-                    toAdd.setBoneIndex(i);
+                    //toAdd.setBoneIndex(i);
 
                     std::string tempName = Utilities::HashRegistry::getInstance().isKnownHash(hash) ? Utilities::HashRegistry::getInstance().getKnownHashString(hash) : "Unknown_Hash_" + std::to_string(i);
                     toAdd.setBoneName(tempName.c_str());

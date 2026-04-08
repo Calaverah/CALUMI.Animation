@@ -5,6 +5,7 @@
 #include "internalplatform.h"
 #include "internalvectordef.h"
 #include <io/FileValidation.h>
+#include <limits>
 #include <AnimStarfield>
 #include <print>
 #include <AnimFile>
@@ -910,6 +911,17 @@ namespace CALUMI {namespace SFBGS {
 	{
 		SkeletonRig rigBuffer(inputRig);
 		*this = rigBuffer;
+	}
+
+	int SkeletonRig::findBoneIndex(const char* boneName) const
+	{
+		for (uint64_t i = 0; i < pImpl->_stringArray.size() && i < std::numeric_limits<int>().max(); i++)
+		{
+			if (SCOMPARE(pImpl->_stringArray.c_str(i), boneName) == 0)
+				return static_cast<int>(i);
+		}
+
+		return -1;
 	}
 
     CALUMI::UNIV::SkeletonRig SkeletonRig::convertToUniversalRig() const

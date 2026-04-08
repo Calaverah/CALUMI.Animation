@@ -325,7 +325,6 @@ GTEST(ScratchAnimation)
 	{
 		UNIV::AnimationBlock block;
 		block.setBoneName("Table");
-		block.setBoneIndex(5);
 		EXPECT_STREQ(block.boneName(), "Table");
 
 		UNIV::Rotation r0(0, Math::Quaternion(0.0, 0.0, 0.0, 1.0));

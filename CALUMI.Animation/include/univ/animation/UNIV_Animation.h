@@ -21,8 +21,8 @@ namespace CALUMI {namespace UNIV {
 		//This will get the final frame entry, not the total number of frames in the sequence
 		unsigned int GetLastFrameInBlock();
 
-        int boneIndex() const;
-        void setBoneIndex(int idx);
+        //int boneIndex() const;
+        //void setBoneIndex(int idx);
 
         const char* boneName() const;
         void setBoneName(const char* name);
@@ -59,8 +59,8 @@ namespace CALUMI {namespace UNIV {
 
         Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
 
-		bool operator<(const AnimationBlock& other) const;
-		bool operator>(const AnimationBlock& other) const;
+		//bool operator<(const AnimationBlock& other) const;
+		//bool operator>(const AnimationBlock& other) const;
 	private:
 		struct Impl;
 		Impl* pImpl;
@@ -88,6 +88,7 @@ namespace CALUMI {namespace UNIV {
         bool addAnimationBlock(AnimationBlock& blockToAdd, bool overwrite = true);
         void clearAnimationBlocks();
         uint64_t animationBlockCount() const;
+		int findAnimationBlock(const char* boneName) const;
 
 		AnimationPackageManager& getPackageManager() const;
 
@@ -107,14 +108,14 @@ namespace CALUMI {namespace UNIV {
 	//For programs like Blender, this should be sufficient as a user can create and push data into the universal format and call for a write to file function with the preferred file type
 	extern  "C" {
 		CALUMIANIMATION_API Animation* CreateAnimationC(const char* animationTitle, unsigned int rigBoneCount);
-		CALUMIANIMATION_API AnimationBlock* GetAnimationBlockC(Animation* source, int index, Utilities::StringContainer* errorMessage);
+		CALUMIANIMATION_API AnimationBlock* GetAnimationBlockC(Animation* source, const char* boneName , Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API uint64_t GetAnimationBlockCountC(Animation* source);
 		CALUMIANIMATION_API const char* GetAnimationTitleC(Animation* source);
 		CALUMIANIMATION_API uint64_t GetFrameCountC(Animation* source);
 		CALUMIANIMATION_API bool DeleteAnimationC(Animation* ptr);
 		CALUMIANIMATION_API bool AddAnimBlockToAnimationC(Animation* anim, AnimationBlock* blockToAdd, bool overwrite, Utilities::StringContainer* errorMessage);
 
-		CALUMIANIMATION_API AnimationBlock* CreateAnimBlockC(const char* boneName, int boneIndex, Utilities::StringContainer* errorMessage);
+		CALUMIANIMATION_API AnimationBlock* CreateAnimBlockC(const char* boneName, Utilities::StringContainer* errorMessage);
 		CALUMIANIMATION_API bool DeleteAnimationBlockC(AnimationBlock* ptr);
 		CALUMIANIMATION_API const char* GetAnimBlockBoneNameC(AnimationBlock* source);
 		CALUMIANIMATION_API int GetAnimBlockBoneIndexC(AnimationBlock* source);

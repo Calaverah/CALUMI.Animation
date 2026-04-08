@@ -145,6 +145,8 @@ namespace CALUMI {namespace SFBGS {
         CALUMI::UNIV::SkeletonRig convertToUniversalRig() const;
         void convertFromUniversalRig(const CALUMI::UNIV::SkeletonRig& inputRig);
 
+		int findBoneIndex(const char* boneName) const;
+
 #ifdef DEBUG_BUILD
     //DEBUG FUNCTIONS
     public:

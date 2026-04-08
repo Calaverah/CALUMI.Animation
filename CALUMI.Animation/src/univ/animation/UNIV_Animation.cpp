@@ -60,9 +60,10 @@ namespace CALUMI {
 		{
 			for (unsigned int i = 0; i < pImpl->_animationBlocks.size(); i ++)
 			{
-				if (pImpl->_animationBlocks.at(i).boneIndex() == blockToAdd.boneIndex())
+				if (SCOMPARE(pImpl->_animationBlocks.at(i).boneName(), blockToAdd.boneName()) == 0)
 				{
-					if (!overwrite) return false;
+					if (!overwrite) 
+						return false;
 					else 
 					{
 						pImpl->_animationBlocks.at(i) = blockToAdd;
@@ -79,6 +80,16 @@ namespace CALUMI {
 		//inline CALUMIANIMATION_API std::vector<UNIV::AnimationBlock> GetAnimationBlockVector() const { return _animationBlocks; }
         void Animation::clearAnimationBlocks() { pImpl->_animationBlocks.clear(); }
         uint64_t Animation::animationBlockCount() const { return pImpl->_animationBlocks.size(); }
+		int Animation::findAnimationBlock(const char* boneName) const
+		{
+			for (size_t i = 0; i < pImpl->_animationBlocks.size(); i++)
+			{
+				if (SCOMPARE(pImpl->_animationBlocks.at(i).boneName(), boneName) == 0)
+					return i;
+			}
+
+			return -1;
+		}
 		AnimationPackageManager& Animation::getPackageManager() const { return pImpl->_packageManager; }
 
         unsigned int UNIV::Animation::frameCount()
@@ -127,7 +138,6 @@ namespace CALUMI {
 		{
 			///@privatesection
 			///@{
-			int boneIndex = -2;
 			Utilities::StringContainer boneName = "UNNAMED";
 			RotationSequence rotationSequence;
 			TranslationSequence translationSequence;
@@ -145,7 +155,6 @@ namespace CALUMI {
 			//skip reassignment functions
 			if (pImpl == other.pImpl) return *this;
 
-			pImpl->boneIndex = other.pImpl->boneIndex;
 			pImpl->boneName = other.pImpl->boneName;
 			pImpl->rotationSequence = other.pImpl->rotationSequence;
 			pImpl->translationSequence = other.pImpl->translationSequence;
@@ -184,16 +193,6 @@ namespace CALUMI {
 			}
 
 			return output;
-		}
-
-		int AnimationBlock::boneIndex() const
-		{
-			return pImpl->boneIndex;
-		}
-
-        void AnimationBlock::setBoneIndex(int idx)
-		{
-			pImpl->boneIndex = idx;
 		}
 
         const char* AnimationBlock::boneName() const
@@ -604,7 +603,7 @@ namespace CALUMI {
         Utilities::StringContainer AnimationBlock::toJSON(const uint64_t indents) const {
 			Utilities::StringContainer output = Utilities::Indent(indents).c_str();
 			output += "{\n";
-			output += std::format("{0}\"boneName\":\"{1}\",\n{0}\"boneIndex\":{2},\n", Utilities::Indent(indents + 1).c_str(), pImpl->boneName.c_str(), pImpl->boneIndex).c_str();
+			//output += std::format("{0}\"boneName\":\"{1}\",\n{0}\"boneIndex\":{2},\n", Utilities::Indent(indents + 1).c_str(), pImpl->boneName.c_str(), pImpl->boneIndex).c_str();
             // output += std::format("{0}\"rotationSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->rotationSequence, indents + 1).c_str()).c_str();
             // output += std::format("{0}\"translationSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->translationSequence, indents + 1).c_str()).c_str();
             // output += std::format("{0}\"scalarSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->scalarSequence, indents + 1).c_str()).c_str();
@@ -613,14 +612,14 @@ namespace CALUMI {
 			return output;
 		}
 
-		bool AnimationBlock::operator<(const AnimationBlock& other) const
-		{
-			return pImpl->boneIndex < other.pImpl->boneIndex;
-		}
-		bool AnimationBlock::operator>(const AnimationBlock& other) const
-		{
-			return pImpl->boneIndex > other.pImpl->boneIndex;
-		}
+		//bool AnimationBlock::operator<(const AnimationBlock& other) const
+		//{
+		//	return pImpl->boneIndex < other.pImpl->boneIndex;
+		//}
+		//bool AnimationBlock::operator>(const AnimationBlock& other) const
+		//{
+		//	return pImpl->boneIndex > other.pImpl->boneIndex;
+		//}
 #pragma endregion
 
 		VECTORDEF(AnimationBlockVector, AnimationBlock)
@@ -633,11 +632,13 @@ namespace CALUMI {
 			Animation* outputAnimation = new Animation(animationTitle, rigBoneCount);
 			return outputAnimation;
 		}
-		AnimationBlock* GetAnimationBlockC(Animation* source, int index, Utilities::StringContainer* errorMessage)
+		AnimationBlock* GetAnimationBlockC(Animation* source, const char* boneName, Utilities::StringContainer* errorMessage)
 		{
 			Utilities::StringContainer tempErrorMessage;
 			Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
 			errorMessageHolder->clear();
+
+			int index = source->findAnimationBlock(boneName);
 
             if (source->animationBlocks().size() <= index || index < 0)
 			{
@@ -687,7 +688,7 @@ namespace CALUMI {
 			*errorMessageHolder += "[CALUMI.Animation API] Animation Block Copied Into Animation Successfully. Original Block Deleted!";
 			return true;
 		}
-		AnimationBlock* CreateAnimBlockC(const char* boneName, int boneIndex, Utilities::StringContainer* errorMessage)
+		AnimationBlock* CreateAnimBlockC(const char* boneName, Utilities::StringContainer* errorMessage)
 		{
 			Utilities::StringContainer tempErrorMessage;
 			Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
@@ -698,13 +699,7 @@ namespace CALUMI {
 				*errorMessageHolder += "[CALUMI.Animation API] Animation Block Must Have Bone Name!";
 				return nullptr;
 			}
-			if (boneIndex < 0)
-			{
-				*errorMessageHolder += "[CALUMI.Animation API] Animation Block Must Have Valid Bone Index! (ix > -1)";
-				return nullptr;
-			}
 			AnimationBlock* outputAnimationBlock = new AnimationBlock;
-            outputAnimationBlock->setBoneIndex(boneIndex);
             outputAnimationBlock->setBoneName(boneName);
 			*errorMessageHolder += "[CALUMI.Animation API] Animation Block Created!";
 			return outputAnimationBlock;
@@ -722,10 +717,6 @@ namespace CALUMI {
 		const char* GetAnimBlockBoneNameC(AnimationBlock* source)
 		{
             return source->boneName();
-		}
-		int GetAnimBlockBoneIndexC(AnimationBlock* source)
-		{
-			return source->boneIndex();
 		}
 		unsigned int GetLastFrameInAnimBlockC(AnimationBlock* source)
 		{
