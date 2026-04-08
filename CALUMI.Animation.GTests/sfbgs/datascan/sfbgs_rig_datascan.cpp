@@ -1,4 +1,5 @@
 #include "sfbgs_common.h"
+#include <cstdint>
 
 
 #define GTEST(x) TEST_F(StarfieldRigDataScan, x)
@@ -21,7 +22,9 @@ union ErrorStatus {
 		bool wrongBoneCountAnimated : 1 = false;
 		bool boneCountLessThanAnimated : 1 = false;
 		bool nonEmptyPadding03 : 1 = false;
-
+		bool stringCountMisMatch : 1 = false;
+		bool stringArrayOutOfOrder : 1 = false;
+		bool stringArrayMisalignedToBones : 1 = false;
 
 	} flags;
 
@@ -76,7 +79,7 @@ protected:
 
 GTEST(RigScan)
 {
-	GTEST_SKIP() << "SKIP RIG SCAN";
+	//GTEST_SKIP() << "SKIP RIG SCAN";
 
 	///The purpose of this test is to scan and verify assumptions based on local file data
 	uint64_t filesFound = 0;
@@ -128,7 +131,25 @@ GTEST(RigScan)
 		if (pSet == SFBGS::PrecisionSet::ShipPrecision())
 			status.flags.unknownPrecisionSet = false;
 
+		status.flags.wrongBoneCount = rig.boneCount() != rig.boneEntries().size();
+		
+		//Strings
+		//IF TRUE this section gives us the ability to search a bone index by name via the string array instead of going back and forth with offsets
+		{
+			status.flags.stringCountMisMatch = rig.boneEntries().size() != rig.stringArray().size();
 
+			uint64_t current = 0;
+			for (uint64_t bIdx = 0; bIdx < rig.boneEntries().size() && bIdx < rig.stringArray().size(); bIdx++)
+			{
+				if(rig.boneEntries().at(bIdx).getNameOffset() < current)
+					status.flags.stringArrayOutOfOrder = true;
+				
+				if (rig.boneEntries().at(bIdx).getNameOffset() == rig.stringArray().getOffset(bIdx))
+					status.flags.stringArrayMisalignedToBones = true;
+
+				current = rig.boneEntries().at(bIdx).getNameOffset();
+			}
+		}
 
 		//End Of File Process Results
 		if (status.raw == 0) continue;
@@ -160,6 +181,15 @@ GTEST(RigScan)
 
 		if (status.flags.unknownPrecisionSet)
 			std::cout << "UNKNOWN PRECISION SET: (high) " << rig.highPrecision() << " and (low) " << rig.lowPrecision() << std::endl;
+
+		if (status.flags.stringCountMisMatch)
+			std::cout << "String Count Mismatch! String Array Size of " << rig.stringArray().size() << " != Bone Entry Size of " << rig.boneEntries().size() << std::endl;
+
+		if (status.flags.stringArrayOutOfOrder)
+			std::cout << "String Offsets OUT OF ORDER from Bone Entries!" << std::endl;
+
+		if (status.flags.stringArrayMisalignedToBones)
+			std::cout << "String Array NOT in the same order as Bone Entries!" << std::endl;
 
 	}
 
