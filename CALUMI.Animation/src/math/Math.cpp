@@ -524,8 +524,18 @@ namespace CALUMI
 			float z = 0.0;
 			float w = 1.0;
 			Impl() = default;
-			Impl(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
-			Impl(double x, double y, double z, double w) : x(static_cast<float>(x)), y(static_cast<float>(y)), z(static_cast<float>(z)), w(static_cast<float>(w)) {}
+			Impl(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) 
+			{
+				if (this->x == -0.0f) 
+					this->x = 0.0f;
+				if (this->y == -0.0f)
+					this->y = 0.0f;
+				if (this->z == -0.0f)
+					this->z = 0.0f;
+				if (this->w == -0.0f)
+					this->w = 0.0f;
+			}
+			Impl(double x, double y, double z, double w) : Impl(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), static_cast<float>(w)) {}
 		};
 
 		Quaternion::Quaternion()

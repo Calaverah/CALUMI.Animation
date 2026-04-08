@@ -24,7 +24,12 @@ add_executable(run_tests test_main.cpp
   math/vector3.cpp
   datacompression/sequence_compression.cpp 
   mockdata/mock_sfbgs.cpp
-  univ/univ_entries.cpp)
+  univ/univ_entries.cpp 
+  sfbgs/datascan/sfbgs_animation_datascan.cpp 
+  Common.h
+  sfbgs/datascan/sfbgs_rig_datascan.cpp 
+  sfbgs/datascan/sfbgs_common.h
+)
 
 target_compile_definitions(run_tests PRIVATE DEBUG_BUILD)
 
@@ -53,6 +58,12 @@ add_custom_command(TARGET run_tests POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
     "${PROJECT_SOURCE_DIR}/mockdata/assets"
     "$<TARGET_FILE_DIR:run_tests>/assets"
+)
+
+add_custom_command(TARGET run_tests POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+    "${PROJECT_SOURCE_DIR}/paths"
+    "$<TARGET_FILE_DIR:run_tests>/paths"
 )
 
 target_link_libraries(run_tests PRIVATE ${LIB_PATH})
