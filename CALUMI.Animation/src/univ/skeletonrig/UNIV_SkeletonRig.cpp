@@ -14,7 +14,6 @@
 #include <limits>
 #include <unordered_map>
 #include <iterator>
-#include <ostream>
 
 
 namespace CALUMI::UNIV{
