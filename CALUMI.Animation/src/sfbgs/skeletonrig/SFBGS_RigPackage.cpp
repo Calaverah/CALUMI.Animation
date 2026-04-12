@@ -1,4 +1,4 @@
-//Copyright © 2025-2026 Calaverah. All rights reserved.
+//Copyright Â© 2025-2026 Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <AnimStarfield>
 #include "internalplatform.h"
-#include <cmath>
 #include <ranges>
 #include <unordered_map>
 
@@ -130,7 +129,7 @@ namespace CALUMI::SFBGS
 
 	bool SFBGS_RigPackage::CreateNewSFBGSRigPackage(const UNIV::SkeletonRig& rig, const bool overwrite)
 	{
-		auto& mgr = rig.getPackageManager();
+		const auto& mgr = rig.getPackageManager();
 
 		auto* pkg = new SFBGS_RigPackage();
 

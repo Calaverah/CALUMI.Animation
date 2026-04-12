@@ -84,8 +84,8 @@ namespace CALUMI::SFBGS
 		/// Returns the converted UNIV Bone Type
 		/// </summary>
 		/// <returns></returns>
-		UNIV::BoneType getBoneTypeAsUNIVEnum() const;
-		const char* getBoneTypeAsString() const;
+		[[nodiscard]] UNIV::BoneType getBoneTypeAsUNIVEnum() const;
+		[[nodiscard]] const char* getBoneTypeAsString() const;
 
 	private:
 		struct Impl;
@@ -150,7 +150,7 @@ namespace CALUMI::SFBGS
 		//DEBUG FUNCTIONS
 	public:
 		[[nodiscard]] Utilities::CharVector endOfHeader() const;
-		uint8_t checkAssumedHeaderEntries() const;
+		[[nodiscard]] uint8_t checkAssumedHeaderEntries() const;
 #endif
 
 	private:
