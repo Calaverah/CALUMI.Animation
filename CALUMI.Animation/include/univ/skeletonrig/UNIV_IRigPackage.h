@@ -32,7 +32,7 @@ namespace CALUMI {
 			 * @param idx Index of the interaction
 			 * @return Whether the operation was successful
 			 */
-			virtual bool handleBoneRename(const char* oldBone, const char* newName, uint64_t idx) = 0;
+			virtual bool handleBoneRename(const char* oldBone, const char* newName) = 0;
 
 		private:
 			friend struct RigPackageManager;
@@ -64,10 +64,9 @@ namespace CALUMI {
 			 * @brief Bone Rename Event that's passed to the packages being managed
 			 * @param oldBone Old name of the bone
 			 * @param newName New name of the bone
-			 * @param idx Index of the bone
 			 * @return Whether the operation was a success
 			 */
-            bool onBoneRename(const char* oldBone, const char* newName, uint64_t idx);
+            bool onBoneRename(const char* oldBone, const char* newName);
 			friend struct SkeletonRig;
 		};
 

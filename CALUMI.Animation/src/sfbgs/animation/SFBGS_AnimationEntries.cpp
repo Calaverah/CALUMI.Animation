@@ -1,4 +1,4 @@
-//Copyright © 2025-2026 Calaverah. All rights reserved.
+//Copyright ï¿½ 2025-2026 Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
@@ -167,7 +167,7 @@ namespace CALUMI { namespace SFBGS{
 	{
 		pImpl->_missing = input;	
 	}
-	const void* const RotationPrefix::getRawData() const
+	const void* const RotationPrefix::data() const
 	{
 		return pImpl;
 	}
@@ -245,7 +245,7 @@ namespace CALUMI { namespace SFBGS{
 		pImpl->_third = input;
 	}
 
-	const void* const RotationEntry::getRawData() const
+	const void* const RotationEntry::data() const
 	{
 		return pImpl;
 	}
@@ -270,10 +270,10 @@ namespace CALUMI { namespace SFBGS{
 	{
 		if (pImpl) delete pImpl;
 	}
-	int16_t TranslationPrefix::getX() const { return pImpl->_x; }
-	int16_t TranslationPrefix::getY() const { return pImpl->_y; }
-	int16_t TranslationPrefix::getZ() const { return pImpl->_z; }
-	uint16_t TranslationPrefix::getCount() const { return pImpl->_count; }
+	int16_t TranslationPrefix::x() const { return pImpl->_x; }
+	int16_t TranslationPrefix::y() const { return pImpl->_y; }
+	int16_t TranslationPrefix::z() const { return pImpl->_z; }
+	uint16_t TranslationPrefix::count() const { return pImpl->_count; }
 	void TranslationPrefix::setX(int16_t x) { pImpl->_x = x; }
 	void TranslationPrefix::setY(int16_t y) { pImpl->_y = y; }
 	void TranslationPrefix::setZ(int16_t z) { pImpl->_z = z; }
@@ -308,7 +308,7 @@ namespace CALUMI { namespace SFBGS{
 	{
 		return !(*this == other);
 	}
-	const void* const TranslationPrefix::getRawData() const
+	const void* const TranslationPrefix::data() const
 	{
 		return pImpl;
 	}
@@ -391,14 +391,14 @@ namespace CALUMI { namespace SFBGS{
 		pImpl->_x = input.pImpl->_x; pImpl->_y = input.pImpl->_y; pImpl->_z = input.pImpl->_z;
 		return *this;
 	}
-	int8_t TranslationEntry::getX() const { return pImpl->_x; }
-	int8_t TranslationEntry::getY() const { return pImpl->_y; }
-	int8_t TranslationEntry::getZ() const { return pImpl->_z; }
+	int8_t TranslationEntry::x() const { return pImpl->_x; }
+	int8_t TranslationEntry::y() const { return pImpl->_y; }
+	int8_t TranslationEntry::z() const { return pImpl->_z; }
 	void TranslationEntry::setX(int8_t x) { pImpl->_x = x; }
 	void TranslationEntry::setY(int8_t y) { pImpl->_y = y; }
 	void TranslationEntry::setZ(int8_t z) { pImpl->_z = z; }
 
-	const void* const TranslationEntry::getRawData() const
+	const void* const TranslationEntry::data() const
 	{
 		return pImpl;
 	}
@@ -417,21 +417,21 @@ namespace CALUMI { namespace SFBGS{
 		CALUMI::Math::Quaternion tempInput = input;
 
         prefix.setMissing(3);
-        if (std::abs(input.getX()) > CLA_SQRT1_2) prefix.setMissing(0);
-        if (std::abs(input.getY()) > CLA_SQRT1_2) prefix.setMissing(1);
-        if (std::abs(input.getZ()) > CLA_SQRT1_2) prefix.setMissing(2);
+        if (std::abs(input.x()) > CLA_SQRT1_2) prefix.setMissing(0);
+        if (std::abs(input.y()) > CLA_SQRT1_2) prefix.setMissing(1);
+        if (std::abs(input.z()) > CLA_SQRT1_2) prefix.setMissing(2);
 
 		//We must flip the quaternion values such that the missing value is positive. When derived, the missing will always be positive. So long as all values flip the quaternion is equal.
-        if (prefix.missing() == 0 && input.getX() < 0) tempInput = -input;
-        if (prefix.missing() == 1 && input.getY() < 0) tempInput = -input;
-        if (prefix.missing() == 2 && input.getZ() < 0) tempInput = -input;
-        if (prefix.missing() == 3 && input.getW() < 0) tempInput = -input;
+        if (prefix.missing() == 0 && input.x() < 0) tempInput = -input;
+        if (prefix.missing() == 1 && input.y() < 0) tempInput = -input;
+        if (prefix.missing() == 2 && input.z() < 0) tempInput = -input;
+        if (prefix.missing() == 3 && input.w() < 0) tempInput = -input;
 
 		std::vector<float> fResults; fResults.reserve(3);
-        if (prefix.missing() != 0) fResults.push_back(tempInput.getX());
-        if (prefix.missing() != 1) fResults.push_back(tempInput.getY());
-        if (prefix.missing() != 2) fResults.push_back(tempInput.getZ());
-        if (prefix.missing() != 3) fResults.push_back(tempInput.getW());
+        if (prefix.missing() != 0) fResults.push_back(tempInput.x());
+        if (prefix.missing() != 1) fResults.push_back(tempInput.y());
+        if (prefix.missing() != 2) fResults.push_back(tempInput.z());
+        if (prefix.missing() != 3) fResults.push_back(tempInput.w());
 
 		auto first = GetSFBGSRotationComponents(fResults.at(0));
 		auto second = GetSFBGSRotationComponents(fResults.at(1));
@@ -492,9 +492,9 @@ namespace CALUMI { namespace SFBGS{
 
 	CompressedTranslation GetSFBGSTranslationPair(const CALUMI::Math::Vector3D& input, const float& highPrecision, const float& lowPrecision)
 	{
-		auto x = GetSFBGSTranslationComponents(input.getX(), highPrecision, lowPrecision);
-		auto y = GetSFBGSTranslationComponents(input.getY(), highPrecision, lowPrecision);
-		auto z = GetSFBGSTranslationComponents(input.getZ(), highPrecision, lowPrecision);
+		auto x = GetSFBGSTranslationComponents(input.x(), highPrecision, lowPrecision);
+		auto y = GetSFBGSTranslationComponents(input.y(), highPrecision, lowPrecision);
+		auto z = GetSFBGSTranslationComponents(input.z(), highPrecision, lowPrecision);
 
 		TranslationPrefix prefix(x.first, y.first, z.first, static_cast < uint16_t>(1));
 		TranslationEntry suffix(x.second, y.second, z.second);
@@ -505,7 +505,7 @@ namespace CALUMI { namespace SFBGS{
 	CALUMI::Math::Vector3D GetUniversalTranslation(const CALUMI::SFBGS::TranslationPrefix& prefix, const CALUMI::SFBGS::TranslationEntry& suffix, const float& highPrecision, const float& lowPrecision)
 	{
 		//std::println("PRE AND SUFF {} {} {} & {} {} {}", prefix._x, prefix._y, prefix._z, suffix._x, suffix._y, suffix._z);
-		CALUMI::Math::Vector3D output((prefix.getX() * lowPrecision + suffix.getX() * highPrecision), (prefix.getY() * lowPrecision + suffix.getY() * highPrecision), (prefix.getZ() * lowPrecision + suffix.getZ() * highPrecision));
+		CALUMI::Math::Vector3D output((prefix.x() * lowPrecision + suffix.x() * highPrecision), (prefix.y() * lowPrecision + suffix.y() * highPrecision), (prefix.z() * lowPrecision + suffix.z() * highPrecision));
 		//std::println("Output {} {} {}", output._x, output._y, output._z);
 		return output;
 	}
@@ -517,14 +517,14 @@ namespace CALUMI { namespace SFBGS{
 		for (int i = 0; i<input.size();i++)
 		{
 			//totalSize++;
-			totalSize += input.at(i).getCount();
+			totalSize += input.at(i).count();
 		}
 		//std::println("totalSize {}", totalSize);
 		output.reserve(totalSize);
 
 		for (int i = 0; i < input.size(); i++)
 		{
-			for (uint32_t j = 0; j < input.at(i).getCount(); j++) //Translations use classical counters
+			for (uint32_t j = 0; j < input.at(i).count(); j++) //Translations use classical counters
 			{
 				CALUMI::SFBGS::TranslationPrefix newPrefix = input.at(i);
 				newPrefix.setCount(1);
@@ -543,9 +543,9 @@ namespace CALUMI { namespace SFBGS{
 		CALUMI::SFBGS::TranslationPrefix referencePrefix = input.at(0);
 		for (uint16_t i = 1; i < input.size(); i++)
 		{
-			if (referencePrefix == input.at(i) && referencePrefix.getCount() <0xFFFF)
+			if (referencePrefix == input.at(i) && referencePrefix.count() <0xFFFF)
 			{
-				referencePrefix.setCount(referencePrefix.getCount()+1);
+				referencePrefix.setCount(referencePrefix.count()+1);
 			}
 			else
 			{

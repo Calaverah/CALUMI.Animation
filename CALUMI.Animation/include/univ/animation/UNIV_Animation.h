@@ -8,59 +8,56 @@
 #include "utilities/CALUMI_Utilities.h"
 
 
-namespace CALUMI {namespace UNIV {
+namespace CALUMI::UNIV
+{
 
 	struct CALUMIANIMATION_API AnimationBlock
 	{
+		//TODO: UNIV Documentation
 		AnimationBlock();
 		~AnimationBlock();
-		
+
 		AnimationBlock(const AnimationBlock& input);
-		AnimationBlock& operator=(const AnimationBlock& input);
+		AnimationBlock& operator=(const AnimationBlock& other);
 
 		//This will get the final frame entry, not the total number of frames in the sequence
-		unsigned int GetLastFrameInBlock();
+		unsigned int GetLastFrameInBlock() const;
 
-        //int boneIndex() const;
-        //void setBoneIndex(int idx);
+		const char* boneName() const;
+		void setBoneName(const char* name) const;
 
-        const char* boneName() const;
-        void setBoneName(const char* name);
+		RotationSequence& rotationSequence() const;
+		bool addRotationEntry(const Rotation& input, bool overwrite = true) const;
+		bool removeRotationEntry(unsigned int frame) const;
+		void clearRotationEntries() const;
+		uint64_t rotationEntryCount() const;
 
-		UNIV::RotationSequence& rotationSequence() const;
-        bool addRotationEntry(CALUMI::UNIV::Rotation& input, bool overwrite = true);
-        bool removeRotationEntry(unsigned int frame);
-        void clearRotationEntries();
-        uint64_t rotationEntryCount() const;
+		void executeRDPReduction_Rotation(float tolerance = 0.0000863f) const;
 
-        void executeRDPReduction_Rotation(float tolerance = 0.0000863f);
+		TranslationSequence& translationSequence() const;
+		bool addTranslationEntry(const Translation& input, bool overwrite = true) const;
+		bool removeTranslationEntry(unsigned int frame) const;
+		void clearTranslationEntries() const;
+		uint64_t translationEntryCount() const;
 
-		UNIV::TranslationSequence& translationSequence() const;
-        bool addTranslationEntry(CALUMI::UNIV::Translation& input, bool overwrite = true);
-        bool removeTranslationEntry(unsigned int frame);
-        void clearTranslationEntries();
-        uint64_t translationEntryCount() const;
-		
-        void executeRDPReduction_Translation(float tolerance = 1.0f / 4000.0f);
+		void executeRDPReduction_Translation(float tolerance = 1.0f / 4000.0f) const;
 
 		ScalarSequence& scalarSequence() const;
-        bool addScalarEntry(CALUMI::UNIV::Scalar& input, bool overwrite = true);
-        bool removeScalarEntry(unsigned int frame);
-        void clearScalarEntries();
-        uint64_t scalarEntryCount() const;
+		bool addScalarEntry(const Scalar& input, bool overwrite = true) const;
+		bool removeScalarEntry(unsigned int frame) const;
+		void clearScalarEntries() const;
+		uint64_t scalarEntryCount() const;
 
-        void executeRDPReduction_Scalar(float tolerance = 1.0f / 5000.0f);
+		void executeRDPReduction_Scalar(float tolerance = 1.0f / 5000.0f) const;
 
-		UNIV::PrioritySequence& prioritySequence();
-        bool addPriorityEntry(CALUMI::UNIV::Priority& input, bool overwrite = true);
-        bool removePriorityEntry(unsigned int frame);
-        void clearPriorityEntries();
-        uint64_t priorityEntryCount() const;
+		PrioritySequence& prioritySequence() const;
+		bool addPriorityEntry(const Priority& input, bool overwrite = true) const;
+		bool removePriorityEntry(unsigned int frame) const;
+		void clearPriorityEntries() const;
+		uint64_t priorityEntryCount() const;
 
-        Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
+		Utilities::StringContainer toJSON(uint64_t indents = 0) const;
 
-		//bool operator<(const AnimationBlock& other) const;
-		//bool operator>(const AnimationBlock& other) const;
 	private:
 		struct Impl;
 		Impl* pImpl;
@@ -71,31 +68,29 @@ namespace CALUMI {namespace UNIV {
 	class CALUMIANIMATION_API Animation
 	{
 	public:
-		//TODO: Remove index logic as name will now be sufficient
-
 		Animation(const Utilities::StringContainer& title, unsigned int initialBlockCount);
 		Animation();
 		~Animation();
 
 		Animation(const Animation& input);
 		Animation& operator=(const Animation& input);
-		
-        const char* animationTitle() const;
-        void setAnimationTitle(const char* title);
-        void setAnimationTitle(const Utilities::StringContainer& title);
 
-        UNIV::AnimationBlockVector& animationBlocks() const;
-        bool addAnimationBlock(AnimationBlock& blockToAdd, bool overwrite = true);
-        void clearAnimationBlocks();
-        uint64_t animationBlockCount() const;
+		const char* animationTitle() const;
+		void setAnimationTitle(const char* title) const;
+		void setAnimationTitle(const Utilities::StringContainer& title) const;
+
+		AnimationBlockVector& animationBlocks() const;
+		bool addAnimationBlock(const AnimationBlock& blockToAdd, bool overwrite = true) const;
+		void clearAnimationBlocks() const;
+		uint64_t animationBlockCount() const;
 		int findAnimationBlock(const char* boneName) const;
 
 		AnimationPackageManager& getPackageManager() const;
 
 		//This will get the final frame entry of all sequences, not the total number of frames in each sequence
-        unsigned int frameCount();
+		unsigned int frameCount() const;
 
-        Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
+		Utilities::StringContainer toJSON(uint64_t indents = 0) const;
 
 	private:
 		struct Impl;
@@ -107,47 +102,47 @@ namespace CALUMI {namespace UNIV {
 	//Ctype accessible, due to namespace being ignored in demangling, it is important to remember that only universal animation structs are exposed
 	//For programs like Blender, this should be sufficient as a user can create and push data into the universal format and call for a write to file function with the preferred file type
 	extern  "C" {
-		CALUMIANIMATION_API Animation* CreateAnimationC(const char* animationTitle, unsigned int rigBoneCount);
-		CALUMIANIMATION_API AnimationBlock* GetAnimationBlockC(Animation* source, const char* boneName , Utilities::StringContainer* errorMessage);
-		CALUMIANIMATION_API uint64_t GetAnimationBlockCountC(Animation* source);
-		CALUMIANIMATION_API const char* GetAnimationTitleC(Animation* source);
-		CALUMIANIMATION_API uint64_t GetFrameCountC(Animation* source);
-		CALUMIANIMATION_API bool DeleteAnimationC(Animation* ptr);
-		CALUMIANIMATION_API bool AddAnimBlockToAnimationC(Animation* anim, AnimationBlock* blockToAdd, bool overwrite, Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API Animation* CreateAnimationC(const char* animationTitle, unsigned int rigBoneCount);
+	CALUMIANIMATION_API AnimationBlock* GetAnimationBlockC(const Animation* source, const char* boneName , Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API uint64_t GetAnimationBlockCountC(const Animation* source);
+	CALUMIANIMATION_API const char* GetAnimationTitleC(const Animation* source);
+	CALUMIANIMATION_API uint64_t GetFrameCountC(const Animation* source);
+	CALUMIANIMATION_API bool DeleteAnimationC(const Animation* ptr);
+	CALUMIANIMATION_API bool AddAnimBlockToAnimationC(const Animation* anim, const AnimationBlock* blockToAdd, bool overwrite, Utilities::StringContainer* errorMessage);
 
-		CALUMIANIMATION_API AnimationBlock* CreateAnimBlockC(const char* boneName, Utilities::StringContainer* errorMessage);
-		CALUMIANIMATION_API bool DeleteAnimationBlockC(AnimationBlock* ptr);
-		CALUMIANIMATION_API const char* GetAnimBlockBoneNameC(AnimationBlock* source);
-		CALUMIANIMATION_API int GetAnimBlockBoneIndexC(AnimationBlock* source);
-		CALUMIANIMATION_API unsigned int GetLastFrameInAnimBlockC(AnimationBlock* source);
+	CALUMIANIMATION_API AnimationBlock* CreateAnimBlockC(const char* boneName, Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API bool DeleteAnimationBlockC(const AnimationBlock* ptr);
+	CALUMIANIMATION_API const char* GetAnimBlockBoneNameC(const AnimationBlock* source);
+	CALUMIANIMATION_API int GetAnimBlockBoneIndexC(AnimationBlock* source);
+	CALUMIANIMATION_API unsigned int GetLastFrameInAnimBlockC(const AnimationBlock* source);
 
-		CALUMIANIMATION_API bool AddRotationSqToAnimBlockC(AnimationBlock* block, Rotation* rotSq, unsigned int size, bool overwrite);
-		CALUMIANIMATION_API Rotation* GetRotationSqArrayC(AnimationBlock* source);
-		CALUMIANIMATION_API Rotation* GetRotationFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
-		CALUMIANIMATION_API uint64_t GetRotationSqSizeC(AnimationBlock* source);
+	CALUMIANIMATION_API bool AddRotationSqToAnimBlockC(const AnimationBlock* block, const Rotation* rotSq, unsigned int size, bool overwrite);
+	CALUMIANIMATION_API Rotation* GetRotationSqArrayC(const AnimationBlock* source);
+	CALUMIANIMATION_API Rotation* GetRotationFromSqC(const AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API uint64_t GetRotationSqSizeC(const AnimationBlock* source);
 
-		//A good default tolerance may be 0.0000863f
-		CALUMIANIMATION_API void ExecuteRDPReduction_RotationC(AnimationBlock* source, float tolerance);
-		
-		CALUMIANIMATION_API bool AddTranslationSqToAnimBlockC(AnimationBlock* block, Translation* trnSq, unsigned int size, bool overwrite);
-		CALUMIANIMATION_API Translation* GetTranslationSqArrayC(AnimationBlock* source);
-		CALUMIANIMATION_API Translation* GetTranslationFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
-		CALUMIANIMATION_API uint64_t GetTranslationSqSizeC(AnimationBlock* source);
-		
-		//A good default tolerance may be 1.0f/4000.0f
-		CALUMIANIMATION_API void ExecuteRDPReduction_TranslationC(AnimationBlock* source, float tolerance);
-		
-		CALUMIANIMATION_API bool AddScalarSqToAnimBlockC(AnimationBlock* block, Scalar* sclrSq, unsigned int size, bool overwrite);
-		CALUMIANIMATION_API Scalar* GetScalarSqArrayC(AnimationBlock* source);
-		CALUMIANIMATION_API Scalar* GetScalarFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
-		CALUMIANIMATION_API uint64_t GetScalarSqSizeC(AnimationBlock* source);
+	//A good default tolerance may be 0.0000863f
+	CALUMIANIMATION_API void ExecuteRDPReduction_RotationC(const AnimationBlock* source, float tolerance);
 
-		//A good default tolerance may be 1.0f/5000.0f
-		CALUMIANIMATION_API void ExecuteRDPReduction_ScalarC(AnimationBlock* source, float tolerance);
-		
-		CALUMIANIMATION_API bool AddPrioritySqToAnimBlockC(AnimationBlock* block, Priority* prtySq, unsigned int size, bool overwrite);
-		CALUMIANIMATION_API Priority* GetPrioritySqArrayC(AnimationBlock* source);
-		CALUMIANIMATION_API Priority* GetPriorityFromSqC(AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
-		CALUMIANIMATION_API uint64_t GetPrioritySqSizeC(AnimationBlock* source);
+	CALUMIANIMATION_API bool AddTranslationSqToAnimBlockC(const AnimationBlock* block, const Translation* trnSq, unsigned int size, bool overwrite);
+	CALUMIANIMATION_API Translation* GetTranslationSqArrayC(const AnimationBlock* source);
+	CALUMIANIMATION_API Translation* GetTranslationFromSqC(const AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API uint64_t GetTranslationSqSizeC(const AnimationBlock* source);
+
+	//A good default tolerance may be 1.0f/4000.0f
+	CALUMIANIMATION_API void ExecuteRDPReduction_TranslationC(const AnimationBlock* source, float tolerance);
+
+	CALUMIANIMATION_API bool AddScalarSqToAnimBlockC(const AnimationBlock* block, const Scalar* sclrSq, unsigned int size, bool overwrite);
+	CALUMIANIMATION_API Scalar* GetScalarSqArrayC(const AnimationBlock* source);
+	CALUMIANIMATION_API Scalar* GetScalarFromSqC(const AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API uint64_t GetScalarSqSizeC(const AnimationBlock* source);
+
+	//A good default tolerance may be 1.0f/5000.0f
+	CALUMIANIMATION_API void ExecuteRDPReduction_ScalarC(const AnimationBlock* source, float tolerance);
+
+	CALUMIANIMATION_API bool AddPrioritySqToAnimBlockC(const AnimationBlock* block, const Priority* prtySq, unsigned int size, bool overwrite);
+	CALUMIANIMATION_API Priority* GetPrioritySqArrayC(const AnimationBlock* source);
+	CALUMIANIMATION_API Priority* GetPriorityFromSqC(const AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API uint64_t GetPrioritySqSizeC(const AnimationBlock* source);
 	}
-}}
+}

@@ -7,20 +7,23 @@
 		{ \
 			std::vector<T> vector; \
 			constexpr Impl() noexcept = default; \
-			constexpr Impl(std::vector<T>&& source) noexcept { std::vector<T> temp(source); vector = temp; } \
-			constexpr Impl(const std::vector<T>& source) noexcept { std::vector<T> temp(source); vector = temp; } \
+			constexpr Impl(std::vector<T>&& source) noexcept { vector = source; } \
+			constexpr Impl(const std::vector<T>& source) noexcept { vector = source; } \
 		}; \
         CLASS::CLASS() noexcept : pImpl(new Impl()) {} \
         CLASS::~CLASS() \
 		{ \
 			if (pImpl) \
+				{ \
 				delete pImpl; \
+				pImpl = nullptr; \
+				} \
 		} \
         CLASS::CLASS(const CLASS& source) : pImpl(new Impl(source.pImpl->vector)) {} \
 		\
         CLASS::CLASS(CLASS&& source) noexcept : pImpl (new Impl(source.pImpl->vector)) {} \
 		\
-        CLASS& CLASS::operator=(const CLASS& other) { pImpl->vector = other.pImpl->vector; return *this; } \
+        CLASS& CLASS::operator=(const CLASS& other) { if(this != &other) { pImpl->vector = other.pImpl->vector; } return *this; } \
         CLASS& CLASS::operator=(CLASS&& other) noexcept { pImpl->vector = other.pImpl->vector; return *this; } \
 		void CLASS::resize(uint64_t n) { pImpl->vector.resize(n); } \
 		void CLASS::reserve(uint64_t n) { pImpl->vector.reserve(n); } \
@@ -39,28 +42,28 @@
 				pImpl->vector.erase((pImpl->vector.begin() + pos)); \
 			} \
 		} \
-		void CLASS::insert_r(uint64_t pos, T& item) \
+		void CLASS::insert_r(uint64_t pos, const T& item) \
 		{ \
 			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end()) \
 			{ \
 				pImpl->vector.insert((pImpl->vector.begin() + pos), item); \
 			} \
 		} \
-		void CLASS::insert(uint64_t pos, T item) \
+		void CLASS::insert(uint64_t pos, T&& item) \
 		{ \
 			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end()) \
 			{ \
 				pImpl->vector.insert((pImpl->vector.begin() + pos), item); \
 			} \
 		} \
-		void CLASS::insert(uint64_t pos, uint64_t count, T& item) \
+		void CLASS::insert(uint64_t pos, uint64_t count, const T& item) \
 		{ \
 			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end()) \
 			{ \
 				pImpl->vector.insert((pImpl->vector.begin() + pos), count, item); \
 			} \
 		} \
-		void CLASS::insert(uint64_t pos, uint64_t count, T item) \
+		void CLASS::insert(uint64_t pos, uint64_t count, T&& item) \
 		{ \
 			if ((pImpl->vector.begin() + pos) >= pImpl->vector.begin() && (pImpl->vector.begin() + pos) <= pImpl->vector.end()) \
 			{ \
@@ -96,14 +99,4 @@
 			return output;	\
 		}
 
-        /* void CLASS::sort(bool highToLow) \
-        { \
-                if (highToLow) \
-            { \
-                    std::sort(pImpl->vector.end(), pImpl->vector.begin()); \
-            } \
-                else \
-            { \
-                    std::sort(pImpl->vector.begin(), pImpl->vector.end()); \
-            } \
-        } \ */
+

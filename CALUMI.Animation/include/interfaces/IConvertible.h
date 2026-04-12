@@ -6,7 +6,7 @@
 #include "univ/UNIV_AnimationScene.h"
 
 
-namespace CALUMI {namespace UNIV
+namespace CALUMI::UNIV
 {
 
 	/**
@@ -15,16 +15,17 @@ namespace CALUMI {namespace UNIV
 	class CALUMIANIMATION_API IConvertibleScene
 	{
 	public:
+		virtual ~IConvertibleScene() = default;
 		/**
 		 * @brief For populating this class with data based on a UNIV Animation Scene
 		 * @param input Universal Animation Scene to pull information from
 		 * @return Whether the operation was a success
 		 */
-        virtual bool convertFromUniversalScene(AnimationScene& input) = 0;
+		virtual bool convertFromUniversalScene(AnimationScene& input) = 0;
 		/**
 		 * @brief For creating a new UNIV Animation Scene with this data from this class
 		 * @return Newly constructed Universal Animation Scene
 		 */
-        virtual AnimationScene convertToUniversalScene() = 0;
+		virtual AnimationScene convertToUniversalScene() = 0;
 	};
-}}
+}

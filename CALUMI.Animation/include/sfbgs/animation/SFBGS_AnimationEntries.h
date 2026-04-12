@@ -7,7 +7,7 @@
 #include "math/Math.h"
 
 
-namespace CALUMI{ namespace SFBGS{
+namespace CALUMI::SFBGS{
 
 	/**
 	 * @brief Prefix RLE based entry component for Rotations
@@ -24,31 +24,31 @@ namespace CALUMI{ namespace SFBGS{
 		 * @brief Raw copy constructor
 		 * @param buffer Expects a 4 byte buffer
 		 */
-		RotationPrefix(const unsigned char* buffer);
+		explicit RotationPrefix(const unsigned char* buffer);
 		~RotationPrefix();
 
 		/// @}
 		/// @name Data
 		/// @{
 		
-        int8_t first() const;
+        [[nodiscard]] int8_t first() const;
         void setFirst(int8_t input);
-        bool firstFlag() const;
+        [[nodiscard]] bool firstFlag() const;
         void setFirstFlag(bool input);
-        int8_t second() const;
+        [[nodiscard]] int8_t second() const;
         void setSecond(int8_t input);
-        bool secondFlag() const;
+        [[nodiscard]] bool secondFlag() const;
         void setSecondFlag(bool input);
-        int8_t third() const;
+        [[nodiscard]] int8_t third() const;
         void setThird(int8_t input);
-        bool thirdFlag() const;
+        [[nodiscard]] bool thirdFlag() const;
         void setThirdFlag(bool input);
-        uint8_t count() const;
+        [[nodiscard]] uint8_t count() const;
         void setCount(uint8_t input);
-        uint8_t missing() const;
+        [[nodiscard]] uint8_t missing() const;
         void setMissing(uint8_t input);
 
-		const void* const getRawData() const;
+		[[nodiscard]] const void* const data() const;
 
 		/// @}
 		/// @name Operators
@@ -75,8 +75,6 @@ namespace CALUMI{ namespace SFBGS{
 		 */
 		RotationPrefix& operator=(const unsigned char* buffer);
 
-		inline bool operator<(const RotationPrefix& other) { return false; }
-
 		/// @}
 	private:
 		struct Impl;
@@ -89,25 +87,23 @@ namespace CALUMI{ namespace SFBGS{
 	struct CALUMIANIMATION_API RotationEntry
 	{
 		//TODO: Documentation for SFBGS Rotation Entry
-        int8_t first() const;
+        [[nodiscard]] int8_t first() const;
         void setFirst(int8_t input);
-        int8_t second() const;
+        [[nodiscard]] int8_t second() const;
         void setSecond(int8_t input);
-        int8_t third() const;
+        [[nodiscard]] int8_t third() const;
         void setThird(int8_t input);
 
 		RotationEntry();
 		RotationEntry(const RotationEntry& input);
 		~RotationEntry();
 		RotationEntry(const int8_t& first, const int8_t& second, const int8_t& third);
-		RotationEntry(const unsigned char* buffer); //warning this method expects a 3 byte buffer. It uses memcpy for quick transfer, caution advised
+		explicit RotationEntry(const unsigned char* buffer); //warning this method expects a 3 byte buffer. It uses memcpy for quick transfer, caution advised
 
-		const void* const getRawData() const;
+		[[nodiscard]] const void* const data() const;
 
 		RotationEntry& operator=(const RotationEntry& input);
 		RotationEntry& operator=(const unsigned char* buffer); //warning this method expects a 3 byte buffer. It uses memcpy for quick transfer, caution advised
-
-		inline bool operator<(const RotationEntry& other) { return false; }
 
 	private:
 		struct Impl;
@@ -117,10 +113,10 @@ namespace CALUMI{ namespace SFBGS{
 	//TODO: Documentation for SFBGS Translation Prefix
 	struct CALUMIANIMATION_API TranslationPrefix
 	{
-		int16_t getX() const;
-		int16_t getY() const;
-		int16_t getZ() const;
-		uint16_t getCount() const;
+		[[nodiscard]] int16_t x() const;
+		[[nodiscard]] int16_t y() const;
+		[[nodiscard]] int16_t z() const;
+		[[nodiscard]] uint16_t count() const;
 
 		void setX(int16_t x);
 		void setY(int16_t x);
@@ -131,17 +127,15 @@ namespace CALUMI{ namespace SFBGS{
 		~TranslationPrefix();
 		TranslationPrefix(int16_t x, int16_t y, int16_t z, uint16_t count);
 		TranslationPrefix(const TranslationPrefix& input);
-		TranslationPrefix(const unsigned char* buffer); //expects 8 bytes
+		explicit TranslationPrefix(const unsigned char* buffer); //expects 8 bytes
 		//Count is not considered in comparison
 		bool operator==(const TranslationPrefix& other) const;
 		bool operator!=(const TranslationPrefix& other) const;
 
-		const void* const getRawData() const;
+		[[nodiscard]] const void* const data() const;
 
 		TranslationPrefix& operator=(const TranslationPrefix& input);
 		TranslationPrefix& operator=(const unsigned char* buffer);
-
-		inline bool operator<(const TranslationPrefix& other) { return false; }
 
 	private:
 		struct Impl;
@@ -151,9 +145,9 @@ namespace CALUMI{ namespace SFBGS{
 	//TODO: Documentation for SFBGS Translation Entry
 	struct CALUMIANIMATION_API TranslationEntry
 	{
-		int8_t getX() const;
-		int8_t getY() const;
-		int8_t getZ() const;
+		[[nodiscard]] int8_t x() const;
+		[[nodiscard]] int8_t y() const;
+		[[nodiscard]] int8_t z() const;
 		void setX(int8_t x);
 		void setY(int8_t y);
 		void setZ(int8_t z);
@@ -161,40 +155,44 @@ namespace CALUMI{ namespace SFBGS{
 		TranslationEntry();
 		~TranslationEntry();
 		TranslationEntry(int8_t x, int8_t y, int8_t z);
-		TranslationEntry(const unsigned char* buffer); //3 bytes expected
+		explicit TranslationEntry(const unsigned char* buffer); //3 bytes expected
 		TranslationEntry(const TranslationEntry& input);
 		TranslationEntry& operator=(const unsigned char* buffer); //3 bytes expected
 		TranslationEntry& operator=(const TranslationEntry& input);
 
-		inline bool operator<(const TranslationEntry& other) { return false; }
-
-		const void* const getRawData() const;
+		[[nodiscard]] const void* const data() const;
 
 	private:
 		struct Impl;
 		Impl* pImpl;
 	};
 
+	/**
+	 * @brief A convenient container for storing a compressed rotation in the SFBGS namespace
+	 */
 	struct CALUMIANIMATION_API CompressedRotation
 	{
 		CompressedRotation(const RotationPrefix& prefix, const RotationEntry& entry);
 		~CompressedRotation();
 
-		const RotationPrefix& prefix() const;
-		const RotationEntry& suffix() const;
+		[[nodiscard]] const RotationPrefix& prefix() const;
+		[[nodiscard]] const RotationEntry& suffix() const;
 
 	private:
 		struct Impl;
 		Impl* pImpl;
 	};
 
+	/**
+	 * @brief A convenient container for storing a compressed translation in the SFBGS namespace
+	 */
 	struct CALUMIANIMATION_API CompressedTranslation
 	{
 		CompressedTranslation(const TranslationPrefix& prefix, const TranslationEntry& entry);
 		~CompressedTranslation();
 
-		const TranslationPrefix& prefix() const;
-		const TranslationEntry& suffix() const;
+		[[nodiscard]] const TranslationPrefix& prefix() const;
+		[[nodiscard]] const TranslationEntry& suffix() const;
 
 	private:
 		struct Impl;
@@ -208,20 +206,16 @@ namespace CALUMI{ namespace SFBGS{
 
 	
 
-    CALUMIANIMATION_API CompressedRotation GetSFBGSRotationPair(const CALUMI::Math::Quaternion& input);
-    CALUMIANIMATION_API CALUMI::Math::Quaternion GetUniversalRotation(const CALUMI::SFBGS::RotationPrefix& prefix, const CALUMI::SFBGS::RotationEntry& suffix);
+    CALUMIANIMATION_API CompressedRotation GetSFBGSRotationPair(const Math::Quaternion& input);
+    CALUMIANIMATION_API Math::Quaternion GetUniversalRotation(const RotationPrefix& prefix, const RotationEntry& suffix);
 
-    CALUMIANIMATION_API CompressedTranslation GetSFBGSTranslationPair(const CALUMI::Math::Vector3D& input, const float& highPrecision, const float& lowPrecision);
-    CALUMIANIMATION_API CALUMI::Math::Vector3D GetUniversalTranslation(const CALUMI::SFBGS::TranslationPrefix& prefix, const CALUMI::SFBGS::TranslationEntry& suffix, const float& highPrecision, const float& lowPrecision);
+    CALUMIANIMATION_API CompressedTranslation GetSFBGSTranslationPair(const Math::Vector3D& input, const float& highPrecision, const float& lowPrecision);
+    CALUMIANIMATION_API Math::Vector3D GetUniversalTranslation(const TranslationPrefix& prefix, const TranslationEntry& suffix, const float& highPrecision, const float& lowPrecision);
 	
-    CALUMIANIMATION_API SFBGS::TranslationPrefixSequence UnfoldTranslationPrefixSequence(const SFBGS::TranslationPrefixSequence& input);
-    CALUMIANIMATION_API SFBGS::TranslationPrefixSequence FoldTranslationPrefixSequence(const SFBGS::TranslationPrefixSequence& input);
+    CALUMIANIMATION_API TranslationPrefixSequence UnfoldTranslationPrefixSequence(const TranslationPrefixSequence& input);
+    CALUMIANIMATION_API TranslationPrefixSequence FoldTranslationPrefixSequence(const TranslationPrefixSequence& input);
 
-    CALUMIANIMATION_API SFBGS::RotationPrefixSequence UnfoldRotationPrefixSequence(const SFBGS::RotationPrefixSequence& input);
-    CALUMIANIMATION_API SFBGS::RotationPrefixSequence FoldRotationPrefixSequence (const SFBGS::RotationPrefixSequence& input);
+    CALUMIANIMATION_API RotationPrefixSequence UnfoldRotationPrefixSequence(const RotationPrefixSequence& input);
+    CALUMIANIMATION_API RotationPrefixSequence FoldRotationPrefixSequence (const RotationPrefixSequence& input);
 
-
-
-    }
-
-    }
+}

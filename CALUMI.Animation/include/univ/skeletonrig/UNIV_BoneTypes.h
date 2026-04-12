@@ -5,67 +5,90 @@
 #pragma once
 #include "utilities/CALUMI_Utilities.h"
 
-namespace CALUMI {
-	namespace UNIV {
+namespace CALUMI::UNIV {
 
-		enum class CALUMIANIMATION_API BoneType : uint32_t
-		{
-			Default = 0,
-			Twist = 1,
-			UNDEFINED = 0xFFFFFFFF
-		};
+	enum class BoneType : uint32_t
+	{
+		Default = 0,
+		Twist = 1,
+		UNDEFINED = 0xFFFFFFFF
+	};
 
-        inline static const char* DefaultBoneTypeStr = "Default";
-        inline static const char* TwistBoneTypeStr = "Twist";
-
+    inline static constexpr auto DefaultBoneTypeStr = "Default";
+    inline static constexpr auto TwistBoneTypeStr = "Twist";
 
 
-		//Returns default when the switch case... defaults... 
-		CALUMIANIMATION_API const UNIV::BoneType BoneTypeFromString(const Utilities::StringContainer& boneTypeStr);
+    /**
+     * @brief Global function to assist in string to enum conversion
+     * @param boneTypeStr c string of the type, likely #DefaultBoneTypeStr or #TwistBoneTypeStr
+     * @return Will return BoneType::UNDEFINED if the bonetypeStr is not found
+     */
+    CALUMIANIMATION_API BoneType BoneTypeFromString(const char* boneTypeStr);
 
-		//Abstract Parent Struct for Bone Type Data. All Types will have an enum informing the user how to cast the child struct.
-		struct CALUMIANIMATION_API BoneTypeProperties
-		{
-            virtual UNIV::BoneType getType() const = 0;
+    /**
+     * @brief Abstract for Bone specific, universally defined properties. Behaves similarly to a strategy pattern in concept
+     */
+    struct CALUMIANIMATION_API BoneTypeProperties
+	{
+        [[nodiscard]] virtual BoneType getType() const = 0;
 
-            virtual const char* getTypeString() const = 0;
-			BoneTypeProperties() = default;
-			virtual ~BoneTypeProperties() {};
-		};
+        [[nodiscard]] virtual const char* getTypeString() const = 0;
+		BoneTypeProperties() = default;
+		virtual ~BoneTypeProperties() = default;
+	};
 
-		//Default Type
-		struct CALUMIANIMATION_API DefaultBoneProperties : BoneTypeProperties
-		{
-			DefaultBoneProperties() = default;
-			~DefaultBoneProperties() override {};
-            const char* getTypeString() const override;
+    /**
+     * @brief Default Bone Type, has no data assigned to it
+     */
+    struct CALUMIANIMATION_API DefaultBoneProperties : BoneTypeProperties
+	{
+		DefaultBoneProperties() = default;
+		~DefaultBoneProperties() override = default;
+        [[nodiscard]] const char* getTypeString() const override;
 
-			// Inherited via BoneTypeProperties
-            UNIV::BoneType getType() const override;
-		};
+		// Inherited via BoneTypeProperties
+        [[nodiscard]] BoneType getType() const override;
+	};
 
-		//Basic Twist Type
-		struct CALUMIANIMATION_API TwistBoneProperties : BoneTypeProperties
-		{
-            int32_t twistDriverIndex() const;
-            void setTwistDriverIndex(int32_t idx);
-            float twistDriverWeight() const;
-            void setTwistDriverWeight(float wgt);
+	/**
+	 * @brief Basic Twist Type, defines how the bone will behave at runtime
+	 */
+	struct CALUMIANIMATION_API TwistBoneProperties : BoneTypeProperties
+	{
+		/// @name Constructors
+		/// @{
+		TwistBoneProperties();
+        explicit TwistBoneProperties(const TwistBoneProperties& input);
+		~TwistBoneProperties() override;
+		/// @}
+		/// @name Twist Data
+		/// @{
+		/**
+		 * @return Name of the bone driving this one
+		 */
+		[[nodiscard]] const char* twistDriver() const;
+        void setTwistDriver(const char* boneName) const;
+		/**
+		 *
+		 * @return Weight of this bone's twist influence
+		 */
+		[[nodiscard]] float twistDriverWeight() const;
+        void setTwistDriverWeight(float wgt) const;
+		/// @}
+		/// @name Inherited
+		/// @{
+        [[nodiscard]] const char* getTypeString() const override;
 
-			TwistBoneProperties();
-			~TwistBoneProperties() override;
-			TwistBoneProperties(const TwistBoneProperties* input);
+        [[nodiscard]] BoneType getType() const override;
+		/// @}
+		/// @name Operators
+		/// @{
+		TwistBoneProperties& operator=(const TwistBoneProperties& input);
+		/// @}
 
-            const char* getTypeString() const override;
+	private:
+		struct Impl;
+		Impl* pImpl;
+	};
 
-			// Inherited via BoneTypeProperties
-            UNIV::BoneType getType() const override;
-
-			TwistBoneProperties& operator=(const TwistBoneProperties& input);
-
-		private:
-			struct Impl;
-			Impl* pImpl;
-		};
-
-}}
+}

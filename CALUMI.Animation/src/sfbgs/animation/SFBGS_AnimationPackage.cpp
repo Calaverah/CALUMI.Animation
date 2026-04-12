@@ -10,565 +10,557 @@
 #include <string>
 #include <limits>
 
-namespace CALUMI {
-    namespace SFBGS {
+namespace CALUMI::SFBGS
+{
 
-        struct SFBGS_AnimationPackage::Impl {
-            // leaving as vector until we know without doubt that order is not important...
-            std::vector<std::pair<uint32_t, UNIV::AnimationBlock>> _amendedBlocks;
-            
-            SFBGS::PrecisionSet _precisionOverride = PrecisionSet::DefaultPrecision();
-            bool _useRigPrecision = true;
-        };
+    struct SFBGS_AnimationPackage::Impl {
+        // leaving as vector until we know without doubt that order is not important...
+        std::vector<std::pair<uint32_t, UNIV::AnimationBlock>> _amendedBlocks;
 
-        SFBGS_AnimationPackage::SFBGS_AnimationPackage() : pImpl(new Impl()) {}
+        PrecisionSet _precisionOverride = PrecisionSet::DefaultPrecision();
+        bool _useRigPrecision = true;
+    };
 
-        SFBGS_AnimationPackage::SFBGS_AnimationPackage(const SFBGS_AnimationPackage& other) : SFBGS_AnimationPackage()
+    SFBGS_AnimationPackage::SFBGS_AnimationPackage() : pImpl(new Impl()) {}
+
+    SFBGS_AnimationPackage::SFBGS_AnimationPackage(const SFBGS_AnimationPackage& other) : SFBGS_AnimationPackage()
+    {
+        *this = other;
+    }
+
+    SFBGS_AnimationPackage& SFBGS_AnimationPackage::operator=(const SFBGS_AnimationPackage& other)
+    {
+        pImpl->_amendedBlocks = other.pImpl->_amendedBlocks;
+        pImpl->_precisionOverride = other.pImpl->_precisionOverride;
+
+        pImpl->_useRigPrecision = other.pImpl->_useRigPrecision;
+        return *this;
+    }
+
+    SFBGS_AnimationPackage::~SFBGS_AnimationPackage()
+    {
+        if (pImpl)
         {
-            *this = other;
+            delete pImpl;
+            pImpl = nullptr;
         }
+    }
 
-        SFBGS_AnimationPackage& SFBGS_AnimationPackage::operator=(const SFBGS_AnimationPackage& other)
-        {
-            pImpl->_amendedBlocks = other.pImpl->_amendedBlocks;
-            pImpl->_precisionOverride = other.pImpl->_precisionOverride;
+    uint16_t SFBGS_AnimationPackage::getAmendedBlockCount() const
+    {
+        return static_cast<uint16_t>(pImpl->_amendedBlocks.size());
+    }
 
-            pImpl->_useRigPrecision = other.pImpl->_useRigPrecision;
-            return *this;
-        }
+    void SFBGS_AnimationPackage::overrideRigPrecision(const PrecisionSet& precision) const
+    {
+        pImpl->_useRigPrecision = false;
+        pImpl->_precisionOverride = precision;
+    }
 
-        SFBGS_AnimationPackage::~SFBGS_AnimationPackage()
-        {
-            if (pImpl)
-            {
-                delete pImpl;
-                pImpl = nullptr;
-            }
-        }
+    PrecisionSet SFBGS_AnimationPackage::getOverridePrecisionSet() const
+    {
+        return pImpl->_precisionOverride;
+    }
 
-        uint16_t SFBGS_AnimationPackage::getAmendedBlockCount() const
-        {
-            return static_cast<uint16_t>(pImpl->_amendedBlocks.size());
-        }
+    bool SFBGS_AnimationPackage::usesRigForPrecision() const
+    {
+        return pImpl->_useRigPrecision;
+    }
 
-        void SFBGS_AnimationPackage::overrideRigPrecision(PrecisionSet precision)
-        {
-            pImpl->_useRigPrecision = false;
-            pImpl->_precisionOverride = precision;
-        }
+    void SFBGS_AnimationPackage::resetPrecision() const
+    {
+        pImpl->_useRigPrecision = true;
+        pImpl->_precisionOverride = PrecisionSet::DefaultPrecision();
+    }
 
-        SFBGS::PrecisionSet SFBGS_AnimationPackage::getOverridePrecisionSet() const
-        {
-            return pImpl->_precisionOverride;
-        }
+    bool SFBGS_AnimationPackage::addAmendedBlock(const UNIV::AnimationBlock& block, const bool overwrite) const
+    {
+        const uint32_t hash = Utilities::HashRegistry::getInstance().registerHash(block.boneName());
 
-        bool SFBGS_AnimationPackage::usesRigForPrecision() const
-        {
-            return pImpl->_useRigPrecision;
-        }
+        return addAmendedBlock(hash, block, overwrite);
+    }
 
-        void SFBGS_AnimationPackage::resetPrecision()
-        {
-            pImpl->_useRigPrecision = true;
-            pImpl->_precisionOverride = PrecisionSet::DefaultPrecision();
-        }
-
-        bool SFBGS_AnimationPackage::addAmendedBlock(UNIV::AnimationBlock block, bool overwrite)
-        {
-            uint32_t hash = Utilities::HashRegistry::getInstance().registerHash(block.boneName());
-
-            return addAmendedBlock(hash, block, overwrite);
-        }
-
-        bool SFBGS_AnimationPackage::addAmendedBlock(uint32_t hash, UNIV::AnimationBlock block, bool overwrite)
-        {
-            if (pImpl->_amendedBlocks.size() >= MaxAmendedBlockCount)
-                return false;
-
-            int index = findAmendedBlock(hash);
-
-            if (index >= 0)
-            {
-                if (!overwrite)
-                {
-                    return false;
-                }
-                else
-                {
-                    pImpl->_amendedBlocks.at(index).second = block;
-                    return true;
-                }
-            }
-            
-            pImpl->_amendedBlocks.push_back({ hash, block });
-            return true;
-        }
-
-        bool SFBGS_AnimationPackage::removeAmendedBlock(const char* name)
-        {
-            uint32_t hash = Utilities::HashRegistry::getInstance().registerHash(name);
-
-            return removeAmendedBlock(hash);
-        }
-
-        bool SFBGS_AnimationPackage::removeAmendedBlock(uint32_t hash)
-        {
-            return removeAmendedBlock(findAmendedBlock(hash));
-        }
-
-        bool SFBGS_AnimationPackage::removeAmendedBlock(int index)
-        {
-            if (index < 0 || index >= pImpl->_amendedBlocks.size())
-                return false;
-
-            pImpl->_amendedBlocks.erase(pImpl->_amendedBlocks.begin() + index);
-            
-            return true;
-        }
-
-        bool SFBGS_AnimationPackage::hasAmendedBlock(uint32_t hash) const
-        {
-            return findAmendedBlock(hash) >= 0;
-        }
-
-        bool SFBGS_AnimationPackage::hasAmendedBlock(const char* name) const
-        {
-            return findAmendedBlock(name) >= 0;
-        }
-
-        int SFBGS_AnimationPackage::findAmendedBlock(uint32_t hash) const
-        {
-            for (uint64_t i = 0; i < pImpl->_amendedBlocks.size(); i++)
-            {
-                if (pImpl->_amendedBlocks.at(i).first == hash)
-                    return static_cast<int>(i);
-            }
-
-            return -1;
-        }
-
-        int SFBGS_AnimationPackage::findAmendedBlock(const char* name) const
-        {
-            uint32_t hash = Utilities::HashRegistry::getInstance().registerHash(name);
-
-            return findAmendedBlock(hash);
-        }
-
-        UNIV::AnimationBlock* SFBGS_AnimationPackage::getAmendedBlock(int index) const
-        {
-            if (index < 0 || index >= pImpl->_amendedBlocks.size())
-                return nullptr;
-
-            return &pImpl->_amendedBlocks.at(index).second;
-        }
-
-        uint32_t SFBGS_AnimationPackage::getAmendedBlockHash(int index) const
-        {
-            if (index < 0 || index >= pImpl->_amendedBlocks.size())
-                return 0xFFFFFFFF;
-
-            return pImpl->_amendedBlocks.at(index).first;
-        }
-
-        const char* SFBGS_AnimationPackage::getPackageType() const
-        {
-            return SFBGS_ANIM_PACKAGE;
-        }
-
-        Utilities::StringContainer SFBGS_AnimationPackage::toJSON(uint64_t indents) const
-        {
-            return Utilities::StringContainer();
-        }
-
-        SFBGS_AnimationPackage* SFBGS_AnimationPackage::clone() const
-        {
-            SFBGS_AnimationPackage* output = new SFBGS_AnimationPackage(*this);
-            return output;
-        }
-                
-        bool CreateNewSFBGSAnimationPackage(UNIV::Animation& animation, bool overwrite)
-        {
-            auto& mgr = animation.getPackageManager();
-
-            SFBGS_AnimationPackage* pkg = new SFBGS_AnimationPackage();
-
-            if (mgr.AddPackage(pkg, overwrite))
-            {
-                return true;
-            }
-
-            if (pkg)
-            {
-                delete pkg;
-                pkg = nullptr;
-            }
-
+    bool SFBGS_AnimationPackage::addAmendedBlock(uint32_t hash, const UNIV::AnimationBlock& block, const bool overwrite) const
+    {
+        if (pImpl->_amendedBlocks.size() >= MaxAmendedBlockCount)
             return false;
+
+        if (const int index = findAmendedBlock(hash); index >= 0)
+        {
+            if (!overwrite)
+            {
+                return false;
+            }
+
+            pImpl->_amendedBlocks.at(index).second = block;
+            return true;
         }
 
-        bool RemoveSFBGSAnimationPackage(UNIV::Animation& animation)
+        pImpl->_amendedBlocks.push_back({ hash, block });
+        return true;
+    }
+
+    bool SFBGS_AnimationPackage::removeAmendedBlock(const char* name) const
+    {
+        const uint32_t hash = Utilities::HashRegistry::getInstance().registerHash(name);
+
+        return removeAmendedBlock(hash);
+    }
+
+    bool SFBGS_AnimationPackage::removeAmendedBlock(const uint32_t hash) const
+    {
+        return removeAmendedBlockUsingIndex(findAmendedBlock(hash));
+    }
+
+    bool SFBGS_AnimationPackage::removeAmendedBlockUsingIndex(const int index) const
+    {
+        if (index < 0 || index >= pImpl->_amendedBlocks.size())
+            return false;
+
+        pImpl->_amendedBlocks.erase(pImpl->_amendedBlocks.begin() + index);
+
+        return true;
+    }
+
+    bool SFBGS_AnimationPackage::hasAmendedBlock(const uint32_t hash) const
+    {
+        return findAmendedBlock(hash) >= 0;
+    }
+
+    bool SFBGS_AnimationPackage::hasAmendedBlock(const char* name) const
+    {
+        return findAmendedBlock(name) >= 0;
+    }
+
+    int SFBGS_AnimationPackage::findAmendedBlock(const uint32_t hash) const
+    {
+        for (uint64_t i = 0; i < pImpl->_amendedBlocks.size(); i++)
         {
-            return animation.getPackageManager().RemovePackage(SFBGS_ANIM_PACKAGE);
+            if (pImpl->_amendedBlocks.at(i).first == hash)
+                return static_cast<int>(i);
         }
+
+        return -1;
+    }
+
+    int SFBGS_AnimationPackage::findAmendedBlock(const char* name) const
+    {
+        const uint32_t hash = Utilities::HashRegistry::getInstance().registerHash(name);
+
+        return findAmendedBlock(hash);
+    }
+
+    UNIV::AnimationBlock* SFBGS_AnimationPackage::getAmendedBlock(const int index) const
+    {
+        if (index < 0 || index >= pImpl->_amendedBlocks.size())
+            return nullptr;
+
+        return &pImpl->_amendedBlocks.at(index).second;
+    }
+
+    uint32_t SFBGS_AnimationPackage::getAmendedBlockHash(const int index) const
+    {
+        if (index < 0 || index >= pImpl->_amendedBlocks.size())
+            return 0xFFFFFFFF;
+
+        return pImpl->_amendedBlocks.at(index).first;
+    }
+
+    const char* SFBGS_AnimationPackage::getPackageType() const
+    {
+        return SFBGS_ANIM_PACKAGE;
+    }
+
+    Utilities::StringContainer SFBGS_AnimationPackage::toJSON(uint64_t indents) const
+    {
+        return Utilities::StringContainer();
+    }
+
+    SFBGS_AnimationPackage* SFBGS_AnimationPackage::clone() const
+    {
+        return new SFBGS_AnimationPackage(*this);
+    }
+
+    bool CreateNewSFBGSAnimationPackage(const UNIV::Animation& animation, const bool overwrite)
+    {
+        const auto& mgr = animation.getPackageManager();
+
+        auto pkg = new SFBGS_AnimationPackage();
+
+        if (mgr.addPackage(pkg, overwrite))
+        {
+            return true;
+        }
+
+        // ReSharper disable once CppDFAConstantConditions
+        if (pkg)
+        {
+            delete pkg;
+            pkg = nullptr;
+        }
+
+        return false;
+    }
+
+    bool RemoveSFBGSAnimationPackage(const UNIV::Animation& animation)
+    {
+        return animation.getPackageManager().removePackage(SFBGS_ANIM_PACKAGE);
+    }
 
 #pragma region Extern C
 
-        bool SFBGSAnimationPackage_AddPackageToAnimationC(UNIV::Animation* animation, Utilities::StringContainer* errorMessage, bool overwrite)
+    bool SFBGSAnimationPackage_AddPackageToAnimationC(const UNIV::Animation* animation, Utilities::StringContainer* errorMessage, const bool overwrite)
+    {
+        Utilities::StringContainer tempErrorMessage;
+        Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+        errorMessageHolder->clear();
+
+        *errorMessageHolder += "[CALUMI.Animation API] ";
+        *errorMessageHolder += SFBGS_ANIM_PACKAGE;
+
+        if (CreateNewSFBGSAnimationPackage(*animation, overwrite))
         {
-            Utilities::StringContainer tempErrorMessage;
-            Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->clear();
-
-            *errorMessageHolder += "[CALUMI.Animation API] ";
-            *errorMessageHolder += SFBGS_ANIM_PACKAGE;
-
-            if (CreateNewSFBGSAnimationPackage(*animation, overwrite))
-            {
-                *errorMessageHolder += " Successfully Added To";
-                *errorMessageHolder += animation->animationTitle();
-                return true;
-            }
-            else
-            {
-                *errorMessageHolder += " Was Not Added To ";
-                *errorMessageHolder += animation->animationTitle();
-                *errorMessageHolder += ", It May Already Exist And Was Not Set To Overwrite";
-            }
-
-            return false;
+            *errorMessageHolder += " Successfully Added To";
+            *errorMessageHolder += animation->animationTitle();
+            return true;
         }
 
-        bool SFBGSAnimationPackage_RemovePackageFromAnimationC(UNIV::Animation* animation, Utilities::StringContainer* errorMessage)
+        *errorMessageHolder += " Was Not Added To ";
+        *errorMessageHolder += animation->animationTitle();
+        *errorMessageHolder += ", It May Already Exist And Was Not Set To Overwrite";
+        return false;
+    }
+
+    bool SFBGSAnimationPackage_RemovePackageFromAnimationC(const UNIV::Animation* animation, Utilities::StringContainer* errorMessage)
+    {
+        Utilities::StringContainer tempErrorMessage;
+        Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+        errorMessageHolder->clear();
+
+        *errorMessageHolder += "[CALUMI.Animation API] ";
+        *errorMessageHolder += SFBGS_ANIM_PACKAGE;
+
+        if (RemoveSFBGSAnimationPackage(*animation))
         {
-            Utilities::StringContainer tempErrorMessage;
-            Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->clear();
-
-            *errorMessageHolder += "[CALUMI.Animation API] ";
-            *errorMessageHolder += SFBGS_ANIM_PACKAGE;
-
-            if (RemoveSFBGSAnimationPackage(*animation))
-            {
-                *errorMessageHolder += " Successfully Removed From ";
-                *errorMessageHolder += animation->animationTitle();
-                return true;
-            }
-            else
-            {
-                *errorMessageHolder += " Was Not Removed From ";
-                *errorMessageHolder += animation->animationTitle();
-                *errorMessageHolder += ", It Either Does Not Exist Or Is Mislabeled";
-            }
-            return false;
+            *errorMessageHolder += " Successfully Removed From ";
+            *errorMessageHolder += animation->animationTitle();
+            return true;
         }
 
-        bool SFBGSAnimationPackage_HasAmendedBlockC(UNIV::Animation* animation, const char* name)
-        {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-                return pkg->hasAmendedBlock(name);
+        *errorMessageHolder += " Was Not Removed From ";
+        *errorMessageHolder += animation->animationTitle();
+        *errorMessageHolder += ", It Either Does Not Exist Or Is Mislabeled";
+        return false;
+    }
 
-            return false;
-        }
+    bool SFBGSAnimationPackage_HasAmendedBlockC(const UNIV::Animation* animation, const char* name)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            return pkg->hasAmendedBlock(name);
 
-        bool SFBGSAnimationPackage_HasAmendedBlockHashC(UNIV::Animation* animation, uint32_t hash)
-        {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-                return pkg->hasAmendedBlock(hash);
+        return false;
+    }
 
-            return false;
-        }
+    bool SFBGSAnimationPackage_HasAmendedBlockHashC(const UNIV::Animation* animation, const uint32_t hash)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            return pkg->hasAmendedBlock(hash);
 
-        uint16_t SFBGSAnimationPackage_GetAmendedBlockCountC(UNIV::Animation* animation)
-        {
-            if (!animation)
-                return 0;
+        return false;
+    }
 
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-                return pkg->getAmendedBlockCount();
-
+    uint16_t SFBGSAnimationPackage_GetAmendedBlockCountC(const UNIV::Animation* animation)
+    {
+        if (!animation)
             return 0;
+
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            return pkg->getAmendedBlockCount();
+
+        return 0;
+    }
+
+    void SFBGSAnimationPackage_OverrideRigWithDefaultPrecisionC(const UNIV::Animation* animation)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            pkg->overrideRigPrecision(PrecisionSet::DefaultPrecision());
+    }
+
+    void SFBGSAnimationPackage_OverrideRigWith1stPersonPrecisionC(const UNIV::Animation* animation)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            pkg->overrideRigPrecision(PrecisionSet::FirstPersonPrecision());
+    }
+
+    void SFBGSAnimationPackage_OverrideRigWithShipPrecisionC(const UNIV::Animation * animation)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            pkg->overrideRigPrecision(PrecisionSet::ShipPrecision());
+    }
+
+    void SFBGSAnimationPackage_OverrideRigWithCustomPrecisionC(const UNIV::Animation* animation, const float custom1, const float custom2)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            pkg->overrideRigPrecision(PrecisionSet(custom1, custom2));
+    }
+
+    float SFBGSAnimationPackage_GetOverridePrecisionHighC(const UNIV::Animation* animation)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            return pkg->getOverridePrecisionSet().high();
+
+        return std::numeric_limits<float>().quiet_NaN();
+    }
+
+    float SFBGSAnimationPackage_GetOverridePrecisionLowC(const UNIV::Animation* animation)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            return pkg->getOverridePrecisionSet().low();
+
+        return std::numeric_limits<float>().quiet_NaN();
+    }
+
+    const char* SFBGSAnimationPackage_GetPrecisionSet(const UNIV::Animation* animation)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+        {
+            if (pkg->usesRigForPrecision())
+                return "Follows Rig";
+
+            return pkg->getOverridePrecisionSet().precisionType();
         }
 
-        void SFBGSAnimationPackage_OverrideRigWithDefaultPrecisionC(UNIV::Animation* animation)
+        return nullptr;
+    }
+
+    bool SFBGSAnimationPackage_UsesRigPrecision(const UNIV::Animation* animation)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
         {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-                pkg->overrideRigPrecision(PrecisionSet::DefaultPrecision());
+            return pkg->usesRigForPrecision();
         }
 
-        void SFBGSAnimationPackage_OverrideRigWith1stPersonPrecisionC(UNIV::Animation* animation)
+        return false;
+    }
+
+    void SFBGSAnimationPackage_ResetPrecision(const UNIV::Animation* animation)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
         {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-                pkg->overrideRigPrecision(PrecisionSet::FirstPersonPrecision());
+            pkg->resetPrecision();
         }
+    }
 
-        void SFBGSAnimationPackage_OverrideRigWithShipPrecisionC(UNIV::Animation * animation)
+    bool SFBGSAnimationPackage_AddAmendedBlockWithNameC(const UNIV::Animation* animation, const UNIV::AnimationBlock* block, Utilities::StringContainer* errorMessage, const bool overwrite)
+    {
+        Utilities::StringContainer tempErrorMessage;
+        Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+        errorMessageHolder->clear();
+
+        *errorMessageHolder += "[CALUMI.Animation API] ";
+
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
         {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-                pkg->overrideRigPrecision(PrecisionSet::ShipPrecision());
-        }
+            *errorMessageHolder += block->boneName();
 
-        void SFBGSAnimationPackage_OverrideRigWithCustomPrecisionC(UNIV::Animation* animation, float custom1, float custom2)
-        {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-                pkg->overrideRigPrecision(PrecisionSet(custom1, custom2));
-        }
-
-        float SFBGSAnimationPackage_GetOverridePrecisionHighC(UNIV::Animation* animation)
-        {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-                return pkg->getOverridePrecisionSet().high();
-
-            return std::numeric_limits<float>().quiet_NaN();
-        }
-
-        float SFBGSAnimationPackage_GetOverridePrecisionLowC(UNIV::Animation* animation)
-        {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-                return pkg->getOverridePrecisionSet().low();
-
-            return std::numeric_limits<float>().quiet_NaN();
-        }
-
-        const char* SFBGSAnimationPackage_GetPrecisionSet(UNIV::Animation* animation)
-        {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            if (pkg->addAmendedBlock(*block, overwrite))
             {
-                if (pkg->usesRigForPrecision())
-                    return "Follows Rig";
+                const uint32_t hash = Utilities::BGS_Str_CRC32(block->boneName());
+                *errorMessageHolder += " added to SFBGS Animation Package with hash: ";
+                *errorMessageHolder += std::to_string(hash).c_str();
 
-                return pkg->getOverridePrecisionSet().precisionType();
-            }
-
-            return nullptr;
-        }
-
-        bool SFBGSAnimationPackage_UsesRigPrecision(UNIV::Animation* animation)
-        {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-            {
-                return pkg->usesRigForPrecision();
-            }
-
-            return false;
-        }
-
-        void SFBGSAnimationPackage_ResetPrecision(UNIV::Animation* animation)
-        {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-            {
-                pkg->resetPrecision();
-            }
-        }
-
-        bool SFBGSAnimationPackage_AddAmendedBlockWithNameC(UNIV::Animation* animation, UNIV::AnimationBlock* block, Utilities::StringContainer* errorMessage, bool overwrite)
-        {
-            Utilities::StringContainer tempErrorMessage;
-            Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->clear();
-
-            *errorMessageHolder += "[CALUMI.Animation API] ";
-
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-            {
-                *errorMessageHolder += block->boneName();
-                
-                if (pkg->addAmendedBlock(*block, overwrite))
+                // ReSharper disable once CppDFAConstantConditions
+                if (block)
                 {
-                    uint32_t hash = Utilities::BGS_Str_CRC32(block->boneName());
-                    *errorMessageHolder += " added to SFBGS Animation Package with hash: ";
-                    *errorMessageHolder += std::to_string(hash).c_str();
-
-                    if (block)
-                    {
-                        delete block;
-                        block = pkg->getAmendedBlock(pkg->findAmendedBlock(hash));
-                    }
-
-                    return true;
+                    delete block;
+                    block = pkg->getAmendedBlock(pkg->findAmendedBlock(hash));
                 }
 
-                *errorMessageHolder += " could not be added to SFBGS Animation Package";
-            }
-            else
-            {
-                *errorMessageHolder += "Package Manager Not Found";
+                return true;
             }
 
-            return false;
+            *errorMessageHolder += " could not be added to SFBGS Animation Package";
+        }
+        else
+        {
+            *errorMessageHolder += "Package Manager Not Found";
         }
 
-        bool SFBGSAnimationPackage_AddAmendedBlockWithHashC(UNIV::Animation* animation, uint32_t hash, UNIV::AnimationBlock* block, Utilities::StringContainer* errorMessage, bool overwrite)
+        return false;
+    }
+
+    bool SFBGSAnimationPackage_AddAmendedBlockWithHashC(const UNIV::Animation* animation, const uint32_t hash, const UNIV::AnimationBlock* block, Utilities::StringContainer* errorMessage, const bool overwrite)
+    {
+        Utilities::StringContainer tempErrorMessage;
+        Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+        errorMessageHolder->clear();
+
+        *errorMessageHolder += "[CALUMI.Animation API] ";
+
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
         {
-            Utilities::StringContainer tempErrorMessage;
-            Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->clear();
+            *errorMessageHolder += "block";
 
-            *errorMessageHolder += "[CALUMI.Animation API] ";
-
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            if (pkg->addAmendedBlock(hash, *block,overwrite))
             {
-                *errorMessageHolder += "block";
+                *errorMessageHolder += " added to SFBGS Animation Package with hash: ";
+                *errorMessageHolder += std::to_string(hash).c_str();
 
-                if (pkg->addAmendedBlock(hash, *block,overwrite))
+                // ReSharper disable once CppDFAConstantConditions
+                if (block)
                 {
-                    *errorMessageHolder += " added to SFBGS Animation Package with hash: ";
-                    *errorMessageHolder += std::to_string(hash).c_str();
-
-                    if (block)
-                    {
-                        delete block;
-                        block = pkg->getAmendedBlock(pkg->findAmendedBlock(hash));
-                    }
-
-                    return true;
+                    delete block;
+                    block = pkg->getAmendedBlock(pkg->findAmendedBlock(hash));
                 }
 
-                *errorMessageHolder += " could not be added to SFBGS Animation Package";
-            }
-            else
-            {
-                *errorMessageHolder += "Package Manager Not Found";
+                return true;
             }
 
-            return false;
+            *errorMessageHolder += " could not be added to SFBGS Animation Package";
         }
-
-        bool SFBGSAnimationPackage_RemoveAmendedBlockWithNameC(UNIV::Animation* animation, const char* name, Utilities::StringContainer* errorMessage)
+        else
         {
-            Utilities::StringContainer tempErrorMessage;
-            Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->clear();
-
-            *errorMessageHolder += "[CALUMI.Animation API] ";
-
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-            {
-                *errorMessageHolder += name;
-
-                if (pkg->removeAmendedBlock(name))
-                {
-                    uint32_t hash = Utilities::BGS_Str_CRC32(name);
-                    *errorMessageHolder += " with hash: ";
-                    *errorMessageHolder += std::to_string(hash).c_str();
-                    *errorMessageHolder += " removed from SFBGS Animation Package";
-
-                    return true;
-                }
-
-                *errorMessageHolder += " could not be removed from SFBGS Animation Package. Are you sure it exists?";
-            }
-            else
-            {
-                *errorMessageHolder += "Package Manager Not Found";
-            }
-
-            return false;
+            *errorMessageHolder += "Package Manager Not Found";
         }
 
-        bool SFBGSAnimationPackage_RemoveAmendedBlockWithHashC(UNIV::Animation* animation, uint32_t hash, Utilities::StringContainer* errorMessage)
+        return false;
+    }
+
+    bool SFBGSAnimationPackage_RemoveAmendedBlockWithNameC(const UNIV::Animation* animation, const char* name, Utilities::StringContainer* errorMessage)
+    {
+        Utilities::StringContainer tempErrorMessage;
+        Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+        errorMessageHolder->clear();
+
+        *errorMessageHolder += "[CALUMI.Animation API] ";
+
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
         {
-            Utilities::StringContainer tempErrorMessage;
-            Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->clear();
+            *errorMessageHolder += name;
 
-            *errorMessageHolder += "[CALUMI.Animation API] ";
-
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            if (pkg->removeAmendedBlock(name))
             {
-                *errorMessageHolder += "block";
+                const uint32_t hash = Utilities::BGS_Str_CRC32(name);
+                *errorMessageHolder += " with hash: ";
+                *errorMessageHolder += std::to_string(hash).c_str();
+                *errorMessageHolder += " removed from SFBGS Animation Package";
 
-                if (pkg->removeAmendedBlock(hash))
-                {
-                    *errorMessageHolder += " with hash: ";
-                    *errorMessageHolder += std::to_string(hash).c_str();
-                    *errorMessageHolder += " removed from SFBGS Animation Package";
-
-                    return true;
-                }
-
-                *errorMessageHolder += " could not be removed from SFBGS Animation Package. Are you sure it exists?";
-            }
-            else
-            {
-                *errorMessageHolder += "Package Manager Not Found";
+                return true;
             }
 
-            return false;
+            *errorMessageHolder += " could not be removed from SFBGS Animation Package. Are you sure it exists?";
         }
-
-        bool SFBGSAnimationPackage_RemoveAmendedBlockWithIndexC(UNIV::Animation* animation, uint16_t index, Utilities::StringContainer* errorMessage)
+        else
         {
-            Utilities::StringContainer tempErrorMessage;
-            Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-            errorMessageHolder->clear();
-
-            *errorMessageHolder += "[CALUMI.Animation API] ";
-
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-            {
-                *errorMessageHolder += "block";
-
-                if (pkg->removeAmendedBlock(index))
-                {
-                    *errorMessageHolder += " at index: ";
-                    *errorMessageHolder += std::to_string(index).c_str();
-                    *errorMessageHolder += " removed from SFBGS Animation Package";
-
-                    return true;
-                }
-
-                *errorMessageHolder += " could not be removed from SFBGS Animation Package. Are you sure it exists?";
-            }
-            else
-            {
-                *errorMessageHolder += "Package Manager Not Found";
-            }
-
-            return false;
+            *errorMessageHolder += "Package Manager Not Found";
         }
 
-        bool SFBGSAnimationPackage_HasAmendedBlockWithNameC(UNIV::Animation* animation, const char* name)
+        return false;
+    }
+
+    bool SFBGSAnimationPackage_RemoveAmendedBlockWithHashC(const UNIV::Animation* animation, const uint32_t hash, Utilities::StringContainer* errorMessage)
+    {
+        Utilities::StringContainer tempErrorMessage;
+        Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+        errorMessageHolder->clear();
+
+        *errorMessageHolder += "[CALUMI.Animation API] ";
+
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
         {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            *errorMessageHolder += "block";
+
+            if (pkg->removeAmendedBlock(hash))
             {
-                return pkg->hasAmendedBlock(name);
+                *errorMessageHolder += " with hash: ";
+                *errorMessageHolder += std::to_string(hash).c_str();
+                *errorMessageHolder += " removed from SFBGS Animation Package";
+
+                return true;
             }
 
-            return false;
+            *errorMessageHolder += " could not be removed from SFBGS Animation Package. Are you sure it exists?";
         }
-
-        bool SFBGSAnimationPackage_HasAmendedBlockWithHashC(UNIV::Animation* animation, uint32_t hash)
+        else
         {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-            {
-                return pkg->hasAmendedBlock(hash);
-            }
-
-            return false;
+            *errorMessageHolder += "Package Manager Not Found";
         }
 
-        int SFBGSAnimationPackage_FindAmendedBlockWithNameC(UNIV::Animation* animation, const char* name)
+        return false;
+    }
+
+    bool SFBGSAnimationPackage_RemoveAmendedBlockWithIndexC(const UNIV::Animation* animation, const uint16_t index, Utilities::StringContainer* errorMessage)
+    {
+        Utilities::StringContainer tempErrorMessage;
+        Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
+        errorMessageHolder->clear();
+
+        *errorMessageHolder += "[CALUMI.Animation API] ";
+
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
         {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+            *errorMessageHolder += "block";
+
+            if (pkg->removeAmendedBlockUsingIndex(index))
             {
-                return pkg->findAmendedBlock(name);
+                *errorMessageHolder += " at index: ";
+                *errorMessageHolder += std::to_string(index).c_str();
+                *errorMessageHolder += " removed from SFBGS Animation Package";
+
+                return true;
             }
 
-            return -1;
+            *errorMessageHolder += " could not be removed from SFBGS Animation Package. Are you sure it exists?";
         }
-
-        int SFBGSAnimationPackage_FindAmendedBlockWithHashC(UNIV::Animation* animation, uint32_t hash)
+        else
         {
-            if (auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
-            {
-                return pkg->findAmendedBlock(hash);
-            }
-
-            return -1;
+            *errorMessageHolder += "Package Manager Not Found";
         }
+
+        return false;
+    }
+
+    bool SFBGSAnimationPackage_HasAmendedBlockWithNameC(const UNIV::Animation* animation, const char* name)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+        {
+            return pkg->hasAmendedBlock(name);
+        }
+
+        return false;
+    }
+
+    bool SFBGSAnimationPackage_HasAmendedBlockWithHashC(const UNIV::Animation* animation, const uint32_t hash)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+        {
+            return pkg->hasAmendedBlock(hash);
+        }
+
+        return false;
+    }
+
+    int SFBGSAnimationPackage_FindAmendedBlockWithNameC(const UNIV::Animation* animation, const char* name)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+        {
+            return pkg->findAmendedBlock(name);
+        }
+
+        return -1;
+    }
+
+    int SFBGSAnimationPackage_FindAmendedBlockWithHashC(const UNIV::Animation* animation, const uint32_t hash)
+    {
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
+        {
+            return pkg->findAmendedBlock(hash);
+        }
+
+        return -1;
+    }
 
 
 #pragma endregion
 
-}
 }

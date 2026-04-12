@@ -178,13 +178,12 @@ struct CALUMIANIMATION_API CLASS \
 		bool empty() const;\
 		\
 		void erase(uint64_t pos);\
-		void insert_r(uint64_t pos, T& item);\
-		void insert(uint64_t pos, T item);\
-		void insert(uint64_t pos, uint64_t count, T& item);\
-		void insert(uint64_t pos, uint64_t count, T item);\
+		void insert_r(uint64_t pos, const T& item);\
+		void insert(uint64_t pos, T&& item);\
+		void insert(uint64_t pos, uint64_t count, const T& item);\
+		void insert(uint64_t pos, uint64_t count, T&& item);\
 		T* data() noexcept;\
 		const T* data() const noexcept; \
-        /* void sort(bool highToLow = false);*/ \
 		\
 		CLASS range(uint64_t first, uint64_t last) const; \
 		\

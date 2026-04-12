@@ -1,3 +1,4 @@
+// ReSharper disable CppUnusedIncludeDirective
 #pragma once
 #include <gtest/gtest.h>
 #include <fstream>

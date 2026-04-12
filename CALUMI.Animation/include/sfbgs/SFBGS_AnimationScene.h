@@ -10,55 +10,52 @@
 #include "skeletonrig/SFBGS_SkeletonRig.h"
 
 
-namespace CALUMI {
-	namespace SFBGS {
-		
-		class CALUMIANIMATION_API AnimationScene : UNIV::IConvertibleScene
-		{
-		public:
-            Utilities::StringContainer& sceneName() const;
-			Animation& animation(uint64_t idx) const;
-			uint64_t animationCount() const;
-            SkeletonRig& rig() const;
-			void setRig(const SkeletonRig& rig);
+namespace CALUMI::SFBGS
+{
 
-			AnimationScene();
-			~AnimationScene();
-			AnimationScene(const char* sceneName);
-			AnimationScene(const Utilities::StringContainer& sceneName);
-			AnimationScene(const AnimationScene& input);
+	class CALUMIANIMATION_API AnimationScene : UNIV::IConvertibleScene
+	{
+	public:
+		[[nodiscard]] Utilities::StringContainer& sceneName() const;
+		[[nodiscard]] Animation& animation(uint64_t idx) const;
+		[[nodiscard]] uint64_t animationCount() const;
+		[[nodiscard]] SkeletonRig& rig() const;
+		void setRig(const SkeletonRig& rig) const;
 
-            bool addAnimationToScene(SFBGS::Animation& animation, bool overwrite = true);
-            bool removeAnimationFromScene(Utilities::StringContainer& sceneToRemove);
-            bool removeAnimationFromScene(const char* sceneToRemove);
-            bool removeAnimationFromScene(unsigned int idx);
+		AnimationScene();
+		~AnimationScene() override;
+		explicit AnimationScene(const char* sceneName);
+		explicit AnimationScene(const Utilities::StringContainer& sceneName);
+		AnimationScene(const AnimationScene& input);
 
-			// Inherited via IConvertibleScene
-            bool convertFromUniversalScene(UNIV::AnimationScene& input) override;
-            bool convertFromUniversalScene(CALUMI::UNIV::AnimationScene& input, SFBGS::SkeletonRig& rigReference);
-            UNIV::AnimationScene convertToUniversalScene() override;
+		bool addAnimationToScene(const Animation& animation, bool overwrite = true) const;
+		bool removeAnimationFromScene(const Utilities::StringContainer& sceneToRemove) const;
+		bool removeAnimationFromScene(const char* sceneToRemove) const;
+		bool removeAnimationFromScene(unsigned int idx) const;
 
-			AnimationScene& operator=(const AnimationScene& input);
+		// Inherited via IConvertibleScene
+		bool convertFromUniversalScene(UNIV::AnimationScene& input) override;
+		bool convertFromUniversalScene(const UNIV::AnimationScene& input, const SkeletonRig& rigReference) const;
+		UNIV::AnimationScene convertToUniversalScene() override;
 
-		private:
-			struct Impl;
-			Impl* pImpl;
-		};
+		AnimationScene& operator=(const AnimationScene& input);
+
+	private:
+		struct Impl;
+		Impl* pImpl;
+	};
 
 
-		extern "C" {
-			//CALUMIANIMATION_API bool SaveAnimationSceneToSFBGSFormatC(UNIV::AnimationScene* scene, const wchar_t* directoryPath, Utilities::StringContainer* errorMessage);
-			CALUMIANIMATION_API bool SaveAnimationSceneToSFBGSFormatPathOverrideC(UNIV::AnimationScene* scene, const wchar_t** directoryPathArray, uint64_t arraySize, Utilities::StringContainer* errorMessage);
-			//CALUMIANIMATION_API bool SaveAnimationSceneToSFBGSFormatUsingRigReferenceC(UNIV::AnimationScene* scene, const wchar_t* directoryPath,const wchar_t* sfbgsRigPath, Utilities::StringContainer* errorMessage);
-			CALUMIANIMATION_API bool SaveAnimationSceneToSFBGSFormatUsingRigReferencePathOverrideC(UNIV::AnimationScene* scene, const wchar_t** directoryPathArray, uint64_t arraySize, const wchar_t* sfbgsRigPath, Utilities::StringContainer* errorMessage);
-			CALUMIANIMATION_API UNIV::AnimationScene* LoadAnimationSceneFromSFBGSFormatC(const wchar_t** filePathsArray, int numberOfFiles, Utilities::StringContainer* errorMessage);
-			CALUMIANIMATION_API UNIV::AnimationScene* LoadAnimationSceneFromSFBGSFormatAndSaveToJsonC(const wchar_t** filePathsArray, int numberOfFiles, Utilities::StringContainer* errorMessage, const wchar_t* jsonOutputPath);
-			CALUMIANIMATION_API UNIV::SkeletonRig* LoadSFBGSSkeletonRigFromFileC(const wchar_t* filePath, Utilities::StringContainer* errorMessage);
+	extern "C" {
+	CALUMIANIMATION_API bool SaveAnimationSceneToSFBGSFormatPathOverrideC(UNIV::AnimationScene* scene, const wchar_t** directoryPathArray, uint64_t arraySize, Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API bool SaveAnimationSceneToSFBGSFormatUsingRigReferencePathOverrideC(const UNIV::AnimationScene* scene, const wchar_t** directoryPathArray, uint64_t arraySize, const wchar_t* sfbgsRigPath, Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API UNIV::AnimationScene* LoadAnimationSceneFromSFBGSFormatC(const wchar_t** filePathsArray, int numberOfFiles, Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API UNIV::AnimationScene* LoadAnimationSceneFromSFBGSFormatAndSaveToJsonC(const wchar_t** filePathsArray, int numberOfFiles, Utilities::StringContainer* errorMessage, const wchar_t* jsonOutputPath);
+	CALUMIANIMATION_API UNIV::SkeletonRig* LoadSFBGSSkeletonRigFromFileC(const wchar_t* filePath, Utilities::StringContainer* errorMessage);
 
-			CALUMIANIMATION_API bool SaveAnimationToSFBGSFormatDirectC(UNIV::Animation* animation, const wchar_t* filePath, UNIV::SkeletonRig* rig, Utilities::StringContainer* errorMessage);
-			CALUMIANIMATION_API bool SaveAnimationToSFBGSFormatWithExistingRigDirectC(UNIV::Animation* animation, const wchar_t* filePath, const wchar_t* sfbgsRigPath, Utilities::StringContainer* errorMessage);
-			CALUMIANIMATION_API bool SaveSkeletonRigToSFBGSFormatDirectC(UNIV::SkeletonRig* rig, const wchar_t* filePath, Utilities::StringContainer* errorMessage);
-		}
+	CALUMIANIMATION_API bool SaveAnimationToSFBGSFormatDirectC(UNIV::Animation* animation, const wchar_t* filePath, const UNIV::SkeletonRig* rig, Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API bool SaveAnimationToSFBGSFormatWithExistingRigDirectC(UNIV::Animation* animation, const wchar_t* filePath, const wchar_t* sfbgsRigPath, Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API bool SaveSkeletonRigToSFBGSFormatDirectC(const UNIV::SkeletonRig* rig, const wchar_t* filePath, Utilities::StringContainer* errorMessage);
 	}
 }
 

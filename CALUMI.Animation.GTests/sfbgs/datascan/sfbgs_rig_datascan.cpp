@@ -25,6 +25,10 @@ union ErrorStatus {
 		bool stringCountMisMatch : 1 = false;
 		bool stringArrayOutOfOrder : 1 = false;
 		bool stringArrayMisalignedToBones : 1 = false;
+		bool twistBoneHasNegativeInfluence : 1 = false;
+		bool negativeTwistOnHigherIndex : 1 = false;
+		bool unkBoneType : 1 = false;
+		bool defaultBoneTypeHasValues : 1 = false;
 
 	} flags;
 
@@ -132,6 +136,31 @@ GTEST(RigScan)
 			status.flags.unknownPrecisionSet = false;
 
 		status.flags.wrongBoneCount = rig.boneCount() != rig.boneEntries().size();
+
+		//Bone Entries
+		for (int boneIndex = 0; boneIndex < rig.boneEntries().size(); boneIndex++)
+		{
+			const auto& bone = rig.boneEntries().at(boneIndex);
+
+			//Twist Bone Data
+			if (bone.getBoneType() == SFBGS::SkeletonBone::BoneType::Twist)
+			{
+				if (bone.getTwistDriverIndex() < 0)
+					status.flags.twistBoneHasNegativeInfluence = true;
+
+				else if (bone.getTwistDriverWeight() < 0.0 && bone.getTwistDriverIndex() >= boneIndex)
+					status.flags.negativeTwistOnHigherIndex = true;
+			}
+			else if (bone.getBoneType() == SFBGS::SkeletonBone::BoneType::Default)
+			{
+				if (bone.getTwistDriverIndex() != -1 || bone.getTwistDriverMqnIndex() != -1 || bone.getTwistDriverWeight() != 0.0f)
+					status.flags.defaultBoneTypeHasValues = true;
+			}
+			else
+			{
+				status.flags.unkBoneType = true;
+			}
+		}
 		
 		//Strings
 		//IF TRUE this section gives us the ability to search a bone index by name via the string array instead of going back and forth with offsets
@@ -171,7 +200,7 @@ GTEST(RigScan)
 			std::cout << "NON EMPTY PADDING 01: " << status.flags.nonEmptyPadding01 << " 02: " << status.flags.nonEmptyPadding02 << " 03: " << status.flags.nonEmptyPadding03 << std::endl;
 
 		if (status.flags.wrongMatchingThree)
-			std::cout << "MATCHING THREE ERROR: " << rig.getMatchingThree().at(0) << ", " << rig.getMatchingThree().at(1) << ", " << rig.getMatchingThree().at(2) << std::endl;
+			std::cout << "MATCHING THREE ERROR: " << rig.matchingThree().at(0) << ", " << rig.matchingThree().at(1) << ", " << rig.matchingThree().at(2) << std::endl;
 
 		if (status.flags.wrongBoneCountAnimated)
 			std::cout << "BONE COUNT [ANIMATED]: SIZE NOT EXPECTED" << std::endl;
@@ -190,6 +219,18 @@ GTEST(RigScan)
 
 		if (status.flags.stringArrayMisalignedToBones)
 			std::cout << "String Array NOT in the same order as Bone Entries!" << std::endl;
+
+		if (status.flags.twistBoneHasNegativeInfluence)
+			std::cout << _CYAN("Twist Bone Type") << " has negative influence index!" << std::endl;
+
+		if (status.flags.negativeTwistOnHigherIndex)
+			std::cout << "Twist Weight is negative float on index greater than bone!" << std::endl;
+
+		if (status.flags.defaultBoneTypeHasValues)
+			std::cout << _CYAN("Default Bone Type") << " has non default values!" << std::endl;
+
+		if (status.flags.unkBoneType)
+			std::cout << _BMAGENTA("Unknown Bone Type") << "!" << std::endl;
 
 	}
 

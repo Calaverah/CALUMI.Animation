@@ -71,7 +71,7 @@ namespace CALUMI {
 
         Utilities::StringContainer Translation::toJSON(const uint64_t indents) const {
             std::string output(Utilities::Indent(indents + 1).c_str());
-            output += ("{\"frame\": " + std::to_string(frame()) + ", \"value\": [" + std::to_string(translationVector().getX()) + ", " + std::to_string(translationVector().getY()) + ", " + std::to_string(translationVector().getZ()) + "]}");
+            output += ("{\"frame\": " + std::to_string(frame()) + ", \"value\": [" + std::to_string(translationVector().x()) + ", " + std::to_string(translationVector().y()) + ", " + std::to_string(translationVector().z()) + "]}");
             return output.c_str();
         }
 #pragma endregion
@@ -140,7 +140,7 @@ namespace CALUMI {
 
         Utilities::StringContainer Rotation::toJSON(const uint64_t indents) const {
             std::string output(Utilities::Indent(indents).c_str());
-            output += ("{\"frame\": " + std::to_string(pImpl->frame) + ", \"value\": [" + std::to_string(pImpl->rotation.getW()) + ", " + std::to_string(pImpl->rotation.getX()) + ", " + std::to_string(pImpl->rotation.getY()) + ", " + std::to_string(pImpl->rotation.getZ()) + "]}");
+            output += ("{\"frame\": " + std::to_string(pImpl->frame) + ", \"value\": [" + std::to_string(pImpl->rotation.w()) + ", " + std::to_string(pImpl->rotation.x()) + ", " + std::to_string(pImpl->rotation.y()) + ", " + std::to_string(pImpl->rotation.z()) + "]}");
             return output.c_str();
         }
 #pragma endregion

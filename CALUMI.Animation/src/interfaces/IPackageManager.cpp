@@ -4,131 +4,81 @@
 
 #include "internalplatform.h"
 #include "interfaces/IPackageManager.h"
-#include <vector>
+#include <unordered_map>
+#include <memory>
+#include <ranges>
+#include <string>
 
-namespace CALUMI {
-	namespace UNIV{
+namespace CALUMI::UNIV
+{
 
-        struct IPackageManager::Impl
+    struct IPackageManager::Impl
+    {
+        std::unordered_map<std::string, std::shared_ptr<IPackage>> _packages;
+    };
+    IPackageManager::IPackageManager() : pImpl(new Impl()) {}
+
+    IPackageManager::IPackageManager(const IPackageManager& input) : IPackageManager()
+    {
+        *this = input;
+    }
+    IPackageManager& IPackageManager::operator=(const IPackageManager& other)
+    {
+        if (this != &other)
         {
-            std::vector<IPackage*> _packages;
+            pImpl->_packages.clear();
 
-            void clear()
+            for (const auto& pkg : other.pImpl->_packages | std::views::values)
             {
-                for (uint64_t i = 0; i < _packages.size(); i++)
-                {
-                    if (_packages.at(i))
-                    {
-                        delete _packages.at(i);
-                        _packages.at(i) = nullptr;
-                    }
-                }
-                _packages.clear();
-            }
-
-            Impl() = default;
-            ~Impl() {
-                clear();
-            }
-        };
-        IPackageManager::IPackageManager() : pImpl(new Impl()) {}
-
-        IPackageManager::IPackageManager(const IPackageManager& input) : IPackageManager()
-        {
-            *this = input;
-        }
-        IPackageManager& IPackageManager::operator=(const IPackageManager& other)
-        {
-            pImpl->clear();
-            for (uint64_t i = 0; i < other.pImpl->_packages.size(); i++)
-            {
-                if (auto ptr = other.pImpl->_packages.at(i))
-                {
-                    pImpl->_packages.push_back(ptr->clone());
-                }
-            }
-            return *this;
-        }
-        IPackageManager::~IPackageManager()
-        {
-            if (pImpl)
-            {
-                delete pImpl;
-                pImpl = nullptr;
+                addPackage(pkg->clone(),true);
             }
         }
-
-        IPackage* IPackageManager::getPackage(const char* packageName)
+        return *this;
+    }
+    IPackageManager::~IPackageManager()
+    {
+        if (pImpl)
         {
-            int idx = findPackage(packageName);
-
-            if (idx < 0)
-                return nullptr;
-
-            return pImpl->_packages.at(idx);
+            delete pImpl;
+            pImpl = nullptr;
         }
+    }
 
-        IPackage* IPackageManager::getPackage(int index)
+    IPackage* IPackageManager::getPackage(const char* packageName)
+    {
+        if (!pImpl->_packages.contains(packageName))
+            return nullptr;
+
+        return pImpl->_packages.at(packageName).get();
+    }
+
+    Utilities::StringList IPackageManager::getPackageList() const
+    {
+        Utilities::StringList output;
+        for (auto& pkg : pImpl->_packages | std::views::keys)
         {
-            if (pImpl->_packages.size() <= index || index < 0)
-                return nullptr;
-
-            return pImpl->_packages.at(index);
+            output.push_back(pkg.c_str());
         }
+        return output;
+    }
 
-        int IPackageManager::findPackage(const char* packageName) const
-        {
-            for (int i = 0; i < pImpl->_packages.size(); i++)
-            {
-                if (SCOMPARE(pImpl->_packages.at(i)->getPackageType(), packageName) == 0)
-                {
-                    return i;
-                }
-            }
-            return -1;
-        }
+    bool IPackageManager::removePackage(const char* packageName)
+    {
+        return static_cast<bool>(pImpl->_packages.erase(packageName));
+    }
 
-        bool IPackageManager::RemovePackage(const char* packageName)
-        {
-            return RemovePackage(findPackage(packageName));
-        }
-
-        bool IPackageManager::RemovePackage(int index)
-        {
-            if (index < 0 && index >= pImpl->_packages.size())
-                return false;
-
-            if (pImpl->_packages.at(index))
-            {
-                delete pImpl->_packages.at(index);
-                pImpl->_packages.at(index) = nullptr;
-                pImpl->_packages.erase(pImpl->_packages.begin()+index);
-                return true;
-            }
-
+    bool IPackageManager::addPackage(IPackage* package, const bool overwrite) const
+    {
+        if (pImpl->_packages.contains(package->getPackageType()) && !overwrite)
             return false;
-        }
 
-        bool IPackageManager::AddPackage(IPackage* package, bool overwrite)
-        {
-            int idx = findPackage(package->getPackageType());
 
-            if (idx >= 0)
-            {
-                if (!overwrite)
-                    return false;
+        pImpl->_packages[package->getPackageType()] = std::shared_ptr<IPackage>(package);
+        return true;
+    }
 
-                if (!RemovePackage(idx))
-                    return false;
-            }
-
-            pImpl->_packages.push_back(package);
-            return true;
-        }
-
-        uint64_t IPackageManager::packageCount() const
-        {
-            return pImpl->_packages.size();
-        }
-}
+    uint64_t IPackageManager::packageCount() const
+    {
+        return pImpl->_packages.size();
+    }
 }
