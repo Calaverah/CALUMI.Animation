@@ -19,11 +19,11 @@ add_subdirectory(src)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE CALUMIANIMATION_EXPORTS)
 
-if(WIN32)
+if(WIN32 AND MSVC)
     target_sources(${PROJECT_NAME} PRIVATE CALUMI.Animation.rc resource.h)
 elseif(APPLE)
 
-else()
+elseif(LINUX)
     target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
 endif()
 

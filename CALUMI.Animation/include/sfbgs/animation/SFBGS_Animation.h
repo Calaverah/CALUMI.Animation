@@ -1,498 +1,473 @@
-//Copyright � 2025-2026 Calaverah. All rights reserved.
+//Copyright © 2025-2026 Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
 #pragma once
 #include "interfaces/IReadWritable.h"
 #include "SFBGS_AnimationEntries.h"
+#include "univ/animation/UNIV_AnimationEntries.h"
 #include <io/FileResult.h>
 
 
-namespace CALUMI{
+namespace CALUMI::SFBGS
+{
+    class AnimationScene;
 
-	
-	namespace SFBGS {
+    /**
+     * @brief Flags defined in the SFBGS animation file's header
+     */
+    struct CALUMIANIMATION_API HeaderFlags
+    {
+        /**
+         * @name Constructors
+         * @{
+         */
+        HeaderFlags();
+        ~HeaderFlags();
+        HeaderFlags(char c0, char c1, char c2, char c3);
+        explicit HeaderFlags(char input[4]);
+        HeaderFlags(const HeaderFlags& input);
+        /// @}
 
-		class AnimationScene;
+        /**
+         * @name Operators
+         * @{
+         */
+        HeaderFlags& operator=(const HeaderFlags& input);
+        /// @}
 
-		/**
-		 * @brief Flags defined in the SFBGS animation file's header
-		 */
-		struct CALUMIANIMATION_API HeaderFlags
-		{
-			/**
-			 * @name Constructors
-			 * @{
-			 */
-			HeaderFlags();
-			~HeaderFlags();
-			HeaderFlags(char c0, char c1, char c2, char c3);
-			HeaderFlags(char input[4]);
-			HeaderFlags(const HeaderFlags& input);
-			/// @}
+        /**
+         * @name Known Data
+         * @{
+         */
 
-			/**
-			 * @name Operators
-			 * @{
-			 */
-			HeaderFlags& operator=(const HeaderFlags& input);
-			/// @}
+        /**
+         * @brief Unknown flag that appears unused
+         * @return
+         */
+        [[nodiscard]] bool firstEntry() const;
+        /**
+         * @brief Unknown flag that appears unused
+         * @param input
+         */
+        void setFirstEntry(bool input) const;
+        /**
+         * @brief Counter size flag
+         * @return Whether animation block counters are 1 or 2 bytes in size
+         */
+        [[nodiscard]] bool areKeyCounters2Byte() const;
+        /**
+         * @brief Counter size flag
+         * @param input Whether animation block counters are 1 or 2 bytes in size
+         */
+        void setKeyCountersFlag(bool input) const;
+        /**
+         * @brief Key Frame size flag
+         * @return Whether animation block key frames are 1 or 2 bytes in size
+         */
+        [[nodiscard]] bool areKeyFrameEntries2Byte() const;
+        /**
+         * @brief Key Frame size flag
+         * @param input Whether animation block key frames are 1 or 2 bytes in size
+         */
+        void setKeyFrameEntriesFlag(bool input) const;
+        /**
+         * @brief Scalars present flag
+         * @return Whether scalars are present
+         */
+        [[nodiscard]] bool hasScalarSequence() const;
+        /**
+         * @brief Scalars present flag
+         * @param input Whether scalars are present
+         */
+        void setScalarSequenceFlag(bool input) const;
+        /**
+         * @brief Main byte of flag data
+         * @return Byte containing the 3 used flags
+         */
+        [[nodiscard]] unsigned char data() const;
 
-			/**
-			 * @name Known Data
-			 * @{
-			 */
+        /// @}
 
-			/**
-			 * @brief Unknown flag that appears unused
-			 * @return 
-			 */
-			bool getFirstEntry() const;
-			/**
-			 * @brief Unknown flag that appears unused
-			 * @param input 
-			 */
-			void setFirstEntry(bool input);
-			/**
-			 * @brief Counter size flag
-			 * @return Whether animation block counters are 1 or 2 bytes in size
-			 */
-			bool areKeyCounters2Byte() const;
-			/**
-			 * @brief Counter size flag
-			 * @param input Whether animation block counters are 1 or 2 bytes in size
-			 */
-			void setKeyCountersFlag(bool input);
-            /**
-			 * @brief Key Frame size flag
-			 * @return Whether animation block key frames are 1 or 2 bytes in size
-			 */
-			bool areKeyFrameEntries2Byte() const;
-			/**
-			 * @brief Key Frame size flag
-			 * @param input Whether animation block key frames are 1 or 2 bytes in size
-			 */
-			void setKeyFrameEntriesFlag(bool input);
-			/**
-			 * @brief Scalars present flag
-			 * @return Whether scalars are present
-			 */
-			bool hasScalarSequence() const;
-			/**
-			 * @brief Scalars present flag
-			 * @param input Whether scalars are present
-			 */
-			void setScalarSequenceFlag(bool input);
-			/**
-			 * @brief Main byte of flag data
-			 * @return Byte containing the 3 used flags
-			 */
-			char getData() const;
+        /**
+         * @name Unknown or Unused
+         * @{
+         */
+        [[nodiscard]] bool u1() const;
+        [[nodiscard]] bool u2() const;
+        [[nodiscard]] bool u3() const;
+        [[nodiscard]] bool u4() const;
+        void setU1(bool input) const;
+        void setU2(bool input) const;
+        void setU3(bool input) const;
+        void setU4(bool input) const;
 
-			/// @}
+        [[nodiscard]] unsigned char c1() const;
+        [[nodiscard]] unsigned char c2() const;
+        [[nodiscard]] unsigned char c3() const;
+        void setC1(unsigned char input) const;
+        void setC2(unsigned char input) const;
+        void setC3(unsigned char input) const;
 
-			/**
-			 * @name Unknown or Unused
-			 * @{
-			 */
-			bool getU1() const;
-			bool getU2() const;
-			bool getU3() const;
-			bool getU4() const;
-			void setU1(bool input);
-			void setU2(bool input);
-			void setU3(bool input);
-			void setU4(bool input);
+        /// @}
 
-			char getC1() const;
-			char getC2() const;
-			char getC3() const;
-			void setC1(char input);
-			void setC2(char input);
-			void setC3(char input);
+    private:
+        struct Impl;
+        Impl* pImpl;
+    };
 
-			/// @}
+    /**
+     * @brief Section of data that describes transform sequences
+     */
+    struct CALUMIANIMATION_API AnimationBlock
+    {
+        /**
+         * @name Constructors
+         * @{
+         */
 
-		private:
-			struct Impl;
-			Impl* pImpl;
-		};
+        AnimationBlock();
+        AnimationBlock(const AnimationBlock& input);
+        AnimationBlock(Utilities::BufferObject& buffer, unsigned long long& addressIndex, const HeaderFlags& flags);
+        ~AnimationBlock();
 
-		/**
-		 * @brief Section of data that describes transform sequences
-		 */
-		struct CALUMIANIMATION_API AnimationBlock
-		{
-			/**
-			 * @name Constructors
-			 * @{
-			 */
-			
-			AnimationBlock();
-			AnimationBlock(const AnimationBlock& input);
-			AnimationBlock(Utilities::BufferObject& buffer, unsigned long long& addressIndex, const HeaderFlags& flags);
-			~AnimationBlock();
+        /// @}
+        /// @name Operators
+        /// @{
 
-			/// @}
-			/// @name Operators
-			/// @{
-			
-			AnimationBlock& operator=(const AnimationBlock& input);
-			
-			/// @}
-			/**
-			 * @name Counts
-			 */
-			
-			/**
-			 * @brief 
-			 * @return The number of rotation entries (suffix) 
-			 */
-			uint16_t getRotationCount() const;
-			/**
-			 * @brief 
-			 * @return The number of rotation entries (prefix) 
-			 */
-			uint16_t getRotationPrefixCount() const;
-			/**
-			 * @brief 
-			 * @return The number of translation entries (suffix) 
-			 */
-			uint16_t getTranslationCount() const;
-			/**
-			 * @brief 
-			 * @return The number of translation entries (prefix) 
-			 */
-			uint16_t getTranslationPrefixCount() const;
-			/**
-			 * @brief 
-			 * @return The number of scalar entries 
-			 */
-			uint16_t getScalarCount() const;
-			/**
-			 * @brief 
-			 * @return The number of "priority" entries 
-			 */
-			uint16_t getPriorityCount() const;
+        AnimationBlock& operator=(const AnimationBlock& input);
+
+        /// @}
+        /**
+         * @name Counts
+         */
+
+        /**
+         * @brief
+         * @return The number of rotation entries (suffix)
+         */
+        [[nodiscard]] uint16_t rotationCount() const;
+        /**
+         * @brief
+         * @return The number of rotation entries (prefix)
+         */
+        [[nodiscard]] uint16_t rotationPrefixCount() const;
+        /**
+         * @brief
+         * @return The number of translation entries (suffix)
+         */
+        [[nodiscard]] uint16_t translationCount() const;
+        /**
+         * @brief
+         * @return The number of translation entries (prefix)
+         */
+        [[nodiscard]] uint16_t translationPrefixCount() const;
+        /**
+         * @brief
+         * @return The number of scalar entries
+         */
+        [[nodiscard]] uint16_t scalarCount() const;
+        /**
+         * @brief
+         * @return The number of "priority" entries
+         */
+        [[nodiscard]] uint16_t priorityCount() const;
 
 
-			void setRotationCount(uint16_t input);
-			void setRotationPrefixCount(uint16_t input);
-			void setTranslationCount(uint16_t input);
-			void setTranslationPrefixCount(uint16_t input);
-			void setScalarCount(uint16_t input);
-			void setPriorityCount(uint16_t input);
+        void setRotationCount(uint16_t input) const;
+        void setRotationPrefixCount(uint16_t input) const;
+        void setTranslationCount(uint16_t input) const;
+        void setTranslationPrefixCount(uint16_t input) const;
+        void setScalarCount(uint16_t input) const;
+        void setPriorityCount(uint16_t input) const;
 
-			/// @}
+        /// @}
 
-			/**
-			 * @name Key Frames 
-			 * @{
-			 */
+        /**
+         * @name Key Frames
+         * @{
+         */
 
-			/**
-			 * @brief Vector of Keyframes of size [RotationCount]
-			 * @return 
-			 */
-			Utilities::U16Vector& RotationKeyFrames() const;
-			/**
-			 * @brief Vector of Keyframes of size [TranslationCount] 
-			 * @return 
-			 */
-			Utilities::U16Vector& TranslationKeyFrames() const;
-			/**
-			 * @brief Vector of Keyframes of size [ScalarCount]
-			 * @return 
-			 */
-			Utilities::U16Vector& ScalarKeyFrames() const;
-			/**
-			 * @brief Vector of Keyframes of size [PriorityCount]
-			 * @return 
-			 */
-			Utilities::U16Vector& BonePriorityKeyFrames() const;
+        /**
+         * @brief Vector of Keyframes of size [RotationCount]
+         * @return
+         */
+        [[nodiscard]] Utilities::U16Vector& rotationKeyFrames() const;
+        /**
+         * @brief Vector of Keyframes of size [TranslationCount]
+         * @return
+         */
+        [[nodiscard]] Utilities::U16Vector& translationKeyFrames() const;
+        /**
+         * @brief Vector of Keyframes of size [ScalarCount]
+         * @return
+         */
+        [[nodiscard]] Utilities::U16Vector& scalarKeyFrames() const;
+        /**
+         * @brief Vector of Keyframes of size [PriorityCount]
+         * @return
+         */
+        [[nodiscard]] Utilities::U16Vector& priorityKeyFrames() const;
 
-			/// @}
-			/**
-			* @name Compressed Entries
-			*/
+        /// @}
+        /**
+        * @name Compressed Entries
+        */
 
-			/**
-			 * @brief "Suffix" of the compressed Rotation entries, one for each frame
-			 * @return 
-			 */
-			RotationEntrySequence& RotationEntries() const;
-			/**
-			 * @brief "Prefix" of the compress Rotation entries, RLE sequence
-			 * @details The "prefix" entries are folded into an RLE sequence where there is a counter on the bitfield that describes how many frames this entries applies to using the programitc counting method (0,1,2...)
-			 * @return 
-			 */
-			SFBGS::RotationPrefixSequence& RotationPrefixEntries() const;
-			/**
-			 * @brief "Suffix" of the compressed Translation entries, one for each frame
-			 * @return 
-			 */
-			SFBGS::TranslationEntrySequence& TranslationEntries() const;
-			/**
-			 * @brief "Prefix" of the compress Translation entries, RLE sequence
-			 * @details The "prefix" entries are folded into an RLE sequence where there is a counter on the bitfield that describes how many frames this entries applies to using the common counting method (1,2, 3...)
-			 * @return
-			 */
-			SFBGS::TranslationPrefixSequence& TranslationPrefixEntries() const;
-			/**
-			 * @brief Scalar entries
-			 * @details Value described with a signed short (2 Bytes) where 5000 is the base scale of 1.0f
-			 * @return 
-			 */
-			Utilities::S16Vector& ScalarEntries() const;
-			/**
-			 * @brief "Priority" entries
-			 * @details Not much is known about these. It is believed that they are used by additive animations to determine which animation take precedence when transforming this bone
-			 * @return 
-			 */
-			Utilities::U8Vector& BonePriorityEntries() const;
+        /**
+         * @brief "Suffix" of the compressed Rotation entries, one for each frame
+         * @return
+         */
+        [[nodiscard]] RotationEntrySequence& rotationEntries() const;
+        /**
+         * @brief "Prefix" of the compress Rotation entries, RLE sequence
+         * @details The "prefix" entries are folded into an RLE sequence where there is a counter on the bitfield that describes how many frames these entries apply to using the programmatic counting method (0,1,2...)
+         * @return
+         */
+        [[nodiscard]] RotationPrefixSequence& rotationPrefixEntries() const;
+        /**
+         * @brief "Suffix" of the compressed Translation entries, one for each frame
+         * @return
+         */
+        [[nodiscard]] TranslationEntrySequence& translationEntries() const;
+        /**
+         * @brief "Prefix" of the compress Translation entries, RLE sequence
+         * @details The "prefix" entries are folded into an RLE sequence where there is a counter on the bitfield that describes how many frames these entries apply to using the common counting method (1,2, 3...)
+         * @return
+         */
+        [[nodiscard]] TranslationPrefixSequence& translationPrefixEntries() const;
+        /**
+         * @brief Scalar entries
+         * @details Value described with a signed short (2 Bytes) where 5000 is the base scale of 1.0f
+         * @return
+         */
+        [[nodiscard]] Utilities::S16Vector& scalarEntries() const;
+        /**
+         * @brief "Priority" entries
+         * @details Not much is known about these. It is believed that they are used by additive animations to
+         * determine which animation take precedence when transforming this bone
+         * @return
+         */
+        [[nodiscard]] Utilities::U8Vector& priorityEntries() const;
 
-			/// @}
-			/// @name Serialization
-			/// @{
-			/**
-			 * @brief Method for serializing data into the expected file format
-			 * @param buffer 
-			 * @param addressIndex 
-			 * @param flags 
-			 */
-			void SerializeIntoBuffer(Utilities::BufferObject& buffer, unsigned long long& addressIndex, const HeaderFlags & flags);
-			/// @}
-			
+        /// @}
+        /// @name Serialization
+        /// @{
+        /**
+         * @brief Method for serializing data into the expected file format
+         * @param buffer
+         * @param addressIndex
+         * @param flags
+         */
+        void serializeIntoBuffer(Utilities::BufferObject& buffer, unsigned long long& addressIndex, const HeaderFlags& flags) const;
+        /// @}
+        /// @name Conversion
+        /// @{
 
-		private:
-			struct Impl;
-			Impl* pImpl;
-		};
+        void setRotationSequenceFromUNIV(UNIV::RotationSequence& input) const;
+        [[nodiscard]] UNIV::RotationSequence rotationSequenceAsUNIV() const;
+        void setTranslationSequenceFromUNIV(UNIV::TranslationSequence& input, const float& highPrecision, const float& lowPrecision) const;
+        [[nodiscard]] UNIV::TranslationSequence translationSequenceAsUNIV(const float& highPrecision, const float& lowPrecision) const;
+        void setScalarSequenceFromUNIV(UNIV::ScalarSequence& input) const;
+        [[nodiscard]] UNIV::ScalarSequence scalarSequenceAsUNIV() const;
+        void setPrioritySequenceFromUNIV(UNIV::PrioritySequence& input) const;
+        [[nodiscard]] UNIV::PrioritySequence prioritySequenceAsUNIV() const;
 
-		struct CALUMIANIMATION_API AnimationBlockVector
-		{
-			AnimationBlockVector();
-			~AnimationBlockVector();
+    private:
+        struct Impl;
+        Impl* pImpl;
+    };
 
-			void push_back(const AnimationBlock& val);
-			uint64_t size() const;
-			bool empty() const;
-			void reserve(uint64_t size);
-			void resize(uint64_t size);
+    VECTORDEC(AnimationBlockVector, AnimationBlock)
 
-			AnimationBlock& at(uint64_t idx) const;
+    /**
+     * @brief Not much is known about this just yet. Nothing that has been proven that is
+     */
+    struct CALUMIANIMATION_API Preamble
+    {
+        [[nodiscard]] uint16_t count() const;
+        void setCount(uint16_t sz) const;
 
-		private:
-			struct Impl;
-			Impl* pImpl;
-		};
-
-		/**
-		 * @brief Not much is known about this just yet. Nothing that has been proven that is
-		 */
-		struct CALUMIANIMATION_API Preamble
-		{
-			uint16_t getCount() const;
-			void setCount(uint16_t sz);
-
-			Utilities::FloatVector& getPreSet() const;
-			void setPreSet(const Utilities::FloatVector& input);
-			Utilities::FloatVector& getMainSet() const;
-			void setMainSet(const Utilities::FloatVector& input);
-			Utilities::S16Vector& getFooter1() const;
-			void setFooter1(const Utilities::S16Vector& input);
-			Utilities::S8Vector& getFooter2() const;
-			void setFooter2(const Utilities::S8Vector& input);
+        [[nodiscard]] Utilities::FloatVector& preSet() const;
+        void setPreSet(const Utilities::FloatVector& input) const;
+        [[nodiscard]] Utilities::FloatVector& mainSet() const;
+        void setMainSet(const Utilities::FloatVector& input) const;
+        [[nodiscard]] Utilities::S16Vector& footer1() const;
+        void setFooter1(const Utilities::S16Vector& input) const;
+        [[nodiscard]] Utilities::S8Vector& footer2() const;
+        void setFooter2(const Utilities::S8Vector& input) const;
 
 
-			Preamble();
-			~Preamble();
-			Preamble(Utilities::BufferObject& buffer, unsigned long long& addressIndex, uint64_t frameCount);
-			Preamble& operator=(const Preamble& other);
-			Preamble(const Preamble& other);
+        Preamble();
+        ~Preamble();
+        Preamble(Utilities::BufferObject& buffer, unsigned long long& addressIndex, uint64_t frameCount);
+        Preamble& operator=(const Preamble& other);
+        Preamble(const Preamble& other);
 
-		private:
-			struct Impl;
-			Impl* pImpl;
-		};
+    private:
+        struct Impl;
+        Impl* pImpl;
+    };
 
-		struct CALUMIANIMATION_API PreambleVector
-		{
-			PreambleVector();
-			~PreambleVector();
+    VECTORDEC(PreambleVector, Preamble)
 
-			void push_back(const Preamble& val);
-			uint64_t size() const;
-			bool empty() const;
-			void reserve(uint64_t size);
-			void resize(uint64_t size);
+    /**
+     * @brief Starfield Animation
+     */
+    class CALUMIANIMATION_API Animation : IReadWritable
+    {
+    public:
+        /**
+         * @brief Index Counting Solution for the Index Atlas
+         */
+        enum class IndexCountingSolution : uint8_t
+        {
+            odd = 0, ///< 1,3,5,etc
+            even = 1, ///< 0,2,4,etc
+            all = 2 ///< all indices
+        };
 
-			Preamble& at(uint64_t idx) const;
+    public:
+        /**
+         * @name Constructors
+         * @{
+         */
 
-		private:
-			struct Impl;
-			Impl* pImpl;
-		};
+        Animation();
+        Animation(const Animation& input);
+        ~Animation() override;
 
-		/**
-		 * @brief Starfield Animation
-		 */
-		class CALUMIANIMATION_API Animation : CALUMI::IReadWritable
-		{
-		public:
-			/**
-			 * @brief Index Counting Solution for the Index Atlas
-			 */
-			enum class IndexCountingSolution : uint8_t
-			{
-				odd		= 0, ///< 1,3,5,etc
-				even	= 1, ///< 0,2,4,etc
-				all		= 2  ///< all indices
-			};
+        /// @}
+        /// @name Operators
+        /// @{
 
-		public:
-			/**
-			 * @name Constructors
-			 * @{
-			 */
-			
-			Animation();
-			Animation(const Animation& input);
-			~Animation();
-			
-			/// @}
-			/// @name Operators
-			/// @{
-			
-			Animation& operator=(const Animation& input);
-			
-			/// @}
-			/// @name Meta
-			/// @{
-			/// 
-			uint64_t getSourceFileSize() const;
-			
-			CALUMI::Utilities::StringContainer& getAnimationFileName() const;
-			void setAnimationFileName(const CALUMI::Utilities::StringContainer& input);
-		
-			/// @}
-			/// @name Header Data
-			/// @{
+        Animation& operator=(const Animation& input);
 
-			uint64_t getMagicNumber() const;
-			void setMagicNumber(uint64_t input);
+        /// @}
+        /// @name Meta
+        /// @{
+        ///
+        [[nodiscard]] uint64_t sourceFileSize() const;
 
-			Math::Quaternion& getHeaderRotation() const;
-			void setHeaderRotation(const Math::Quaternion& input);
+        [[nodiscard]] Utilities::StringContainer& animationFileName() const;
+        void setAnimationFileName(const Utilities::StringContainer& input) const;
 
-			Math::Vector3& getHeaderTranslation() const;
-			void setHeaderTranslation(const Math::Vector3& input);
+        /// @}
+        /// @name Header Data
+        /// @{
 
-			HeaderFlags& getHeaderFlags() const;
-			void setHeaderFlags(const HeaderFlags& input);
-			void evaluateHeaderFlags();
+        [[nodiscard]] uint64_t magicNumber() const;
+        void setMagicNumber(uint64_t input) const;
 
-			short getVersionNumber() const;
-			void setVersionNumber(short v);
+        [[nodiscard]] Math::Quaternion& headerRotation() const;
+        void setHeaderRotation(const Math::Quaternion& input) const;
+
+        [[nodiscard]] Math::Vector3& headerTranslation() const;
+        void setHeaderTranslation(const Math::Vector3& input) const;
+
+        [[nodiscard]] HeaderFlags& headerFlags() const;
+        void setHeaderFlags(const HeaderFlags& input) const;
+        void evaluateHeaderFlags() const;
+
+        [[nodiscard]] short versionNumber() const;
+        void setVersionNumber(short v) const;
 
 
-			uint16_t getBoneCount() const;
-			void setBoneCount(uint16_t input);
-			uint16_t getFrameCount() const;
-			void setFrameCount(uint16_t input);
-			uint16_t getIndexAtlasCount() const;
-			void setIndexAtlasCount(uint16_t input);
+        [[nodiscard]] uint16_t boneCount() const;
+        void setBoneCount(uint16_t input) const;
+        [[nodiscard]] uint16_t frameCount() const;
+        void setFrameCount(uint16_t input) const;
+        [[nodiscard]] uint16_t indexAtlasCount() const;
+        void setIndexAtlasCount(uint16_t input) const;
 
-			/**
-			 * @brief Count of Non-Rig based animation blocks
-			 * @return 
-			 */
-			uint16_t getAmendedBlockCount() const;
-			void setAmendedBlockCount(uint16_t input);
+        /**
+         * @brief Count of Non-Rig based animation blocks
+         * @return
+         */
+        [[nodiscard]] uint16_t amendedBlockCount() const;
+        void setAmendedBlockCount(uint16_t input) const;
 
-			uint16_t getPreambleOffset() const;
-			void setPreambleOffset(uint16_t input);
+        [[nodiscard]] uint16_t preambleOffset() const;
+        void setPreambleOffset(uint16_t input) const;
 
-			CALUMI::Utilities::FloatVector getNZeroFloats() const;
-			void setNZeroFloats(float input[3]);
+        [[nodiscard]] Utilities::FloatVector nZeroFloats() const;
+        void setNZeroFloats(const float input[3]) const;
 
-			/**
-			 * @brief Hash values to apply the amended animation blocks. The original string is lost during export and must be retraced
-			 * @return 
-			 */
-			Utilities::U32Vector& getAmendedHashSet() const;
-			void setAmendedHashSet(const Utilities::U32Vector& input);
+        /**
+         * @brief Hash values to apply the amended animation blocks. The original string is lost during export and must be retraced
+         * @return
+         */
+        [[nodiscard]] Utilities::U32Vector& amendedHashSet() const;
+        void setAmendedHashSet(const Utilities::U32Vector& input) const;
 
-			uint32_t getPreambleCount() const;
-			void setPreambleCount(uint32_t input);
-			PreambleVector& getPreamble() const;
-			void setPreamble(const PreambleVector& input);
+        [[nodiscard]] uint32_t preambleCount() const;
+        void setPreambleCount(uint32_t input) const;
+        [[nodiscard]] PreambleVector& preamble() const;
+        void setPreamble(const PreambleVector& input) const;
 
-			
-			/// @}
-			/// @name Animation Block Entries
-			/// @{
 
-			/**
-			 * @brief Index Atlas describes how the following data is assigned
-			 * @details The atlas consists of an array of unsigned values, the first value (and following odd index values) being the amount of bones to skip during processing 
-			 * and the second value (and following even index values) being the amount of bones to apply the data to. \n 
-			 * For example an array {1, 9, 11, 1} will skip the SkeletonRig's root bone, apply the first 11 animation blocks to bone indices 1-9, skip bone indices 10-20, 
-			 * and then finally apply the final blocks to the bone at index 21
-			 * @return 
-			 */
-			Utilities::U16Vector& getIndexAtlas() const;
-			/**
-			 * @brief 
-			 * @param input An evenly sized array of unsigned values
-			 */
-			void setIndexAtlast(const Utilities::U16Vector& input);
+        /// @}
+        /// @name Animation Block Entries
+        /// @{
 
-			/**
-			 * @brief The array of animation blocks to apply to the given Starfield skeleton rig
-			 * @return 
-			 */
-			AnimationBlockVector& getAnimationBlocks() const;
-			void setAnimationBlocks(const AnimationBlockVector& input);
-			/**
-			 * @brief The array of animation blocks that are applied by hash value in game, to some form of AnimObject
-			 * @return 
-			 */
-			AnimationBlockVector& getAmendedAnimationBlocks() const;
-			void setAmendedAnimationBlocks(const AnimationBlockVector& input);
+        /**
+         * @brief Index Atlas describes how the following data is assigned
+         * @details The atlas consists of an array of unsigned values, the first value (and following odd index values) being the amount of bones to skip during processing
+         * and the second value (and following even index values) being the amount of bones to apply the data to. \n
+         * For example an array {1, 9, 11, 1} will skip the SkeletonRig's root bone, apply the first 11 animation blocks to bone indices 1-9, skip bone indices 10-20,
+         * and then finally apply the final blocks to the bone at index 21
+         * @return
+         */
+        [[nodiscard]] Utilities::U16Vector& indexAtlas() const;
+        /**
+         * @brief
+         * @param input An evenly sized array of unsigned values
+         */
+        void setIndexAtlast(const Utilities::U16Vector& input) const;
 
-			/// @}
+        /**
+         * @brief The array of animation blocks to apply to the given Starfield skeleton rig
+         * @return
+         */
+        [[nodiscard]] AnimationBlockVector& animationBlocks() const;
+        void setAnimationBlocks(const AnimationBlockVector& input) const;
+        /**
+         * @brief The array of animation blocks that are applied by hash value in game, to some form of AnimObject
+         * @return
+         */
+        [[nodiscard]] AnimationBlockVector& amendedAnimationBlocks() const;
+        void setAmendedAnimationBlocks(const AnimationBlockVector& input) const;
 
-		public:
-			/// @name IReadWritable
-			/// @{
-			
-            Utilities::FileResult readFromFile(Utilities::PathContainer& inputFilePath) override;
-            Utilities::FileResult readFromFile(Utilities::PathContainer&& inputFilePath) override;
-            Utilities::FileResult writeToFile(Utilities::PathContainer& outputFilePath) override;
-            Utilities::FileResult writeToFile(Utilities::PathContainer&& outputFilePath) override;
+        /// @}
 
-			/// @}
+    public:
+        /// @name IReadWritable
+        /// @{
 
-		public:
-			/// @name Validation
-			/// @{
-			
-			/**
-			 * @brief Confirms the sizes of various amended block data to be equal
-			 * @return 
-			 */
-			bool VerifyAmendedBlocks() const;
+        Utilities::FileResult readFromFile(Utilities::PathContainer& inputFilePath) override;
+        Utilities::FileResult readFromFile(Utilities::PathContainer&& inputFilePath) override;
+        Utilities::FileResult writeToFile(Utilities::PathContainer& outputFilePath) override;
+        Utilities::FileResult writeToFile(Utilities::PathContainer&& outputFilePath) override;
 
-			/// @}
+        /// @}
 
-		private:
-			struct Impl;
-			Impl* pImpl;
+    public:
+        /// @name Validation
+            /// @{
 
-		private:
-			friend class AnimationScene;
-		};
-    }
+        /**
+         * @brief Confirms the sizes of various amended block data to be equal
+         * @return
+         */
+        [[nodiscard]] bool verifyAmendedBlocks() const;
+
+        /// @}
+
+    private:
+        struct Impl;
+        Impl* pImpl;
+
+    private:
+        friend class AnimationScene;
+    };
 }
-

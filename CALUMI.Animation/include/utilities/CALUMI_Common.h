@@ -22,11 +22,12 @@
 #include <cstdint>
 
 #if defined(_WIN32) || defined(__APPLE__)
-	#include <cstddef>
+// ReSharper disable once CppUnusedIncludeDirective
+#include <cstddef>
 #endif
 
 namespace CALUMI {
-	enum class CALUMIANIMATION_API SupportedGames : uint8_t
+	enum class SupportedGames : uint8_t
 	{
 		Starfield
 	};

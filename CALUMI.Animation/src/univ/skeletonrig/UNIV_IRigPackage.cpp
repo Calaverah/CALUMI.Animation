@@ -7,34 +7,36 @@
 #include "univ/skeletonrig/UNIV_BoneTypes.h"
 #include <AnimUtil>
 
-namespace CALUMI {
-	namespace UNIV {
+namespace CALUMI::UNIV
+{
 #pragma region RIGPACKAGEMANAGER
 
-        RigPackageManager::RigPackageManager() : IPackageManager() {} 
+    RigPackageManager::RigPackageManager() : IPackageManager() {}
 
 
-        Utilities::StringContainer RigPackageManager::toJSON(uint64_t indents) const
+    Utilities::StringContainer RigPackageManager::toJSON(uint64_t indents) const
+    {
+        //TODO: RigPackageManager JSON
+        return {};
+    }
+
+    bool RigPackageManager::onBoneRename(const char* oldBone, const char* newName)
+    {
+        bool output = true;
+
+        const auto keys = getPackageList();
+
+        for (uint64_t i = 0; i < keys.size(); i++)
         {
-            //TODO: RigPackageManager JSON
-            return Utilities::StringContainer();
-        }
-
-        bool RigPackageManager::onBoneRename(const char* oldBone, const char* newName, uint64_t idx)
-        {
-            bool output = true;
-
-            for (uint64_t i = 0; i < packageCount(); i++)
+            if (const auto pkg = dynamic_cast<IRigPackage*>(getPackage(keys.c_str(i))))
             {
-                if (auto pkg = dynamic_cast<IRigPackage*>(getPackage(i)))
-                {
-                    if (!pkg->handleBoneRename(oldBone, newName, idx))
-                        output = false;
-                }
+                if (!pkg->handleBoneRename(oldBone, newName))
+                    output = false;
             }
-
-            return output;
         }
+
+        return output;
+    }
 
 #pragma endregion
-} }
+}

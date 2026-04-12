@@ -11,7 +11,8 @@
 
 
 
-namespace CALUMI {namespace SFBGS {
+namespace CALUMI::SFBGS
+{
 
 	struct SkeletonRig;
 
@@ -30,38 +31,38 @@ namespace CALUMI {namespace SFBGS {
 			Default = -1, /**< Animation driven **in game** */
 			Twist	=  1  /**< Dynamically driven **in game**  */
 		};
-		
-        CALUMI::Math::Quaternion& localRotation() const;
-		
-        CALUMI::Math::Quaternion& globalRotation() const;
-		
-        CALUMI::Math::Vector3& position() const;
 
-		BoneType getBoneType() const;
-		void setBoneType(BoneType t);
-		
-		uint64_t getNameOffset() const;
-		void setNameOffset(uint64_t offset);
-		int32_t getParentBoneIndex() const;
-		void setParentBoneIndex(int32_t idx);
-		int32_t getTwistDriverMqnIndex() const;
-		void setTwistDriverMqnIndex(int32_t idx);
-		int32_t getTwistDriverIndex() const;
-		void setTwistDriverIndex(int32_t idx);
-		int32_t getMirrorBoneIndex() const;
-		void setMirrorBoneIndex(int32_t idx);
-		int32_t getTerm05() const;
-		void setTerm05(int32_t value);
-		float getTwistDriverWeight() const;
-		void setTwistDriverWeight(float weight);
-		float getUnknownScalar() const;
-		void setUnknownScalar(float value);
-		int32_t getTerm08() const;
-		void setTerm08(int32_t value);
+		[[nodiscard]] Math::Quaternion& localRotation() const;
+
+		[[nodiscard]] Math::Quaternion& globalRotation() const;
+
+		[[nodiscard]] Math::Vector3& position() const;
+
+		[[nodiscard]] BoneType getBoneType() const;
+		void setBoneType(BoneType t) const;
+
+		[[nodiscard]] uint64_t getNameOffset() const;
+		void setNameOffset(uint64_t offset) const;
+		[[nodiscard]] int32_t getParentBoneIndex() const;
+		void setParentBoneIndex(int32_t idx) const;
+		[[nodiscard]] int32_t getTwistDriverMqnIndex() const;
+		void setTwistDriverMqnIndex(int32_t idx) const;
+		[[nodiscard]] int32_t getTwistDriverIndex() const;
+		void setTwistDriverIndex(int32_t idx) const;
+		[[nodiscard]] int32_t getMirrorBoneIndex() const;
+		void setMirrorBoneIndex(int32_t idx) const;
+		[[nodiscard]] int32_t getTerm05() const;
+		void setTerm05(int32_t value) const;
+		[[nodiscard]] float getTwistDriverWeight() const;
+		void setTwistDriverWeight(float weight) const;
+		[[nodiscard]] float getUnknownScalar() const;
+		void setUnknownScalar(float value) const;
+		[[nodiscard]] int32_t getTerm08() const;
+		void setTerm08(int32_t value) const;
 
 #ifdef DEBUG_BUILD
-		int32_t getPad01() const;
-		int32_t getPad02() const;
+		[[nodiscard]] int32_t getPad01() const;
+		[[nodiscard]] int32_t getPad02() const;
 #endif
 
 		//Constructors
@@ -77,19 +78,14 @@ namespace CALUMI {namespace SFBGS {
 		/// </summary>
 		/// <param name="buffer"></param>
 		/// <param name="addressIndex"></param>
-        void serializeIntoBuffer(Utilities::BufferObject& buffer, unsigned long long& addressIndex) const;
+		void serializeIntoBuffer(Utilities::BufferObject& buffer, unsigned long long& addressIndex) const;
 
 		/// <summary>
 		/// Returns the converted UNIV Bone Type
 		/// </summary>
 		/// <returns></returns>
-        UNIV::BoneType getBoneTypeAsUNIVEnum();
-        const char* getBoneTypeAsString();
-		
-	private:
-		//CONVERSION ONLY, DOES NOT ADD MQN TWIST INDEX
-        bool setBoneTypeFromUNIV(UNIV::SkeletonBone& univBone);
-        bool setBoneTypeToUNIV(UNIV::SkeletonBone& univBone);
+		UNIV::BoneType getBoneTypeAsUNIVEnum() const;
+		const char* getBoneTypeAsString() const;
 
 	private:
 		struct Impl;
@@ -101,65 +97,66 @@ namespace CALUMI {namespace SFBGS {
 
 	VECTORDEC(SkeletonBoneVector, SkeletonBone)
 
-	struct CALUMIANIMATION_API SkeletonRig : CALUMI::IReadWritable
+	struct CALUMIANIMATION_API SkeletonRig : IReadWritable
 	{
-        int versionNumber() const;
-        void versionNumber(int v);
-        uint32_t fileSize() const;
-        void fileSize(uint32_t size);
-        uint32_t headerSize() const;
-        void headerSize(uint32_t size);
-        uint32_t boneMapOffset() const;
-        void boneMapOffset(uint32_t offset);
-		Utilities::U64Vector getMatchingThree() const;
-		void setMatchingThree(uint64_t m1, uint64_t m2, uint64_t m3);
-        float lowPrecision() const;
-        void setLowPrecision(float value);
-        float highPrecision() const;
-        void setHighPrecision(float value);
-        uint16_t boneCount() const;
-        void setBoneCount(uint16_t count);
-        uint16_t boneCountAnimated() const;
-        void setBoneCountAnimated(uint16_t count);
-        SkeletonBoneVector& boneEntries() const;
-        Utilities::S16Vector boneMapArray() const;
-        void setBoneMapArray(Utilities::S16Vector& input);
-        Utilities::StringList& stringArray() const;
+		[[nodiscard]] int versionNumber() const;
+		void setVersionNumber(int v) const;
+		[[nodiscard]] uint32_t fileSize() const;
+		void setFileSize(uint32_t size) const;
+		[[nodiscard]] uint32_t headerSize() const;
+		void setHeaderSize(uint32_t size) const;
+		[[nodiscard]] uint32_t boneMapOffset() const;
+		void setBoneMapOffset(uint32_t offset) const;
+		[[nodiscard]] Utilities::U64Vector matchingThree() const;
+		void setMatchingThree(uint64_t m1, uint64_t m2, uint64_t m3) const;
+		[[nodiscard]] float lowPrecision() const;
+		void setLowPrecision(float value) const;
+		[[nodiscard]] float highPrecision() const;
+		void setHighPrecision(float value) const;
+		[[nodiscard]] uint16_t boneCount() const;
+		void setBoneCount(uint16_t count) const;
+		[[nodiscard]] uint16_t boneCountAnimated() const;
+		void setBoneCountAnimated(uint16_t count) const;
+		[[nodiscard]] SkeletonBoneVector& boneEntries() const;
+		[[nodiscard]] Utilities::S16Vector boneMapArray() const;
+		void setBoneMapArray(Utilities::S16Vector& input) const;
+		[[nodiscard]] Utilities::StringList& stringArray() const;
 
 
-		bool IsMarkedMannequin() const;
+		[[nodiscard]] bool IsMarkedMannequin() const;
 
 		// Inherited via IReadWritable
-        Utilities::FileResult readFromFile(Utilities::PathContainer& inputFilePath) override;
-        Utilities::FileResult readFromFile(Utilities::PathContainer&& inputFilePath) override;
-        Utilities::FileResult writeToFile(Utilities::PathContainer& outputFilePath) override;
-        Utilities::FileResult writeToFile(Utilities::PathContainer&& outputFilePath) override;
+		Utilities::FileResult readFromFile(Utilities::PathContainer& inputFilePath) override;
+		Utilities::FileResult readFromFile(Utilities::PathContainer&& inputFilePath) override;
+		Utilities::FileResult writeToFile(Utilities::PathContainer& outputFilePath) override;
+		Utilities::FileResult writeToFile(Utilities::PathContainer&& outputFilePath) override;
 
-		~SkeletonRig();
+		~SkeletonRig() override;
 		SkeletonRig();
-		SkeletonRig(const SFBGS::SkeletonRig& input);
-		SkeletonRig(const UNIV::SkeletonRig& input);
+		SkeletonRig(const SkeletonRig& input);
+		explicit SkeletonRig(const UNIV::SkeletonRig& input);
 
 		SkeletonRig& operator=(const SkeletonRig& input);
 
-        CALUMI::UNIV::SkeletonRig convertToUniversalRig() const;
-        void convertFromUniversalRig(const CALUMI::UNIV::SkeletonRig& inputRig);
+		[[nodiscard]] UNIV::SkeletonRig convertToUniversalRig() const;
+		void convertFromUniversalRig(const UNIV::SkeletonRig& inputRig);
+
+		bool setBoneTypeFromUNIV(const UNIV::SkeletonBone& univBone, const SkeletonBone& sfbgsBone, const UNIV::SkeletonRig* univRig = nullptr) const; // NOLINT(*-use-nodiscard)
+		bool setBoneTypeToUNIV(const SkeletonBone& sfbgsBone, const UNIV::SkeletonBone& univBone) const; // NOLINT(*-use-nodiscard)
 
 		int findBoneIndex(const char* boneName) const;
 
 #ifdef DEBUG_BUILD
-    //DEBUG FUNCTIONS
-    public:
-        Utilities::CharVector endOfHeader() const;
-        uint8_t checkAssumedHeaderEntries();
+		//DEBUG FUNCTIONS
+	public:
+		[[nodiscard]] Utilities::CharVector endOfHeader() const;
+		uint8_t checkAssumedHeaderEntries() const;
 #endif
 
 	private:
 		struct Impl;
 		Impl* pImpl;
 	};
-
-    }
 
 }
 

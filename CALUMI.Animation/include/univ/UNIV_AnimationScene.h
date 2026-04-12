@@ -8,29 +8,30 @@
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
 #include "utilities/CALUMI_Utilities.h"
 
-namespace CALUMI{namespace UNIV{
+namespace CALUMI::UNIV
+{
 
-	
+
 
 	class CALUMIANIMATION_API AnimationScene
 	{
 	public:
-        SkeletonRig& rig() const;
+		SkeletonRig& rig() const;
 
 		Animation& animation(uint64_t idx) const;
 		uint64_t animationCount() const;
 
-        const char* sceneName() const;
-        void setSceneName(const char* name);
-        void setSceneName(const Utilities::StringContainer& input);
+		const char* sceneName() const;
+		void setSceneName(const char* name);
+		void setSceneName(const Utilities::StringContainer& input);
 
-        bool addAnimationToScene(UNIV::Animation& animation, bool overwrite = true);
-        bool removeAnimationFromScene(Utilities::StringContainer& sceneToRemove);
-        bool removeAnimationFromScene(unsigned int idx);
-		
+		bool addAnimationToScene(UNIV::Animation& animation, bool overwrite = true);
+		bool removeAnimationFromScene(Utilities::StringContainer& sceneToRemove);
+		bool removeAnimationFromScene(unsigned int idx);
+
 		//Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension);
 
-        Utilities::StringContainer toJSON(uint64_t indents) const;
+		Utilities::StringContainer toJSON(uint64_t indents) const;
 
 		AnimationScene();
 		AnimationScene(const Utilities::StringContainer& sceneName);
@@ -45,12 +46,12 @@ namespace CALUMI{namespace UNIV{
 		Impl* pImpl;
 	};
 
-	
 
 
 
-	
-}}
+
+
+}
 
 extern "C" {
 CALUMIANIMATION_API CALUMI::UNIV::AnimationScene* CreateAnimationSceneC(const char* sceneName);

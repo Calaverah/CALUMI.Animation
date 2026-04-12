@@ -6,75 +6,84 @@
 #include "univ/skeletonrig/UNIV_BoneTypes.h"
 
 
-namespace CALUMI {
-	namespace UNIV {
 
-		//Returns default when the switch case... defaults... 
-		const UNIV::BoneType BoneTypeFromString(const Utilities::StringContainer& boneTypeStr)
-		{
-			if (SCOMPARE(boneTypeStr.c_str(), TwistBoneTypeStr) == 0)
-				return UNIV::BoneType::Twist;
-			else if (SCOMPARE(boneTypeStr.c_str(), DefaultBoneTypeStr) == 0)
-				return UNIV::BoneType::Default;
-			else
-				return UNIV::BoneType::UNDEFINED;
-		}
-        const char* DefaultBoneProperties::getTypeString() const
-		{
-			return DefaultBoneTypeStr;
-		}
-        UNIV::BoneType DefaultBoneProperties::getType() const
-		{
-			return UNIV::BoneType::Default;
-		}
+namespace CALUMI::UNIV {
 
 
-		struct TwistBoneProperties::Impl 
+	BoneType BoneTypeFromString(const char* boneTypeStr)
+	{
+		if (SCOMPARE(boneTypeStr, TwistBoneTypeStr) == 0)
+			return BoneType::Twist;
+
+		if (SCOMPARE(boneTypeStr, DefaultBoneTypeStr) == 0)
+			return BoneType::Default;
+		
+		return BoneType::UNDEFINED;
+	}
+    const char* DefaultBoneProperties::getTypeString() const
+	{
+		return DefaultBoneTypeStr;
+	}
+    BoneType DefaultBoneProperties::getType() const
+	{
+		return BoneType::Default;
+	}
+
+
+	struct TwistBoneProperties::Impl
+	{
+		std::string _twistDriver;
+		float _twistDriverWeight = 0.0f;
+		Impl() = default;
+	};
+    const char* TwistBoneProperties::twistDriver() const
+	{
+		return pImpl->_twistDriver.c_str();
+	}
+    void TwistBoneProperties::setTwistDriver(const char* boneName) const
+    {
+		pImpl->_twistDriver = boneName;
+	}
+    float TwistBoneProperties::twistDriverWeight() const
+	{
+		return pImpl->_twistDriverWeight;
+	}
+    void TwistBoneProperties::setTwistDriverWeight(const float wgt) const
+    {
+		pImpl->_twistDriverWeight = wgt;
+	}
+	TwistBoneProperties::TwistBoneProperties()
+	{
+		pImpl = new Impl;
+	}
+	TwistBoneProperties::~TwistBoneProperties()
+	{
+		if (pImpl)
 		{
-			int32_t twistDriverIndex = -1;
-			float twistDriverWeight = 0.0f;
-			Impl() = default;
-		};
-        int32_t TwistBoneProperties::twistDriverIndex() const
-		{
-			return pImpl->twistDriverIndex;
-		}
-        void TwistBoneProperties::setTwistDriverIndex(int32_t idx)
-		{
-			pImpl->twistDriverIndex = idx;
-		}
-        float TwistBoneProperties::twistDriverWeight() const
-		{
-			return pImpl->twistDriverWeight;
-		}
-        void TwistBoneProperties::setTwistDriverWeight(float wgt)
-		{
-			pImpl->twistDriverWeight = wgt;
-		}
-		TwistBoneProperties::TwistBoneProperties()
-		{
-			pImpl = new Impl;
-		}
-		TwistBoneProperties::~TwistBoneProperties()
-		{
-			if (pImpl) delete pImpl;
-		}
-		TwistBoneProperties::TwistBoneProperties(const TwistBoneProperties* input) : TwistBoneProperties()
-		{
-			*pImpl = *(input->pImpl);
-		}
-        const char* TwistBoneProperties::getTypeString() const
-		{
-			return TwistBoneTypeStr;
-		}
-        UNIV::BoneType TwistBoneProperties::getType() const
-		{
-			return UNIV::BoneType::Twist;
-		}
-		TwistBoneProperties& TwistBoneProperties::operator=(const TwistBoneProperties& input)
-		{
-			*pImpl = *(input.pImpl);
-			return *this;
+			delete pImpl;
+			pImpl = nullptr;
 		}
 	}
+	TwistBoneProperties::TwistBoneProperties(const TwistBoneProperties& input) : TwistBoneProperties()
+	{
+		*this = input;
+	}
+    const char* TwistBoneProperties::getTypeString() const
+	{
+		return TwistBoneTypeStr;
+	}
+    BoneType TwistBoneProperties::getType() const
+	{
+		return BoneType::Twist;
+	}
+	TwistBoneProperties& TwistBoneProperties::operator=(const TwistBoneProperties& input)
+	{
+    	if (this != &input)
+    	{
+    		pImpl->_twistDriver = input.pImpl->_twistDriver;
+    		pImpl->_twistDriverWeight = input.pImpl->_twistDriverWeight;
+    	}
+		return *this;
+	}
 }
+

@@ -1,4 +1,9 @@
+// ReSharper disable CppUnusedIncludeDirective
+// ReSharper disable CppTooWideScope
+// ReSharper disable CppDFATimeOver
+// ReSharper disable CppTemplateArgumentsCanBeDeduced
 #include <gtest/gtest.h>
+#include <iostream>
 #include <AnimMath>
 #include <AnimUniv>
 #include <AnimStarfield>
@@ -57,17 +62,19 @@ GTEST(Rig00)
 	}
 #endif
 
+
 	//Precision
     EXPECT_EQ(rig00.highPrecision(), 1.0f / 4000.0f);
     EXPECT_EQ(rig00.lowPrecision(), 1.0f / 32.000f);
 
 	//Matching 3
-	auto match00 = rig00.getMatchingThree();
+	auto match00 = rig00.matchingThree();
 	EXPECT_EQ(match00.size(), 3);
-	for (uint8_t i = 0; i < match00.size(); i++)
+	for (uint8_t i = 0; i < match00.size() && i < 3; i++)
 	{
 		EXPECT_EQ(match00.at(i), 4587439358609565533);
 	}
+
 
 	//Bone Entries
 	float unk00Floats[3] = { 0.1f, 0.2f, 60.0f };
@@ -85,6 +92,7 @@ GTEST(Rig00)
 		offsetSum00 = rig00Bones.at(0).getNameOffset();
 
 	float twistW00[3] = { 0.0f,0.0f,0.67f };
+
 
 	for (uint8_t i = 0; i < rig00Bones.size() && i < str00.size(); i++)
 	{
@@ -104,7 +112,7 @@ GTEST(Rig00)
 		EXPECT_EQ(rig00Bones.at(i).getTwistDriverWeight(), twistW00[i]);
 		EXPECT_EQ(rig00Bones.at(i).getMirrorBoneIndex(), i);
 
-		//Padding 
+		//Padding
 #ifdef DEBUG_BUILD
         EXPECT_EQ(rig00Bones.at(i).getPad01(), -1);
 		EXPECT_EQ(rig00Bones.at(i).getPad02(), 0);
@@ -120,8 +128,7 @@ GTEST(Rig00)
         EXPECT_EQ(std::string(str00.c_str(0)), "Fountain_Root");
         EXPECT_EQ(std::string(str00.c_str(1)), "PlanetObject");
         EXPECT_EQ(std::string(str00.c_str(2)), "RingObject");
-	}
-    else
+	} else
     {
         ADD_FAILURE() << "Bone Name Array Size Does Not Match";
     }
@@ -146,12 +153,11 @@ GTEST(Rig00)
 		}
 	}
 
-    UNIV::SkeletonRig uRig00 = rig00.convertToUniversalRig();
-	SFBGS::SkeletonRig rig00COPY;
-    rig00COPY.convertFromUniversalRig(uRig00);
+	UNIV::SkeletonRig uRig00 = rig00.convertToUniversalRig();
+	SFBGS::SkeletonRig rig00COPY(uRig00);
 
     EXPECT_EQ(uRig00.boneEntries().size(), rig00.boneEntries().size());
-	
+
     EXPECT_EQ(uRig00.boneCount(), rig00.boneCount());
 
 #pragma region COPIED RIG00

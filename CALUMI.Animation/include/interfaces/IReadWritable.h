@@ -12,6 +12,10 @@ namespace CALUMI {
 	 */
 	class CALUMIANIMATION_API IReadWritable
 	{
+	public:
+		virtual ~IReadWritable() = default;
+
+	public:
 		/**
 		 * @brief Reads in a file from a given file _path
 		 * @param inputFilePath 

@@ -5,135 +5,115 @@
 #pragma once
 #include "utilities/CALUMI_Utilities.h"
 
-namespace CALUMI {
-	namespace UNIV {
+namespace CALUMI::UNIV
+{
 
-		/**
+	/**
 		 * @brief RigPackages provide a convenient way for users to apply game specific data to a rig
 		 *
 		 * @details Rig Packages allow a rig to have multiple games worth of data applied to the rig without conflicting. The intention is that users can export a single rig for various games at the same time... assuming the game is supported.
 		 */
-		struct CALUMIANIMATION_API IPackage
-		{
-			/** @name Initialization */
-			/// @{
-			IPackage() = default;
-			virtual ~IPackage() = default;
+	struct CALUMIANIMATION_API IPackage
+	{
+		/** @name Initialization */
+		/// @{
+		IPackage() = default;
+		virtual ~IPackage() = default;
 
-			/// @}
+		/// @}
 
-		public:
-			/**
+	public:
+		/**
 			 * @brief A way to get a string describing the package.
-			 * @return A string of the package type
+			 * @return A c string of the package type
 			 */
-			virtual const char* getPackageType() const = 0;
+		[[nodiscard]] virtual const char* getPackageType() const = 0;
 
-			/**
+		/**
 			 * @brief Serialization of the class
 			 * @param indents Amount of spaces for formatting
 			 * @return The serialized struct as a strContainer
 			 */
-			virtual Utilities::StringContainer toJSON(uint64_t indents) const = 0;
+		[[nodiscard]] virtual Utilities::StringContainer toJSON(uint64_t indents) const = 0;
 
-		protected:
+	protected:
 
-			/**
+		/**
 			 * @brief A convenient way to duplicate the struct into a new dynamically allocated version.
 			 * @details This function should only be used by the package manager as a simple way to copy data without sharing the struct or using pvt/shared ptrs
 			 * @return The new dynamically allocated clone of the package
 			 */
-			virtual IPackage* clone() const = 0;
+		[[nodiscard]] virtual IPackage* clone() const = 0;
 
-		private:
-			friend struct IPackageManager;
-		};
+	private:
+		friend struct IPackageManager;
+	};
 
 
-		/**
+	/**
 		 * @brief The Rig Package Manager handles the data and memory allocation of the packages for a rig
 		 */
-		struct CALUMIANIMATION_API IPackageManager
-		{
-		public:
-			/** @name Initialization*/
-			/// @{
-		
-			IPackageManager();
-			IPackageManager(const IPackageManager& input);
-			virtual ~IPackageManager();
-		
-			/// @}
-			/** @name Operators*/
-			/// @{
-		public:
-			virtual IPackageManager& operator=(const IPackageManager& other);
-		
-			///@}
-		
-		public:
-			/**
+	struct CALUMIANIMATION_API IPackageManager
+	{
+	public:
+		/** @name Initialization*/
+		/// @{
+
+		IPackageManager();
+		IPackageManager(const IPackageManager& input);
+		virtual ~IPackageManager();
+
+		/// @}
+		/** @name Operators*/
+		/// @{
+	public:
+		IPackageManager& operator=(const IPackageManager& other);
+
+		///@}
+
+	public:
+		/**
 			 * @brief Retrieves a package by name/type
 			 * @param packageName Name/Type
 			 * @return The first package ptr that matches, if it exists
 			 */
-			virtual IPackage* getPackage(const char* packageName);
+		[[nodiscard]] IPackage* getPackage(const char* packageName);
 
-			/**
-			 * @brief Returns the package at the given index
-			 * @param index 
-			 * @return Nullptr if none exists, or out of bounds
-			 */
-			virtual IPackage* getPackage(int index);
-		
-			/**
-			 * @brief
-			 * @param packageName Package name/type to search for
-			 * @return Index of package, -1 if not found
-			 */
-			virtual int findPackage(const char* packageName) const;
-		
-			/**
+		[[nodiscard]] Utilities::StringList getPackageList() const;
+
+		/**
 			 * @brief Removes a package
 			 * @param packageName Name/Type
 			 * @return Whether the operation was successful
 			 */
-			virtual bool RemovePackage(const char* packageName);
-		
-			/**
-			 * @brief Removes a package
-			 * @param index Index of package
-			 * @return Whether the operation was successful
-			 */
-			virtual bool RemovePackage(int index);
-		
-			/**
+		virtual bool removePackage(const char* packageName);
+
+		/**
 			 * @brief Adds a package to the rig
 			 * @param package Package to add
 			 * @param overwrite Replaces an existing package, if one of the same type is found
 			 * @return Whether the operation was a success
 			 */
-			virtual bool AddPackage(IPackage* package, bool overwrite = true);
+		bool addPackage(IPackage* package, bool overwrite = true) const;
 
-			/**
-			 * @brief 
-			 * @return Number of packages 
+		/**
+			 * @brief
+			 * @return Number of packages
 			 */
-			uint64_t packageCount() const;
-		
-			/**
+		[[nodiscard]] uint64_t packageCount() const;
+
+		/**
 			 * @brief Serialization
 			 * @param indents Spaces for formatting
 			 * @return The strContainer of the serialized struct
 			 */
-			virtual Utilities::StringContainer toJSON(uint64_t indents) const = 0;
-		
-		
-		
-		private:
-			struct Impl;
-			Impl* pImpl;
-		};
+		[[nodiscard]] virtual Utilities::StringContainer toJSON(uint64_t indents) const = 0;
 
-    }
+
+
+	private:
+		struct Impl;
+		Impl* pImpl;
+	};
+
 }

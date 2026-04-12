@@ -9,14 +9,14 @@ GTEST(Construction)
 {
     Quaternion q1;
     Quaternion q2(q1);
-    EXPECT_TRUE(q1.getW() == 1.0f && q1.getX() == 0.0f && q1.getY() == 0.0f && q1.getZ() == 0.0f);
-    EXPECT_TRUE(q2.getW() == q1.getW() && q2.getX() == q1.getX() && q2.getY() == q1.getY() && q2.getZ() == q1.getZ());
+    EXPECT_TRUE(q1.w() == 1.0f && q1.x() == 0.0f && q1.y() == 0.0f && q1.z() == 0.0f);
+    EXPECT_TRUE(q2.w() == q1.w() && q2.x() == q1.x() && q2.y() == q1.y() && q2.z() == q1.z());
     EXPECT_TRUE(q1 == q1.Identity);
     EXPECT_FALSE(q1 != q2);
 
     float buffer[4] = {0.0f,1.0f,0.0f,1.0f};
     Quaternion qMem(buffer);
-    EXPECT_TRUE(qMem.getW() == float(CLA_SQRT1_2) && qMem.getY() == qMem.getW() && qMem.getX() == 0.0f && qMem.getZ() == 0.0f);
+    EXPECT_TRUE(qMem.w() == float(CLA_SQRT1_2) && qMem.y() == qMem.w() && qMem.x() == 0.0f && qMem.z() == 0.0f);
 
     Quaternion qAxis1(Vector3(1.0f,2.0f,3.0f), static_cast<float>(ToRadians(50.0)));
     Quaternion qAxis1D(Vector3D(1.0,2.0,3.0), static_cast<float>(ToRadians(50.0)));
@@ -26,8 +26,8 @@ GTEST(Construction)
 
     Quaternion qNumeric(1.0f,0.0f,1.0f,0.0f);
     Quaternion qNumericD(1.0,0.0,1.0,0.0);
-    EXPECT_TRUE(qNumeric.getZ() == float(CLA_SQRT1_2) && qNumeric.getX() == qNumeric.getZ() && qNumeric.getY() == 0.0f && qNumeric.getW() == 0.0f);
-    EXPECT_TRUE(qNumericD.getZ() == float(CLA_SQRT1_2) && qNumericD.getX() == qNumericD.getZ() && qNumericD.getY() == 0.0f && qNumericD.getW() == 0.0f);
+    EXPECT_TRUE(qNumeric.z() == float(CLA_SQRT1_2) && qNumeric.x() == qNumeric.z() && qNumeric.y() == 0.0f && qNumeric.w() == 0.0f);
+    EXPECT_TRUE(qNumericD.z() == float(CLA_SQRT1_2) && qNumericD.x() == qNumericD.z() && qNumericD.y() == 0.0f && qNumericD.w() == 0.0f);
 }
 
 GTEST(Addition)
