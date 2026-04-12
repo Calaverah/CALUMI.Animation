@@ -340,7 +340,7 @@ namespace CALUMI::UNIV{
 
         std::erase_if(pImpl->_mirrors, [boneName](const auto& item)
         {
-            return _stricmp(item.second.c_str(), boneName) == 0;
+            return SCOMPARE(item.second.c_str(), boneName) == 0;
         });
 
         return pImpl->_boneEntries.size() != size;
