@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include <algorithm>
 #include <iostream>
 #include <limits>
 #include <unordered_map>
@@ -70,8 +69,6 @@ namespace CALUMI::UNIV{
     void SkeletonBone::setRotation(const Math::Quaternion& global) const
     {
         pImpl->globalRotation = global;
-        //TODO: erase this std::cout
-        std::cout << name() << " rotation set to " << pImpl->globalRotation.toString().c_str() << std::endl;
     }
     void SkeletonBone::setPosition(const Math::Vector3 & global) const
     {
@@ -278,15 +275,12 @@ namespace CALUMI::UNIV{
     {
         for (int i =0 ; i < pImpl->_boneEntries.size(); i++)
         {
-            if (const auto child = pImpl->_boneEntries.at(i); SCOMPARE(child.parentBone(), bone.name()) == 0)
+            if (const auto& child = pImpl->_boneEntries.at(i); SCOMPARE(child.parentBone(), bone.name()) == 0)
             {
                 Math::Vector3 newPos = child.globalPosition() + posOffset;
                 Math::Quaternion newRot = child.globalRotation();
 
                 newRot.rotateBy(rotOffset);
-
-                std::cout << "Rotating " <<child.name() << " from " << child.globalRotation().toString().c_str() << " by " << rotOffset.toString().c_str() << " to end at " << newRot.toString().c_str() << std::endl;
-
                 child.setRotation(newRot);
                 child.setPosition(newPos);
 
@@ -361,8 +355,8 @@ namespace CALUMI::UNIV{
         if (idx < 0 || pIdx < 0 || pIdx == idx)
             return false;
 
-        Math::Quaternion pgRotation = boneRotation(boneName, false);
-        Math::Vector3 pgPosition = bonePosition(boneName, false);
+        const Math::Quaternion pgRotation = boneRotation(boneName, false);
+        const Math::Vector3 pgPosition = bonePosition(boneName, false);
         Math::Quaternion rotation = boneRotation(boneName, keepRelative);
         Math::Vector3 position = bonePosition(boneName, keepRelative);
 
@@ -491,7 +485,7 @@ namespace CALUMI::UNIV{
 
         if (pIdx < 0)
             return rotation;
-        std::cout << "Getting relative rotation for " << boneName << " of " << Math::Quaternion::rotationOffset(pImpl->_boneEntries.at(pIdx).globalRotation(), rotation).toString().c_str() << std::endl;
+
         return Math::Quaternion::rotationOffset(pImpl->_boneEntries.at(pIdx).globalRotation(), rotation);
     }
 

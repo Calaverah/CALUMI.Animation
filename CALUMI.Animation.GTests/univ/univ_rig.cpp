@@ -61,6 +61,31 @@ GTEST(UnivRigCreation)
     EXPECT_QUATNEAR(rig.boneRotation("root",false),Math::Quaternion(0.0f,0.0f,0.087156f,0.996195f),0.000001f);
     EXPECT_QUATNEAR(rig.boneRotation("root",true),Math::Quaternion(0.0f,0.0f,0.087156f,0.996195f),0.000001f);
 
+    EXPECT_TRUE(rig.addBoneToRig({0.0f,0.0f,static_cast<float>(Math::ToRadians(180.0f)),Math::Quaternion::EulerOrder::XYZ},Math::Vector3(0.0f,0.0f,0.0f),"base","",true));
+
+    Math::Quaternion expChild01 = rig.boneRotation("child01",false);
+    expChild01.rotateBy(Math::Quaternion(0.0f,0.0f,1.0f,0.0f));
+    Math::Quaternion expChild00 = rig.boneRotation("child00",false);
+    expChild00.rotateBy(Math::Quaternion(0.0f,0.0f,1.0f,0.0f));
+    Math::Quaternion expChild000 = rig.boneRotation("root",false);
+    expChild000.rotateBy(Math::Quaternion(0.0f,0.0f,1.0f,0.0f));
+
+    EXPECT_TRUE(rig.setRoot("base"));
+    EXPECT_TRUE(rig.setBoneParent("root","base"));
+    EXPECT_TRUE(rig.renameBone("root","child000"));
+
+    EXPECT_EQ(rig.boneCount(), 4);
+    EXPECT_QUATNEAR(rig.boneRotation("child01",false),expChild01,0.000001f);
+    EXPECT_QUATNEAR(rig.boneRotation("child01",true),Math::Quaternion(0.0f,0.0f,0.258819f,0.965926f),0.000001f);
+
+    EXPECT_QUATNEAR(rig.boneRotation("child00",false),expChild00,0.000001f);
+    EXPECT_QUATNEAR(rig.boneRotation("child00",true),Math::Quaternion(0.0f,0.0f,0.707107f,0.707107f),0.000001f);
+
+    EXPECT_QUATNEAR(rig.boneRotation("child000",false),expChild000,0.000001f);
+    EXPECT_QUATNEAR(rig.boneRotation("child000",true),Math::Quaternion(0.0f,0.0f,0.087156f,0.996195f),0.000001f);
+
+    EXPECT_QUATNEAR(rig.boneRotation("base",false),Math::Quaternion(0.0f,0.0f,1.0f,0.0f),0.000001f);
+    EXPECT_QUATNEAR(rig.boneRotation("base",true),Math::Quaternion(0.0f,0.0f,1.0f,0.0f),0.000001f);
 }
 
 GTEST(UnivRigCreationC)

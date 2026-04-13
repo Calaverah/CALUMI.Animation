@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "utilities\CALUMI_Hashes.h"
+#include "utilities/CALUMI_Hashes.h"
 #include "../Common.h"
 
 #define GTEST(x) TEST(HashUtil, x)
@@ -38,11 +38,15 @@ GTEST(RegisterHash)
     const auto outputList = Utilities::HashRegistry::getInstance().getRegisteredStrings();
 
     EXPECT_EQ(outputList.size(), 5);
-    EXPECT_STREQ(outputList.c_str(0), "TestxyzHash1");
-    EXPECT_STREQ(outputList.c_str(1), "TestxyzHash2");
-    EXPECT_STREQ(outputList.c_str(2), "TestxyzHash3");
-    EXPECT_STREQ(outputList.c_str(4), "TestxyzHash4");
-    EXPECT_STREQ(outputList.c_str(3), "TestxyzHash5");
+    std::set<std::string> registeredStrings;
+    for (uint32_t i = 0; i < outputList.size(); i++)
+        registeredStrings.insert(outputList.c_str(i));
+
+    EXPECT_TRUE(registeredStrings.contains("TestxyzHash1"));
+    EXPECT_TRUE(registeredStrings.contains("TestxyzHash2"));
+    EXPECT_TRUE(registeredStrings.contains("TestxyzHash3"));
+    EXPECT_TRUE(registeredStrings.contains("TestxyzHash4"));
+    EXPECT_TRUE(registeredStrings.contains("TestxyzHash5"));
 
     EXPECT_EQ(hash1, Utilities::HashRegistry::getInstance().registerHash("TestxyzHash1"));
     EXPECT_EQ(hash2, Utilities::HashRegistry::getInstance().registerHash("TestxyzHash2"));
