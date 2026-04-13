@@ -916,7 +916,7 @@ namespace CALUMI::Math
 		result.pImpl->w = qConjugate.pImpl->w / pLength;
 	}
 
-	void Math::Quaternion::inverse() noexcept
+	void Quaternion::inverse() const noexcept
 	{
 		float pLength = length();
 		if (pLength <= 0)
@@ -934,12 +934,21 @@ namespace CALUMI::Math
 
 	float Quaternion::angularDistance(const Quaternion& input) const
 	{
-		Quaternion qInverse;
-		inverse(qInverse);
-
-		Quaternion diffQ = qInverse * input;
+		const auto diffQ = rotationOffset(input, *this);
 
 		return 2 * acos(diffQ.w());
+	}
+
+	Quaternion Quaternion::rotationOffset(const Quaternion& start, const Quaternion& end)
+	{
+		Quaternion inv;
+		start.inverse(inv);
+		return end * inv;
+	}
+
+	void Quaternion::rotateBy(const Quaternion& offset)
+	{
+		*this = offset * *this;
 	}
 
 	Quaternion Quaternion::sLerp(const Quaternion& input, float t) const

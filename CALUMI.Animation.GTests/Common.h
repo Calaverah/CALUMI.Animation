@@ -11,3 +11,15 @@
 
 #define _BMAGENTA(X) std::format("\033[95m{}\033[0m",X)
 #define _BRED(X) std::format("\033[91m{}\033[0m",X)
+
+#define EXPECT_QUATNEAR(q1,q2,tolerance) \
+    {\
+    bool result = q1.areEqual(q2, tolerance); \
+    EXPECT_TRUE(result);\
+    if(!result) \
+    { \
+        std::cout << _BMAGENTA("Q1: ") << q1.toString().c_str() << std::endl; \
+        std::cout << _BMAGENTA("Q2: ") << q2.toString().c_str() << std::endl; \
+    }\
+    }\
+    

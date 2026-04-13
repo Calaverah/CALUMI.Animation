@@ -582,10 +582,21 @@ namespace CALUMI::Math
 		void normalize(Quaternion& result) const noexcept;
 
 		void inverse(Quaternion& result) const noexcept;
-		void inverse() noexcept;
+		void inverse() const noexcept;
 
 		//Returns angle in radians
 		float angularDistance(const Quaternion& input) const;
+
+		/**
+		 * @param start
+		 * @param end
+		 * @return The offset rotation needed for "start" to reach "end"
+		 */
+		static Quaternion rotationOffset(const Quaternion& start, const Quaternion& end);
+		/**
+		 * @param offset The amount to rotate this quaternion
+		 */
+		void rotateBy(const Quaternion& offset);
 
 		Quaternion sLerp(const Quaternion& input, float t = 0.5f) const;
 

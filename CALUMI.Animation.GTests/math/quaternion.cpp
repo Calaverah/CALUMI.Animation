@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <AnimMath>
+#include "../Common.h"
 
 using namespace CALUMI::Math;
 
@@ -215,4 +216,24 @@ GTEST(EulerXYZ)
     Quaternion q12(float(ToRadians(30)), float(ToRadians(60)), float(ToRadians(45)), Quaternion::EulerOrder::ZYZ);
     Quaternion expected12(0.065263f, 0.495722f, 0.527203f, 0.687064f);
     EXPECT_TRUE(expected12.areEqual(q12, 0.001));
+}
+
+GTEST(Offset)
+{
+    Quaternion q1(0.0f, 0.0f, static_cast<float>(ToRadians(30.0f)), Quaternion::EulerOrder::XYZ);
+    const Quaternion q2(0.0f, 0.0f, static_cast<float>(ToRadians(60.0f)), Quaternion::EulerOrder::XYZ);
+    const Quaternion qExpect(0.0f, 0.0f, static_cast<float>(ToRadians(90.0f)), Quaternion::EulerOrder::XYZ);
+
+    q1.rotateBy(q2);
+    EXPECT_QUATNEAR(q1, qExpect, 0.000001f);
+
+    const auto qDist = Quaternion::rotationOffset(q1, q2);
+    const Quaternion qDistExpect(0.0f, 0.0f, static_cast<float>(ToRadians(-30.0f)), Quaternion::EulerOrder::XYZ);
+    const auto qNone = Quaternion::rotationOffset(q1, qExpect);
+
+    EXPECT_QUATNEAR(qDist, qDistExpect, 0.000001f);
+    EXPECT_QUATNEAR(qNone, Quaternion(), 0.000001f);
+
+    q1.rotateBy(qDist);
+    EXPECT_QUATNEAR(q1, q2, 0.000001f);
 }

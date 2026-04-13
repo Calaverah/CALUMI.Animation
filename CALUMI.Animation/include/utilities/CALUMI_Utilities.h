@@ -2,25 +2,39 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppNonExplicitConvertingConstructor
 #pragma once
 #include "CALUMI_Common.h"
 
 
 
-namespace CALUMI { namespace Utilities {
-
-	
-
+namespace CALUMI::Utilities
+{
+	/**
+	 * @brief A buffer object is a simple char vector with basic functionality meant for
+	 * reading/parsing/aligning to a binary source during input
+	 * @details This buffer object can be used in larger classes for data handling with alignment
+	 */
 	struct CALUMIANIMATION_API BufferObject
 	{
 		BufferObject();
 		virtual ~BufferObject();
 
-		virtual char* data() const;
-		virtual uint64_t endPos() const;
-		virtual uint64_t size() const;
+		/**
+		 * @return Non-const ptr to the beginning of this vector
+		 */
+		[[nodiscard]] virtual char* data() const;
+		/**
+		 * @return The index of the vector.end, relative to its beginning
+		 * @brief i.e. _buffer.end() - _buffer.begin()
+		 */
+		[[nodiscard]] virtual uint64_t endPos() const;
+		/**
+		 * @return The current buffer size
+		 */
+		[[nodiscard]] virtual uint64_t size() const;
 
-		virtual const char& at(uint64_t idx) const;
+		[[nodiscard]] virtual const char& at(uint64_t idx) const;
 		virtual char& at(uint64_t idx);
 		virtual void insert(uint64_t pos, uint64_t size, char item);
 		virtual void reserve(uint64_t size);
@@ -33,6 +47,9 @@ namespace CALUMI { namespace Utilities {
 		PrivateBuffer* pBuffer;
 	};
 
+	/**
+	 * @brief A simple string container for convenience
+	 */
 	struct CALUMIANIMATION_API StringContainer
 	{
 		StringContainer(const char* cString);
@@ -41,28 +58,28 @@ namespace CALUMI { namespace Utilities {
 		StringContainer(StringContainer&& source) noexcept;
 		StringContainer();
 		~StringContainer();
-		
-		const char* c_str() const;
-		const char* data() const;
-		void clear();
-		bool empty();
-		uint64_t length(bool includeNull = false) const;
+
+		[[nodiscard]] const char* c_str() const;
+		[[nodiscard]] const char* data() const;
+		void clear() const;
+		[[nodiscard]] bool empty() const;
+		[[nodiscard]] uint64_t length(bool includeNull = false) const;
 
 		uint64_t find(const char* s, uint64_t pos = 0) const;
 
-		int compare(const StringContainer& other, bool caseSensitive = true) const noexcept;
-		int compare(uint64_t pos, uint64_t len, const StringContainer& other) const;
-		int compare(uint64_t pos, uint64_t len, const StringContainer& other, uint64_t subpos, uint64_t sublen) const;
+		[[nodiscard]] int compare(const StringContainer& other, bool caseSensitive = true) const noexcept;
+		[[nodiscard]] int compare(uint64_t pos, uint64_t len, const StringContainer& other) const;
+		[[nodiscard]] int compare(uint64_t pos, uint64_t len, const StringContainer& other, uint64_t subPos, uint64_t subLngth) const;
 
-		void assign(const char* str);
+		void assign(const char* str) const;
 
-		char at(uint64_t idx) const;
+		[[nodiscard]] char at(uint64_t idx) const;
 		StringContainer& operator+=(const char* other);
 		StringContainer& operator+=(const StringContainer& other);
 		StringContainer& operator=(const StringContainer& other);
 		StringContainer& operator=(const char* other);
-		StringContainer operator+(const char* other);
-		StringContainer operator+(const StringContainer& other);
+		StringContainer operator+(const char* other) const;
+		StringContainer operator+(const StringContainer& other) const;
 		bool operator==(const StringContainer& other) const;
 		bool operator!=(const StringContainer& other) const;
 		bool operator==(const char* other) const;
@@ -76,10 +93,22 @@ namespace CALUMI { namespace Utilities {
 		Impl* pImpl;
 	};
 
-	//String Stuff
-	Utilities::StringContainer Indent(const uint64_t indents);
-	bool IsNumeric(const Utilities::StringContainer& str);
+	/**
+	 *
+	 * @param indents Amount of spaces
+	 * @return A simple, empty string of only ' 's to assist with indentation
+	 */
+	StringContainer Indent(uint64_t indents);
+	/**
+	 * @brief Extremely simple string check for numeric characters
+	 * @param str
+	 * @return
+	 */
+	bool IsNumeric(const StringContainer& str);
 
+	/**
+	 * @brief Simple wrapper for the std::filesystem::path class. Has options for wide or single space character output.
+	 */
 	struct CALUMIANIMATION_API PathContainer
 	{
 		PathContainer();
@@ -89,28 +118,28 @@ namespace CALUMI { namespace Utilities {
 		PathContainer(const PathContainer&& source) noexcept;
 		~PathContainer();
 
-		StringContainer strContainer() const;
-		const wchar_t* w_str() const;
-		const char* c_str() const;
-		void clear();
-		bool empty();
+		[[nodiscard]] StringContainer strContainer() const;
+		[[nodiscard]] const wchar_t* w_str() const;
+		[[nodiscard]] const char* c_str() const;
+		void clear() const;
+		[[nodiscard]] bool empty() const;
 
-		bool has_extension() const;
-		bool has_filename() const;
-		PathContainer filename() const;
-		PathContainer stem() const;
-		bool has_relativepath() const;
-		bool has_parentpath() const;
-		PathContainer extension() const;
+		[[nodiscard]] bool has_extension() const;
+		[[nodiscard]] bool has_filename() const;
+		[[nodiscard]] PathContainer filename() const;
+		[[nodiscard]] PathContainer stem() const;
+		[[nodiscard]] bool has_relativepath() const;
+		[[nodiscard]] bool has_parentpath() const;
+		[[nodiscard]] PathContainer extension() const;
 
 		PathContainer& replace_extension(const PathContainer& replacement);
 
 		PathContainer& operator=(const char* other);
 		PathContainer& operator=(const wchar_t* other);
 		PathContainer& operator=(const PathContainer& other);
-		PathContainer& operator=(const Utilities::StringContainer& other);
+		PathContainer& operator=(const StringContainer& other);
 		PathContainer& operator/=(const PathContainer& other);
-		PathContainer& operator/=(const Utilities::StringContainer& other);
+		PathContainer& operator/=(const StringContainer& other);
 		PathContainer& operator/=(const char* other);
 		PathContainer& operator/=(const wchar_t* other);
 		bool operator==(const PathContainer& other) const;
@@ -120,27 +149,30 @@ namespace CALUMI { namespace Utilities {
 		Impl* pImpl;
 	};
 
+	/**
+	 * @brief String Vector wrapper with added data for serialization assistance
+	 */
 	struct CALUMIANIMATION_API StringList
 	{
 		StringList();
 		StringList(const StringList& other);
 		~StringList();
 
-		void push_back(const char* string, uint64_t offset);
-		void push_back(const char* string);
+		void push_back(const char* string, uint64_t offset) const;
+		void push_back(const char* string) const;
 
-		uint64_t getOffset(uint64_t idx);
-		uint64_t getFinalOffset();
-		bool hasOffset(uint64_t idx);
-		void setFinalOffset(uint64_t offset);
-		void reserve(uint64_t size);
-		const char* c_str(uint64_t idx) const;
-		uint64_t stringLength(uint64_t idx, bool includeNull = false) const;
-		uint64_t size() const;
+		[[nodiscard]] uint64_t getOffset(uint64_t idx) const;
+		[[nodiscard]] uint64_t getFinalOffset() const;
+		[[nodiscard]] bool hasOffset(uint64_t idx) const;
+		void setFinalOffset(uint64_t offset) const;
+		void reserve(uint64_t size) const;
+		[[nodiscard]] const char* c_str(uint64_t idx) const;
+		[[nodiscard]] uint64_t stringLength(uint64_t idx, bool includeNull = false) const;
+		[[nodiscard]] uint64_t size() const;
 
 		StringList& operator=(const StringList& other);
 
-		bool empty() const;
+		[[nodiscard]] bool empty() const;
 
 	private:
 		struct Impl;
@@ -210,21 +242,19 @@ struct CALUMIANIMATION_API CLASS \
 
 
 
-	void AlignBuffer(BufferObject& buffer, unsigned long long& currentIndex, int alignmentSize);
 
-	//Buff Stuff
+	void AlignBuffer(unsigned long long& currentIndex, int alignmentSize);
 	void AlignBufferAndRead(BufferObject& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, void* Destination);
 	void AlignFillBufferAndWrite(BufferObject& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, const void* Source);
 
 #pragma region EXTERN "C"
 	extern "C" {
-		CALUMIANIMATION_API StringContainer* CreateStringContainerC();
-		CALUMIANIMATION_API const char* GetStringFromContainerC(StringContainer* source);
-		CALUMIANIMATION_API uint64_t GetStringContainerSizeC(StringContainer* source);
-		CALUMIANIMATION_API void DeleteStringContainerC(StringContainer* ptr);
+	CALUMIANIMATION_API StringContainer* CreateStringContainerC();
+	CALUMIANIMATION_API const char* GetStringFromContainerC(const StringContainer* source);
+	CALUMIANIMATION_API uint64_t GetStringContainerSizeC(const StringContainer* source);
+	CALUMIANIMATION_API void DeleteStringContainerC(const StringContainer* ptr);
 	}
 #pragma endregion
 
-}
 }
 

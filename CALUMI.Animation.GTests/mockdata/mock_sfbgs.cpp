@@ -347,3 +347,4 @@ GTEST(ScratchAnimation)
 	EXPECT_EQ(uAnim.animationBlockCount(), 2);
 	EXPECT_EQ(uAnim.frameCount(), 31);
 }
+

@@ -97,7 +97,7 @@ namespace CALUMI::UNIV{
 
 	public:
 		/**
-		 * @brief Sets the parent for this bone
+		 * @brief Sets the parent for this bone, however, setting the parent directly on the bone will not affect its global position and rotation
 		 * @param name Name of parent
 		 * @details If no name is set, or is left blank, the parentage will default to the root object of the rig during compilation
 		 */
@@ -157,15 +157,21 @@ namespace CALUMI::UNIV{
 
 		/// @}
 
+		//TODO: Consider flags for parental/relative/global during shifting operations
+
 	public:
 		/** @name Properties*/
 		/// @{
 
 		/**
 		 * @brief
-		 * @return String Container of the rig's name
+		 * @return C String of the rig's name
 		 */
-		[[nodiscard]] Utilities::StringContainer& rigName() const;
+		[[nodiscard]] const char* name() const;
+		/**
+		 * @param name Name to set, unique is advised
+		 */
+		bool setName(const char* name) const;
 		/**
 		 * @brief The entry list for this rig's bones
 		 * @return Vector container
@@ -223,10 +229,20 @@ namespace CALUMI::UNIV{
 		/**
 		 * @brief Flags a bone to act as the root bone of this rig, moving it to the top of the bone entry vector.
 		 * The same as setting this bone's index to 0.
-		 * @param boneName 
+		 * @param boneName
+		 * @param keepRelative Will keep the relative position/rotation to its current parent, and assign it as global
+		 * @param keepChildrenRelative Will keep the relative positions of its children
 		 * @return Whether the bone was successfully set as the root
 		 */
-		bool setRoot(const char* boneName) const;
+		bool setRoot(const char* boneName, bool keepRelative = true, bool keepChildrenRelative = true) const;
+		/**
+		 * @param boneName The bone to reparent
+		 * @param parentName The new parent, if not found, will cancel operation
+		 * @param keepRelative If true, the relative position/rotation of this bone to its current parent will be preserved under its new parent
+		 * @param keepChildrenRelative
+		 * @return Whether the operation is successful
+		 */
+		bool setBoneParent(const char* boneName, const char* parentName, bool keepRelative = true, bool keepChildrenRelative = true) const;
 		/**
 		 * @brief Renames a bone in the rig, if one exists
 		 * @param oldBoneName The name of the bone to rename
@@ -325,7 +341,9 @@ namespace CALUMI::UNIV{
 		static constexpr unsigned int MaxBoneCount = 512;
 
 		/// @}
-
+	private:
+		/// @private
+		void shiftChildren(const SkeletonBone& bone, const Math::Vector3& posOffset, const Math::Quaternion& rotOffset) const;
 	private:
 		struct Impl;
 		Impl* pImpl;
@@ -434,9 +452,11 @@ namespace CALUMI::UNIV{
 		 * @brief Normally the root of the rig is set to the 0th index of the bone entry vector, setting this will override that selection, if desired
 		 * @param rig 
 		 * @param boneName Bone to mark as the root override
+		 * @param keepRelative
+		 * @param keepChildrenRelative
 		 * @return 
 		 */
-		CALUMIANIMATION_API bool SetRootC(const SkeletonRig* rig, const char* boneName);
+		CALUMIANIMATION_API bool SetRootC(const SkeletonRig* rig, const char* boneName, bool keepRelative, bool keepChildrenRelative);
 		/**
 		 * @brief Sets the given bone to a new index, if one exists
 		 * @param rig The rig that holds the vector containing the bone

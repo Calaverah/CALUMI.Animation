@@ -11,9 +11,11 @@
 #include <vector>
 #include <memory>
 #include <algorithm>
+#include <iostream>
 #include <limits>
 #include <unordered_map>
-#include <iterator>
+#include <ostream>
+#include <unordered_set>
 
 
 namespace CALUMI::UNIV{
@@ -68,6 +70,8 @@ namespace CALUMI::UNIV{
     void SkeletonBone::setRotation(const Math::Quaternion& global) const
     {
         pImpl->globalRotation = global;
+        //TODO: erase this std::cout
+        std::cout << name() << " rotation set to " << pImpl->globalRotation.toString().c_str() << std::endl;
     }
     void SkeletonBone::setPosition(const Math::Vector3 & global) const
     {
@@ -112,6 +116,9 @@ namespace CALUMI::UNIV{
 
     void SkeletonBone::setParentBone(const char* name) const
     {
+        if (SCOMPARE(name, pImpl->name.c_str()) == 0)
+            return;
+
         pImpl->_parentBone = name;
     }
 
@@ -158,13 +165,24 @@ namespace CALUMI::UNIV{
         /// <summary>
         /// Optional name for the skeleton rig.
         /// </summary>
-        Utilities::StringContainer _rigName = "MySkeletonRig";
+        std::string _rigName = "MySkeletonRig";
         SkeletonBoneVector _boneEntries;
         RigPackageManager _rigPackageManager;
         std::unordered_map<std::string, std::string> _mirrors;
         Impl() = default;
     };
-    Utilities::StringContainer& SkeletonRig::rigName() const { return pImpl->_rigName; }
+
+    const char* SkeletonRig::name() const { return pImpl->_rigName.c_str(); }
+
+    bool SkeletonRig::setName(const char* name) const
+    {
+        if (SCOMPARE(name, "") == 0)
+            return false;
+
+        pImpl->_rigName = name;
+        return true;
+    }
+
     const SkeletonBoneVector& SkeletonRig::boneEntries() const { return pImpl->_boneEntries; }
     SkeletonBone* SkeletonRig::bone(const char* boneName) const
     {
@@ -196,7 +214,7 @@ namespace CALUMI::UNIV{
     }
     SkeletonRig::SkeletonRig(const Utilities::StringContainer& _rigName) : SkeletonRig()
     {
-        pImpl->_rigName = _rigName;
+        pImpl->_rigName = _rigName.c_str();
     }
     SkeletonRig::SkeletonRig(const char* _rigName) : SkeletonRig()
     {
@@ -221,16 +239,13 @@ namespace CALUMI::UNIV{
     SkeletonBone* SkeletonRig::addBoneToRig(const Math::Quaternion& rotation, const Math::Vector3& position, const char* boneName, const char* parentName, const bool relativeToParent) const
     {
         if (pImpl->_boneEntries.size() >= MaxBoneCount)
-        {
-            //std::println("[CALUMI.Animation API] Bone Count Limit Reached For Rig: {}", pImpl->_rigName.c_str());
             return nullptr;
-        }
 
         if (SCOMPARE(boneName, "") == 0)
-        {
-            //std::println("[CALUMI.Animation API] Bone Must Have Valid Bone Name");
             return nullptr;
-        }
+
+        if (SCOMPARE(boneName, parentName) == 0)
+            return nullptr;
 
         if (findBone(boneName) >= 0)
             return nullptr;
@@ -258,10 +273,123 @@ namespace CALUMI::UNIV{
 
         return &pImpl->_boneEntries.at(pImpl->_boneEntries.size()-1);
     }
-    bool SkeletonRig::setRoot(const char* boneName) const
+
+    void SkeletonRig::shiftChildren(const SkeletonBone& bone, const Math::Vector3& posOffset, const Math::Quaternion& rotOffset) const
     {
-        return setBoneIndex(boneName, 0) == 0;
+        for (int i =0 ; i < pImpl->_boneEntries.size(); i++)
+        {
+            if (const auto child = pImpl->_boneEntries.at(i); SCOMPARE(child.parentBone(), bone.name()) == 0)
+            {
+                Math::Vector3 newPos = child.globalPosition() + posOffset;
+                Math::Quaternion newRot = child.globalRotation();
+
+                newRot.rotateBy(rotOffset);
+
+                std::cout << "Rotating " <<child.name() << " from " << child.globalRotation().toString().c_str() << " by " << rotOffset.toString().c_str() << " to end at " << newRot.toString().c_str() << std::endl;
+
+                child.setRotation(newRot);
+                child.setPosition(newPos);
+
+                shiftChildren(child, posOffset, rotOffset);
+            }
+        }
     }
+
+    static bool s_HasParentLoop(const SkeletonRig& rig, const char* boneName, std::unordered_set<std::string>& parentNames)
+    {
+        if (const auto bone = rig.bone(boneName))
+        {
+            if (SCOMPARE(bone->parentBone(), "") ==0 )
+                return false;
+
+            if (SCOMPARE(bone->parentBone(), boneName) == 0)
+                return true;
+
+            if (parentNames.contains(bone->parentBone()))
+                return true;
+
+            if (parentNames.size() == rig.boneEntries().size())
+                return true;
+
+            parentNames.insert(bone->parentBone());
+
+            return s_HasParentLoop(rig, bone->parentBone(), parentNames);
+        }
+        return false;
+    }
+
+    bool SkeletonRig::setRoot(const char* boneName, const bool keepRelative, const bool keepChildrenRelative) const
+    {
+        const auto idx = findBone(boneName);
+
+        if (idx < 0)
+            return false;
+
+        //we store the previous globals for child relative calculations
+        const Math::Quaternion prevRotation = pImpl->_boneEntries.at(idx).globalRotation();
+        const Math::Vector3 prevPosition = pImpl->_boneEntries.at(idx).globalPosition();
+
+        //if keep relative, then new global will be equal to current relative
+        const Math::Quaternion newRotation = boneRotation(boneName, keepRelative);
+        const Math::Vector3 newPosition = bonePosition(boneName, keepRelative);
+
+        if (setBoneIndex(boneName, 0) != 0)
+            return false;
+
+        //the new index is set so we move forward
+        pImpl->_boneEntries.at(0).setParentBone("");
+        pImpl->_boneEntries.at(0).setRotation(newRotation);
+        pImpl->_boneEntries.at(0).setPosition(newPosition);
+
+        if (!keepChildrenRelative)
+            return true;
+
+        if (std::unordered_set<std::string> parentNames; s_HasParentLoop(*this, boneName, parentNames))
+            return false;
+
+        shiftChildren(pImpl->_boneEntries.at(0),
+                      newPosition - prevPosition,
+                      Math::Quaternion::rotationOffset(prevRotation, newRotation));
+        return true;
+    }
+
+    bool SkeletonRig::setBoneParent(const char* boneName, const char* parentName, const bool keepRelative, const bool keepChildrenRelative) const
+    {
+        const int idx = findBone(boneName);
+        const int pIdx = findBone(parentName);
+
+        if (idx < 0 || pIdx < 0 || pIdx == idx)
+            return false;
+
+        Math::Quaternion pgRotation = boneRotation(boneName, false);
+        Math::Vector3 pgPosition = bonePosition(boneName, false);
+        Math::Quaternion rotation = boneRotation(boneName, keepRelative);
+        Math::Vector3 position = bonePosition(boneName, keepRelative);
+
+        pImpl->_boneEntries.at(idx).setParentBone(parentName);
+
+        if (!keepRelative)
+            return true;
+
+        position += pImpl->_boneEntries.at(pIdx).globalPosition();
+        rotation.rotateBy(pImpl->_boneEntries.at(pIdx).globalRotation());
+
+        pImpl->_boneEntries.at(idx).setPosition(position);
+        pImpl->_boneEntries.at(idx).setRotation(rotation);
+
+        if (!keepChildrenRelative)
+            return true;
+
+        if (std::unordered_set<std::string> parentNames; s_HasParentLoop(*this, boneName, parentNames))
+            return false;
+
+        shiftChildren(pImpl->_boneEntries.at(idx),
+                      position - pgPosition,
+                      Math::Quaternion::rotationOffset(pgRotation, rotation));
+
+        return true;
+    }
+
     bool SkeletonRig::renameBone(const char* oldBoneName, const char* newBoneName) const
     {
         if (SCOMPARE(newBoneName, "") == 0)
@@ -363,14 +491,8 @@ namespace CALUMI::UNIV{
 
         if (pIdx < 0)
             return rotation;
-
-        Math::Quaternion inverseParentRoot;
-
-        pImpl->_boneEntries.at(pIdx).globalRotation().inverse(inverseParentRoot);
-
-        rotation = rotation * inverseParentRoot;
-
-        return rotation;
+        std::cout << "Getting relative rotation for " << boneName << " of " << Math::Quaternion::rotationOffset(pImpl->_boneEntries.at(pIdx).globalRotation(), rotation).toString().c_str() << std::endl;
+        return Math::Quaternion::rotationOffset(pImpl->_boneEntries.at(pIdx).globalRotation(), rotation);
     }
 
     Math::Vector3 SkeletonRig::bonePosition(const char* boneName, const bool relativeToParent) const
@@ -407,19 +529,32 @@ namespace CALUMI::UNIV{
         if (newIndex >= pImpl->_boneEntries.size())
             newIndex = static_cast<int>(pImpl->_boneEntries.size() - 1);
 
-        const auto begin = pImpl->_boneEntries.pImpl->vector.begin();
+        const auto copy = pImpl->_boneEntries.at(prevIndex);
 
-        if (newIndex < prevIndex)
+        const auto pSize = pImpl->_boneEntries.size();
+        pImpl->_boneEntries.erase(prevIndex);
+
+        if (pSize == pImpl->_boneEntries.size())
+            return prevIndex;
+
+        pImpl->_boneEntries.insert_r(newIndex, copy);
+
+        if (pSize != pImpl->_boneEntries.size())
         {
-            return static_cast<int>(std::distance(begin, std::rotate(begin + newIndex, begin + prevIndex, begin + prevIndex + 1)));
+            pImpl->_boneEntries.insert_r(prevIndex, copy);
+            return prevIndex;
         }
 
-        if (newIndex > prevIndex)
+        if (SCOMPARE(pImpl->_boneEntries.at(newIndex).name(), copy.name()) == 0)
+            return newIndex;
+
+        for (int i = 0; i < pImpl->_boneEntries.size(); i++)
         {
-            return static_cast<int>(std::distance(begin, std::rotate(begin + prevIndex, begin + prevIndex + 1, begin + newIndex + 1)));
+            if (SCOMPARE(pImpl->_boneEntries.at(i).name(), copy.name()) == 0)
+                return i;
         }
 
-        return newIndex;
+        return -1;
     }
 
     bool SkeletonRig::verifyExclusiveBoneMirrors() const
@@ -480,7 +615,7 @@ namespace CALUMI::UNIV{
     Utilities::StringContainer SkeletonRig::toJSON(const uint64_t indents = 0) const {
         Utilities::StringContainer output = Utilities::Indent(indents).c_str();
         output += "{\n";
-        output += std::format("{0}\"rigName\":\"{1}\",\n{0}\"boneEntries\":", Utilities::Indent(indents + 1).c_str(), pImpl->_rigName.c_str()).c_str();
+        output += std::format("{0}\"rigName\":\"{1}\",\n{0}\"boneEntries\":", Utilities::Indent(indents + 1).c_str(), pImpl->_rigName).c_str();
         // output += Utilities::VectorToJSON(pImpl->_boneEntries,indents + 1);
         output += "\n ";
         output += Utilities::Indent(indents).c_str();
@@ -690,7 +825,7 @@ namespace CALUMI::UNIV{
     }
     const char* GetSkeletonRigNameC(const SkeletonRig* source)
     {
-        return source->rigName().c_str();
+        return source->name();
     }
     SkeletonBone* GetSkeletonBoneC(const SkeletonRig* source, const char* boneName)
     {
@@ -748,9 +883,9 @@ namespace CALUMI::UNIV{
     {
         return rig->removeBone(boneName);
     }
-    bool SetRootC(const SkeletonRig* rig, const char* boneName)
+    bool SetRootC(const SkeletonRig* rig, const char* boneName, const bool keepRelative, const bool keepChildrenRelative)
     {
-        return rig->setRoot(boneName);
+        return rig->setRoot(boneName, keepRelative, keepChildrenRelative);
     }
     int FindBoneInRigC(const SkeletonRig* rig, const char* boneName)
     {

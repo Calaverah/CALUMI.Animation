@@ -1074,7 +1074,7 @@ namespace CALUMI::SFBGS {
 	Utilities::FileResult Animation::readFromFile(Utilities::PathContainer& inputFilePath)
 	{
 		//Check to see if file exists and is valid
-		Utilities::StringList vec;
+		const Utilities::StringList vec;
 		vec.push_back(".af");
 
 		auto buffer = ValidateFile(inputFilePath, vec, 64, 0, true);
@@ -1139,7 +1139,7 @@ namespace CALUMI::SFBGS {
 		// uint64_t newOffset = addressIndex + pImpl->_preambleOffset;
 		if (pImpl->_preambleOffset > 0)
 		{
-			CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 4, 4, &pImpl->_preambleCount);
+			Utilities::AlignBufferAndRead(buffer, addressIndex, 4, 4, &pImpl->_preambleCount);
 			pImpl->_preamble.reserve(pImpl->_preambleCount);
 			for (uint64_t i = 0; i < pImpl->_preambleCount; i++)
 			{
@@ -1154,11 +1154,11 @@ namespace CALUMI::SFBGS {
 		pImpl->_amendedHashSet.resize(pImpl->_amendedBlockCount);
 		for (uint64_t i = 0; i < pImpl->_amendedBlockCount; i++)
 		{
-			CALUMI::Utilities::AlignBufferAndRead(buffer, addressIndex, 4, 4, &pImpl->_amendedHashSet.at(i));
+			Utilities::AlignBufferAndRead(buffer, addressIndex, 4, 4, &pImpl->_amendedHashSet.at(i));
 		}
 
 		//Aligning To 4 before hitting the Animation Block Evaluation
-		CALUMI::Utilities::AlignBuffer(buffer, addressIndex, 4);
+		Utilities::AlignBuffer(addressIndex, 4);
 
 		//Evaluate Animation Blocks
 		//INDEX ATLAS
@@ -1223,7 +1223,7 @@ namespace CALUMI::SFBGS {
 			std::cout << std::format("===========================================================").c_str() << std::endl;
 		}
 #endif
-		return {Utilities::FileResult::FileErrorCode::Success, inputFilePath.w_str(), ""};
+		return {Utilities::FileResult::FileErrorCode::Success, inputFilePath, ""};
 	}
 
 	Utilities::FileResult Animation::writeToFile(Utilities::PathContainer& outputFilePath)

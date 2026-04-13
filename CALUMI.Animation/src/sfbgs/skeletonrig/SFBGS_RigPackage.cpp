@@ -427,12 +427,12 @@ namespace CALUMI::SFBGS
 		if (SFBGS_RigPackage::CreateNewSFBGSRigPackage(*rig, overwrite))
 		{
 			*errorMessageHolder += " Successfully Added To";
-			*errorMessageHolder += rig->rigName();
+			*errorMessageHolder += rig->name();
 			return true;
 		}
 
 		*errorMessageHolder += " Was Not Added To ";
-		*errorMessageHolder += rig->rigName();
+		*errorMessageHolder += rig->name();
 		*errorMessageHolder += ", It May Already Exist And Was Not Set To Overwrite";
 
 		return false;
@@ -450,12 +450,12 @@ namespace CALUMI::SFBGS
 		if (SFBGS_RigPackage::RemoveSFBGSRigPackage(*rig))
 		{
 			*errorMessageHolder += " Successfully Removed From ";
-			*errorMessageHolder += rig->rigName();
+			*errorMessageHolder += rig->name();
 			return true;
 		}
 
 		*errorMessageHolder += " Was Not Removed From ";
-		*errorMessageHolder += rig->rigName();
+		*errorMessageHolder += rig->name();
 		*errorMessageHolder += ", It Either Does Not Exist Or Is Mislabeled";
 
 		return false;
@@ -488,7 +488,7 @@ namespace CALUMI::SFBGS
 				return true;
 		}
 
-		*errorMessageHolder += std::format("[CALUMI.Animation API] Bone: {} Could Not Be Added To SFBGS Rig Map On Rig: {}", boneName, rig->rigName().c_str()).c_str();
+		*errorMessageHolder += std::format("[CALUMI.Animation API] Bone: {} Could Not Be Added To SFBGS Rig Map On Rig: {}", boneName, rig->name()).c_str();
 		return false;
 
 	}

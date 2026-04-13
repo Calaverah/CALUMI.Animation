@@ -37,6 +37,7 @@ namespace CALUMI::Utilities
 		/// @{
 		FileResult();
 		~FileResult();
+		FileResult(FileErrorCode fileCode, PathContainer&& path, const char* errorMessage) noexcept;
 		FileResult(const FileErrorCode& fileCode, const PathContainer& path, const char* errorMessage);
 		FileResult(const FileErrorCode& fileCode, const PathContainer& path, const StringContainer& errorMessage);
 		FileResult(const FileResult& source);
@@ -53,23 +54,23 @@ namespace CALUMI::Utilities
 			 * @brief Simple way to check for error in the result
 			 * @return
 			 */
-		bool hasError() const;
+		[[nodiscard]] bool hasError() const;
 
 		/**
 			 * @brief Error Code Enum
 			 * @return Enum
 			 */
-		FileErrorCode getFileErrorCode() const;
+		[[nodiscard]] FileErrorCode getFileErrorCode() const;
 		/**
 			 * @brief File _path in question
 			 * @return Path Container of the file _path
 			 */
-		PathContainer getFilePath() const;
+		[[nodiscard]] PathContainer getFilePath() const;
 		/**
 		 * @brief Message specific to the operation
 		 * @return
 		 */
-		const char* getOpMessage() const;
+		[[nodiscard]] const char* getOpMessage() const;
 		/// @}
 
 		/// @name Serialization
@@ -79,7 +80,7 @@ namespace CALUMI::Utilities
 		 * @brief Combines the message, error code, and filepath into a human read-able format
 		 * @return String container with formatted message
 		 */
-		StringContainer toString();
+		StringContainer toString() const;
 		/// @}
 
 	private:
@@ -95,8 +96,8 @@ namespace CALUMI::Utilities
 		FileBufferResult();
 		~FileBufferResult() override;
 
-		void setResult(FileResult result);
-		const FileResult& result() const;
+		void setResult(const FileResult& result) const;
+		[[nodiscard]] const FileResult& result() const;
 
 	private:
 		struct Impl;
