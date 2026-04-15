@@ -27,15 +27,21 @@ namespace CALUMI::UNIV{
         std::shared_ptr<BoneTypeProperties> boneTypeProperties = std::make_shared<DefaultBoneProperties>();
         std::string _parentBone;
         Math::Quaternion globalRotation;
+        Math::Quaternion _localRotation;
         Math::Vector3 globalPosition;
+        Math::Vector3 _localPosition;
         Utilities::StringContainer name;
+
+        const ILineage& _parent;
+        std::vector<std::shared_ptr<SkeletonBone>> _childBones;
+        explicit Impl(const ILineage& parent) : _parent(parent) {}
     };
 
-    SkeletonBone::SkeletonBone()
+    SkeletonBone::SkeletonBone(const ILineage& parent)
     {
-        pImpl = new Impl;
+        pImpl = new Impl(parent);
     }
-    SkeletonBone::SkeletonBone(const SkeletonBone& other) : SkeletonBone()
+    SkeletonBone::SkeletonBone(const SkeletonBone& other) : SkeletonBone(other.pImpl->_parent)
     {
         *this = other;
     }
@@ -61,6 +67,29 @@ namespace CALUMI::UNIV{
         }
         return *this;
     }
+
+    const ILineage* SkeletonBone::parent() const
+    {
+        return &pImpl->_parent;
+    }
+
+    const SkeletonRig& SkeletonBone::parentRig() const
+    {
+        auto parentPtr = parent();
+        uint64_t failSafe = 0;
+
+        while (parentPtr->parent() != nullptr && failSafe < SkeletonRig::MaxBoneCount)
+        {
+            parentPtr = parentPtr->parent();
+            failSafe++;
+        }
+
+        if (const auto rig = dynamic_cast<const SkeletonRig*>(parentPtr))
+            return *rig;
+
+        throw std::runtime_error("SkeletonBone::parentRig() cannot resolve lineage to find Rig.");
+    }
+
     //const Math::Quaternion& SkeletonBone::localRotation() const { return pImpl->localRotation; }
     const Math::Quaternion& SkeletonBone::globalRotation() const { return pImpl->globalRotation; }
 
@@ -159,14 +188,15 @@ namespace CALUMI::UNIV{
 
     struct SkeletonRig::Impl
     {
-        /// <summary>
-        /// Optional name for the skeleton rig.
-        /// </summary>
         std::string _rigName = "MySkeletonRig";
         SkeletonBoneVector _boneEntries;
         RigPackageManager _rigPackageManager;
         std::unordered_map<std::string, std::string> _mirrors;
-        Impl() = default;
+
+        //TODO: Set bone parent
+        SkeletonBone _root;
+
+        explicit Impl(const SkeletonRig& owner) : _root(owner) {}
     };
 
     const char* SkeletonRig::name() const { return pImpl->_rigName.c_str(); }
@@ -195,7 +225,7 @@ namespace CALUMI::UNIV{
 
     SkeletonRig::SkeletonRig()
     {
-        pImpl = new Impl;
+        pImpl = new Impl(*this);
     }
     SkeletonRig::SkeletonRig(const SkeletonRig& input) : SkeletonRig()
     {
@@ -659,6 +689,11 @@ namespace CALUMI::UNIV{
             *pImpl = *other.pImpl;
         }
         return *this;
+    }
+
+    const ILineage* SkeletonRig::parent() const
+    {
+        return nullptr;
     }
 #pragma endregion
 

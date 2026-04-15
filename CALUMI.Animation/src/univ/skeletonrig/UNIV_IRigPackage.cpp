@@ -11,9 +11,6 @@ namespace CALUMI::UNIV
 {
 #pragma region RIGPACKAGEMANAGER
 
-    RigPackageManager::RigPackageManager() : IPackageManager() {}
-
-
     Utilities::StringContainer RigPackageManager::toJSON(uint64_t indents) const
     {
         //TODO: RigPackageManager JSON

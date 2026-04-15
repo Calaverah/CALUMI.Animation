@@ -3,4 +3,5 @@ PUBLIC
 IPackageManager.h
 IConvertible.h
 IReadWritable.h
+ILineage.h
 )

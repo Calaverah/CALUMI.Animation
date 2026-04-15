@@ -8,21 +8,25 @@
 #include "UNIV_IRigPackage.h"
 #include <cstdint>
 
+#include "interfaces/ILineage.h"
+
 namespace CALUMI::UNIV{
+
+	class SkeletonRig;
 
 	/**
 	 * @brief Universal method of storing skeleton limb data
 	 */
-	struct CALUMIANIMATION_API SkeletonBone
+	class CALUMIANIMATION_API SkeletonBone : public ILineage
 	{
 	public:
 
 		/** @name Initialization*/
 		/// @{
 
-		SkeletonBone();
+		explicit SkeletonBone(const ILineage& parent);
 		SkeletonBone(const SkeletonBone& other);
-		~SkeletonBone();
+		~SkeletonBone() override;
 
 		/// @}
 		/** @name Operators*/
@@ -31,6 +35,17 @@ namespace CALUMI::UNIV{
 		SkeletonBone& operator=(const SkeletonBone& other);
 
 		/// @}
+		/// @name ILineage
+		/// @{
+
+		/**
+		 * @brief Since the rig itself cannot be a child of another bone or rig,
+		 * this will return nullptr, signaling that it is the root of the structure
+		 */
+		[[nodiscard]] const ILineage* parent() const override;
+		[[nodiscard]] const SkeletonRig& parentRig() const;
+		/// @}
+
 	public:
 
 		/** @name Transform*/
@@ -126,17 +141,17 @@ namespace CALUMI::UNIV{
 		Impl* pImpl;
 
 	private:
-		friend struct SkeletonRig;
+		friend class SkeletonRig;
 	};
 
-	VECTORDECF(SkeletonBoneVector, SkeletonBone, friend struct SkeletonRig;)
+	VECTORDECF(SkeletonBoneVector, SkeletonBone, friend class SkeletonRig;)
 
 	/**
 	 * @brief Universal method of representing a skeleton/rig/armature.
 	 * 
 	 * @details The Universal Skeleton Rig aims to keep its data game agnostic with special packages and properties to tie game specific data to the rig. The goal is to create a flexible system for users when updates or additional games are supported.
 	 */
-	struct CALUMIANIMATION_API SkeletonRig
+	class CALUMIANIMATION_API SkeletonRig : public ILineage
 	{
 	public:
 		/** @name Initialization*/
@@ -146,15 +161,24 @@ namespace CALUMI::UNIV{
 		explicit SkeletonRig(const char* _rigName);
 		explicit SkeletonRig(const Utilities::StringContainer& _rigName);
 		SkeletonRig(const SkeletonRig& input);
-		~SkeletonRig();
+		~SkeletonRig() override;
 
 		/// @}
-		/** @name Operators*/
+		/// @name Operators
 		/// @{
 
 	public:
 		SkeletonRig& operator=(const SkeletonRig& other);
 
+		/// @}
+		/// @name ILineage
+		/// @{
+
+		/**
+		 * @brief Since the rig itself cannot be a child of another bone or rig,
+		 * this will return nullptr, signaling that it is the root of the structure
+		 */
+		[[nodiscard]] const ILineage* parent() const override;
 		/// @}
 
 		//TODO: Consider flags for parental/relative/global during shifting operations

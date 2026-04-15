@@ -6,71 +6,71 @@
 #include "utilities/CALUMI_Utilities.h"
 #include "interfaces/IPackageManager.h"
 
-namespace CALUMI {
-	namespace UNIV {
+namespace CALUMI::UNIV
+{
 
 
-		/**
+	/**
 		 * @brief RigPackages provide a convenient way for users to apply game specific data to a rig
 		 *
 		 * @details Rig Packages allow a rig to have multiple games worth of data applied to the rig without conflicting. The intention is that users can export a single rig for various games at the same time... assuming the game is supported.
 		 */
-		struct CALUMIANIMATION_API IRigPackage : public IPackage
-		{
-			/** @name Initialization */
-			/// @{
-			IRigPackage() = default;
-			virtual ~IRigPackage() = default;
+	class CALUMIANIMATION_API IRigPackage : public IPackage
+	{
+		/** @name Initialization */
+		/// @{
+		IRigPackage() = default;
+		~IRigPackage() override = default;
 
-			/// @}
+		/// @}
 
-		protected:
-			/**
+	protected:
+		/**
 			 * @brief Event called when a rig renames a bone.
 			 * @param oldBone Name of the bone being renamed
 			 * @param newName The new bone name
-			 * @param idx Index of the interaction
 			 * @return Whether the operation was successful
 			 */
-			virtual bool handleBoneRename(const char* oldBone, const char* newName) = 0;
+		virtual bool handleBoneRename(const char* oldBone, const char* newName) = 0;
 
-		private:
-			friend struct RigPackageManager;
-		};
+	private:
+		friend class RigPackageManager;
+	};
 
-		/**
+	/**
 		 * @brief The Rig Package Manager handles the data and memory allocation of the packages for a rig
 		 */
-		struct CALUMIANIMATION_API RigPackageManager : public IPackageManager
-		{
-		public:
-			/** @name Initialization*/
-			/// @{
+	class CALUMIANIMATION_API RigPackageManager : public IPackageManager
+	{
+	public:
+		/** @name Initialization*/
+		/// @{
 
-			RigPackageManager();
+		RigPackageManager() = default;
+		~RigPackageManager() override = default;
 
-			///@}
+		///@}
 
-		public:
-			/**
+	public:
+		/**
 			 * @brief Serialization
 			 * @param indents Spaces for formatting
 			 * @return The strContainer of the serialized struct
 			 */
-			Utilities::StringContainer toJSON(uint64_t indents) const;
+		[[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
 
-		private:
-			/**
+	private:
+		/**
 			 * @brief Bone Rename Event that's passed to the packages being managed
 			 * @param oldBone Old name of the bone
 			 * @param newName New name of the bone
 			 * @return Whether the operation was a success
 			 */
-            bool onBoneRename(const char* oldBone, const char* newName);
-			friend struct SkeletonRig;
-		};
+		bool onBoneRename(const char* oldBone, const char* newName);
+		friend class SkeletonRig;
+	};
 
-		/**
+	/**
 		 * @addtogroup extern_c
 		 * @{
 		 * @defgroup c_univ_rig_package Rig Package "C" API
@@ -80,4 +80,4 @@ namespace CALUMI {
 		 * @}
 		 * */
 
-} }
+}

@@ -13,8 +13,9 @@ namespace CALUMI::UNIV
 		 *
 		 * @details Rig Packages allow a rig to have multiple games worth of data applied to the rig without conflicting. The intention is that users can export a single rig for various games at the same time... assuming the game is supported.
 		 */
-	struct CALUMIANIMATION_API IPackage
+	class CALUMIANIMATION_API IPackage
 	{
+	public:
 		/** @name Initialization */
 		/// @{
 		IPackage() = default;
@@ -46,14 +47,14 @@ namespace CALUMI::UNIV
 		[[nodiscard]] virtual IPackage* clone() const = 0;
 
 	private:
-		friend struct IPackageManager;
+		friend class IPackageManager;
 	};
 
 
 	/**
 		 * @brief The Rig Package Manager handles the data and memory allocation of the packages for a rig
 		 */
-	struct CALUMIANIMATION_API IPackageManager
+	class CALUMIANIMATION_API IPackageManager
 	{
 	public:
 		/** @name Initialization*/
