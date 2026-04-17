@@ -3,6 +3,11 @@
 //Contact: Calaverahmedia@gmail.com
 
 
+// ReSharper disable CppPassValueParameterByConstReference
+// ReSharper disable CppMemberFunctionMayBeConst
+// ReSharper disable CppParameterMayBeConstPtrOrRef
+// ReSharper disable CppParameterMayBeConst
+// ReSharper disable CppDFANullDereference
 #include "math/Math.h"
 #include <cmath>
 #include "internalplatform.h"
@@ -20,12 +25,12 @@ namespace CALUMI::Math
 	const Vector3 Vector3::UnitY = { 0.0, 1.0, 0.0 };
 	const Vector3 Vector3::UnitZ = { 0.0, 0.0, 1.0 };
 
-	const Math::Vector3 Math::Vector3::Up = { 0.0, 0.0, 1.0 };
-	const Math::Vector3 Math::Vector3::Down = { 0.0, 0.0, -1.0 };
-	const Math::Vector3 Math::Vector3::Right = { -1.0, 0.0, 0.0 };
-	const Math::Vector3 Math::Vector3::Left = { 1.0, 0.0, 0.0 };
-	const Math::Vector3 Math::Vector3::Forward = { 0.0, 1.0, 0.0 };
-	const Math::Vector3 Math::Vector3::Back = { 0.0, -1.0, 0.0 };
+	const Vector3 Vector3::Up = { 0.0, 0.0, 1.0 };
+	const Vector3 Vector3::Down = { 0.0, 0.0, -1.0 };
+	const Vector3 Vector3::Right = { -1.0, 0.0, 0.0 };
+	const Vector3 Vector3::Left = { 1.0, 0.0, 0.0 };
+	const Vector3 Vector3::Forward = { 0.0, 1.0, 0.0 };
+	const Vector3 Vector3::Back = { 0.0, -1.0, 0.0 };
 
 	struct Vector3::Impl
 	{
@@ -72,10 +77,13 @@ namespace CALUMI::Math
 	Vector3::~Vector3()
 	{
 		if (pImpl)
+		{
 			delete pImpl;
+			pImpl = nullptr;
+		}
 	}
 
-	Math::Vector3::Vector3(float input[3])
+	Vector3::Vector3(float input[3])
 	{
 		pImpl = new Impl(input[0], input[1], input[2]);
 	}
@@ -85,7 +93,7 @@ namespace CALUMI::Math
 		pImpl = new Impl(input[0], input[1], input[2]);
 	}
 
-	Math::Vector3::Vector3(float input)
+	Vector3::Vector3(float input)
 	{
 		pImpl = new Impl(input, input, input);
 	}
@@ -110,32 +118,35 @@ namespace CALUMI::Math
 		pImpl = new Impl(source.pImpl->x, source.pImpl->y, source.pImpl->z);
 	}
 
-	Utilities::StringContainer Math::Vector3::toString() const
+	Utilities::StringContainer Vector3::toString() const
 	{
 		Utilities::StringContainer output;
 		output += std::format("x: {}, y: {}, z: {}", pImpl->x, pImpl->y, pImpl->z).c_str();
 		return output;
 	}
 
-	bool Math::Vector3::operator==(const Math::Vector3& other) const
+	bool Vector3::operator==(const Vector3& other) const
 	{
 		return pImpl->x == other.pImpl->x && pImpl->y == other.pImpl->y && pImpl->z == other.pImpl->z;
 	}
 
-	bool Math::Vector3::operator!=(const Math::Vector3& other) const
+	bool Vector3::operator!=(const Vector3& other) const
 	{
 		return !(pImpl->x == other.pImpl->x && pImpl->y == other.pImpl->y && pImpl->z == other.pImpl->z);
 	}
 
-	Math::Vector3& Math::Vector3::operator=(const Math::Vector3& other)
+	Vector3& Vector3::operator=(const Vector3& other)
 	{
-		pImpl->x = other.pImpl->x;
-		pImpl->y = other.pImpl->y;
-		pImpl->z = other.pImpl->z;
+		if (this != &other)
+		{
+			pImpl->x = other.pImpl->x;
+			pImpl->y = other.pImpl->y;
+			pImpl->z = other.pImpl->z;
+		}
 		return *this;
 	}
 
-	Math::Vector3& Math::Vector3::operator+=(const Math::Vector3& other)
+	Vector3& Vector3::operator+=(const Vector3& other)
 	{
 		pImpl->x += other.pImpl->x;
 		pImpl->y += other.pImpl->y;
@@ -143,7 +154,7 @@ namespace CALUMI::Math
 		return *this;
 	}
 
-	Math::Vector3& Math::Vector3::operator-=(const Math::Vector3& other)
+	Vector3& Vector3::operator-=(const Vector3& other)
 	{
 		pImpl->x -= other.pImpl->x;
 		pImpl->y -= other.pImpl->y;
@@ -151,7 +162,7 @@ namespace CALUMI::Math
 		return *this;
 	}
 
-	Math::Vector3& Math::Vector3::operator*=(const Math::Vector3& other)
+	Vector3& Vector3::operator*=(const Vector3& other)
 	{
 		pImpl->x *= other.pImpl->x;
 		pImpl->y *= other.pImpl->y;
@@ -159,7 +170,7 @@ namespace CALUMI::Math
 		return *this;
 	}
 
-	Math::Vector3& Math::Vector3::operator*=(float other)
+	Vector3& Vector3::operator*=(float other)
 	{
 		pImpl->x *= other;
 		pImpl->y *= other;
@@ -167,7 +178,7 @@ namespace CALUMI::Math
 		return *this;
 	}
 
-	Math::Vector3& Math::Vector3::operator/=(float other)
+	Vector3& Vector3::operator/=(float other)
 	{
 		pImpl->x /= other;
 		pImpl->y /= other;
@@ -175,38 +186,38 @@ namespace CALUMI::Math
 		return *this;
 	}
 
-	Math::Vector3 Math::Vector3::operator+() const { return *this; }
+	Vector3 Vector3::operator+() const { return *this; }
 
-	Math::Vector3 Math::Vector3::operator-() const { return Math::Vector3(-(pImpl->x), -(pImpl->y), -(pImpl->z)); }
+	Vector3 Vector3::operator-() const { return {-pImpl->x, -pImpl->y, -pImpl->z}; }
 
-	float Math::Vector3::length() const
+	float Vector3::length() const
 	{
 
-		return sqrt((pImpl->x * pImpl->x) + (pImpl->y * pImpl->y) + (pImpl->z * pImpl->z));
+		return sqrt(pImpl->x * pImpl->x + pImpl->y * pImpl->y + pImpl->z * pImpl->z);
 	}
-	float Math::Vector3::lengthSquared() const
+	float Vector3::lengthSquared() const
 	{
-		return (pImpl->x * pImpl->x) + (pImpl->y * pImpl->y) + (pImpl->z * pImpl->z);
+		return pImpl->x * pImpl->x + pImpl->y * pImpl->y + pImpl->z * pImpl->z;
 	}
 
-	float Math::Vector3::dot(const Math::Vector3& other) const
+	float Vector3::dot(const Vector3& other) const
 	{
-		return (pImpl->x * other.pImpl->x) + (pImpl->y * other.pImpl->y) + (pImpl->z * other.pImpl->z);
+		return pImpl->x * other.pImpl->x + pImpl->y * other.pImpl->y + pImpl->z * other.pImpl->z;
 	}
 
-	void Math::Vector3::cross(const Math::Vector3& other, Math::Vector3& result) const
+	void Vector3::cross(const Vector3& other, Vector3& result) const
 	{
 		result.pImpl->x = pImpl->y * other.pImpl->z - pImpl->z * other.pImpl->y;
 		result.pImpl->y = pImpl->z * other.pImpl->x - pImpl->x * other.pImpl->z;
 		result.pImpl->z = pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x;
 	}
 
-	Math::Vector3 Math::Vector3::cross(const Math::Vector3& other) const
+	Vector3 Vector3::cross(const Vector3& other) const
 	{
-		return Math::Vector3(pImpl->y * other.pImpl->z - pImpl->z * other.pImpl->y, pImpl->z * other.pImpl->x - pImpl->x * other.pImpl->z, pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x);
+		return {pImpl->y * other.pImpl->z - pImpl->z * other.pImpl->y, pImpl->z * other.pImpl->x - pImpl->x * other.pImpl->z, pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x};
 	}
 
-	void Math::Vector3::normalize()
+	void Vector3::normalize()
 	{
 		*this /= this->length();
 	}
@@ -215,37 +226,37 @@ namespace CALUMI::Math
 
 	double ToDegrees(double radians) noexcept { return radians * (180.0 / CLA_PI); }
 
-	Math::Vector3 operator+ (const Math::Vector3& A, const Math::Vector3& B) noexcept
+	Vector3 operator+ (const Vector3& A, const Vector3& B) noexcept
 	{
-		return Math::Vector3(A.x() + B.x(), A.y() + B.y(), A.z() + B.z());
+		return {A.x() + B.x(), A.y() + B.y(), A.z() + B.z()};
 	}
-	Math::Vector3 operator- (const Math::Vector3& A, const Math::Vector3& B) noexcept
+	Vector3 operator- (const Vector3& A, const Vector3& B) noexcept
 	{
-		return Math::Vector3(A.x() - B.x(), A.y() - B.y(), A.z() - B.z());
+		return {A.x() - B.x(), A.y() - B.y(), A.z() - B.z()};
 	}
-	Math::Vector3 operator* (const Math::Vector3& A, const Math::Vector3& B) noexcept
+	Vector3 operator* (const Vector3& A, const Vector3& B) noexcept
 	{
-		return Math::Vector3(A.x() * B.x(), A.y() * B.y(), A.z() * B.z());
+		return {A.x() * B.x(), A.y() * B.y(), A.z() * B.z()};
 	}
-	Math::Vector3 operator* (const Math::Vector3& A, float B) noexcept
+	Vector3 operator* (const Vector3& A, float B) noexcept
 	{
-		return Math::Vector3(A.x() * B, A.y() * B, A.z() * B);
+		return {A.x() * B, A.y() * B, A.z() * B};
 	}
-	Math::Vector3 operator* (float A, const Math::Vector3& B) noexcept
+	Vector3 operator* (float A, const Vector3& B) noexcept
 	{
-		return Math::Vector3(A * B.x(), A * B.y(), A * B.z());
+		return {A * B.x(), A * B.y(), A * B.z()};
 	}
-	Math::Vector3 operator/ (const Math::Vector3& A, const Math::Vector3& B) noexcept
+	Vector3 operator/ (const Vector3& A, const Vector3& B) noexcept
 	{
-		return Math::Vector3(A.x() / B.x(), A.y() / B.y(), A.z() / B.z());
+		return {A.x() / B.x(), A.y() / B.y(), A.z() / B.z()};
 	}
-	Math::Vector3 operator/ (const Math::Vector3& A, float B) noexcept
+	Vector3 operator/ (const Vector3& A, float B) noexcept
 	{
-		return Math::Vector3(A.x() / B, A.y() / B, A.z() / B);
+		return {A.x() / B, A.y() / B, A.z() / B};
 	}
-	Math::Vector3 operator/(float A, const Math::Vector3& B) noexcept
+	Vector3 operator/(float A, const Vector3& B) noexcept
 	{
-		return Math::Vector3(A / B.x(), A / B.y(), A / B.z());
+		return {A / B.x(), A / B.y(), A / B.z()};
 	}
 
 	float GetVector3X(Vector3* source)
@@ -262,26 +273,40 @@ namespace CALUMI::Math
 	{
 		return source->z();
 	}
+	int DeleteVector3C(Vector3* ptr)
+	{
+		if (!ptr)
+			return -1;
+
+		try
+		{
+			delete ptr;
+			return 0;
+		}
+		catch (std::bad_alloc&){}
+
+		return -1;
+	}
 
 #pragma endregion
 
 #pragma region VECTOR3D
 
 	//Math::Vector3D (double)
-	const Math::Vector3D Math::Vector3D::Zero = Vector3D(0.0);
-	const Math::Vector3D Math::Vector3D::One = Vector3D(1.0);
-	const Math::Vector3D Math::Vector3D::UnitX = { 1.0, 0.0, 0.0};
-	const Math::Vector3D Math::Vector3D::UnitY = { 0.0, 1.0, 0.0};
-	const Math::Vector3D Math::Vector3D::UnitZ = { 0.0, 0.0, 1.0};
+	const Vector3D Vector3D::Zero = Vector3D(0.0);
+	const Vector3D Vector3D::One = Vector3D(1.0);
+	const Vector3D Vector3D::UnitX = { 1.0, 0.0, 0.0};
+	const Vector3D Vector3D::UnitY = { 0.0, 1.0, 0.0};
+	const Vector3D Vector3D::UnitZ = { 0.0, 0.0, 1.0};
 
-	const Math::Vector3D Math::Vector3D::Up = { 0.0, 0.0, 1.0}; //In coordinate system found on Nifskope. May need modifying
-	const Math::Vector3D Math::Vector3D::Down = { 0.0, 0.0, -1.0};
-	const Math::Vector3D Math::Vector3D::Right = { -1.0, 0.0, 0.0};
-	const Math::Vector3D Math::Vector3D::Left = { 1.0, 0.0, 0.0};
-	const Math::Vector3D Math::Vector3D::Forward = { 0.0, 1.0, 0.0};
-	const Math::Vector3D Math::Vector3D::Back = { 0.0, -1.0, 0.0};
+	const Vector3D Vector3D::Up = { 0.0, 0.0, 1.0}; //In coordinate system found on Nifskope. May need modifying
+	const Vector3D Vector3D::Down = { 0.0, 0.0, -1.0};
+	const Vector3D Vector3D::Right = { -1.0, 0.0, 0.0};
+	const Vector3D Vector3D::Left = { 1.0, 0.0, 0.0};
+	const Vector3D Vector3D::Forward = { 0.0, 1.0, 0.0};
+	const Vector3D Vector3D::Back = { 0.0, -1.0, 0.0};
 
-	Utilities::StringContainer Math::Vector3D::toString() const
+	Utilities::StringContainer Vector3D::toString() const
 	{
 		Utilities::StringContainer output;
 		output += std::format("x: {}, y: {}, z: {}",x(), y(), z()).c_str();
@@ -335,20 +360,23 @@ namespace CALUMI::Math
 	Vector3D::~Vector3D()
 	{
 		if (pImpl)
+		{
 			delete pImpl;
+			pImpl = nullptr;
+		}
 	}
 
-	Math::Vector3D::Vector3D(double input[3])
+	Vector3D::Vector3D(double input[3])
 	{
 		pImpl = new Impl(input[0], input[1], input[2]);
 	}
 
-	Math::Vector3D::Vector3D(double input)
+	Vector3D::Vector3D(double input)
 	{
 		pImpl = new Impl(input, input, input);
 	}
 
-	Math::Vector3D::Vector3D(Math::Vector3 input)
+	Vector3D::Vector3D(Vector3 input)
 	{
 		pImpl = new Impl(input.x(), input.y(), input.z());
 	}
@@ -363,25 +391,28 @@ namespace CALUMI::Math
 		pImpl = new Impl(x, y, z);
 	}
 
-	bool Math::Vector3D::operator==(const Math::Vector3D & other) const
+	bool Vector3D::operator==(const Vector3D & other) const
 	{
 		return pImpl->x == other.pImpl->x && pImpl->y == other.pImpl->y && pImpl->z == other.pImpl->z;
 	}
 
-	bool Math::Vector3D::operator!=(const Math::Vector3D & other) const
+	bool Vector3D::operator!=(const Vector3D & other) const
 	{
 		return !(pImpl->x == other.pImpl->x && pImpl->y == other.pImpl->y && pImpl->z == other.pImpl->z);
 	}
 
-	Math::Vector3D& Math::Vector3D::operator=(const Math::Vector3D& other)
+	Vector3D& Vector3D::operator=(const Vector3D& other)
 	{
-		pImpl->x = other.pImpl->x;
-		pImpl->y = other.pImpl->y;
-		pImpl->z = other.pImpl->z;
+		if (this != &other)
+		{
+			pImpl->x = other.pImpl->x;
+			pImpl->y = other.pImpl->y;
+			pImpl->z = other.pImpl->z;
+		}
 		return *this;
 	}
 
-	Math::Vector3D& Math::Vector3D::operator+=(const Math::Vector3D & other)
+	Vector3D& Vector3D::operator+=(const Vector3D & other)
 	{
 		pImpl->x += other.pImpl->x;
 		pImpl->y += other.pImpl->y;
@@ -389,7 +420,7 @@ namespace CALUMI::Math
 		return *this;
 	}
 
-	Math::Vector3D& Math::Vector3D::operator-=(const Math::Vector3D & other)
+	Vector3D& Vector3D::operator-=(const Vector3D & other)
 	{
 		pImpl->x -= other.pImpl->x;
 		pImpl->y -= other.pImpl->y;
@@ -397,7 +428,7 @@ namespace CALUMI::Math
 		return *this;
 	}
 
-	Math::Vector3D& Math::Vector3D::operator*=(const Math::Vector3D & other)
+	Vector3D& Vector3D::operator*=(const Vector3D & other)
 	{
 		pImpl->x *= other.pImpl->x;
 		pImpl->y *= other.pImpl->y;
@@ -405,7 +436,7 @@ namespace CALUMI::Math
 		return *this;
 	}
 
-	Math::Vector3D& Math::Vector3D::operator*=(double other)
+	Vector3D& Vector3D::operator*=(double other)
 	{
 		pImpl->x *= other;
 		pImpl->y *= other;
@@ -413,7 +444,7 @@ namespace CALUMI::Math
 		return *this;
 	}
 
-	Math::Vector3D& Math::Vector3D::operator/=(double other)
+	Vector3D& Vector3D::operator/=(double other)
 	{
 		pImpl->x /= other;
 		pImpl->y /= other;
@@ -421,80 +452,80 @@ namespace CALUMI::Math
 		return *this;
 	}
 
-	Math::Vector3D Math::Vector3D::operator+() const { return *this; };
+	Vector3D Vector3D::operator+() const { return *this; }
 
-	Math::Vector3D Math::Vector3D::operator-() const { return Math::Vector3D(-(pImpl->x), -(pImpl->y), -(pImpl->z)); };
+	Vector3D Vector3D::operator-() const { return {-pImpl->x, -pImpl->y, -pImpl->z}; }
 
-	double Math::Vector3D::length() const
+	double Vector3D::length() const
 	{
 
-		return sqrt((pImpl->x * pImpl->x) + (pImpl->y * pImpl->y) + (pImpl->z * pImpl->z));
+		return sqrt(pImpl->x * pImpl->x + pImpl->y * pImpl->y + pImpl->z * pImpl->z);
 	}
-	double Math::Vector3D::lengthSquared() const
+	double Vector3D::lengthSquared() const
 	{
-		return (pImpl->x * pImpl->x) + (pImpl->y * pImpl->y) + (pImpl->z * pImpl->z);
+		return pImpl->x * pImpl->x + pImpl->y * pImpl->y + pImpl->z * pImpl->z;
 	}
 
-	double Math::Vector3D::dot(const Math::Vector3D & other) const
+	double Vector3D::dot(const Vector3D & other) const
 	{
-		return (pImpl->x * other.pImpl->x) + (pImpl->y * other.pImpl->y) + (pImpl->z * other.pImpl->z);
+		return pImpl->x * other.pImpl->x + pImpl->y * other.pImpl->y + pImpl->z * other.pImpl->z;
 	}
 
-	void Math::Vector3D::cross(const Math::Vector3D & other, Math::Vector3D & result) const
+	void Vector3D::cross(const Vector3D & other, Vector3D & result) const
 	{
 		result.pImpl->x = pImpl->y * other.pImpl->z - pImpl->z * other.pImpl->y;
 		result.pImpl->y = pImpl->z * other.pImpl->x - pImpl->x * other.pImpl->z;
 		result.pImpl->z = pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x;
 	}
 
-	Math::Vector3D Math::Vector3D::cross(const Math::Vector3D & other) const
+	Vector3D Vector3D::cross(const Vector3D & other) const
 	{
-		return Math::Vector3D(pImpl->y * other.pImpl->z - pImpl->z * other.pImpl->y, pImpl->z * other.pImpl->x - pImpl->x * other.pImpl->z, pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x);
+		return {pImpl->y * other.pImpl->z - pImpl->z * other.pImpl->y, pImpl->z * other.pImpl->x - pImpl->x * other.pImpl->z, pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x};
 	}
 
-	void Math::Vector3D::normalize()
+	void Vector3D::normalize()
 	{
 		*this /= this->length();
 	}
 
 	Vector3D Vector3D::lerp(const Vector3D& input, double t) const
 	{
-		Vector3D output = (1.0-t)*(*this) + t * input;
+		Vector3D output = (1.0-t) * *this + t * input;
 
 		return output;
 	}
 
-	Math::Vector3D operator+ (const Math::Vector3D& A, const Math::Vector3D& B) noexcept
+	Vector3D operator+ (const Vector3D& A, const Vector3D& B) noexcept
 	{
-		return Math::Vector3D(A.x() + B.x(), A.y() + B.y(), A.z() + B.z());
+		return {A.x() + B.x(), A.y() + B.y(), A.z() + B.z()};
 	}
-	Math::Vector3D operator- (const Math::Vector3D& A, const Math::Vector3D& B) noexcept
+	Vector3D operator- (const Vector3D& A, const Vector3D& B) noexcept
 	{
-		return Math::Vector3D(A.x() - B.x(), A.y() - B.y(), A.z() - B.z());
+		return {A.x() - B.x(), A.y() - B.y(), A.z() - B.z()};
 	}
-	Math::Vector3D operator* (const Math::Vector3D& A, const Math::Vector3D& B) noexcept
+	Vector3D operator* (const Vector3D& A, const Vector3D& B) noexcept
 	{
-		return Math::Vector3D(A.x() * B.x(), A.y() * B.y(), A.z() * B.z());
+		return {A.x() * B.x(), A.y() * B.y(), A.z() * B.z()};
 	}
-	Math::Vector3D operator* (const Math::Vector3D& A, double B) noexcept
+	Vector3D operator* (const Vector3D& A, double B) noexcept
 	{
-		return Math::Vector3D(A.x() * B, A.y() * B, A.z() * B);
+		return {A.x() * B, A.y() * B, A.z() * B};
 	}
-	Math::Vector3D operator* (double A, const Math::Vector3D& B) noexcept
+	Vector3D operator* (double A, const Vector3D& B) noexcept
 	{
-		return Math::Vector3D(A * B.x(), A * B.y(), A * B.z());
+		return {A * B.x(), A * B.y(), A * B.z()};
 	}
-	Math::Vector3D operator/ (const Math::Vector3D& A, const Math::Vector3D& B) noexcept
+	Vector3D operator/ (const Vector3D& A, const Vector3D& B) noexcept
 	{
-		return Math::Vector3D(A.x() / B.x(), A.y() / B.y(), A.z() / B.z());
+		return {A.x() / B.x(), A.y() / B.y(), A.z() / B.z()};
 	}
-	Math::Vector3D operator/ (const Math::Vector3D& A, double B) noexcept
+	Vector3D operator/ (const Vector3D& A, double B) noexcept
 	{
-		return Math::Vector3D(A.x() / B, A.y() / B, A.z() / B);
+		return {A.x() / B, A.y() / B, A.z() / B};
 	}
-	Math::Vector3D operator/(double A, const Math::Vector3D& B) noexcept
+	Vector3D operator/(double A, const Vector3D& B) noexcept
 	{
-		return Math::Vector3D(A / B.x(), A / B.y(), A / B.z());
+		return {A / B.x(), A / B.y(), A / B.z()};
 	}
 
 	double GetVector3DX(Vector3D* source)
@@ -510,6 +541,20 @@ namespace CALUMI::Math
 	double GetVector3DZ(Vector3D* source)
 	{
 		return source->z();
+	}
+	int DeleteVector3DC(Vector3D* ptr)
+	{
+		if (!ptr)
+			return -1;
+
+		try
+		{
+			delete ptr;
+			return 0;
+		}
+		catch (std::bad_alloc&){}
+
+		return -1;
 	}
 #pragma endregion
 
@@ -544,23 +589,26 @@ namespace CALUMI::Math
 	Quaternion::~Quaternion()
 	{
 		if (pImpl)
+		{
 			delete pImpl;
+			pImpl = nullptr;
+		}
 	}
 
 	//Math::Quaternions (float)
-	Math::Quaternion::Quaternion(float input[4], bool normalized)
+	Quaternion::Quaternion(float input[4], bool normalized)
 	{
 		pImpl = new Impl(input[0], input[1], input[2], input[3]);
 		if(normalized)
 			normalize();
-	};
+	}
 
-	Math::Quaternion::Quaternion(Vector3 direction, double radians, bool normalized)
+	Quaternion::Quaternion(Vector3 direction, double radians, bool normalized)
 	{
 		direction.normalize();
-		float halfTheta = static_cast<float>(radians)/2.0f;
-		float halfThetaSin = std::sin(halfTheta);
-		float halfThetaCos = std::cos(halfTheta);
+		const float halfTheta = static_cast<float>(radians)/2.0f;
+		const float halfThetaSin = std::sin(halfTheta);
+		const float halfThetaCos = std::cos(halfTheta);
 
 		pImpl = new Impl(	halfThetaSin * direction.x(),
 			                 halfThetaSin * direction.y(),
@@ -569,9 +617,9 @@ namespace CALUMI::Math
 
 		if (normalized)
 			normalize();
-	};
+	}
 
-	Math::Quaternion::Quaternion(double x, double y, double z, double w, bool normalized)
+	Quaternion::Quaternion(double x, double y, double z, double w, bool normalized)
 	{
 		pImpl = new Impl(x, y, z, w);
 		if (normalized)
@@ -598,7 +646,7 @@ namespace CALUMI::Math
 
 		switch (order)
 		{
-		case CALUMI::Math::Quaternion::EulerOrder::XZY:
+		case EulerOrder::XZY:
 			{
 				qx = sX * cY * cZ - sY * sZ * cX;
 				qy = sZ * cX * cY - sX * sY * cZ;
@@ -606,7 +654,7 @@ namespace CALUMI::Math
 				qw = sX * sY * sZ + cX * cY * cZ;
 				break;
 			}
-		case CALUMI::Math::Quaternion::EulerOrder::YXZ:
+		case EulerOrder::YXZ:
 			{
 				qx = sX * sZ * cY + sY * cX * cZ;
 				qy = sX * cY * cZ - sY * sZ * cX;
@@ -614,7 +662,7 @@ namespace CALUMI::Math
 				qw = sX * sY * sZ + cX * cY * cZ;
 				break;
 			}
-		case CALUMI::Math::Quaternion::EulerOrder::YZX:
+		case EulerOrder::YZX:
 			{
 				qx = sX * sY * cZ + sZ * cX * cY;
 				qy = sX * cY * cZ + sY * sZ * cX;
@@ -622,7 +670,7 @@ namespace CALUMI::Math
 				qw = cX * cY * cZ - sX * sY * sZ;
 				break;
 			}
-		case CALUMI::Math::Quaternion::EulerOrder::ZXY:
+		case EulerOrder::ZXY:
 			{
 				qx = sY * cX * cZ - sX * sZ * cY;
 				qy = sX * sY * cZ + sZ * cX * cY;
@@ -630,7 +678,7 @@ namespace CALUMI::Math
 				qw = cX * cY * cZ - sX * sY * sZ;
 				break;
 			}
-		case CALUMI::Math::Quaternion::EulerOrder::ZYX:
+		case EulerOrder::ZYX:
 			{
 				qx = sZ * cX * cY - sX * sY * cZ;
 				qy = sX * sZ * cY + sY * cX * cZ;
@@ -638,7 +686,7 @@ namespace CALUMI::Math
 				qw = sX * sY * sZ + cX * cY * cZ;
 				break;
 			}
-		case CALUMI::Math::Quaternion::EulerOrder::XYX:
+		case EulerOrder::XYX:
 			{
 				qx = sX* cY* cZ + sZ * cX * cY;
 				qy = sX* sY* sZ + sY * cX * cZ;
@@ -646,7 +694,7 @@ namespace CALUMI::Math
 				qw = cX* cY* cZ - sX * sZ * cY;
 				break;
 			}
-		case CALUMI::Math::Quaternion::EulerOrder::XZX:
+		case EulerOrder::XZX:
 			{
 				qx = sX* cY* cZ + sZ * cX * cY;
 				qy = sY* sZ* cX - sX * sY * cZ;
@@ -654,7 +702,7 @@ namespace CALUMI::Math
 				qw = cX* cY* cZ - sX * sZ * cY;
 				break;
 			}
-		case CALUMI::Math::Quaternion::EulerOrder::YXY:
+		case EulerOrder::YXY:
 			{
 				qx = sX* sY* sZ + sY * cX * cZ;
 				qy = sX* cY* cZ + sZ * cX * cY;
@@ -662,7 +710,7 @@ namespace CALUMI::Math
 				qw = cX* cY* cZ - sX * sZ * cY;
 				break;
 			}
-		case CALUMI::Math::Quaternion::EulerOrder::YZY:
+		case EulerOrder::YZY:
 			{
 				qx = sX* sY* cZ - sY * sZ * cX;
 				qy = sX* cY* cZ + sZ * cX * cY;
@@ -670,7 +718,7 @@ namespace CALUMI::Math
 				qw = cX* cY* cZ - sX * sZ * cY;
 				break;
 			}
-		case CALUMI::Math::Quaternion::EulerOrder::ZXZ:
+		case EulerOrder::ZXZ:
 			{
 				qx = sX * sY * sZ + sY * cX * cZ;
 				qy = sX * sY * cZ - sY * sZ * cX;
@@ -678,7 +726,7 @@ namespace CALUMI::Math
 				qw = cX * cY * cZ - sX * sZ * cY;
 				break;
 			}
-		case CALUMI::Math::Quaternion::EulerOrder::ZYZ:
+		case EulerOrder::ZYZ:
 			{
 				qx = sY * sZ * cX - sX * sY * cZ;
 				qy = sX * sY * sZ + sY * cX * cZ;
@@ -705,12 +753,12 @@ namespace CALUMI::Math
 		pImpl = new Impl(input.pImpl->x, input.pImpl->y, input.pImpl->z, input.pImpl->w);
 	}
 
-	Math::Quaternion::Quaternion(Vector3D direction, double radians, bool normalized)
+	Quaternion::Quaternion(Vector3D direction, double radians, bool normalized)
 	{
 		direction.normalize();
-		double halfTheta = radians / 2.0f;
-		double halfThetaSin = std::sin(halfTheta);
-		double halfThetaCos = std::cos(halfTheta);
+		const double halfTheta = radians / 2.0f;
+		const double halfThetaSin = std::sin(halfTheta);
+		const double halfThetaCos = std::cos(halfTheta);
 
 		pImpl = new Impl(	halfThetaSin * direction.x(),
 			                 halfThetaSin * direction.y(),
@@ -719,7 +767,7 @@ namespace CALUMI::Math
 
 		if (normalized)
 			normalize();
-	};
+	}
 
 	float Quaternion::x() const
 	{
@@ -761,41 +809,41 @@ namespace CALUMI::Math
 		pImpl->w = w;
 	}
 
-	Math::Quaternion Math::Quaternion::operator+() const noexcept
+	Quaternion Quaternion::operator+() const noexcept
 	{
 		return *this;
 	}
 
-	Math::Quaternion Math::Quaternion::operator-() const noexcept
+	Quaternion Quaternion::operator-() const noexcept
 	{
-		return Math::Quaternion(-(pImpl->x), -(pImpl->y), -(pImpl->z), -(pImpl->w));
+		return {-pImpl->x, -pImpl->y, -pImpl->z, -pImpl->w};
 	}
 
-	bool Math::Quaternion::operator==(const Math::Quaternion& input) const noexcept
+	bool Quaternion::operator==(const Quaternion& input) const noexcept
 	{
-		return (pImpl->x == input.pImpl->x && pImpl->y == input.pImpl->y && pImpl->z == input.pImpl->z && pImpl->w == input.pImpl->w);
+		return pImpl->x == input.pImpl->x && pImpl->y == input.pImpl->y && pImpl->z == input.pImpl->z && pImpl->w == input.pImpl->w;
 	}
 
-	bool Math::Quaternion::operator!=(const Math::Quaternion& input) const noexcept
+	bool Quaternion::operator!=(const Quaternion& input) const noexcept
 	{
 		return !(pImpl->x == input.pImpl->x && pImpl->y == input.pImpl->y && pImpl->z == input.pImpl->z && pImpl->w == input.pImpl->w);
 	}
 
 	bool Quaternion::areSameRotation(const Quaternion& input, float tolerance) const noexcept
 	{
-		return (areEqual(input,tolerance)|| areEqual(-input, tolerance));
+		return areEqual(input,tolerance)|| areEqual(-input, tolerance);
 	}
 
 	bool Quaternion::areEqual(const Quaternion & input, float tolerance) const noexcept
 	{
-		float dx = std::abs(pImpl->x - input.pImpl->x);
-		float dy = std::abs(pImpl->y - input.pImpl->y);
-		float dz = std::abs(pImpl->z - input.pImpl->z);
-		float dw = std::abs(pImpl->w - input.pImpl->w);
-		return (dx < tolerance && dy < tolerance && dz < tolerance && dw < tolerance);
+		const float dx = std::abs(pImpl->x - input.pImpl->x);
+		const float dy = std::abs(pImpl->y - input.pImpl->y);
+		const float dz = std::abs(pImpl->z - input.pImpl->z);
+		const float dw = std::abs(pImpl->w - input.pImpl->w);
+		return dx < tolerance && dy < tolerance && dz < tolerance && dw < tolerance;
 	}
 
-	Math::Quaternion& Math::Quaternion::operator+= (const Math::Quaternion& other) noexcept
+	Quaternion& Quaternion::operator+= (const Quaternion& other) noexcept
 	{
 		pImpl->x += other.pImpl->x;
 		pImpl->y += other.pImpl->y;
@@ -804,7 +852,7 @@ namespace CALUMI::Math
 		return *this;
 	}
 
-	Math::Quaternion& Math::Quaternion::operator-=(const Math::Quaternion& other) noexcept
+	Quaternion& Quaternion::operator-=(const Quaternion& other) noexcept
 	{
 		pImpl->x -= other.pImpl->x;
 		pImpl->y -= other.pImpl->y;
@@ -813,13 +861,13 @@ namespace CALUMI::Math
 		return *this;
 	}
 
-	Math::Quaternion& Math::Quaternion::operator*=(const Math::Quaternion& other) noexcept
+	Quaternion& Quaternion::operator*=(const Quaternion& other) noexcept
 	{
 		*this = *this * other;
 		return *this;
 	}
 
-	Math::Quaternion& Math::Quaternion::operator*=(float other) noexcept
+	Quaternion& Quaternion::operator*=(float other) noexcept
 	{
 		pImpl->x *= other;
 		pImpl->y *= other;
@@ -828,15 +876,18 @@ namespace CALUMI::Math
 		return *this;
 	}
 
-	Math::Quaternion& Math::Quaternion::operator=(const Math::Quaternion& other) noexcept
+	Quaternion& Quaternion::operator=(const Quaternion& other) noexcept
 	{
-		pImpl->x = other.pImpl->x;
-		pImpl->y = other.pImpl->y;
-		pImpl->z = other.pImpl->z;
-		pImpl->w = other.pImpl->w;
+		if (this != &other)
+		{
+			pImpl->x = other.pImpl->x;
+			pImpl->y = other.pImpl->y;
+			pImpl->z = other.pImpl->z;
+			pImpl->w = other.pImpl->w;
+		}
 		return *this;
 	}
-	Math::Quaternion& Math::Quaternion::operator/=(const Math::Quaternion& other) noexcept
+	Quaternion& Quaternion::operator/=(const Quaternion& other) noexcept
 	{
 		pImpl->x /= other.pImpl->x;
 		pImpl->y /= other.pImpl->y;
@@ -845,35 +896,35 @@ namespace CALUMI::Math
 		return *this;
 	}
 
-	Quaternion Math::Quaternion::conjugate() noexcept
+	Quaternion Quaternion::conjugate() noexcept
 	{
-		return Quaternion(pImpl->x * -1, pImpl->y * -1, pImpl->z * -1, pImpl->w);
+		return {pImpl->x * -1, pImpl->y * -1, pImpl->z * -1, pImpl->w};
 	}
 
-	float Math::Quaternion::dot(const Math::Quaternion& input) const noexcept
+	float Quaternion::dot(const Quaternion& input) const noexcept
 	{
-		return (pImpl->x*input.pImpl->x + pImpl->y*input.pImpl->y + pImpl->z*input.pImpl->z + pImpl->w*input.pImpl->w);
+		return pImpl->x*input.pImpl->x + pImpl->y*input.pImpl->y + pImpl->z*input.pImpl->z + pImpl->w*input.pImpl->w;
 	}
 
-	void Math::Quaternion::conjugate(Math::Quaternion& result) const noexcept
+	void Quaternion::conjugate(Quaternion& result) const noexcept
 	{
-		result.pImpl->x = -(pImpl->x);
-		result.pImpl->y = -(pImpl->y);
-		result.pImpl->z = -(pImpl->z);
+		result.pImpl->x = -pImpl->x;
+		result.pImpl->y = -pImpl->y;
+		result.pImpl->z = -pImpl->z;
 		result.pImpl->w = pImpl->w;
 	}
 
-	float Math::Quaternion::lengthSquared() const noexcept
+	float Quaternion::lengthSquared() const noexcept
 	{
-		return (pImpl->x* pImpl->x + pImpl->y* pImpl->y + pImpl->z* pImpl->z + pImpl->w* pImpl->w);
+		return pImpl->x* pImpl->x + pImpl->y* pImpl->y + pImpl->z* pImpl->z + pImpl->w* pImpl->w;
 	}
 
-	float Math::Quaternion::length() const noexcept
+	float Quaternion::length() const noexcept
 	{
 		return sqrt(lengthSquared());
 	}
 
-	void Math::Quaternion::normalize() noexcept
+	void Quaternion::normalize() noexcept
 	{
 		float pLength = length();
 		if (pLength <= 0)
@@ -887,7 +938,7 @@ namespace CALUMI::Math
 		pImpl->w /= pLength;
 	}
 
-	void Math::Quaternion::normalize(Math::Quaternion& result) const noexcept
+	void Quaternion::normalize(Quaternion& result) const noexcept
 	{
 		float pLength = length();
 		if (pLength <= 0)
@@ -900,14 +951,14 @@ namespace CALUMI::Math
 		result.pImpl->w = pImpl->w / pLength;
 	}
 
-	void Math::Quaternion::inverse(Math::Quaternion& result) const noexcept
+	void Quaternion::inverse(Quaternion& result) const noexcept
 	{
 		float pLength = length();
 		if (pLength <= 0)
 		{
 			pLength = 1;
 		}
-		Math::Quaternion qConjugate;
+		Quaternion qConjugate;
 		conjugate(qConjugate);
 
 		result.pImpl->x = qConjugate.pImpl->x / pLength;
@@ -923,7 +974,7 @@ namespace CALUMI::Math
 		{
 			pLength = 1;
 		}
-		Math::Quaternion qConjugate;
+		Quaternion qConjugate;
 		conjugate(qConjugate);
 
 		pImpl->x = qConjugate.pImpl->x / pLength;
@@ -953,27 +1004,27 @@ namespace CALUMI::Math
 
 	Quaternion Quaternion::sLerp(const Quaternion& input, float t) const
 	{
-		float pDot = dot(input);
+		const float pDot = dot(input);
 
 		if (std::abs(pDot) >= 1.0f) return input;
 
-		float hTheta = acos(pDot);
-		float sinhTheta = sqrtf(1.0f - pDot * pDot);
+		const float hTheta = acos(pDot);
+		const float sinhTheta = sqrtf(1.0f - pDot * pDot);
 
-		float ratio1 = sin((1 - t) * hTheta) / sinhTheta;
-		float ratio2 = sin(t * hTheta) / sinhTheta;
+		const float ratio1 = sin((1 - t) * hTheta) / sinhTheta;
+		const float ratio2 = sin(t * hTheta) / sinhTheta;
 
 		Quaternion output(
-			(x() * ratio1 + input.x() * ratio2),
-			(y() * ratio1 + input.y() * ratio2),
-			(z() * ratio1 + input.z() * ratio2),
-			(w() * ratio1 + input.w() * ratio2)
+			x() * ratio1 + input.x() * ratio2,
+			y() * ratio1 + input.y() * ratio2,
+			z() * ratio1 + input.z() * ratio2,
+			w() * ratio1 + input.w() * ratio2
 		);
 
 		return output;
 	}
 
-	const Math::Quaternion Math::Quaternion::Identity = {0.0f,0.0f,0.0f,1.0f};
+	const Quaternion Quaternion::Identity = {0.0f,0.0f,0.0f,1.0f};
 
 	Utilities::StringContainer Quaternion::toString() const
 	{
@@ -982,50 +1033,54 @@ namespace CALUMI::Math
 		return output;
 	}
 
-	Math::Quaternion operator+ (const Math::Quaternion& A, const Math::Quaternion& B) noexcept
+	Quaternion operator+ (const Quaternion& A, const Quaternion& B) noexcept
 	{
-		return Math::Quaternion(A.x() + B.x(), A.y() + B.y(), A.z() + B.z(), A.w() + B.w() );
+		return {A.x() + B.x(), A.y() + B.y(), A.z() + B.z(), A.w() + B.w() };
 	}
-	Math::Quaternion operator- (const Math::Quaternion& A, const Math::Quaternion& B) noexcept
+	Quaternion operator- (const Quaternion& A, const Quaternion& B) noexcept
 	{
-		return Math::Quaternion(A.x() - B.x(), A.y() - B.y(), A.z() - B.z(), A.w() - B.w());
+		return {A.x() - B.x(), A.y() - B.y(), A.z() - B.z(), A.w() - B.w()};
 	}
-	Math::Quaternion operator* (const Math::Quaternion& A, const Math::Quaternion& B) noexcept
+	Quaternion operator* (const Quaternion& A, const Quaternion& B) noexcept
 	{
-		return Math::Quaternion(
+		return {
 			A.w() * B.x() + A.x() * B.w() + A.y() * B.z() - A.z() * B.y(),
 			A.w() * B.y() - A.x() * B.z() + A.y() * B.w() + A.z() * B.x(),
 			A.w() * B.z() + A.x() * B.y() - A.y() * B.x() + A.z() * B.w(),
 			A.w() * B.w() - A.x() * B.x() - A.y() * B.y() - A.z() * B.z()
-		);
+		};
 	}
-	Math::Quaternion operator* (const Math::Quaternion& A, float B) noexcept
+	Quaternion operator* (const Quaternion& A, float B) noexcept
 	{
-		return Math::Quaternion(A.x() * B, A.y() * B, A.z() * B, A.w() * B);
+		return {A.x() * B, A.y() * B, A.z() * B, A.w() * B};
 	}
-	Math::Quaternion operator* (float A, const Math::Quaternion& B) noexcept
+	Quaternion operator* (float A, const Quaternion& B) noexcept
 	{
-		return Math::Quaternion(B.x() * A, B.y() * A, B.z() * A, B.w() * A);
+		return {B.x() * A, B.y() * A, B.z() * A, B.w() * A};
 	}
-	Math::Quaternion operator/ (const Math::Quaternion& A, const Math::Quaternion& B) noexcept
+	Quaternion operator/ (const Quaternion& A, const Quaternion& B) noexcept
 	{
-		Math::Quaternion nB;
+		Quaternion nB;
 		B.inverse(nB);
 		return A * nB;
 	}
-	float GetQuaternionX(Quaternion* source)
+	Quaternion* CreateQuaternionC()
+	{
+		return new Quaternion;
+	}
+	float GetQuaternionXC(Quaternion* source)
 	{
 		return source->x();
 	}
-	float GetQuaternionY(Quaternion* source)
+	float GetQuaternionYC(Quaternion* source)
 	{
 		return source->y();
 	}
-	float GetQuaternionZ(Quaternion* source)
+	float GetQuaternionZC(Quaternion* source)
 	{
 		return source->z();
 	}
-	float GetQuaternionW(Quaternion* source)
+	float GetQuaternionWC(Quaternion* source)
 	{
 		return source->w();
 	}
@@ -1037,9 +1092,23 @@ namespace CALUMI::Math
 		if (!input || !result)
 			return false;
 
-		Quaternion rotation(Vector3(x,y,z) , radians);
-		*result = rotation * (*input);
+		const Quaternion rotation(Vector3(x,y,z) , radians);
+		*result = rotation * *input;
 		return true;
+	}
+	int DeleteQuaternionC(Quaternion* ptr)
+	{
+		if (!ptr)
+			return -1;
+
+		try
+		{
+			delete ptr;
+			return 0;
+		}
+		catch ( std::bad_alloc& e) { }
+
+		return -1;
 	}
 #pragma endregion
 
@@ -1060,7 +1129,7 @@ namespace CALUMI::Math
 
 		Impl() = default;
 		Impl(float x, float y) :x(x), y(y) {}
-		Impl(float value) :x(value), y(value) {}
+		explicit Impl(float value) :x(value), y(value) {}
 	};
 
 	Vector2::Vector2()
@@ -1070,7 +1139,10 @@ namespace CALUMI::Math
 	Vector2::~Vector2()
 	{
 		if (pImpl)
+		{
 			delete pImpl;
+			pImpl = nullptr;
+		}
 	}
 	Vector2::Vector2(float input[2])
 	{
@@ -1114,8 +1186,11 @@ namespace CALUMI::Math
 	}
 	Vector2& Vector2::operator=(const Vector2& other)
 	{
-		pImpl->x = other.pImpl->x;
-		pImpl->y = other.pImpl->y;
+		if (this != &other)
+		{
+			pImpl->x = other.pImpl->x;
+			pImpl->y = other.pImpl->y;
+		}
 		return *this;
 	}
 	Vector2& Vector2::operator+=(const Vector2& other)
@@ -1155,31 +1230,31 @@ namespace CALUMI::Math
 	}
 	Vector2 Vector2::operator-() const
 	{
-		return Math::Vector2(-(pImpl->x),-(pImpl->y));
+		return {-pImpl->x,-pImpl->y};
 	}
 
 	float Vector2::Length() const
 	{
-		return sqrt((pImpl->x * pImpl->x) + (pImpl->y * pImpl->y));
+		return sqrt(pImpl->x * pImpl->x + pImpl->y * pImpl->y);
 	}
 	float Vector2::LengthSquared() const
 	{
-		return ((pImpl->x * pImpl->x) + (pImpl->y * pImpl->y));
+		return pImpl->x * pImpl->x + pImpl->y * pImpl->y;
 	}
 
 	float Vector2::Dot(const Vector2& other) const
 	{
-		return (pImpl->x * other.pImpl->x) + (pImpl->y * other.pImpl->y);
+		return pImpl->x * other.pImpl->x + pImpl->y * other.pImpl->y;
 	}
 
 	void Vector2::Cross(const Vector2& other, Vector2& result) const
 	{
-		result.pImpl->x = result.pImpl->y = (pImpl->x * other.pImpl->y) - (pImpl->y * other.pImpl->x);
+		result.pImpl->x = result.pImpl->y = pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x;
 	}
 	Vector2 Vector2::Cross(const Vector2& other) const
 	{
-		float result = (pImpl->x * other.pImpl->y) - (pImpl->y * other.pImpl->x);
-		return Vector2(result, result);
+		float result = pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x;
+		return {result, result};
 	}
 
 	void Vector2::Normalize()
@@ -1193,45 +1268,59 @@ namespace CALUMI::Math
 		return output;
 	}
 	//Non Member Functions
-	Math::Vector2 operator+(const Vector2& A, const Vector2& B) noexcept
+	Vector2 operator+(const Vector2& A, const Vector2& B) noexcept
 	{
-		return Math::Vector2(A.x() + B.x(), A.y() + B.y());
+		return {A.x() + B.x(), A.y() + B.y()};
 	}
-	Math::Vector2 operator-(const Vector2& A, const Vector2& B) noexcept
+	Vector2 operator-(const Vector2& A, const Vector2& B) noexcept
 	{
-		return Math::Vector2(A.x() -B.x(),A.y() -B.y());
+		return {A.x() -B.x(),A.y() -B.y()};
 	}
-	Math::Vector2 operator*(const Vector2& A, const Vector2& B) noexcept
+	Vector2 operator*(const Vector2& A, const Vector2& B) noexcept
 	{
-		return Math::Vector2(A.x() *B.x(),A.y() *B.y());
+		return {A.x() *B.x(),A.y() *B.y()};
 	}
-	Math::Vector2 operator*(const Vector2& A, float B) noexcept
+	Vector2 operator*(const Vector2& A, float B) noexcept
 	{
-		return Math::Vector2(A.x()*B,A.y() *B);
+		return {A.x()*B,A.y() *B};
 	}
-	Math::Vector2 operator*(float A, const Vector2& B) noexcept
+	Vector2 operator*(float A, const Vector2& B) noexcept
 	{
-		return Math::Vector2(A*B.x(),A*B.y());
+		return {A*B.x(),A*B.y()};
 	}
-	Math::Vector2 operator/(const Vector2& A, const Vector2& B) noexcept
+	Vector2 operator/(const Vector2& A, const Vector2& B) noexcept
 	{
-		return Math::Vector2(A.x()/B.x(),A.y() /B.y());
+		return {A.x()/B.x(),A.y() /B.y()};
 	}
-	Math::Vector2 operator/(const Vector2& A, float B) noexcept
+	Vector2 operator/(const Vector2& A, float B) noexcept
 	{
-		return Math::Vector2(A.x()/B,A.y() /B);
+		return {A.x()/B,A.y() /B};
 	}
-	Math::Vector2 operator/(float A, const Vector2& B) noexcept
+	Vector2 operator/(float A, const Vector2& B) noexcept
 	{
-		return Math::Vector2(A/B.x(),A/B.y());
+		return {A/B.x(),A/B.y()};
 	}
-	float GetVector2X(Vector2* source)
+	float GetVector2XC(Vector2* source)
 	{
 		return source->x();
 	}
-	float GetVector2Y(Vector2* source)
+	float GetVector2YC(Vector2* source)
 	{
 		return source->y();
+	}
+	int DeleteVector2C(Vector2* ptr)
+	{
+		if (!ptr)
+			return -1;
+
+		try
+		{
+			delete ptr;
+			return 0;
+		}
+		catch (std::bad_alloc&){}
+
+		return -1;
 	}
 #pragma endregion
 
@@ -1251,7 +1340,7 @@ namespace CALUMI::Math
 		double y = 0.0;
 		Impl() = default;
 		Impl(double x, double y) :x(x), y(y) {}
-		Impl(double value) :x(value), y(value) {}
+		explicit Impl(double value) :x(value), y(value) {}
 	};
 
 	Vector2D::Vector2D()
@@ -1262,7 +1351,10 @@ namespace CALUMI::Math
 	Vector2D::~Vector2D()
 	{
 		if (pImpl)
+		{
 			delete pImpl;
+			pImpl = nullptr;
+		}
 	}
 
 	Vector2D::Vector2D(double input[2])
@@ -1312,8 +1404,11 @@ namespace CALUMI::Math
 
 	Vector2D& Vector2D::operator=(const Vector2D& other)
 	{
-		pImpl->x = other.pImpl->x;
-		pImpl->y = other.pImpl->y;
+		if (this != &other)
+		{
+			pImpl->x = other.pImpl->x;
+			pImpl->y = other.pImpl->y;
+		}
 		return *this;
 	}
 
@@ -1354,31 +1449,31 @@ namespace CALUMI::Math
 	}
 	Vector2D Vector2D::operator-() const
 	{
-		return Math::Vector2D(-(pImpl->x), -(pImpl->y));
+		return {-pImpl->x, -pImpl->y};
 	}
 
 	double Vector2D::length() const
 	{
-		return sqrt((pImpl->x * pImpl->x) + (pImpl->y * pImpl->y));
+		return sqrt(pImpl->x * pImpl->x + pImpl->y * pImpl->y);
 	}
 	double Vector2D::lengthSquared() const
 	{
-		return ((pImpl->x * pImpl->x) + (pImpl->y * pImpl->y));
+		return pImpl->x * pImpl->x + pImpl->y * pImpl->y;
 	}
 
 	double Vector2D::dot(const Vector2D& other) const
 	{
-		return (pImpl->x * other.pImpl->x) + (pImpl->y * other.pImpl->y);
+		return pImpl->x * other.pImpl->x + pImpl->y * other.pImpl->y;
 	}
 
 	void Vector2D::cross(const Vector2D& other, Vector2D& result) const
 	{
-		result.pImpl->x = result.pImpl->y = (pImpl->x * other.pImpl->y) - (pImpl->y * other.pImpl->x);
+		result.pImpl->x = result.pImpl->y = pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x;
 	}
 	Vector2D Vector2D::cross(const Vector2D& other) const
 	{
-		double result = (pImpl->x * other.pImpl->y) - (pImpl->y * other.pImpl->x);
-		return Vector2D(result, result);
+		double result = pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x;
+		return {result, result};
 	}
 
 	void Vector2D::normalize()
@@ -1387,7 +1482,7 @@ namespace CALUMI::Math
 	}
 	Vector2D Vector2D::lerp(const Vector2D& input, double t) const
 	{
-		Vector2D output = (1.0 - t) * (*this) + t * input;
+		Vector2D output = (1.0 - t) * *this + t * input;
 
 		return output;
 	}
@@ -1398,37 +1493,37 @@ namespace CALUMI::Math
 		return output;
 	}
 	//Non-member functions
-	Math::Vector2D operator+(const Vector2D& A, const Vector2D& B) noexcept
+	Vector2D operator+(const Vector2D& A, const Vector2D& B) noexcept
 	{
-		return Math::Vector2D(A.x() + B.x(), A.y() + B.y());
+		return {A.x() + B.x(), A.y() + B.y()};
 	}
-	Math::Vector2D operator-(const Vector2D& A, const Vector2D& B) noexcept
+	Vector2D operator-(const Vector2D& A, const Vector2D& B) noexcept
 	{
-		return Math::Vector2D(A.x() - B.x(), A.y() - B.y());
+		return {A.x() - B.x(), A.y() - B.y()};
 	}
-	Math::Vector2D operator*(const Vector2D& A, const Vector2D& B) noexcept
+	Vector2D operator*(const Vector2D& A, const Vector2D& B) noexcept
 	{
-		return Math::Vector2D(A.x() * B.x(), A.y() * B.y());
+		return {A.x() * B.x(), A.y() * B.y()};
 	}
-	Math::Vector2D operator*(const Vector2D& A, double B) noexcept
+	Vector2D operator*(const Vector2D& A, double B) noexcept
 	{
-		return Math::Vector2D(A.x() * B, A.y() * B);
+		return {A.x() * B, A.y() * B};
 	}
-	Math::Vector2D operator*(double A, const Vector2D& B) noexcept
+	Vector2D operator*(double A, const Vector2D& B) noexcept
 	{
-		return Math::Vector2D(A * B.x(), A * B.y());
+		return {A * B.x(), A * B.y()};
 	}
-	Math::Vector2D operator/(const Vector2D& A, const Vector2D& B) noexcept
+	Vector2D operator/(const Vector2D& A, const Vector2D& B) noexcept
 	{
-		return Math::Vector2D(A.x() / B.x(), A.y() / B.y());
+		return {A.x() / B.x(), A.y() / B.y()};
 	}
-	Math::Vector2D operator/(const Vector2D& A, double B) noexcept
+	Vector2D operator/(const Vector2D& A, double B) noexcept
 	{
-		return Math::Vector2D(A.x() / B, A.y() / B);
+		return {A.x() / B, A.y() / B};
 	}
-	Math::Vector2D operator/(double A, const Vector2D& B) noexcept
+	Vector2D operator/(double A, const Vector2D& B) noexcept
 	{
-		return Math::Vector2D(A / B.x(), A / B.y());
+		return {A / B.x(), A / B.y()};
 	}
 	double GetVector2DX(Vector2D* source)
 	{
@@ -1437,6 +1532,129 @@ namespace CALUMI::Math
 	double GetVector2DY(Vector2D* source)
 	{
 		return source->y();
+	}
+	int DeleteVector2DC(Vector2D* ptr)
+	{
+		if (!ptr)
+			return -1;
+
+		try
+		{
+			delete ptr;
+			return 0;
+		}
+		catch (std::bad_alloc&){}
+
+		return -1;
+	}
+#pragma endregion
+
+#pragma region Tranform
+	struct Transform::Impl
+	{
+		Vector3 m_position;
+		Quaternion m_rotation;
+	};
+
+	Transform::Transform(Vector3 position, Quaternion rotation) : pImpl(new Impl())
+	{
+		pImpl->m_position = position;
+		pImpl->m_rotation = rotation;
+	}
+
+	Transform::~Transform()
+	{
+		if (pImpl)
+		{
+			delete pImpl;
+			pImpl = nullptr;
+		}
+	}
+
+	Transform Transform::global(const Transform& reference) const
+	{
+		Quaternion qGlobal = pImpl->m_rotation;
+		qGlobal.rotateBy(reference.pImpl->m_rotation);
+
+		Quaternion qPosition(pImpl->m_position.x(), pImpl->m_position.y(), pImpl->m_position.z(), 0.0f, false);
+
+		qPosition = reference.pImpl->m_rotation * qPosition * reference.pImpl->m_rotation.conjugate();
+
+		return { {
+					qPosition.x() + reference.pImpl->m_position.x(),
+					qPosition.y() + reference.pImpl->m_position.y(),
+					qPosition.z() + reference.pImpl->m_position.z()
+				 },
+					qGlobal
+			   };
+	}
+
+	Transform Transform::local(const Transform& reference) const
+	{
+		Quaternion qLocal = pImpl->m_rotation;
+		const Quaternion qInverse = reference.pImpl->m_rotation;
+		qInverse.inverse();
+		qLocal.rotateBy(qInverse);
+
+		const Vector3 vPosition = pImpl->m_position - reference.pImpl->m_position;
+		Quaternion qPosition(vPosition.x(), vPosition.y(), vPosition.z(), 0.0f);
+		qPosition = qInverse * qPosition * reference.pImpl->m_rotation;
+
+		return { {
+			qPosition.x() + reference.pImpl->m_position.x(),
+			qPosition.y() + reference.pImpl->m_position.y(),
+			qPosition.z() + reference.pImpl->m_position.z()
+		 },
+			qLocal
+	   };
+	}
+
+	Quaternion Transform::rotation() const
+	{
+		return pImpl->m_rotation;
+	}
+
+	void Transform::setRotation(const Quaternion& rotation)
+	{
+		pImpl->m_rotation = rotation;
+	}
+
+	void Transform::setRotation(Quaternion&& rotation)
+	{
+		pImpl->m_rotation = rotation;
+	}
+
+	Vector3 Transform::position() const
+	{
+		return pImpl->m_position;
+	}
+
+	void Transform::setPosition(const Vector3& position)
+	{
+		pImpl->m_position = position;
+	}
+
+	void Transform::setPosition(Vector3&& position)
+	{
+		pImpl->m_position = position;
+	}
+	Transform* CreateTransformC()
+	{
+		return new Transform;
+	}
+	int DeleteTransformC(Transform* ptr)
+	{
+		if (!ptr)
+			return -1;
+
+		try
+		{
+			delete ptr;
+			return 0;
+		}
+		catch (std::bad_alloc&){}
+
+		return -1;
 	}
 #pragma endregion
 

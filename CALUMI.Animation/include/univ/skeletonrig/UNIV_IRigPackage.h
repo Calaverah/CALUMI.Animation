@@ -13,7 +13,9 @@ namespace CALUMI::UNIV
 	/**
 		 * @brief RigPackages provide a convenient way for users to apply game specific data to a rig
 		 *
-		 * @details Rig Packages allow a rig to have multiple games worth of data applied to the rig without conflicting. The intention is that users can export a single rig for various games at the same time... assuming the game is supported.
+		 * @details Rig Packages allow a rig to have multiple games worth of data applied to the rig without
+		 * conflicting. The intention is that users can export a single rig for various games at the same time...
+		 * assuming the game is supported.
 		 */
 	class CALUMIANIMATION_API IRigPackage : public IPackage
 	{

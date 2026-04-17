@@ -2,14 +2,12 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
-#pragma once
+#include "interfaces/ILineage.h"
 
 namespace CALUMI
 {
-    class ILineage
+    const ILineage* ILineage::parent() const
     {
-    public:
-      virtual ~ILineage() = default;
-        [[nodiscard]] virtual const ILineage* parent() const;
-    };
+        return nullptr;
+    }
 }

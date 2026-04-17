@@ -14,25 +14,28 @@ namespace CALUMI::UNIV{
 
 	class SkeletonRig;
 
+	//TODO: Bone Doc and Rig Doc
+
 	/**
 	 * @brief Universal method of storing skeleton limb data
 	 */
 	class CALUMIANIMATION_API SkeletonBone : public ILineage
 	{
-	public:
+	private:
 
 		/** @name Initialization*/
 		/// @{
 
-		explicit SkeletonBone(const ILineage& parent);
-		SkeletonBone(const SkeletonBone& other);
+		explicit SkeletonBone(const ILineage* parent, const char* name);
+		// SkeletonBone(const SkeletonBone& other);
+	public:
 		~SkeletonBone() override;
 
 		/// @}
 		/** @name Operators*/
 		/// @{
 	public:
-		SkeletonBone& operator=(const SkeletonBone& other);
+		// SkeletonBone& operator=(const SkeletonBone& other);
 
 		/// @}
 		/// @name ILineage
@@ -44,6 +47,26 @@ namespace CALUMI::UNIV{
 		 */
 		[[nodiscard]] const ILineage* parent() const override;
 		[[nodiscard]] const SkeletonRig& parentRig() const;
+
+		[[nodiscard]] SkeletonBone* addChildBone(const char* name, const Math::Transform& transform) const;
+		[[nodiscard]] SkeletonBone* childBone(const char* name) const;
+		[[nodiscard]] SkeletonBone* childBone(unsigned int index) const;
+		/**
+		 *
+		 * @return Number of direct children belonging to this bone
+		 */
+		[[nodiscard]] unsigned int childBoneCount() const;
+		/**
+		 *
+		 * @return Total number of bones belonging to this bone, including children of its direct children
+		 */
+		[[nodiscard]] unsigned int boneCount() const;
+		/**
+		 * @brief Returns the bones that are of the given type belonging to this bone
+		 * @param type Bone type to search for
+		 * @return
+		 */
+		[[nodiscard]] unsigned int boneTypeCount(BoneType type) const;
 		/// @}
 
 	public:
@@ -52,27 +75,10 @@ namespace CALUMI::UNIV{
 		/// @{
 
 		/**
-		 * @brief #Rotation in relation to the origin of the skeleton rig
-		 * @return #Rotation in the form of a Quaternion
+		 * @brief The transform for this object. Expressed position and rotation
 		 */
-        [[nodiscard]] const Math::Quaternion& globalRotation() const;
-		/**
-		 * @brief Position in relation to the origin of the skeleton rig
-		 * @return Position in the form of a Vector3 (float base)
-		 */
-        [[nodiscard]] const Math::Vector3& globalPosition() const;
-
-	private:
-		/**
-		 * @brief Method for skeleton rig, or other privileged classes, to set the transform members of this bone
-		 * @param global Relative to rig origin
-		 */
-        void setRotation(const Math::Quaternion& global) const;
-		/**
-		 * @brief Method for skeleton rig, or other privileged classes, to set the transform members of this bone
-		 * @param global Relative to rig origin
-		 */
-        void setPosition(const Math::Vector3& global) const;
+		[[nodiscard]] const Math::Transform& localTransform() const;
+		[[nodiscard]] Math::Transform globalTransform() const;
 
 		/// @}
 
@@ -86,6 +92,8 @@ namespace CALUMI::UNIV{
          * @return name in a string container
 		 */
         [[nodiscard]] const char* name() const;
+		[[nodiscard]] bool isValidName(const char* name) const;
+		bool setName(const char* name) const;
 
 		/// @}
 		/** @name Properties*/
@@ -111,17 +119,15 @@ namespace CALUMI::UNIV{
         bool resetBoneTypeProperty(BoneType boneType = BoneType::Default) const; // NOLINT(*-use-nodiscard)
 
 	public:
+		//TODO: docs
+		bool setParentBone(const SkeletonBone& newParent) const; // NOLINT(*-use-nodiscard)
+
 		/**
-		 * @brief Sets the parent for this bone, however, setting the parent directly on the bone will not affect its global position and rotation
-		 * @param name Name of parent
-		 * @details If no name is set, or is left blank, the parentage will default to the root object of the rig during compilation
+		 *
+		 * @param boneCandidate The potential ancestor of this bone
+		 * @return If the boneCandidate is this bone's ancestor (parent, grandparent, or some form of upstream lineage)
 		 */
-        void setParentBone(const char* name) const;
-		/**
-		 * @brief 
-		 * @return The name of this bone's parent, if set
-		 */
-        [[nodiscard]] const char* parentBone() const;
+		[[nodiscard]] bool isAncestor(const SkeletonBone& boneCandidate) const;
 
 		/// @}
 		/** @name Serialization*/
@@ -164,24 +170,6 @@ namespace CALUMI::UNIV{
 		~SkeletonRig() override;
 
 		/// @}
-		/// @name Operators
-		/// @{
-
-	public:
-		SkeletonRig& operator=(const SkeletonRig& other);
-
-		/// @}
-		/// @name ILineage
-		/// @{
-
-		/**
-		 * @brief Since the rig itself cannot be a child of another bone or rig,
-		 * this will return nullptr, signaling that it is the root of the structure
-		 */
-		[[nodiscard]] const ILineage* parent() const override;
-		/// @}
-
-		//TODO: Consider flags for parental/relative/global during shifting operations
 
 	public:
 		/** @name Properties*/
@@ -196,43 +184,12 @@ namespace CALUMI::UNIV{
 		 * @param name Name to set, unique is advised
 		 */
 		bool setName(const char* name) const;
-		/**
-		 * @brief The entry list for this rig's bones
-		 * @return Vector container
-		 */
-		[[nodiscard]] const SkeletonBoneVector& boneEntries() const;
-		/**
-		 * @brief Returns a pointer to a bone if one exists under the given name
-		 * @param boneName 
-		 * @return Nullptr if none exists
-		 */
-		SkeletonBone* bone(const char* boneName) const;
+
 		/**
 		 * @brief
 		 * @return Reference to this rig's package manager
 		 */
 		[[nodiscard]] RigPackageManager& getPackageManager() const;
-
-		/// @}
-		/** @name Validation*/
-		/// @{
-
-		/**
-		 * @brief Checks whether all bone names in this rig are unique
-		 * @return Whether all names in the rig are unique and valid
-		 */
-		[[nodiscard]] bool validateNames() const;
-		/**
-		 * @brief Checks if each bone mirror's another exclusively, or not at all
-		 * @return Whether each bone has an exclusive mirror, or no mirror at all
-		 */
-		[[nodiscard]] bool verifyExclusiveBoneMirrors() const;
-		/**
-		 * @brief Returns the name of the bone's mirror
-		 * @param boneName 
-		 * @return empty if no mirror is set, or bone doesn't exist
-		 */
-		const char* getBoneMirrorName(const char* boneName) const;
 
 		/// @}
 
@@ -241,88 +198,11 @@ namespace CALUMI::UNIV{
 		/// @{
 
 		/**
-		 * @brief The preferred way to add bones to a universal rig definition
-		 * @param rotation Rotational entry as Quaternion
-		 * @param position Position as Vector3 (float)
-		 * @param boneName Must be unique string
-		 * @param parentName If a parent is not found, the parent will default to the root bone
-		 * @param relativeToParent If true, and a parent transform is found within the rig, the position and rotation will be treated as relative to this bone's parent. If false, or a parent isn't found, the values will be accepted as global.
-		 * @return Ptr to the newly added bone, or nullptr if the operation was unsuccessful
-		 */
-		SkeletonBone* addBoneToRig(const Math::Quaternion& rotation, const Math::Vector3& position, const char* boneName, const char* parentName, bool relativeToParent) const;
-		/**
-		 * @brief Flags a bone to act as the root bone of this rig, moving it to the top of the bone entry vector.
-		 * The same as setting this bone's index to 0.
+		 * @brief Returns a pointer to a bone if one exists under the given name
 		 * @param boneName
-		 * @param keepRelative Will keep the relative position/rotation to its current parent, and assign it as global
-		 * @param keepChildrenRelative Will keep the relative positions of its children
-		 * @return Whether the bone was successfully set as the root
+		 * @return Nullptr if none exists
 		 */
-		bool setRoot(const char* boneName, bool keepRelative = true, bool keepChildrenRelative = true) const;
-		/**
-		 * @param boneName The bone to reparent
-		 * @param parentName The new parent, if not found, will cancel operation
-		 * @param keepRelative If true, the relative position/rotation of this bone to its current parent will be preserved under its new parent
-		 * @param keepChildrenRelative
-		 * @return Whether the operation is successful
-		 */
-		bool setBoneParent(const char* boneName, const char* parentName, bool keepRelative = true, bool keepChildrenRelative = true) const;
-		/**
-		 * @brief Renames a bone in the rig, if one exists
-		 * @param oldBoneName The name of the bone to rename
-		 * @param newBoneName The new name for the bone
-		 * @return Whether the operation was a success
-		 */
-		bool renameBone(const char* oldBoneName, const char* newBoneName) const;
-		/**
-		 * @brief Pairs two bones to mirror each other
-		 * @param bone1 Index of the first bone
-		 * @param bone2 Index of the second bone
-		 * @return Whether the operation was a success
-		 */
-		bool createBoneMirrorPair(const char* bone1, const char* bone2) const;
-		/**
-		 * @brief Resets all bones in the rig to have no mirrored entry
-		 * @return Whether the operation was a success
-		 */
-		bool resetAllBoneMirrors() const; // NOLINT(*-use-nodiscard)
-		/**
-		 * @brief Removes a bone from the rig
-		 * @param boneName Name of bone
-		 * @return Whether a bone with this name was successfully removed
-		 */
-		bool removeBone(const char* boneName) const;
-		/**
-		 * @brief Returns the rotation of this bone
-		 * @param boneName If not found, identity quaternion will be returned
-		 * @param relativeToParent if true and a parent is found, the rotation will be relative to the parent
-		 * @return relative rotation as quaternion, if no parent is found, global rotation will be returned
-		 */
-		Math::Quaternion boneRotation(const char* boneName, bool relativeToParent) const;
-		/**
-		 * @brief Returns the position of this bone
-		 * @param boneName If not found, Vector3.Zero will be returned
-		 * @param relativeToParent if true and a parent is found, the position will be relative to the parent
-		 * @return relative position as vector3 (float), if no parent is found, global position will be returned 
-		 */
-		Math::Vector3 bonePosition(const char* boneName, bool relativeToParent) const;
-		/**
-		 * @brief Attempts to move a bone, if it exists, to a new index
-		 * @param boneName 
-		 * @param index The destination index, if it is out of bounds of the vector, then it will default to the nearest acceptable index. For example: -1 becomes 0, if the array size is 5 then an input of 5 will become 4, and so on
-		 * @return The index, if any, that the bone was moved to. If no bone was found, or there was an error, will return -1
-		 */
-		int setBoneIndex(const char* boneName, int index) const;
-		/**
-		 * @brief Returns the index of the given bone name, if not found, returns -1
-		 * @returns -1 if none found
-		 */
-		int findBone(const char* name) const;
-		/**
-		 * @brief Returns the index of the given bone's parent, if not found, returns -1
-		 * @returns -1 if none found
-		 */
-		int findBoneParent(const char* name) const;
+		[[nodiscard]] SkeletonBone* bone(const char* boneName) const;
 
 		/// @}
 
@@ -331,15 +211,15 @@ namespace CALUMI::UNIV{
 		/// @{
 
 		/**
-		 * @brief Returns the bones that are animation driven, rather than dynamically controlled
-		 * @return The number of animated bones (ie not in-game twist)
+		 * @brief Returns the bones that are of the given type belonging to this rig
+		 * @param type Bone type to search for
+		 * @return
 		 */
-		[[nodiscard]] uint64_t animatedBoneCount() const;
+		[[nodiscard]] unsigned int boneTypeCount(BoneType type) const;
 		/**
-		 * @brief Returns the total amount of bones, whether they are driven by curves or dynamically in game
-		 * @return The total number of bones on this rig
+		 * @brief Returns the total amount of bones in this rig
 		 */
-		[[nodiscard]] uint64_t boneCount() const;
+		[[nodiscard]] unsigned int boneCount() const;
 
 		/// @}
 
@@ -365,9 +245,6 @@ namespace CALUMI::UNIV{
 		static constexpr unsigned int MaxBoneCount = 512;
 
 		/// @}
-	private:
-		/// @private
-		void shiftChildren(const SkeletonBone& bone, const Math::Vector3& posOffset, const Math::Quaternion& rotOffset) const;
 	private:
 		struct Impl;
 		Impl* pImpl;
@@ -464,14 +341,16 @@ namespace CALUMI::UNIV{
 		 * @return Whether the operation was successful
 		 */
 		CALUMIANIMATION_API bool RemoveBoneC(const SkeletonRig* rig, const char* boneName);
+
 		/**
-		 * @brief Renames a bone, if one exists, on the given rig
-		 * @param rig 
-		 * @param oldName 
-		 * @param newName Must be unique, and not empty
-		 * @return Whether the operation was a success
+		 *
+		 * @param rig Skeleton rig in which this bone resides
+		 * @param oldName Name of the bone that will be renamed
+		 * @param newName New name of the bone (must be unique and valid)
+		 * @return -1 = invalid rig\n 0 = Success\n 1 = Bone not found\n 2 = New name is invalid\n 3 = New name is same
+		 * as old\n 4 = Name could not be set
 		 */
-		CALUMIANIMATION_API bool RenameBoneC(const SkeletonRig* rig, const char* oldName, const char* newName);
+		CALUMIANIMATION_API int RenameBoneC(const SkeletonRig* rig, const char* oldName, const char* newName);
 		/**
 		 * @brief Normally the root of the rig is set to the 0th index of the bone entry vector, setting this will override that selection, if desired
 		 * @param rig 
@@ -565,25 +444,27 @@ namespace CALUMI::UNIV{
 		CALUMIANIMATION_API bool ResetAllBoneMirrorsC(const SkeletonRig* rig);
 		/**
 		 * @brief Scans all bones in the given skeleton rig to verify the mirrors are exclusive or are set to default
-		 
 		 * @param rig Ptr to rig
 		 * @return Whether the operation was a success
 		 */
 		CALUMIANIMATION_API bool VerifyExclusiveBoneMirrorsC(const SkeletonRig* rig);
 		/**
-		 * @brief 
-		 
+		 * @brief
 		 * @param source Ptr to skeleton rig to check
 		 * @return The total number of bones belonging to this rig
 		 */
-		CALUMIANIMATION_API uint64_t GetSkeletonRigBoneCountC(const SkeletonRig* source);
+		CALUMIANIMATION_API unsigned int GetSkeletonRigBoneCountC(const SkeletonRig* source);
 		/**
 		 * @brief Animated bones that are not driven dynamically in game
-		 
 		 * @param source Ptr to rig 
 		 * @return The total number of animated bones that driven by animation's data prior to runtime
 		 */
-		CALUMIANIMATION_API uint64_t GetSkeletonRigAnimatedBoneCountC(const SkeletonRig* source);
+		CALUMIANIMATION_API unsigned int GetSkeletonRigAnimatedBoneCountC(const SkeletonRig* source);
+		/**
+		 * @param source Ptr to rig
+		 * @return The total number of non-animated bones that are driven during runtime (aka Twist bones)
+		 */
+		CALUMIANIMATION_API unsigned int GetSkeletonRigNonAnimatedBoneCountC(const SkeletonRig* source);
 		/**
 		 * @brief 
 		 
@@ -598,7 +479,7 @@ namespace CALUMI::UNIV{
 		 * @param boneName
 		 * @return Ptr, if one exists, to the skeleton bone at the given index
 		 */
-		CALUMIANIMATION_API SkeletonBone* GetSkeletonBoneC(const SkeletonRig* source, const char* boneName);
+		CALUMIANIMATION_API const SkeletonBone* GetSkeletonBoneC(const SkeletonRig* source, const char* boneName);
 		/**
 		 * @brief 
 		 
@@ -612,7 +493,7 @@ namespace CALUMI::UNIV{
 		 * @param source Ptr to a skeleton bone
 		 * @return The name of the source bone's parent, if none exist, will return as empty
 		 */
-		CALUMIANIMATION_API const char* GetSkeletonBoneParentC(const SkeletonBone* source);
+		CALUMIANIMATION_API const SkeletonBone* GetSkeletonBoneParentC(const SkeletonBone* source);
 		/**
 		 * @brief Returns the rotation of this bone, in global coordinates
 		 

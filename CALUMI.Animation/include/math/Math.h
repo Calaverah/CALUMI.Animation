@@ -1,7 +1,8 @@
-//Copyright � 2025-2026 Calaverah. All rights reserved.
+//Copyright © 2025-2026 Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppNonExplicitConvertingConstructor
 #pragma once
 #include "utilities/CALUMI_Common.h"
 #include "utilities/CALUMI_Utilities.h"
@@ -64,9 +65,9 @@ namespace CALUMI::Math
 		/** @name Data */
 		/// @{
 
-		float x() const;
+		[[nodiscard]] float x() const;
 		void setX(float x);
-		float y() const;
+		[[nodiscard]] float y() const;
 		void setY(float y);
 
 		/// @}
@@ -92,13 +93,13 @@ namespace CALUMI::Math
 		/** @name Vector Operations */
 		/// @{
 
-		float Length() const;
-		float LengthSquared() const;
+		[[nodiscard]] float Length() const;
+		[[nodiscard]] float LengthSquared() const;
 
-		float Dot(const Vector2& other) const;
+		[[nodiscard]] float Dot(const Vector2& other) const;
 
 		void Cross(const Vector2& other, Vector2& result) const;
-		Vector2 Cross(const Vector2& other) const;
+		[[nodiscard]] Vector2 Cross(const Vector2& other) const;
 
 		void Normalize();
 
@@ -117,7 +118,7 @@ namespace CALUMI::Math
 		/** @name Print */
 		/// @{
 
-		Utilities::StringContainer ToString() const;
+		[[nodiscard]] Utilities::StringContainer ToString() const;
 
 		/// @}
 
@@ -146,13 +147,19 @@ namespace CALUMI::Math
 
 	extern "C" {
 	/** @relates Vector2
-			 *  @name Extern "C"
-			 */
-	CALUMIANIMATION_API float GetVector2X(Vector2* source);
+	 *  @name Extern "C"
+	 */
+	CALUMIANIMATION_API float GetVector2XC(Vector2* source);
 	/** @relates Vector2
-			 *  @name Extern "C"
-			 */
-	CALUMIANIMATION_API float GetVector2Y(Vector2* source);
+	 *  @name Extern "C"
+	 */
+	CALUMIANIMATION_API float GetVector2YC(Vector2* source);
+	/**
+	 * @relates Vector2
+	 * @name Extern "C"
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Deletion
+	 */
+	CALUMIANIMATION_API int DeleteVector2C(Vector2* ptr);
 	}
 
 	struct CALUMIANIMATION_API Vector2D
@@ -172,9 +179,9 @@ namespace CALUMI::Math
 		/** @name Data */
 		/// @{
 
-		double x() const;
+		[[nodiscard]] double x() const;
 		void setX(double x);
-		double y() const;
+		[[nodiscard]] double y() const;
 		void setY(double y);
 
 		/// @}
@@ -199,16 +206,16 @@ namespace CALUMI::Math
 		/** @name Vector Operations */
 		/// @{
 
-		double length() const;
-		double lengthSquared() const;
+		[[nodiscard]] double length() const;
+		[[nodiscard]] double lengthSquared() const;
 
-		double dot(const Vector2D& other) const;
+		[[nodiscard]] double dot(const Vector2D& other) const;
 		void cross(const Vector2D& other, Vector2D& result) const;
-		Vector2D cross(const Vector2D& other) const;
+		[[nodiscard]] Vector2D cross(const Vector2D& other) const;
 
 		void normalize();
 
-		Vector2D lerp(const Vector2D& input, double t = 0.5) const;
+		[[nodiscard]] Vector2D lerp(const Vector2D& input, double t = 0.5) const;
 
 		/// @}
 
@@ -223,7 +230,7 @@ namespace CALUMI::Math
 
 		/** @name Print */
 		/// @{
-		Utilities::StringContainer toString() const;
+		[[nodiscard]] Utilities::StringContainer toString() const;
 		/// @}
 
 	private:
@@ -250,13 +257,19 @@ namespace CALUMI::Math
 
 	extern "C" {
 	/** @relates Vector2D
-			 *  @name Extern "C"
-			 */
+	 *  @name Extern "C"
+	 */
 	CALUMIANIMATION_API double GetVector2DX(Vector2D* source);
 	/** @relates Vector2D
-			 *  @name Extern "C"
-			 */
+	 *  @name Extern "C"
+	 */
 	CALUMIANIMATION_API double GetVector2DY(Vector2D* source);
+	/**
+	 * @relates Vector2D
+	 * @name Extern "C"
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Deletion
+	 */
+	CALUMIANIMATION_API int DeleteVector2DC(Vector2D* ptr);
 	}
 
 	struct CALUMIANIMATION_API Vector3
@@ -278,11 +291,11 @@ namespace CALUMI::Math
 		/** @name Data */
 		/// @{
 
-		float x() const;
+		[[nodiscard]] float x() const;
 		void setX(float x) const;
-		float y() const;
+		[[nodiscard]] float y() const;
 		void setY(float y) const;
-		float z() const;
+		[[nodiscard]] float z() const;
 		void setZ(float z) const;
 
 		/// @}
@@ -307,13 +320,13 @@ namespace CALUMI::Math
 		/** @name Vector Operations */
 		/// @{
 
-		float length() const;
-		float lengthSquared() const;
+		[[nodiscard]] float length() const;
+		[[nodiscard]] float lengthSquared() const;
 
-		float dot(const Vector3& other) const;
+		[[nodiscard]] float dot(const Vector3& other) const;
 
 		void cross(const Vector3& other, Vector3& result) const;
-		Vector3 cross(const Vector3& other) const;
+		[[nodiscard]] Vector3 cross(const Vector3& other) const;
 
 		void normalize();
 
@@ -334,7 +347,7 @@ namespace CALUMI::Math
 		/** @name Print */
 		/// @{
 
-		Utilities::StringContainer toString() const;
+		[[nodiscard]] Utilities::StringContainer toString() const;
 
 		/// @}
 
@@ -373,6 +386,12 @@ namespace CALUMI::Math
 			 *  @name Extern "C"
 			 */
 	CALUMIANIMATION_API float GetVector3Z(Vector3* source);
+	/**
+	 * @relates Vector3
+	 * @name Extern "C"
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Deletion
+	 */
+	CALUMIANIMATION_API int DeleteVector3C(Vector3* ptr);
 	}
 
 	struct CALUMIANIMATION_API Vector3D
@@ -392,11 +411,11 @@ namespace CALUMI::Math
 		/** @name Data */
 		/// @{
 
-		double x() const;
+		[[nodiscard]] double x() const;
 		void setX(double x);
-		double y() const;
+		[[nodiscard]] double y() const;
 		void setY(double y);
-		double z() const;
+		[[nodiscard]] double z() const;
 		void setZ(double z);
 
 		/// @}
@@ -421,16 +440,16 @@ namespace CALUMI::Math
 		/** @name Vector Operations */
 		/// @{
 
-		double length() const;
-		double lengthSquared() const;
+		[[nodiscard]] double length() const;
+		[[nodiscard]] double lengthSquared() const;
 
-		double dot(const Vector3D& other) const;
+		[[nodiscard]] double dot(const Vector3D& other) const;
 		void cross(const Vector3D& other, Vector3D& result) const;
-		Vector3D cross(const Vector3D& other) const;
+		[[nodiscard]] Vector3D cross(const Vector3D& other) const;
 
 		void normalize();
 
-		Vector3D lerp(const Vector3D& input, double t = 0.5) const;
+		[[nodiscard]] Vector3D lerp(const Vector3D& input, double t = 0.5) const;
 
 		/// @}
 
@@ -449,7 +468,7 @@ namespace CALUMI::Math
 		/** @name Print */
 		/// @{
 
-		Utilities::StringContainer toString() const;
+		[[nodiscard]] Utilities::StringContainer toString() const;
 
 		/// @}
 
@@ -477,17 +496,23 @@ namespace CALUMI::Math
 
 	extern "C" {
 	/** @relates Vector3D
-			 *  @name Extern "C"
-			 */
+	 *  @name Extern "C"
+	 */
 	CALUMIANIMATION_API double GetVector3DX(Vector3D* source);
 	/** @relates Vector3D
-			 *  @name Extern "C"
-			 */
+	 *  @name Extern "C"
+	 */
 	CALUMIANIMATION_API double GetVector3DY(Vector3D* source);
 	/** @relates Vector3D
-			 *  @name Extern "C"
-			 */
+	 *  @name Extern "C"
+	 */
 	CALUMIANIMATION_API double GetVector3DZ(Vector3D* source);
+	/**
+	 * @relates Vector3D
+	 * @name Extern "C"
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Deletion
+	 */
+	CALUMIANIMATION_API int DeleteVector3DC(Vector3D* ptr);
 	}
 
 	/**
@@ -531,13 +556,13 @@ namespace CALUMI::Math
 		/** @name Data */
 		/// @{
 
-		float x() const;
+		[[nodiscard]] float x() const;
 		void setX(float x);
-		float y() const;
+		[[nodiscard]] float y() const;
 		void setY(float y);
-		float z() const;
+		[[nodiscard]] float z() const;
 		void setZ(float z);
-		float w() const;
+		[[nodiscard]] float w() const;
 		void setW(float w);
 
 		/// @}
@@ -563,8 +588,8 @@ namespace CALUMI::Math
 		/** @name Equality */
 		/// @{
 
-		bool areSameRotation(const Quaternion& input, float tolerance = 0.0) const noexcept;
-		bool areEqual(const Quaternion& input, float tolerance = 0.0) const noexcept;
+		[[nodiscard]] bool areSameRotation(const Quaternion& input, float tolerance = 0.0) const noexcept;
+		[[nodiscard]] bool areEqual(const Quaternion& input, float tolerance = 0.0) const noexcept;
 
 		/// @}
 		/** @name Vector Operations */
@@ -573,10 +598,10 @@ namespace CALUMI::Math
 		Quaternion conjugate() noexcept;
 		void conjugate(Quaternion& result) const noexcept;
 
-		float dot(const Quaternion& input) const noexcept;
+		[[nodiscard]] float dot(const Quaternion& input) const noexcept;
 
-		float lengthSquared() const noexcept;
-		float length() const noexcept;
+		[[nodiscard]] float lengthSquared() const noexcept;
+		[[nodiscard]] float length() const noexcept;
 
 		void normalize() noexcept;
 		void normalize(Quaternion& result) const noexcept;
@@ -585,7 +610,7 @@ namespace CALUMI::Math
 		void inverse() const noexcept;
 
 		//Returns angle in radians
-		float angularDistance(const Quaternion& input) const;
+		[[nodiscard]] float angularDistance(const Quaternion& input) const;
 
 		/**
 		 * @param start
@@ -598,7 +623,7 @@ namespace CALUMI::Math
 		 */
 		void rotateBy(const Quaternion& offset);
 
-		Quaternion sLerp(const Quaternion& input, float t = 0.5f) const;
+		[[nodiscard]] Quaternion sLerp(const Quaternion& input, float t = 0.5f) const;
 
 		static const Quaternion Identity;
 
@@ -606,7 +631,7 @@ namespace CALUMI::Math
 		/** @name Print */
 		/// @{
 
-		Utilities::StringContainer toString() const;
+		[[nodiscard]] Utilities::StringContainer toString() const;
 
 		/// @}
 
@@ -629,25 +654,116 @@ namespace CALUMI::Math
 	CALUMIANIMATION_API Quaternion operator/ (const Quaternion& A, const Quaternion& B) noexcept;
 
 	extern "C" {
+	/**
+	 * @relates Quaternion
+	 * @name Extern "C"
+	 * @return A heap allocated Quaternion where xyz = 0, w = 1
+	 */
+	CALUMIANIMATION_API Quaternion* CreateQuaternionC();
 	/** @relates Quaternion
-			 *  @name Extern "C"
-			 */
-	CALUMIANIMATION_API float GetQuaternionX(Quaternion* source);
+	 *  @name Extern "C"
+	 */
+	CALUMIANIMATION_API float GetQuaternionXC(Quaternion* source);
 	/** @relates Quaternion
-			 *  @name Extern "C"
-			 */
-	CALUMIANIMATION_API float GetQuaternionY(Quaternion* source);
+	 *  @name Extern "C"
+	 */
+	CALUMIANIMATION_API float GetQuaternionYC(Quaternion* source);
 	/** @relates Quaternion
-			 *  @name Extern "C"
-			 */
-	CALUMIANIMATION_API float GetQuaternionZ(Quaternion* source);
+	 *  @name Extern "C"
+	 */
+	CALUMIANIMATION_API float GetQuaternionZC(Quaternion* source);
 	/** @relates Quaternion
-			 *  @name Extern "C"
-			 */
-	CALUMIANIMATION_API float GetQuaternionW(Quaternion* source);
+	 *  @name Extern "C"
+	 */
+	CALUMIANIMATION_API float GetQuaternionWC(Quaternion* source);
 	/** @relates Quaternion
-			 *  @name Extern "C"
-			 */
+	 *  @name Extern "C"
+	 */
 	CALUMIANIMATION_API bool RotateQuaternionByAxisAngleC(Quaternion* input, Quaternion* result, float x, float y, float z, float radians);
+	/**
+	 * @relates Quaternion
+	 * @name Extern "C"
+	 * @param ptr Dynamically allocated quaternion to delete
+	 * @return Error code: \n -1 = Invalid pointer \n 0 = Successful Deletion
+	 */
+	CALUMIANIMATION_API int DeleteQuaternionC(Quaternion* ptr);
 	}
+
+	struct CALUMIANIMATION_API Transform
+	{
+		Transform(Vector3 position = Vector3(), Quaternion rotation = Quaternion());
+		~Transform();
+
+		/**
+		 *
+		 * @param reference The origin transform to offset this transform by
+		 * @return This transform in global coordinates
+		 */
+		[[nodiscard]] Transform global(const Transform& reference) const;
+		/**
+		 *
+		 * @param reference The origin transform to find the offset from
+		 * @return This transform relative to the given transform
+		 */
+		[[nodiscard]] Transform local(const Transform& reference) const;
+		/**
+		 * @return rotation of this transform
+		 */
+		[[nodiscard]] Quaternion rotation() const;
+		/**
+		 * @brief Sets the rotation
+		 * @param rotation
+		 */
+		void setRotation(const Quaternion& rotation);
+		/**
+		 * @brief Sets the rotation
+		 * @param rotation
+		 */
+		void setRotation(Quaternion&& rotation);
+		/**
+		 * @return position of this transform
+		 */
+		[[nodiscard]] Vector3 position() const;
+		/**
+		 * @brief Sets the position
+		 * @param position
+		 */
+		void setPosition(const Vector3& position);
+		/**
+		 * @brief Sets the position
+		 * @param position
+		 */
+		void setPosition(Vector3&& position);
+
+	private:
+		struct Impl;
+		Impl* pImpl;
+	};
+
+	extern "C" {
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @return Heap allocated transform at Position (0,0,0) and Rotation xyz = 0, w = 1
+	 */
+	CALUMIANIMATION_API Transform* CreateTransformC();
+	CALUMIANIMATION_API Transform* GetLocalTransformC(Transform* global, Transform* reference);
+	CALUMIANIMATION_API int SetTransformPositionC(Transform* transform, float x, float y, float z);
+	CALUMIANIMATION_API float GetTransformPositionXC(Transform* transform);
+	CALUMIANIMATION_API float GetTransformPositionYC(Transform* transform);
+	CALUMIANIMATION_API float GetTransformPositionZC(Transform* transform);
+	CALUMIANIMATION_API float GetTransformRotationXC(Transform* transform);
+	CALUMIANIMATION_API float GetTransformRotationYC(Transform* transform);
+	CALUMIANIMATION_API float GetTransformRotationZC(Transform* transform);
+	CALUMIANIMATION_API float GetTransformRotationWC(Transform* transform);
+	CALUMIANIMATION_API Transform* GetGlobalTransformC(Transform* local, Transform* reference);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param ptr Dynamically allocated quaternion to delete
+	 * @return Error code: \n -1 = Invalid pointer \n 0 = Successful Deletion
+	 */
+	CALUMIANIMATION_API int DeleteTransformC(Transform* ptr);
+	}
+
 }
