@@ -8,6 +8,7 @@
 
 namespace CALUMI::UNIV
 {
+	class SkeletonRig;
 	/**
 		 * @brief RigPackages provide a convenient way for users to apply game specific data to a rig
 		 *

@@ -5,6 +5,8 @@
 
 #include <algorithm>
 #include <AnimStarfield>
+#include <cmath>
+
 #include "internalplatform.h"
 #include <ranges>
 #include <unordered_map>
