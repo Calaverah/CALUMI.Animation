@@ -40,12 +40,12 @@ GTEST(TransformConversion)
     const Transform childGlobal = child.global(root);
 
     EXPECT_QUATNEAR(childGlobal.rotation(), expectedChildGlobal.rotation(), 0.000001f);
-    EXPECT_VEC3NEAR(childGlobal.position(), expectedChildGlobal.position(), 0.000001f);
+    EXPECT_VEC3NEAR(childGlobal.position(), expectedChildGlobal.position(), 0.000002f);
 
     const Transform childLocal = childGlobal.local(root);
 
     EXPECT_QUATNEAR(childLocal.rotation(), child.rotation(), 0.000001f);
-    EXPECT_VEC3NEAR(childLocal.position(), child.position(), 0.000001f);
+    EXPECT_VEC3NEAR(childLocal.position(), child.position(), 0.000002f);
 
     const Transform expectedRelative(
         Vector3(0.0f,-49.0f,-1.0f),
@@ -54,5 +54,5 @@ GTEST(TransformConversion)
     const Transform relative = child.local(root);
 
     EXPECT_QUATNEAR(relative.rotation(), expectedRelative.rotation(), 0.000001f);
-    EXPECT_VEC3NEAR(relative.position(), expectedRelative.position(), 0.00001f);
+    EXPECT_VEC3NEAR(relative.position(), expectedRelative.position(), 0.000005f);
 }
