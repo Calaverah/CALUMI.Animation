@@ -10,7 +10,6 @@
 
 namespace CALUMI::UNIV
 {
-
 	struct CALUMIANIMATION_API AnimationBlock
 	{
 		//TODO: UNIV Documentation
@@ -98,51 +97,264 @@ namespace CALUMI::UNIV
 	};
 
 	VECTORDEC(AnimationVector, Animation)
-
-	//Ctype accessible, due to namespace being ignored in demangling, it is important to remember that only universal animation structs are exposed
-	//For programs like Blender, this should be sufficient as a user can create and push data into the universal format and call for a write to file function with the preferred file type
-	extern  "C" {
-	CALUMIANIMATION_API Animation* CreateAnimationC(const char* animationTitle, unsigned int rigBoneCount);
-	CALUMIANIMATION_API AnimationBlock* GetAnimationBlockC(const Animation* source, const char* boneName , Utilities::StringContainer* errorMessage);
-	CALUMIANIMATION_API uint64_t GetAnimationBlockCountC(const Animation* source);
-	CALUMIANIMATION_API const char* GetAnimationTitleC(const Animation* source);
-	CALUMIANIMATION_API uint64_t GetFrameCountC(const Animation* source);
-	CALUMIANIMATION_API bool DeleteAnimationC(const Animation* ptr);
-	CALUMIANIMATION_API bool AddAnimBlockToAnimationC(const Animation* anim, const AnimationBlock* blockToAdd, bool overwrite, Utilities::StringContainer* errorMessage);
-
-	CALUMIANIMATION_API AnimationBlock* CreateAnimBlockC(const char* boneName, Utilities::StringContainer* errorMessage);
-	CALUMIANIMATION_API bool DeleteAnimationBlockC(const AnimationBlock* ptr);
-	CALUMIANIMATION_API const char* GetAnimBlockBoneNameC(const AnimationBlock* source);
-	CALUMIANIMATION_API int GetAnimBlockBoneIndexC(AnimationBlock* source);
-	CALUMIANIMATION_API unsigned int GetLastFrameInAnimBlockC(const AnimationBlock* source);
-
-	CALUMIANIMATION_API bool AddRotationSqToAnimBlockC(const AnimationBlock* block, const Rotation* rotSq, unsigned int size, bool overwrite);
-	CALUMIANIMATION_API Rotation* GetRotationSqArrayC(const AnimationBlock* source);
-	CALUMIANIMATION_API Rotation* GetRotationFromSqC(const AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
-	CALUMIANIMATION_API uint64_t GetRotationSqSizeC(const AnimationBlock* source);
-
-	//A good default tolerance may be 0.0000863f
-	CALUMIANIMATION_API void ExecuteRDPReduction_RotationC(const AnimationBlock* source, float tolerance);
-
-	CALUMIANIMATION_API bool AddTranslationSqToAnimBlockC(const AnimationBlock* block, const Translation* trnSq, unsigned int size, bool overwrite);
-	CALUMIANIMATION_API Translation* GetTranslationSqArrayC(const AnimationBlock* source);
-	CALUMIANIMATION_API Translation* GetTranslationFromSqC(const AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
-	CALUMIANIMATION_API uint64_t GetTranslationSqSizeC(const AnimationBlock* source);
-
-	//A good default tolerance may be 1.0f/4000.0f
-	CALUMIANIMATION_API void ExecuteRDPReduction_TranslationC(const AnimationBlock* source, float tolerance);
-
-	CALUMIANIMATION_API bool AddScalarSqToAnimBlockC(const AnimationBlock* block, const Scalar* sclrSq, unsigned int size, bool overwrite);
-	CALUMIANIMATION_API Scalar* GetScalarSqArrayC(const AnimationBlock* source);
-	CALUMIANIMATION_API Scalar* GetScalarFromSqC(const AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
-	CALUMIANIMATION_API uint64_t GetScalarSqSizeC(const AnimationBlock* source);
-
-	//A good default tolerance may be 1.0f/5000.0f
-	CALUMIANIMATION_API void ExecuteRDPReduction_ScalarC(const AnimationBlock* source, float tolerance);
-
-	CALUMIANIMATION_API bool AddPrioritySqToAnimBlockC(const AnimationBlock* block, const Priority* prtySq, unsigned int size, bool overwrite);
-	CALUMIANIMATION_API Priority* GetPrioritySqArrayC(const AnimationBlock* source);
-	CALUMIANIMATION_API Priority* GetPriorityFromSqC(const AnimationBlock* source, int index, Utilities::StringContainer* errorMessage);
-	CALUMIANIMATION_API uint64_t GetPrioritySqSizeC(const AnimationBlock* source);
-	}
 }
+
+/**
+	 *
+	 *
+	 * @addtogroup c_anim
+	 * @{
+	 * @defgroup c_univ_anim Universal
+	 * @{
+	 */
+	extern  "C" {
+	/**
+	 *
+	 * @param animationTitle
+	 * @param rigBoneCount
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteAnimationC
+	 * @return
+	 */
+	CALUMIANIMATION_API CALUMI::UNIV::Animation* CreateAnimationC(const char* animationTitle,
+	                                                              unsigned int rigBoneCount);
+	/**
+	 *
+	 * @param source
+	 * @param boneName
+	 * @param errorMessage
+	 * @return
+	 */
+	CALUMIANIMATION_API CALUMI::UNIV::AnimationBlock* GetAnimationBlockC(
+																	const CALUMI::UNIV::Animation* source,
+																	const char* boneName,
+																	CALUMI::Utilities::StringContainer* errorMessage);
+	/**
+	 *
+	 * @param source
+	 * @return
+	 */
+	CALUMIANIMATION_API uint64_t GetAnimationBlockCountC(const CALUMI::UNIV::Animation* source);
+	/**
+	 *
+	 * @param source
+	 * @return
+	 */
+	CALUMIANIMATION_API const char* GetAnimationTitleC(const CALUMI::UNIV::Animation* source);
+	/**
+	 *
+	 * @param source
+	 * @return
+	 */
+	CALUMIANIMATION_API uint64_t GetFrameCountC(const CALUMI::UNIV::Animation* source);
+	/**
+	 *
+	 * @param ptr
+	 * @return
+	 */
+	CALUMIANIMATION_API bool DeleteAnimationC(const CALUMI::UNIV::Animation* ptr);
+	/**
+	 *
+	 * @param anim
+	 * @param blockToAdd
+	 * @param overwrite
+	 * @param errorMessage
+	 * @return
+	 */
+	CALUMIANIMATION_API bool AddAnimBlockToAnimationC(const CALUMI::UNIV::Animation* anim,
+	                                                  const CALUMI::UNIV::AnimationBlock* blockToAdd,
+	                                                  bool overwrite,
+	                                                  CALUMI::Utilities::StringContainer* errorMessage);
+	/**
+	 *
+	 * @param boneName
+	 * @param errorMessage
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteAnimationBlockC
+	 * @return
+	 */
+	CALUMIANIMATION_API CALUMI::UNIV::AnimationBlock* CreateAnimBlockC(
+																	const char* boneName,
+																	CALUMI::Utilities::StringContainer* errorMessage);
+	/**
+	 *
+	 * @param ptr
+	 * @return
+	 */
+	CALUMIANIMATION_API bool DeleteAnimationBlockC(const CALUMI::UNIV::AnimationBlock* ptr);
+	/**
+	 *
+	 * @param source
+	 * @return
+	 */
+	CALUMIANIMATION_API const char* GetAnimBlockBoneNameC(const CALUMI::UNIV::AnimationBlock* source);
+	/**
+	 *
+	 * @param source
+	 * @return
+	 */
+	CALUMIANIMATION_API int GetAnimBlockBoneIndexC(CALUMI::UNIV::AnimationBlock* source);
+	/**
+	 *
+	 * @param source
+	 * @return
+	 */
+	CALUMIANIMATION_API unsigned int GetLastFrameInAnimBlockC(const CALUMI::UNIV::AnimationBlock* source);
+	/**
+	 *
+	 * @param block
+	 * @param rotSq
+	 * @param size
+	 * @param overwrite
+	 * @return
+	 */
+	CALUMIANIMATION_API bool AddRotationSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block,
+	                                                   const CALUMI::UNIV::Rotation* rotSq,
+	                                                   unsigned int size,
+	                                                   bool overwrite);
+	/**
+	 *
+	 * @param source
+	 * @return
+	 */
+	CALUMIANIMATION_API CALUMI::UNIV::Rotation* GetRotationSqArrayC(const CALUMI::UNIV::AnimationBlock* source);
+	/**
+	 *
+	 * @param source
+	 * @param index
+	 * @param errorMessage
+	 * @return
+	 */
+	CALUMIANIMATION_API CALUMI::UNIV::Rotation* GetRotationFromSqC(const CALUMI::UNIV::AnimationBlock* source,
+	                                                               int index,
+	                                                               CALUMI::Utilities::StringContainer* errorMessage);
+	/**
+	 *
+	 * @param source
+	 * @return
+	 */
+	CALUMIANIMATION_API uint64_t GetRotationSqSizeC(const CALUMI::UNIV::AnimationBlock* source);
+	/**
+	 * @note A good default tolerance may be 0.0000863f
+	 * @param source
+	 * @param tolerance
+	 */
+	CALUMIANIMATION_API void ExecuteRDPReduction_RotationC(const CALUMI::UNIV::AnimationBlock* source, float tolerance);
+	/**
+	 *
+	 * @param block
+	 * @param trnSq
+	 * @param size
+	 * @param overwrite
+	 * @return
+	 */
+	CALUMIANIMATION_API bool AddTranslationSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block,
+	                                                      const CALUMI::UNIV::Translation* trnSq,
+	                                                      unsigned int size,
+	                                                      bool overwrite);
+	/**
+	 *
+	 * @param source
+	 * @return
+	 */
+	CALUMIANIMATION_API CALUMI::UNIV::Translation* GetTranslationSqArrayC(const CALUMI::UNIV::AnimationBlock* source);
+	/**
+	 *
+	 * @param source
+	 * @param index
+	 * @param errorMessage
+	 * @return
+	 */
+	CALUMIANIMATION_API CALUMI::UNIV::Translation* GetTranslationFromSqC(
+																	const CALUMI::UNIV::AnimationBlock* source,
+																	int index,
+																	CALUMI::Utilities::StringContainer* errorMessage);
+	/**
+	 *
+	 * @param source
+	 * @return
+	 */
+	CALUMIANIMATION_API uint64_t GetTranslationSqSizeC(const CALUMI::UNIV::AnimationBlock* source);
+	/**
+	 * @note A good default tolerance may be 1.0/4000.0
+	 * @param source
+	 * @param tolerance
+	 */
+	CALUMIANIMATION_API void ExecuteRDPReduction_TranslationC(const CALUMI::UNIV::AnimationBlock* source,
+	                                                          float tolerance);
+	/**
+	 *
+	 * @param block
+	 * @param sclrSq
+	 * @param size
+	 * @param overwrite
+	 * @return
+	 */
+	CALUMIANIMATION_API bool AddScalarSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block,
+	                                                 const CALUMI::UNIV::Scalar* sclrSq,
+	                                                 unsigned int size,
+	                                                 bool overwrite);
+	/**
+	 *
+	 * @param source
+	 * @return
+	 */
+	CALUMIANIMATION_API CALUMI::UNIV::Scalar* GetScalarSqArrayC(const CALUMI::UNIV::AnimationBlock* source);
+	/**
+	 *
+	 * @param source
+	 * @param index
+	 * @param errorMessage
+	 * @return
+	 */
+	CALUMIANIMATION_API CALUMI::UNIV::Scalar* GetScalarFromSqC(const CALUMI::UNIV::AnimationBlock* source,
+	                                                           int index,
+	                                                           CALUMI::Utilities::StringContainer* errorMessage);
+	/**
+	 *
+	 * @param source
+	 * @return
+	 */
+	CALUMIANIMATION_API uint64_t GetScalarSqSizeC(const CALUMI::UNIV::AnimationBlock* source);
+	/**
+	 * @note A good default tolerance may be 1.0/5000.0
+	 * @param source
+	 * @param tolerance
+	 */
+	CALUMIANIMATION_API void ExecuteRDPReduction_ScalarC(const CALUMI::UNIV::AnimationBlock* source, float tolerance);
+	/**
+	 *
+	 * @param block
+	 * @param prtySq
+	 * @param size
+	 * @param overwrite
+	 * @return
+	 */
+	CALUMIANIMATION_API bool AddPrioritySqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block,
+	                                                   const CALUMI::UNIV::Priority* prtySq,
+	                                                   unsigned int size,
+	                                                   bool overwrite);
+	/**
+	 *
+	 * @param source
+	 * @return
+	 */
+	CALUMIANIMATION_API CALUMI::UNIV::Priority* GetPrioritySqArrayC(const CALUMI::UNIV::AnimationBlock* source);
+	/**
+	 *
+	 * @param source
+	 * @param index
+	 * @param errorMessage
+	 * @return
+	 */
+	CALUMIANIMATION_API CALUMI::UNIV::Priority* GetPriorityFromSqC(const CALUMI::UNIV::AnimationBlock* source,
+	                                                               int index,
+	                                                               CALUMI::Utilities::StringContainer* errorMessage);
+	/**
+	 *
+	 * @param source
+	 * @return
+	 */
+	CALUMIANIMATION_API uint64_t GetPrioritySqSizeC(const CALUMI::UNIV::AnimationBlock* source);
+	}
+
+/// @}
+/// @}

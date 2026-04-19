@@ -14,7 +14,7 @@ namespace CALUMI {namespace UNIV {
 	struct CALUMIANIMATION_API Translation
 	{
         uint16_t frame() const;
-        void setFrame(uint16_t frame);
+        void setFrame(uint16_t frame) const;
         Math::Vector3D& translationVector() const;
 
 		~Translation();
@@ -43,7 +43,7 @@ namespace CALUMI {namespace UNIV {
 	struct CALUMIANIMATION_API Rotation
 	{
         uint16_t frame() const;
-        void setFrame(uint16_t frame);
+        void setFrame(uint16_t frame) const;
         Math::Quaternion& rotationQuaternion() const;
 
 		Rotation();
@@ -72,9 +72,9 @@ namespace CALUMI {namespace UNIV {
 	struct CALUMIANIMATION_API Scalar
 	{
         uint16_t frame() const;
-        void setFrame(uint16_t frame);
+        void setFrame(uint16_t frame) const;
         float scalarValue() const;
-        void setScalarValue(float value);
+        void setScalarValue(float value) const;
 
 		Scalar();
 		~Scalar();
@@ -102,9 +102,9 @@ namespace CALUMI {namespace UNIV {
 	struct CALUMIANIMATION_API Priority
 	{
         uint16_t frame() const;
-        void setFrame(uint16_t frame);
+        void setFrame(uint16_t frame) const;
         uint8_t priorityValue() const;
-        void setPriorityValue(uint8_t value);
+        void setPriorityValue(uint8_t value) const;
 
 		Priority();
 		~Priority();
@@ -132,15 +132,15 @@ namespace CALUMI {namespace UNIV {
 	struct ScalarSequence;
 	struct PrioritySequence;
 
-	CALUMIANIMATION_API void SortTranslationSequence(TranslationSequence& sq, bool highToLow = false);
-	CALUMIANIMATION_API void SortRotationSequence(RotationSequence& sq, bool highToLow = false);
-	CALUMIANIMATION_API void SortScalarSequence(ScalarSequence& sq, bool highToLow = false);
-	CALUMIANIMATION_API void SortPrioritySequence(PrioritySequence& sq, bool highToLow = false);
+	CALUMIANIMATION_API void SortTranslationSequence(const TranslationSequence& sq, bool highToLow = false);
+	CALUMIANIMATION_API void SortRotationSequence(const RotationSequence& sq, bool highToLow = false);
+	CALUMIANIMATION_API void SortScalarSequence(const ScalarSequence& sq, bool highToLow = false);
+	CALUMIANIMATION_API void SortPrioritySequence(const PrioritySequence& sq, bool highToLow = false);
 
-    VECTORDECF(TranslationSequence, Translation, friend void SortTranslationSequence(TranslationSequence& sq, bool highToLow);)
-    VECTORDECF(RotationSequence, Rotation, friend void SortRotationSequence(RotationSequence& sq, bool highToLow);)
-    VECTORDECF(ScalarSequence, Scalar, friend void SortScalarSequence(ScalarSequence& sq, bool highToLow);)
-    VECTORDECF(PrioritySequence, Priority, friend void SortPrioritySequence(PrioritySequence& sq, bool highToLow);)
+    VECTORDECF(TranslationSequence, Translation, friend void SortTranslationSequence(const TranslationSequence& sq, bool highToLow);)
+    VECTORDECF(RotationSequence, Rotation, friend void SortRotationSequence(const RotationSequence& sq, bool highToLow);)
+    VECTORDECF(ScalarSequence, Scalar, friend void SortScalarSequence(const ScalarSequence& sq, bool highToLow);)
+    VECTORDECF(PrioritySequence, Priority, friend void SortPrioritySequence(const PrioritySequence& sq, bool highToLow);)
 
 	
 
@@ -158,51 +158,51 @@ namespace CALUMI {namespace UNIV {
 		/// <returns></returns>
 		CALUMIANIMATION_API Rotation* CreateRotationEntryFromEulerC(uint16_t frame, float x, float y, float z, uint8_t order);
 		
-		CALUMIANIMATION_API bool DeleteRotationEntryC(Rotation* ptr);
+		CALUMIANIMATION_API bool DeleteRotationEntryC(const Rotation* ptr);
 
 		CALUMIANIMATION_API Translation* CreateTranslationEntryC(uint16_t frame, double x, double y, double z);
 		
-		CALUMIANIMATION_API bool DeleteTranslationEntryC(Translation* ptr);
+		CALUMIANIMATION_API bool DeleteTranslationEntryC(const Translation* ptr);
 		
 		CALUMIANIMATION_API Scalar* CreateScalarEntryC(uint16_t frame, float scalar);
 		
-		CALUMIANIMATION_API bool DeleteScalarEntryC(Scalar* ptr);
+		CALUMIANIMATION_API bool DeleteScalarEntryC(const Scalar* ptr);
 		
 		CALUMIANIMATION_API Priority* CreatePriorityEntryC(uint16_t frame, uint8_t priority);
 		
-		CALUMIANIMATION_API bool DeletePriorityEntryC(Priority* ptr);
+		CALUMIANIMATION_API bool DeletePriorityEntryC(const Priority* ptr);
 		
-		CALUMIANIMATION_API uint16_t GetFrameFromRotationEntryC(Rotation* source);
+		CALUMIANIMATION_API uint16_t GetFrameFromRotationEntryC(const Rotation* source);
 		
-		CALUMIANIMATION_API uint16_t GetFrameFromTranslationEntryC(Translation* source);
+		CALUMIANIMATION_API uint16_t GetFrameFromTranslationEntryC(const Translation* source);
 		
-		CALUMIANIMATION_API uint16_t GetFrameFromScalarEntryC(Scalar* source);
+		CALUMIANIMATION_API uint16_t GetFrameFromScalarEntryC(const Scalar* source);
 		
-		CALUMIANIMATION_API uint16_t GetFrameFromPriorityEntryC(Priority* source);
+		CALUMIANIMATION_API uint16_t GetFrameFromPriorityEntryC(const Priority* source);
 		/// <summary>
 		/// Returns a pointer to a rotation entry value (Quaternion). An array of 4 floats (4 bytes each)
 		/// </summary>
 		/// <param name="source"></param>
 		/// <returns></returns>
-		CALUMIANIMATION_API Math::Quaternion* GetValueFromRotationEntryC(Rotation* source);
+		CALUMIANIMATION_API Math::Quaternion* GetValueFromRotationEntryC(const Rotation* source);
 		/// <summary>
 		/// Returns a pointer to the translation entry value (Vector3D). An array of 3 doubles  (8 bytes each)
 		/// </summary>
 		/// <param name="source"></param>
 		/// <returns></returns>
-		CALUMIANIMATION_API Math::Vector3D* GetValueFromTranslationEntryC(Translation* source);
+		CALUMIANIMATION_API Math::Vector3D* GetValueFromTranslationEntryC(const Translation* source);
 		/// <summary>
 		/// Returns the scalar entry value (float)
 		/// </summary>
 		/// <param name="source"></param>
 		/// <returns></returns>
-		CALUMIANIMATION_API float GetValueFromScalarEntryC(Scalar* source);
+		CALUMIANIMATION_API float GetValueFromScalarEntryC(const Scalar* source);
 		/// <summary>
 		/// Returns the priority entry value (uint8_t)
 		/// </summary>
 		/// <param name="source"></param>
 		/// <returns></returns>
-		CALUMIANIMATION_API uint8_t GetValueFromPriorityEntryC(Priority* source);
+		CALUMIANIMATION_API uint8_t GetValueFromPriorityEntryC(const Priority* source);
 	}
 
 }}

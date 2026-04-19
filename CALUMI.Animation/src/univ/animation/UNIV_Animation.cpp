@@ -52,7 +52,14 @@ namespace CALUMI::UNIV
 	{
 		*pImpl = *input.pImpl;
 	}
-	Animation::~Animation() { if (pImpl) delete pImpl; }
+	Animation::~Animation()
+	{
+		if (pImpl)
+		{
+			delete pImpl;
+			pImpl = nullptr;
+		}
+	}
 	Animation& Animation::operator=(const Animation& input)
 	{
 		if (this != &input)
@@ -162,15 +169,14 @@ namespace CALUMI::UNIV
 	}
 	AnimationBlock& AnimationBlock::operator=(const AnimationBlock& other)
 	{
-		//skip reassignment functions
-		if (pImpl == other.pImpl)
-			return *this;
-
-		pImpl->boneName = other.pImpl->boneName;
-		pImpl->rotationSequence = other.pImpl->rotationSequence;
-		pImpl->translationSequence = other.pImpl->translationSequence;
-		pImpl->scalarSequence = other.pImpl->scalarSequence;
-		pImpl->prioritySequence = other.pImpl->prioritySequence;
+		if (this != &other)
+		{
+			pImpl->boneName = other.pImpl->boneName;
+			pImpl->rotationSequence = other.pImpl->rotationSequence;
+			pImpl->translationSequence = other.pImpl->translationSequence;
+			pImpl->scalarSequence = other.pImpl->scalarSequence;
+			pImpl->prioritySequence = other.pImpl->prioritySequence;
+		}
 
 		return *this;
 	}
@@ -178,25 +184,25 @@ namespace CALUMI::UNIV
 	unsigned int AnimationBlock::GetLastFrameInBlock() const
 	{
 		unsigned int output = 0;
-		if (pImpl->rotationSequence.size() > 0) {
+		if (!pImpl->rotationSequence.empty()) {
 			if (pImpl->rotationSequence.at(pImpl->rotationSequence.size()-1).frame() > output)
 			{
 				output = pImpl->rotationSequence.at(pImpl->rotationSequence.size()-1).frame();
 			}
 		}
-		if (pImpl->translationSequence.size() > 0) {
+		if (!pImpl->translationSequence.empty()) {
 			if (pImpl->translationSequence.at(pImpl->translationSequence.size()-1).frame() > output)
 			{
 				output = pImpl->translationSequence.at(pImpl->translationSequence.size() - 1).frame();
 			}
 		}
-		if (pImpl->scalarSequence.size() > 0) {
+		if (!pImpl->scalarSequence.empty()) {
 			if (pImpl->scalarSequence.at(pImpl->scalarSequence.size()-1).frame() > output)
 			{
 				output = pImpl->scalarSequence.at(pImpl->scalarSequence.size() - 1).frame();
 			}
 		}
-		if (pImpl->prioritySequence.size() > 0) {
+		if (!pImpl->prioritySequence.empty()) {
 			if (pImpl->prioritySequence.at(pImpl->prioritySequence.size()-1).frame() > output)
 			{
 				output = pImpl->prioritySequence.at(pImpl->prioritySequence.size() - 1).frame();
@@ -266,7 +272,7 @@ namespace CALUMI::UNIV
 
 	uint64_t AnimationBlock::rotationEntryCount() const { return pImpl->rotationSequence.size(); }
 
-	static RotationSequence _RDP_Rotation_Recursive(RotationSequence input, const float tolerance)
+	static RotationSequence s_RDP_Rotation_Recursive(RotationSequence input, const float tolerance)
 	{
 		if (input.size() <= 2)
 			return input;
@@ -309,8 +315,8 @@ namespace CALUMI::UNIV
 		RotationSequence output;
 
 		if (dMax > tolerance || skip) {
-			auto left = _RDP_Rotation_Recursive(input.range(0, index), tolerance);
-			auto right = _RDP_Rotation_Recursive(input.range(index, input.size() - 1),tolerance);
+			auto left = s_RDP_Rotation_Recursive(input.range(0, index), tolerance);
+			auto right = s_RDP_Rotation_Recursive(input.range(index, input.size() - 1),tolerance);
 
 			output.reserve(left.size() + right.size() - 1);
 
@@ -337,7 +343,7 @@ namespace CALUMI::UNIV
 
 	void AnimationBlock::executeRDPReduction_Rotation(const float tolerance) const
 	{
-		pImpl->rotationSequence = _RDP_Rotation_Recursive(pImpl->rotationSequence, tolerance);
+		pImpl->rotationSequence = s_RDP_Rotation_Recursive(pImpl->rotationSequence, tolerance);
 	}
 
 	TranslationSequence& AnimationBlock::translationSequence() const
@@ -393,7 +399,7 @@ namespace CALUMI::UNIV
 		return pImpl->translationSequence.size();
 	}
 
-	static TranslationSequence _RDP_Translation_Recursive(TranslationSequence input, const float tolerance)
+	static TranslationSequence s_RDP_Translation_Recursive(TranslationSequence input, const float tolerance)
 	{
 		if (input.size() <= 2)
 			return input;
@@ -422,8 +428,8 @@ namespace CALUMI::UNIV
 
 		if (dMax > tolerance) {
 
-			auto left = _RDP_Translation_Recursive(input.range(0, index), tolerance);
-			auto right = _RDP_Translation_Recursive(input.range(index, input.size() - 1), tolerance);
+			auto left = s_RDP_Translation_Recursive(input.range(0, index), tolerance);
+			auto right = s_RDP_Translation_Recursive(input.range(index, input.size() - 1), tolerance);
 
 			output.reserve(left.size() + right.size() - 1);
 
@@ -449,7 +455,7 @@ namespace CALUMI::UNIV
 
 	void AnimationBlock::executeRDPReduction_Translation(const float tolerance) const
 	{
-		pImpl->translationSequence = _RDP_Translation_Recursive(pImpl->translationSequence, tolerance);
+		pImpl->translationSequence = s_RDP_Translation_Recursive(pImpl->translationSequence, tolerance);
 	}
 
 	ScalarSequence& AnimationBlock::scalarSequence() const
@@ -503,7 +509,7 @@ namespace CALUMI::UNIV
 
 	uint64_t AnimationBlock::scalarEntryCount() const { return pImpl->scalarSequence.size(); }
 
-	static ScalarSequence _RDP_Scalar_Recursive(ScalarSequence input, const float tolerance)
+	static ScalarSequence s_RDP_Scalar_Recursive(ScalarSequence input, const float tolerance)
 	{
 		if (input.size() <= 2)
 			return input;
@@ -536,8 +542,8 @@ namespace CALUMI::UNIV
 		if (dMax > tolerance)
 		{
 
-			auto left = _RDP_Scalar_Recursive(input.range(0, index), tolerance);
-			auto right = _RDP_Scalar_Recursive(input.range(index, input.size() - 1), tolerance);
+			auto left = s_RDP_Scalar_Recursive(input.range(0, index), tolerance);
+			auto right = s_RDP_Scalar_Recursive(input.range(index, input.size() - 1), tolerance);
 
 			output.reserve(left.size() + right.size() - 1);
 
@@ -563,7 +569,7 @@ namespace CALUMI::UNIV
 
 	void AnimationBlock::executeRDPReduction_Scalar(const float tolerance) const
 	{
-		pImpl->scalarSequence = _RDP_Scalar_Recursive(pImpl->scalarSequence, tolerance);
+		pImpl->scalarSequence = s_RDP_Scalar_Recursive(pImpl->scalarSequence, tolerance);
 	}
 
 	PrioritySequence& AnimationBlock::prioritySequence() const

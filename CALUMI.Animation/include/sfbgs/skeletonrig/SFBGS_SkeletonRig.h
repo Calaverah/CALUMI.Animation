@@ -141,7 +141,7 @@ namespace CALUMI::SFBGS
 		[[nodiscard]] UNIV::SkeletonRig convertToUniversalRig() const;
 		void convertFromUniversalRig(const UNIV::SkeletonRig& inputRig);
 
-		bool setBoneTypeFromUNIV(const UNIV::SkeletonBone& univBone, const SkeletonBone& sfbgsBone, const UNIV::SkeletonRig* univRig = nullptr) const; // NOLINT(*-use-nodiscard)
+		bool setBoneTypeFromUNIV(const UNIV::SkeletonBone& univBone, const SkeletonBone& sfbgsBone, const Utilities::StringList* boneList = nullptr) const; // NOLINT(*-use-nodiscard)
 		bool setBoneTypeToUNIV(const SkeletonBone& sfbgsBone, const UNIV::SkeletonBone& univBone) const; // NOLINT(*-use-nodiscard)
 
 		int findBoneIndex(const char* boneName) const;

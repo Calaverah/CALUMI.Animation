@@ -9,14 +9,14 @@
 
 namespace CALUMI::Utilities
 {
-
 	/// @addtogroup Singletons
-		/// @{
-
+	/// @{
 	/**
-		 * @brief The Hash Registry holds data that's established from reverse engineering efforts as well as from the user in order to reverse hash keys into the input values that generated them.
-		 * @details At present this library only needs to consider simple string hashes so it is not expected to expand beyond that purpose.
-		 */
+	 * @brief The Hash Registry holds data that's established from reverse engineering efforts as well as from
+	 * the user in order to reverse hash keys into the input values that generated them.
+	 * @details At present this library only needs to consider simple string hashes so it is not expected to
+	 * expand beyond that purpose.
+	 */
 	class HashRegistry {
 	private:
 		HashRegistry();
@@ -75,13 +75,13 @@ namespace CALUMI::Utilities
 	};
 
 	/// @}
-
+}
 
 
 	/**
 		 * @addtogroup extern_c
 		 * @{
-		 * @defgroup c_hash General Hashing "C" API
+		 * @defgroup c_hash Hashes
 		 * @brief Provides C Style API for the known hashing algorithms
 		 * @{
 		 */
@@ -94,5 +94,4 @@ namespace CALUMI::Utilities
 	CALUMIANIMATION_API uint32_t BGS_Str_CRC32(const char* string);
 	}
 	/// @}
-		/// @}
-}
+	/// @}

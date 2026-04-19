@@ -95,11 +95,11 @@ namespace CALUMI::Utilities
 	}
 	PathContainer PathContainer::filename() const
 	{
-		return PathContainer(pImpl->path.filename().c_str());
+		return {pImpl->path.filename().c_str()};
 	}
 	PathContainer PathContainer::stem() const
 	{
-		return PathContainer(pImpl->path.stem().c_str());
+		return {pImpl->path.stem().c_str()};
 	}
 	bool PathContainer::has_relativepath() const
 	{
@@ -485,7 +485,7 @@ namespace CALUMI::Utilities
 	{
 		pImpl->strings.emplace_back(string);
 	}
-	uint64_t StringList::getOffset(const uint64_t idx) const
+	uint64_t StringList::getOffset(const unsigned int idx) const
 	{
 		return pImpl->strings.at(idx).offset;
 	}
@@ -493,7 +493,7 @@ namespace CALUMI::Utilities
 	{
 		return pImpl->finalOffset;
 	}
-	bool StringList::hasOffset(const uint64_t idx) const
+	bool StringList::hasOffset(const unsigned int idx) const
 	{
 		return pImpl->strings.at(idx).hasOffset;
 	}
@@ -501,24 +501,38 @@ namespace CALUMI::Utilities
 	{
 		pImpl->finalOffset = offset;
 	}
-	void StringList::reserve(const uint64_t size) const
+	void StringList::reserve(const unsigned int size) const
 	{
 		pImpl->strings.reserve(size);
 	}
-	const char* StringList::c_str(const uint64_t idx) const
+	const char* StringList::c_str(const unsigned int idx) const
 	{
 		return pImpl->strings.at(idx).string.c_str();
 	}
-	uint64_t StringList::stringLength(const uint64_t idx, const bool includeNull) const
+	uint64_t StringList::stringLength(const unsigned int idx, const bool includeNull) const
 	{
 		uint64_t output = includeNull ? 1 : 0;
 		output += pImpl->strings.at(idx).string.length();
 		return output;
 	}
-	uint64_t StringList::size() const
+	unsigned int StringList::size() const
 	{
 		return pImpl->strings.size();
 	}
+
+	int64_t StringList::find(const char* string, int64_t defValue) const
+	{
+		for (int i = 0; i < pImpl->strings.size(); i++)
+		{
+			if (SCOMPARE(string, pImpl->strings.at(i).string.c_str())==0)
+			{
+				return i;
+			}
+		}
+
+		return defValue;
+	}
+
 	bool StringList::empty() const
 	{
 		return pImpl->strings.empty();

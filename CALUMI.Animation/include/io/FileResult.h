@@ -80,7 +80,7 @@ namespace CALUMI::Utilities
 		 * @brief Combines the message, error code, and filepath into a human read-able format
 		 * @return String container with formatted message
 		 */
-		StringContainer toString() const;
+		[[nodiscard]] StringContainer toString() const;
 		/// @}
 
 	private:

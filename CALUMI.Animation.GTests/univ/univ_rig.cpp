@@ -16,6 +16,14 @@ GTEST(UnivRigCreation)
     rig.addBoneToRig({0.0f,0.0f,static_cast<float>(Math::ToRadians(90.0f)),Math::Quaternion::EulerOrder::XYZ},Math::Vector3(0.0f,0.0f,0.0f),"root","",true);
     rig.addBoneToRig({0.0f,0.0f,static_cast<float>(Math::ToRadians(30.0f)),Math::Quaternion::EulerOrder::XYZ},Math::Vector3(0.0f,0.0f,1.0f),"child01","root",true);
 
+    EXPECT_STRCASEEQ(rig.root().name(), "root");
+    rig.root().setLocalTransform(
+        Math::Vector3(0.0f,0.0f,0.0f),
+        {0.0f,0.0f,static_cast<float>(Math::ToRadians(90.0f)), Math::EulerDefinition::EulerOrder::XYZ}
+        );
+
+
+
     EXPECT_EQ(rig.boneCount(), 2);
     EXPECT_QUATNEAR(rig.boneRotation("child01",false),Math::Quaternion(0.0f,0.0f,0.866025f,0.5f),0.000001f);
     EXPECT_QUATNEAR(rig.boneRotation("child01",true),Math::Quaternion(0.0f,0.0f,0.258819f,0.965926f),0.000001f);

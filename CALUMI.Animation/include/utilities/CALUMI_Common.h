@@ -31,9 +31,6 @@ namespace CALUMI {
 	{
 		Starfield
 	};
-}
-
-#ifdef CALUMIANIMATION_EXPORTS
 
 	/**
 	 *
@@ -41,11 +38,10 @@ namespace CALUMI {
 	 * @brief Group of C Style functions to be used by non c++ functions such as Python with C-Types
 	 * @{
 	 * @}
-	 * 
+	 *
 	 * @defgroup Singletons
 	 * @brief Group of singletons that provide convenient methods globally
 	 * @{
 	 * @}
-	 * */
-
-#endif
+	 */
+}

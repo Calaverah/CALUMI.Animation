@@ -5,58 +5,70 @@
 #pragma once
 #include "interfaces/IPackageManager.h"
 
-namespace CALUMI {
-	namespace UNIV {
-		/**
+namespace CALUMI::UNIV
+{
+	class Animation;
+	/**
 	 * @brief A game specific package of data that can be applied directly to an animation
 	 */
-		struct CALUMIANIMATION_API IAnimationPackage : public IPackage
-		{
+	class CALUMIANIMATION_API IAnimationPackage : public IPackage
+	{
+	public:
+		/// @name Initialization
+		/// @{
+		IAnimationPackage() = default;
+		~IAnimationPackage() override = default;
+		/// @}
 
-			/// @name Initialization
-			/// @{
-			IAnimationPackage() = default;
-			virtual ~IAnimationPackage() = default;
-			/// @}
+	private:
+		friend class AnimationPackageManager;
 
-		private:
-			friend struct AnimationPackageManager;
+	};
 
-		};
-
-		/**
+	/**
 		 * @brief The Animation Package Manager handles the data and memory allocation of the packages for an Animation
 		 */
-		struct CALUMIANIMATION_API AnimationPackageManager : public IPackageManager
-		{
-		public:
-			/** @name Initialization*/
-			/// @{
+	class CALUMIANIMATION_API AnimationPackageManager : public IPackageManager
+	{
+	public:
+		/** @name Initialization*/
+		/// @{
 
-			AnimationPackageManager();
-			virtual ~AnimationPackageManager() = default;
-			///@}
+		AnimationPackageManager();
+		~AnimationPackageManager() override = default;
+		///@}
 
-		public:
+	public:
 
-			/**
+		/**
 			 * @brief Serialization
 			 * @param indents Spaces for formatting
 			 * @return The strContainer of the serialized struct
 			 */
-            Utilities::StringContainer toJSON(uint64_t indents) const override;
+		[[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
 
-		private:
-			friend class Animation;
-		};
+	private:
+		friend class Animation;
+	};
+}
+namespace CALUMI{
 
-		/**
+	/**
 		 * @addtogroup extern_c
 		 * @{
-		 * @defgroup c_univ_anim_package Animation Package "C" API
-		 * @brief C Style API for Animation Packages
+		 * @defgroup c_anim Animation
+		 * @brief C Style API for Animations
 		 * @{
+		 * @defgroup c_anim_packages Packages
+		 * @{
+		 * @}
 		 * @}
 		 * @}
 		 * */
-} }
+		 /// @defgroup anim Animation
+		 /// @{
+		 /// @defgroup anim_packages Animation Packages
+		 /// @{
+		 /// @}
+		 /// @}
+}

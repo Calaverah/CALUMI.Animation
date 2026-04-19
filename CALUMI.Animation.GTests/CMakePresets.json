@@ -1,0 +1,73 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "base-gtests",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/${presetName}"
+    },
+    {
+      "name": "win-base-gtests",
+      "hidden": true,
+      "inherits": "base-gtests",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "linux-base-gtests",
+      "hidden": true,
+      "inherits": "base-gtests",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "mac-base-gtests",
+      "hidden": true,
+      "inherits": "base-gtests",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "win-debug-gtests",
+      "displayName": "Windows Debug GTests",
+      "inherits": "win-base-gtests",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "linux-debug-gtests",
+      "displayName": "Linux Debug GTests",
+      "inherits": "linux-base-gtests",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "mac-debug-gtests",
+      "displayName": "macOS Debug GTests",
+      "inherits": "mac-base-gtests",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "win-debug-gtests",
+      "configurePreset": "win-debug-gtests"
+    },
+    {
+      "name": "linux-debug-gtests",
+      "configurePreset": "linux-debug-gtests"
+    },
+    {
+      "name": "mac-debug-gtests",
+      "configurePreset": "mac-debug-gtests"
+    }
+  ]
+}

@@ -53,8 +53,8 @@ namespace CALUMI::SFBGS
 	CALUMIANIMATION_API UNIV::AnimationScene* LoadAnimationSceneFromSFBGSFormatAndSaveToJsonC(const wchar_t** filePathsArray, int numberOfFiles, Utilities::StringContainer* errorMessage, const wchar_t* jsonOutputPath);
 	CALUMIANIMATION_API UNIV::SkeletonRig* LoadSFBGSSkeletonRigFromFileC(const wchar_t* filePath, Utilities::StringContainer* errorMessage);
 
-	CALUMIANIMATION_API bool SaveAnimationToSFBGSFormatDirectC(UNIV::Animation* animation, const wchar_t* filePath, const UNIV::SkeletonRig* rig, Utilities::StringContainer* errorMessage);
-	CALUMIANIMATION_API bool SaveAnimationToSFBGSFormatWithExistingRigDirectC(UNIV::Animation* animation, const wchar_t* filePath, const wchar_t* sfbgsRigPath, Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API bool SaveAnimationToSFBGSFormatDirectC(const UNIV::Animation* animation, const wchar_t* filePath, const UNIV::SkeletonRig* rig, Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API bool SaveAnimationToSFBGSFormatWithExistingRigDirectC(const UNIV::Animation* animation, const wchar_t* filePath, const wchar_t* sfbgsRigPath, Utilities::StringContainer* errorMessage);
 	CALUMIANIMATION_API bool SaveSkeletonRigToSFBGSFormatDirectC(const UNIV::SkeletonRig* rig, const wchar_t* filePath, Utilities::StringContainer* errorMessage);
 	}
 }

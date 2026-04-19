@@ -2,6 +2,7 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppExpressionWithoutSideEffects
 #include "internalplatform.h"
 #include "internalvectordef.h"
 #include <io/FileValidation.h>
@@ -11,26 +12,15 @@
 #include <iostream>
 #include <vector>
 #include <cstring>
+#include <unordered_map>
 #include <utilities/CALUMI_Utilities.h>
 #include "sfbgs/skeletonrig/SFBGS_RigPackage.h"
+#include "univ/skeletonrig/packages/UNIV_RigManifestPackage.h"
+#include "univ/skeletonrig/packages/UNIV_RigMirrorPackage.h"
 
 namespace CALUMI::SFBGS
 {
-	static Utilities::StringList CreateStringVectorFromRig(const UNIV::SkeletonRig& inputRig)
-	{
-		Utilities::StringList stringMap;
-		stringMap.reserve(inputRig.boneEntries().size());
-		uint64_t iOffset = 0;
-		for (int i = 0; i < inputRig.boneEntries().size(); i++)
-		{
-			stringMap.push_back(inputRig.boneEntries().at(i).name(), iOffset);
-			iOffset += Utilities::StringContainer(inputRig.boneEntries().at(i).name()).length(true);
-		}
-		stringMap.setFinalOffset(iOffset);
-		return stringMap;
-	}
-
-	static std::vector<unsigned int> _getSFBGSRigStringOffsets(const Utilities::StringList& stringEntries)
+	static std::vector<unsigned int> s_getSFBGSRigStringOffsets(const Utilities::StringList& stringEntries)
 	{
 		std::vector<unsigned int> output;
 		//offset should be 80 + 96+boneCount + 314... Yes we are static casting twice, it's just to prevent an overflow message and clean up compiler messages
@@ -420,79 +410,81 @@ namespace CALUMI::SFBGS
 
 	SkeletonRig::SkeletonRig(const UNIV::SkeletonRig& input) : SkeletonRig()
 	{
-		auto stringResult = CreateStringVectorFromRig(input);
-		stringArray().reserve(stringResult.size());
+		const auto& manifestPkg = UNIV::RigManifestPackage::GetPackage(input);
+		const auto& mirrorPkg = UNIV::RigMirrorPackage::GetPackage(input);
+		const auto& sfbgsPackage = SFBGS_RigPackage::GetPackage(input);
 
-		const auto sfbgsRigPackagePtr = dynamic_cast<SFBGS_RigPackage*>(input.getPackageManager().getPackage(SFBGS_RIG_PACKAGE));
-		SFBGS_RigPackage sfbgsRigPackage;
+		pImpl->_stringArray = manifestPkg.processPackage(input);
+
 		bool isMarkedMannequin = false;
-		if (sfbgsRigPackagePtr)
-		{
-			sfbgsRigPackage = *sfbgsRigPackagePtr;
-		}
 
-		isMarkedMannequin = sfbgsRigPackage.isMannequin();
-		setLowPrecision(sfbgsRigPackage.precisionSet().low());
-		setHighPrecision(sfbgsRigPackage.precisionSet().high());
+		isMarkedMannequin = sfbgsPackage.isMannequin();
+		setLowPrecision(sfbgsPackage.precisionSet().low());
+		setHighPrecision(sfbgsPackage.precisionSet().high());
 
-		setFileSize(fileSize() + static_cast<unsigned int>(stringResult.getFinalOffset()));
-		setBoneMapOffset(boneMapOffset() + static_cast<unsigned int>(80 + 96 * input.boneEntries().size()));
+		setFileSize(fileSize() + static_cast<unsigned int>(pImpl->_stringArray.getFinalOffset()));
+		setBoneMapOffset(boneMapOffset() + (80 + 96 * input.boneCount()));
 		setFileSize(fileSize() + boneMapOffset() + SFBGSMAPSIZE * 2);
 
-		setBoneCount(static_cast<uint16_t>(input.boneEntries().size()));
+		setBoneCount(static_cast<uint16_t>(input.boneCount()));
 
 		uint16_t animatedBoneCount = 0;
 		boneEntries().reserve(boneCount());
 
-		for (int i = 0; i < boneCount(); i++)
+		for (int i = 0; i < boneCount() && i < pImpl->_stringArray.size(); i++)
 		{
-			const auto& refBone = input.boneEntries().at(i);
+			const auto refBone = input.bone(pImpl->_stringArray.c_str(i));
+
 			SkeletonBone toAdd;
-			toAdd.pImpl->_localRotation = input.boneRotation(refBone.name(), true);
-			toAdd.pImpl->_globalRotation = refBone.globalRotation();
-			toAdd.pImpl->_position = input.bonePosition(refBone.name(), true);
-			toAdd.pImpl->_nameOffset = stringResult.getOffset(i);
-
-			if (i == 0)
+			if (refBone)
 			{
-				//The first entry from our UNIV rig will be treated as the root bone
-				//which in SFBGS has no parent and is set to -1
-				toAdd.pImpl->_parentBoneIndex = -1;
+				const auto& localTransform = refBone->localTransform();
+				const auto globalTransform = refBone->globalTransform();
+				toAdd.pImpl->_localRotation = localTransform.rotation();
+				toAdd.pImpl->_globalRotation = globalTransform.rotation();
+				toAdd.pImpl->_position = localTransform.position();
+				toAdd.pImpl->_nameOffset = pImpl->_stringArray.getOffset(i) + boneMapOffset() + SFBGSMAPSIZE * 2;
+
+				if (i == 0)
+				{
+					//The first entry from our UNIV rig will be treated as the root bone
+					//which in SFBGS has no parent and is set to -1
+					toAdd.pImpl->_parentBoneIndex = -1;
+				}
+				else
+				{
+					const auto parentBone = dynamic_cast<const UNIV::SkeletonBone*>(refBone->parent());
+
+					if (parentBone)
+					{
+						toAdd.pImpl->_parentBoneIndex = static_cast<int32_t>(pImpl->_stringArray.find(parentBone->name(),0));
+					}
+					else
+					{
+						toAdd.pImpl->_parentBoneIndex = 0;
+					}
+				}
+
+				toAdd.pImpl->_mirrorBoneIndex = static_cast<int32_t>(pImpl->_stringArray.find(mirrorPkg.getPairedBone(refBone->name()), i));
+
+				// ReSharper disable once CppExpressionWithoutSideEffects
+				setBoneTypeFromUNIV(*refBone, toAdd, &pImpl->_stringArray);
+
+				if (isMarkedMannequin && toAdd.pImpl->_boneType == SkeletonBone::BoneType::Twist)
+				{
+					toAdd.pImpl->_twistDriverMqnIndex = toAdd.pImpl->_parentBoneIndex;
+				}
+				else
+				{
+					animatedBoneCount++;
+				}
 			}
-			else
-			{
-				int parentBoneIndex = findBoneIndex(refBone.parentBone());
-
-				//We look for a bone in the newly formed rig to act as this bone's parent
-				//If none is found we default the parent to our root bone
-				parentBoneIndex = parentBoneIndex < 0 ? 0 : parentBoneIndex;
-				toAdd.pImpl->_parentBoneIndex = parentBoneIndex;
-			}
-
-
-			int mirrorIndex = input.findBone(input.getBoneMirrorName(refBone.name()));
-			mirrorIndex = mirrorIndex < 0 || mirrorIndex >= input.boneEntries().size() ? i : mirrorIndex;
-			toAdd.pImpl->_mirrorBoneIndex = mirrorIndex;
-
-			// ReSharper disable once CppExpressionWithoutSideEffects
-			setBoneTypeFromUNIV(refBone, toAdd, &input);
-
-			if (isMarkedMannequin && toAdd.pImpl->_boneType == SkeletonBone::BoneType::Twist)
-			{
-				toAdd.pImpl->_twistDriverMqnIndex = toAdd.pImpl->_parentBoneIndex;
-			}
-			else
-			{
-				animatedBoneCount++;
-			}
-
 			boneEntries().push_back(toAdd);
-			stringArray().push_back(stringResult.c_str(i));
 		}
 
 		setBoneCountAnimated(animatedBoneCount);
 
-		Utilities::S16Vector vecPackage = SFBGS_RigPackage::ConvertSFBGSRigPackage(input);
+		Utilities::S16Vector vecPackage = sfbgsPackage.ConvertMap(pImpl->_stringArray);
 		setBoneMapArray(vecPackage);
 	}
 
@@ -651,7 +643,7 @@ namespace CALUMI::SFBGS
 	}
 	Utilities::FileResult SkeletonRig::readFromFile(Utilities::PathContainer& inputFilePath)
 	{
-		Utilities::StringList vec;
+		const Utilities::StringList vec;
 		vec.push_back(".rig");
 
 		auto buffer = ValidateFile(inputFilePath, vec, 80, 0, true);
@@ -766,7 +758,7 @@ namespace CALUMI::SFBGS
 		buffer.reserve(18500);
 
 		unsigned long long addressIndex = 0;
-		const std::vector<unsigned int> offsets = _getSFBGSRigStringOffsets(pImpl->_stringArray);
+		const std::vector<unsigned int> offsets = s_getSFBGSRigStringOffsets(pImpl->_stringArray);
 
 		//HEADER
 		{
@@ -910,7 +902,7 @@ namespace CALUMI::SFBGS
 		*this = SkeletonRig(inputRig);
 	}
 
-	bool SkeletonRig::setBoneTypeFromUNIV(const UNIV::SkeletonBone& univBone, const SkeletonBone& sfbgsBone, const UNIV::SkeletonRig* univRig) const
+	bool SkeletonRig::setBoneTypeFromUNIV(const UNIV::SkeletonBone& univBone, const SkeletonBone& sfbgsBone, const Utilities::StringList* boneList) const
 	{
 		switch (univBone.boneTypeProperty()->getType())
 		{
@@ -928,8 +920,8 @@ namespace CALUMI::SFBGS
 
 				int driverIndex = -1;
 
-				if (univRig)
-					driverIndex = univRig->findBone(tProp->twistDriver());
+				if (boneList)
+					driverIndex = static_cast<int>(boneList->find(tProp->twistDriver(), -1));
 				else
 					driverIndex = findBoneIndex(tProp->twistDriver());
 
@@ -982,52 +974,70 @@ namespace CALUMI::SFBGS
 	UNIV::SkeletonRig SkeletonRig::convertToUniversalRig() const
 	{
 		UNIV::SkeletonRig output;
+		const auto& mirrorPackage = UNIV::RigMirrorPackage::GetPackage(output);
+		const auto& manifestPackage = UNIV::RigManifestPackage::GetPackage(output);
+		const auto& sfbgsPackage = SFBGS_RigPackage::GetPackage(output);
 
-		for (unsigned int i = 0; i < pImpl->_boneEntries.size(); i++)
+		std::unordered_map<std::string, const UNIV::SkeletonBone*> uPtrs;
+
+		//get and assign root
+		if (!pImpl->_boneEntries.empty() && !pImpl->_stringArray.empty())
+		{
+			const auto& uRootRef = output.root();
+			const auto& sfbgsRootRef = pImpl->_boneEntries.at(0);
+			if (!uRootRef.setName(pImpl->_stringArray.c_str(0)))
+				uRootRef.setName("unknownRootName");
+
+			uRootRef.setLocalTransform(sfbgsRootRef.pImpl->_position,sfbgsRootRef.pImpl->_localRotation);
+			setBoneTypeToUNIV(sfbgsRootRef, uRootRef);
+			uPtrs[uRootRef.name()] = &uRootRef;
+			manifestPackage.addBone(uRootRef.name());
+		}
+
+		for (unsigned int i = 1; i < pImpl->_boneEntries.size(); i++)
 		{
 			const SkeletonBone& bone = pImpl->_boneEntries.at(i);
 			const int pIdx = bone.getParentBoneIndex();
+			const UNIV::SkeletonBone* uParentPtr = nullptr;
 
-			std::string parentName = pIdx >= 0 && pIdx < pImpl->_boneEntries.size() ? pImpl->_stringArray.c_str(pIdx) : "";
+			if (uPtrs.contains(pImpl->_stringArray.c_str(pIdx)))
+				uParentPtr = uPtrs[pImpl->_stringArray.c_str(pIdx)];
 
-			const auto addedBone = output.addBoneToRig(bone.pImpl->_localRotation, bone.pImpl->_position, pImpl->_stringArray.c_str(i), parentName.c_str(), true);
+			if (!uParentPtr)
+				uParentPtr = &output.root();
 
-			if (addedBone)
+			if (const auto uAddedBone = uParentPtr->addChildBone(pImpl->_stringArray.c_str(i), bone.pImpl->_position, bone .pImpl->_localRotation))
 			{
-				// ReSharper disable once CppExpressionWithoutSideEffects
-				setBoneTypeToUNIV(bone, *addedBone);
+				uPtrs[uAddedBone->name()] = uAddedBone;
+				manifestPackage.addBone(uAddedBone->name());
+
+				setBoneTypeToUNIV(bone, *uAddedBone);
 
 				std::string setter = bone.pImpl->_mirrorBoneIndex == i && bone.pImpl->_mirrorBoneIndex >= 0 ? "" : pImpl->_stringArray.c_str(bone.pImpl->_mirrorBoneIndex);
 				if (!setter.empty())
 				{
-					// ReSharper disable once CppExpressionWithoutSideEffects
-					output.createBoneMirrorPair(pImpl->_stringArray.c_str(i), setter.c_str());
+					mirrorPackage.addPair(pImpl->_stringArray.c_str(i), setter.c_str());
 				}
 			}
 		}
 
-		SFBGS_RigPackage::CreateNewSFBGSRigPackage(output);
-		if (const auto sfbgsRigPackage = dynamic_cast<SFBGS_RigPackage*>(output.getPackageManager().getPackage(SFBGS_RIG_PACKAGE)))
+		auto pBoneMapArray = boneMapArray();
+		for (int key = 0; key < SFBGSMAPSIZE; key++)
 		{
-			auto pBoneMapArray = boneMapArray();
-			for (int key = 0; key < SFBGSMAPSIZE; key++)
+			if (const int16_t keyValue = pBoneMapArray.at(key); keyValue >= 0 && keyValue < pImpl->_stringArray.size())
 			{
-				if (const int16_t keyValue = pBoneMapArray.at(key); keyValue >= 0 && keyValue < pImpl->_stringArray.size())
-				{
-					const char* sfbgsMappedBoneName = pImpl->_stringArray.c_str(keyValue);
+				const char* sfbgsMappedBoneName = pImpl->_stringArray.c_str(keyValue);
 
-					//If the bone has successfully made it to the UNIV Rig, add it to the map
-					if(const UNIV::SkeletonBone* uMappedBonePtr = output.bone(sfbgsMappedBoneName); SCOMPARE(sfbgsMappedBoneName, "") != 0)
-						sfbgsRigPackage->addBoneToMap(static_cast<SFBGS_RigPackage::BoneMapKey>(key), uMappedBonePtr->name(), true);
-				}
+				//If the bone has successfully made it to the UNIV Rig, add it to the map
+				if(const UNIV::SkeletonBone* uMappedBonePtr = output.bone(sfbgsMappedBoneName); SCOMPARE(sfbgsMappedBoneName, "") != 0)
+					sfbgsPackage.addBoneToMap(static_cast<SFBGS_RigPackage::BoneMapKey>(key), uMappedBonePtr->name(), true);
 			}
-			if (IsMarkedMannequin())
-				sfbgsRigPackage->setIsMannequin(true);
-
-			sfbgsRigPackage->setPrecisionValues(PrecisionSet(lowPrecision(), highPrecision()));
 		}
+		if (IsMarkedMannequin())
+			sfbgsPackage.setIsMannequin(true);
+
+		sfbgsPackage.setPrecisionValues(PrecisionSet(lowPrecision(), highPrecision()));
 
 		return output;
 	}
-
 }

@@ -30,10 +30,13 @@ namespace CALUMI::SFBGS
 
     SFBGS_AnimationPackage& SFBGS_AnimationPackage::operator=(const SFBGS_AnimationPackage& other)
     {
-        pImpl->_amendedBlocks = other.pImpl->_amendedBlocks;
-        pImpl->_precisionOverride = other.pImpl->_precisionOverride;
+        if (this != &other)
+        {
+            pImpl->_amendedBlocks = other.pImpl->_amendedBlocks;
+            pImpl->_precisionOverride = other.pImpl->_precisionOverride;
 
-        pImpl->_useRigPrecision = other.pImpl->_useRigPrecision;
+            pImpl->_useRigPrecision = other.pImpl->_useRigPrecision;
+        }
         return *this;
     }
 
@@ -96,7 +99,7 @@ namespace CALUMI::SFBGS
             return true;
         }
 
-        pImpl->_amendedBlocks.push_back({ hash, block });
+        pImpl->_amendedBlocks.emplace_back( hash, block );
         return true;
     }
 
@@ -173,7 +176,7 @@ namespace CALUMI::SFBGS
 
     Utilities::StringContainer SFBGS_AnimationPackage::toJSON(uint64_t indents) const
     {
-        return Utilities::StringContainer();
+        return {};
     }
 
     SFBGS_AnimationPackage* SFBGS_AnimationPackage::clone() const
@@ -181,7 +184,7 @@ namespace CALUMI::SFBGS
         return new SFBGS_AnimationPackage(*this);
     }
 
-    bool CreateNewSFBGSAnimationPackage(const UNIV::Animation& animation, const bool overwrite)
+    bool SFBGS_AnimationPackage::AddPackage(const UNIV::Animation& animation, const bool overwrite)
     {
         const auto& mgr = animation.getPackageManager();
 
@@ -202,7 +205,7 @@ namespace CALUMI::SFBGS
         return false;
     }
 
-    bool RemoveSFBGSAnimationPackage(const UNIV::Animation& animation)
+    bool SFBGS_AnimationPackage::RemovePackage(const UNIV::Animation& animation)
     {
         return animation.getPackageManager().removePackage(SFBGS_ANIM_PACKAGE);
     }
@@ -218,7 +221,7 @@ namespace CALUMI::SFBGS
         *errorMessageHolder += "[CALUMI.Animation API] ";
         *errorMessageHolder += SFBGS_ANIM_PACKAGE;
 
-        if (CreateNewSFBGSAnimationPackage(*animation, overwrite))
+        if (SFBGS_AnimationPackage::AddPackage(*animation, overwrite))
         {
             *errorMessageHolder += " Successfully Added To";
             *errorMessageHolder += animation->animationTitle();
@@ -240,7 +243,7 @@ namespace CALUMI::SFBGS
         *errorMessageHolder += "[CALUMI.Animation API] ";
         *errorMessageHolder += SFBGS_ANIM_PACKAGE;
 
-        if (RemoveSFBGSAnimationPackage(*animation))
+        if (SFBGS_AnimationPackage::RemovePackage(*animation))
         {
             *errorMessageHolder += " Successfully Removed From ";
             *errorMessageHolder += animation->animationTitle();
@@ -309,7 +312,7 @@ namespace CALUMI::SFBGS
         if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
             return pkg->getOverridePrecisionSet().high();
 
-        return std::numeric_limits<float>().quiet_NaN();
+        return std::numeric_limits<float>::quiet_NaN();
     }
 
     float SFBGSAnimationPackage_GetOverridePrecisionLowC(const UNIV::Animation* animation)
@@ -317,7 +320,7 @@ namespace CALUMI::SFBGS
         if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(animation->getPackageManager().getPackage(SFBGS_ANIM_PACKAGE)))
             return pkg->getOverridePrecisionSet().low();
 
-        return std::numeric_limits<float>().quiet_NaN();
+        return std::numeric_limits<float>::quiet_NaN();
     }
 
     const char* SFBGSAnimationPackage_GetPrecisionSet(const UNIV::Animation* animation)
@@ -365,7 +368,7 @@ namespace CALUMI::SFBGS
 
             if (pkg->addAmendedBlock(*block, overwrite))
             {
-                const uint32_t hash = Utilities::BGS_Str_CRC32(block->boneName());
+                const uint32_t hash = Utilities::HashRegistry::getInstance().registerHash(block->boneName());
                 *errorMessageHolder += " added to SFBGS Animation Package with hash: ";
                 *errorMessageHolder += std::to_string(hash).c_str();
 
@@ -440,7 +443,7 @@ namespace CALUMI::SFBGS
 
             if (pkg->removeAmendedBlock(name))
             {
-                const uint32_t hash = Utilities::BGS_Str_CRC32(name);
+                const uint32_t hash = Utilities::HashRegistry::getInstance().registerHash(name);
                 *errorMessageHolder += " with hash: ";
                 *errorMessageHolder += std::to_string(hash).c_str();
                 *errorMessageHolder += " removed from SFBGS Animation Package";

@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include <AnimMath>
 #include <AnimUniv>
 
 using namespace CALUMI;
