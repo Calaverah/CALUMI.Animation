@@ -8,6 +8,8 @@
 #include <AnimUniv>
 #include <AnimStarfield>
 
+#include "../Common.h"
+
 using namespace CALUMI;
 
 #define GTEST(x) TEST(MockStarfield, x)
@@ -156,7 +158,7 @@ GTEST(Rig00)
 	UNIV::SkeletonRig uRig00 = rig00.convertToUniversalRig();
 	SFBGS::SkeletonRig rig00COPY(uRig00);
 
-    EXPECT_EQ(uRig00.boneEntries().size(), rig00.boneEntries().size());
+    EXPECT_EQ(uRig00.boneCount(), rig00.boneEntries().size());
 
     EXPECT_EQ(uRig00.boneCount(), rig00.boneCount());
 
@@ -214,9 +216,8 @@ GTEST(Rig00)
 	for (uint8_t i = 0; i < rig00COPYBones.size() && i < str00COPY.size(); i++)
 	{
 		//Rotations
-        EXPECT_TRUE(rig00COPYBones.at(i).localRotation().areEqual(rig00Bones.at(i).localRotation(), 0.000001f)) << "Tested " << rig00COPYBones.at(i).localRotation().toString().c_str() << " \nExpected " << rig00Bones.at(i).localRotation().toString().c_str();
-        EXPECT_TRUE(rig00COPYBones.at(i).globalRotation().areEqual(rig00Bones.at(i).globalRotation(), 0.000001f)) << "Tested " << rig00COPYBones.at(i).localRotation().toString().c_str() << " \nExpected " << rig00Bones.at(i).globalRotation().toString().c_str();
-
+		EXPECT_QUATNEAR(rig00COPYBones.at(i).localRotation(), rig00Bones.at(i).localRotation(), 0.000001f);
+		EXPECT_QUATNEAR(rig00COPYBones.at(i).globalRotation(), rig00Bones.at(i).globalRotation(), 0.000001f);
 		//Unks
 		//EXPECT_EQ(rig00COPYBones.at(i).getUnknownScalar(), unk00Floats[i]);
 		//EXPECT_EQ(rig00COPYBones.at(i).getTerm05(), 4);
@@ -225,8 +226,8 @@ GTEST(Rig00)
 		EXPECT_EQ(rig00COPYBones.at(i).getBoneType(), rig00Bones.at(i).getBoneType());
 		EXPECT_EQ(rig00COPYBones.at(i).getParentBoneIndex(), rig00Bones.at(i).getParentBoneIndex());
 		EXPECT_EQ(rig00COPYBones.at(i).getTwistDriverMqnIndex(), rig00Bones.at(i).getTwistDriverMqnIndex());
-		EXPECT_EQ(rig00COPYBones.at(i).getTwistDriverIndex(), -1); //These bones were set to default and should be different than the source on output as the values are corrected
-		EXPECT_EQ(rig00COPYBones.at(i).getTwistDriverWeight(), 0.0f); //These bones were set to default and should be different than the source on output as the values are corrected
+		EXPECT_EQ(rig00COPYBones.at(i).getTwistDriverIndex(), -1); //These bones were set to default and should be different from the source on output as the values are corrected
+		EXPECT_EQ(rig00COPYBones.at(i).getTwistDriverWeight(), 0.0f); //These bones were set to default and should be different from the source on output as the values are corrected
 		EXPECT_EQ(rig00COPYBones.at(i).getMirrorBoneIndex(), rig00Bones.at(i).getMirrorBoneIndex());
 
 		//Padding 

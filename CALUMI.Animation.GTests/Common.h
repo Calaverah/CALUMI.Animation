@@ -22,4 +22,14 @@
         std::cout << _BMAGENTA("Q2: ") << q2.toString().c_str() << std::endl; \
     }\
     }\
-    
+
+#define EXPECT_VEC3NEAR(v1,v2,tolerance) \
+    {\
+    bool result = v1.areEqual(v2, tolerance); \
+    EXPECT_TRUE(result);\
+    if(!result) \
+    {\
+        std::cout << _BMAGENTA("V1: ") << v1.toString().c_str() << std::endl;\
+        std::cout << _BMAGENTA("V2: ") << v2.toString().c_str() << std::endl;\
+    }\
+    }

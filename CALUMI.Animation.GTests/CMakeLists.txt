@@ -25,12 +25,13 @@ add_executable(run_tests test_main.cpp
   datacompression/sequence_compression.cpp 
   mockdata/mock_sfbgs.cpp
   univ/univ_entries.cpp 
-  sfbgs/datascan/sfbgs_animation_datascan.cpp 
+  sfbgs/datascan/sfbgs_animation_datascan.cpp
   Common.h
-  sfbgs/datascan/sfbgs_rig_datascan.cpp 
+  sfbgs/datascan/sfbgs_rig_datascan.cpp
   sfbgs/datascan/sfbgs_common.h
         utilities/util_hash.cpp
-        univ/univ_rig.cpp
+        math/transform.cpp
+        #univ/univ_rig.cpp
 )
 
 target_compile_definitions(run_tests PRIVATE DEBUG_BUILD)
@@ -49,7 +50,7 @@ elseif(WIN32)
   set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/win-debug/CALUMI.Animation.lib)
     #copy dll
   add_custom_command(TARGET run_tests POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    COMMAND ${CMAKE_COMMAND} -E copy
         "${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/win-debug/CALUMI.Animation.dll"
         $<TARGET_FILE_DIR:run_tests>
       )

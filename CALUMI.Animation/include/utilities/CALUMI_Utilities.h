@@ -161,14 +161,15 @@ namespace CALUMI::Utilities
 		void push_back(const char* string, uint64_t offset) const;
 		void push_back(const char* string) const;
 
-		[[nodiscard]] uint64_t getOffset(uint64_t idx) const;
+		[[nodiscard]] uint64_t getOffset(unsigned int idx) const;
 		[[nodiscard]] uint64_t getFinalOffset() const;
-		[[nodiscard]] bool hasOffset(uint64_t idx) const;
+		[[nodiscard]] bool hasOffset(unsigned int idx) const;
 		void setFinalOffset(uint64_t offset) const;
-		void reserve(uint64_t size) const;
-		[[nodiscard]] const char* c_str(uint64_t idx) const;
-		[[nodiscard]] uint64_t stringLength(uint64_t idx, bool includeNull = false) const;
-		[[nodiscard]] uint64_t size() const;
+		void reserve(unsigned int size) const;
+		[[nodiscard]] const char* c_str(unsigned int idx) const;
+		[[nodiscard]] uint64_t stringLength(unsigned int idx, bool includeNull = false) const;
+		[[nodiscard]] unsigned int size() const;
+		[[nodiscard]] int64_t find(const char* string, int64_t defValue = -1) const;
 
 		StringList& operator=(const StringList& other);
 

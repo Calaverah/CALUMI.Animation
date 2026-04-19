@@ -1,10 +1,12 @@
-target_sources(${PROJECT_NAME} 
-PUBLIC
-UNIV_AnimationScene.h
-animation/UNIV_Animation.h
-animation/UNIV_AnimationEntries.h
-animation/UNIV_IAnimationPackage.h
-skeletonrig/UNIV_SkeletonRig.h
-skeletonrig/UNIV_IRigPackage.h
-skeletonrig/UNIV_BoneTypes.h
+target_sources(${PROJECT_NAME}
+        PUBLIC
+        UNIV_AnimationScene.h
+        animation/UNIV_Animation.h
+        animation/UNIV_AnimationEntries.h
+        animation/UNIV_IAnimationPackage.h
+        skeletonrig/UNIV_SkeletonRig.h
+        skeletonrig/UNIV_IRigPackage.h
+        skeletonrig/UNIV_BoneTypes.h
+        skeletonrig/packages/UNIV_RigMirrorPackage.h
+        skeletonrig/packages/UNIV_RigManifestPackage.h
 )

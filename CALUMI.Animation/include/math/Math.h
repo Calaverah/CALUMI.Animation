@@ -96,6 +96,8 @@ namespace CALUMI::Math
 		[[nodiscard]] float Length() const;
 		[[nodiscard]] float LengthSquared() const;
 
+		[[nodiscard]] bool areEqual(const Vector2& input, float tolerance) const noexcept;
+
 		[[nodiscard]] float Dot(const Vector2& other) const;
 
 		void Cross(const Vector2& other, Vector2& result) const;
@@ -146,6 +148,15 @@ namespace CALUMI::Math
 
 
 	extern "C" {
+	/**
+	 * @relates Vector2
+	 * @name Extern "C"
+	 * @param x
+	 * @param y
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteVector2C
+	 * @return Heap allocated Vector2 <float> of the given values
+	 */
+	CALUMIANIMATION_API Vector2* CreateVector2C(float x, float y);
 	/** @relates Vector2
 	 *  @name Extern "C"
 	 */
@@ -209,6 +220,8 @@ namespace CALUMI::Math
 		[[nodiscard]] double length() const;
 		[[nodiscard]] double lengthSquared() const;
 
+		[[nodiscard]] bool areEqual(const Vector2D& input, float tolerance) const noexcept;
+
 		[[nodiscard]] double dot(const Vector2D& other) const;
 		void cross(const Vector2D& other, Vector2D& result) const;
 		[[nodiscard]] Vector2D cross(const Vector2D& other) const;
@@ -256,14 +269,23 @@ namespace CALUMI::Math
 	CALUMIANIMATION_API Vector2D operator/ (double A, const Vector2D& B) noexcept;
 
 	extern "C" {
+	/**
+	 * @relates Vector2D
+	 * @name Extern "C"
+	 * @param x
+	 * @param y
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteVector2DC
+	 * @return Heap allocated vector2D <double> of the given values
+	 */
+	CALUMIANIMATION_API Vector2D* CreateVector2DC(float x, float y);
 	/** @relates Vector2D
 	 *  @name Extern "C"
 	 */
-	CALUMIANIMATION_API double GetVector2DX(Vector2D* source);
+	CALUMIANIMATION_API double GetVector2DXC(Vector2D* source);
 	/** @relates Vector2D
 	 *  @name Extern "C"
 	 */
-	CALUMIANIMATION_API double GetVector2DY(Vector2D* source);
+	CALUMIANIMATION_API double GetVector2DYC(Vector2D* source);
 	/**
 	 * @relates Vector2D
 	 * @name Extern "C"
@@ -323,6 +345,8 @@ namespace CALUMI::Math
 		[[nodiscard]] float length() const;
 		[[nodiscard]] float lengthSquared() const;
 
+		[[nodiscard]] bool areEqual(const Vector3& input, float tolerance) const noexcept;
+
 		[[nodiscard]] float dot(const Vector3& other) const;
 
 		void cross(const Vector3& other, Vector3& result) const;
@@ -374,18 +398,28 @@ namespace CALUMI::Math
 	CALUMIANIMATION_API Vector3 operator/ (float A, const Vector3& B) noexcept;
 
 	extern "C" {
+	/**
+	 * @relates Vector3
+	 * @name Extern "C"
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteVector3C
+	 * @return Heap allocated vector3 <float> of the given values
+	 */
+	CALUMIANIMATION_API Vector3* CreateVector3C(float x, float y, float z);
 	/** @relates Vector3
-			 *  @name Extern "C"
-			 */
-	CALUMIANIMATION_API float GetVector3X(Vector3* source);
+	 *  @name Extern "C"
+	 */
+	CALUMIANIMATION_API float GetVector3XC(Vector3* source);
 	/** @relates Vector3
-			 *  @name Extern "C"
-			 */
-	CALUMIANIMATION_API float GetVector3Y(Vector3* source);
+	 *  @name Extern "C"
+	 */
+	CALUMIANIMATION_API float GetVector3YC(Vector3* source);
 	/** @relates Vector3
-			 *  @name Extern "C"
-			 */
-	CALUMIANIMATION_API float GetVector3Z(Vector3* source);
+	 *  @name Extern "C"
+	 */
+	CALUMIANIMATION_API float GetVector3ZC(Vector3* source);
 	/**
 	 * @relates Vector3
 	 * @name Extern "C"
@@ -443,6 +477,8 @@ namespace CALUMI::Math
 		[[nodiscard]] double length() const;
 		[[nodiscard]] double lengthSquared() const;
 
+		[[nodiscard]] bool areEqual(const Vector3D& input, float tolerance = 0.0) const noexcept;
+
 		[[nodiscard]] double dot(const Vector3D& other) const;
 		void cross(const Vector3D& other, Vector3D& result) const;
 		[[nodiscard]] Vector3D cross(const Vector3D& other) const;
@@ -495,18 +531,28 @@ namespace CALUMI::Math
 	CALUMIANIMATION_API Vector3D operator/ (double A, const Vector3D& B) noexcept;
 
 	extern "C" {
+	/**
+	 * @relates Vector3D
+	 * @name Extern "C"
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteVector3DC
+	 * @return Heap allocated vector3D <double> of the given values
+	 */
+	CALUMIANIMATION_API Vector3D* CreateVector3DC(double x, double y, double z);
 	/** @relates Vector3D
 	 *  @name Extern "C"
 	 */
-	CALUMIANIMATION_API double GetVector3DX(Vector3D* source);
+	CALUMIANIMATION_API double GetVector3DXC(Vector3D* source);
 	/** @relates Vector3D
 	 *  @name Extern "C"
 	 */
-	CALUMIANIMATION_API double GetVector3DY(Vector3D* source);
+	CALUMIANIMATION_API double GetVector3DYC(Vector3D* source);
 	/** @relates Vector3D
 	 *  @name Extern "C"
 	 */
-	CALUMIANIMATION_API double GetVector3DZ(Vector3D* source);
+	CALUMIANIMATION_API double GetVector3DZC(Vector3D* source);
 	/**
 	 * @relates Vector3D
 	 * @name Extern "C"
@@ -516,13 +562,13 @@ namespace CALUMI::Math
 	}
 
 	/**
-		 * @brief Imaginary way to mathematically describe a rotation without risk of gimble lock
-		 */
-	struct CALUMIANIMATION_API Quaternion
+	 * @brief Convenient way to describe euler and Tait-Bryan operations
+	 */
+	struct CALUMIANIMATION_API EulerDefinition
 	{
 		/**
-			 * @brief Order of operations for converting euler (rx,ry,rz) to quaternion
-			 */
+		 * @brief Order of operations for converting euler (rx,ry,rz) to quaternion
+		 */
 		enum class EulerOrder{
 			XYZ =  0,
 			XZY =  1,
@@ -536,8 +582,89 @@ namespace CALUMI::Math
 			YZY =  9,
 			ZXZ = 10,
 			ZYZ = 11,
+
+			RPY = XYZ,
+			YPR = ZYX,
+			Default = XYZ,
 			Max = ZYZ
 		};
+
+	public:
+		/**
+		 * @param first
+		 * @param second
+		 * @param third
+		 * @param euler
+		 */
+		EulerDefinition(float first = 0.0f,
+		                float second = 0.0f,
+		                float third = 0.0f,
+		                EulerOrder euler = EulerOrder::Default);
+
+		EulerDefinition(const EulerDefinition& other);
+
+		~EulerDefinition();
+
+		EulerDefinition& operator=(const EulerDefinition& other);
+
+		/**
+		 * @return first of the operations, or alpha
+		 */
+		[[nodiscard]] float first() const;
+		/**
+		 * @return second of the operations, or beta
+		 */
+		[[nodiscard]] float second() const;
+		/**
+		 * @param safe Whether to consider singularity safety from the beta value,
+		 * @return third of the operations, or gamma. If safety is on, will return 0.0f in the case that there is a
+		 * singularity
+		 */
+		[[nodiscard]] float third(bool safe = true) const;
+		/**
+		 * @return order of the operations
+		 */
+		[[nodiscard]] EulerOrder order() const;
+		/**
+		 * @param first
+		 */
+		void setFirst(float first);
+		/**
+		 * @param second
+		 */
+		void setSecond(float second);
+		/**
+		 * @param third
+		 */
+		void setThird(float third);
+		/**
+		 * @param order
+		 */
+		void setOrder(EulerOrder order);
+
+	public:
+		/**
+		 * @return Euler order of this order definition in the form of an int for convenient handling in extern "C"
+		 */
+		[[nodiscard]] static int toInt(EulerOrder order);
+		/**
+		 *
+		 * @param order
+		 * @return EulerOrder from the given int, will default to EulerOrder::Default if not defined
+		 */
+		static EulerOrder GetEulerOrder(int order);
+
+	private:
+		struct Impl;
+		Impl* pImpl;
+	};
+
+	/**
+	 * @brief Imaginary way to mathematically describe a rotation without risk of gimble lock
+	 */
+	struct CALUMIANIMATION_API Quaternion
+	{
+
 
 		/** @name Constructors */
 		/// @{
@@ -549,7 +676,8 @@ namespace CALUMI::Math
 		Quaternion(Vector3D direction, double radians, bool normalized = true);
 		Quaternion(double x, double y, double z, double w, bool normalized = true);
 		Quaternion(float x, float y, float z, float w, bool normalized = true);
-		Quaternion(float x, float y, float z, EulerOrder order = EulerOrder::XYZ);
+		Quaternion(EulerDefinition eulerInput);
+		Quaternion(float x, float y, float z, EulerDefinition::EulerOrder order);
 		Quaternion(const Quaternion& input);
 
 		/// @}
@@ -625,6 +753,8 @@ namespace CALUMI::Math
 
 		[[nodiscard]] Quaternion sLerp(const Quaternion& input, float t = 0.5f) const;
 
+		[[nodiscard]] EulerDefinition toEuler(EulerDefinition::EulerOrder order) const;
+
 		static const Quaternion Identity;
 
 		/// @}
@@ -657,9 +787,22 @@ namespace CALUMI::Math
 	/**
 	 * @relates Quaternion
 	 * @name Extern "C"
-	 * @return A heap allocated Quaternion where xyz = 0, w = 1
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteQuaternionC
+	 * @note To get a basic quaternion with rotation, insert (0.0, 0.0, 0.0, 1.0)
+	 * @return A heap allocated, normalized, Quaternion <float> of the given values
 	 */
-	CALUMIANIMATION_API Quaternion* CreateQuaternionC();
+	CALUMIANIMATION_API Quaternion* CreateQuaternionC(float x, float y, float z, float w);
+	/**
+	 * @relates Quaternion
+	 * @name Extern "C"
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param eulerOrder
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteQuaternionC
+	 * @return
+	 */
+	Quaternion* CreateQuaternionFromEulerC(float x, float y, float z, int eulerOrder);
 	/** @relates Quaternion
 	 *  @name Extern "C"
 	 */
@@ -676,10 +819,53 @@ namespace CALUMI::Math
 	 *  @name Extern "C"
 	 */
 	CALUMIANIMATION_API float GetQuaternionWC(Quaternion* source);
+	/**
+	 * @relates Quaternion
+	 * @name Extern "C"
+	 * @param input
+	 * @param eulerOrder
+	 * @param first ptr to the first output float
+	 * @param second ptr to the second output float
+	 * @param third ptr to the third output float
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation
+	 */
+	CALUMIANIMATION_API int GetQuaternionToEulerC(Quaternion* input,
+												  int eulerOrder,
+												  float* first,
+												  float* second,
+												  float* third);
 	/** @relates Quaternion
 	 *  @name Extern "C"
+	 *  @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation\n 1 = Invalid Axis
 	 */
-	CALUMIANIMATION_API bool RotateQuaternionByAxisAngleC(Quaternion* input, Quaternion* result, float x, float y, float z, float radians);
+	CALUMIANIMATION_API int RotateQuaternionByAxisAngleC(Quaternion* input,
+														 Quaternion* result,
+														 float x,
+														 float y,
+														 float z,
+														 float radians);
+	/**
+	 * @relates Quaternion
+	 * @name Extern "C"
+	 * @param input Starting rotation
+	 * @param offset Rotation to apply to input
+	 * @param result Output rotation
+	 * @return Error code:\n -1 = Invalid Ptr\n 0 = Successful Operation
+	 */
+	CALUMIANIMATION_API int RotateQuaternionByQuaternionC(Quaternion* input,
+	                                                      Quaternion* offset,
+	                                                      Quaternion* result);
+	/**
+	 * @relates Quaternion
+	 * @name Extern "C"
+	 * @param input Rotation of interest
+	 * @param reference Reference rotation
+	 * @param result Offset rotation to get from the reference to the input
+	 * @return Error code:\n -1 = Invalid Ptr\n 0 = Successful Operation
+	 */
+	CALUMIANIMATION_API int GetQuaternionOffsetC(Quaternion* input,
+	                                             Quaternion* reference,
+	                                             Quaternion* result);
 	/**
 	 * @relates Quaternion
 	 * @name Extern "C"
@@ -692,8 +878,10 @@ namespace CALUMI::Math
 	struct CALUMIANIMATION_API Transform
 	{
 		Transform(Vector3 position = Vector3(), Quaternion rotation = Quaternion());
+		Transform(const Transform& other);
 		~Transform();
 
+		Transform& operator=(const Transform& other);
 		/**
 		 *
 		 * @param reference The origin transform to offset this transform by
@@ -744,19 +932,166 @@ namespace CALUMI::Math
 	/**
 	 * @relates Transform
 	 * @name Extern "C"
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteTransformC
 	 * @return Heap allocated transform at Position (0,0,0) and Rotation xyz = 0, w = 1
 	 */
 	CALUMIANIMATION_API Transform* CreateTransformC();
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @param reference Ptr to transform in which values will be copied
+	 * @return Error Code: \n -1 = Invalid Ptr\n 0 = Successful Copy
+	 */
+	CALUMIANIMATION_API int SetTransformFromReferenceC(Transform* transform, Transform* reference);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param global Transform to measure in a coordinate system
+	 * @param reference Reference Transform in the same coordinate system as the input transform
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteTransformC
+	 * @return Heap allocated transform representing the global input relative to the reference input
+	 */
 	CALUMIANIMATION_API Transform* GetLocalTransformC(Transform* global, Transform* reference);
-	CALUMIANIMATION_API int SetTransformPositionC(Transform* transform, float x, float y, float z);
-	CALUMIANIMATION_API float GetTransformPositionXC(Transform* transform);
-	CALUMIANIMATION_API float GetTransformPositionYC(Transform* transform);
-	CALUMIANIMATION_API float GetTransformPositionZC(Transform* transform);
-	CALUMIANIMATION_API float GetTransformRotationXC(Transform* transform);
-	CALUMIANIMATION_API float GetTransformRotationYC(Transform* transform);
-	CALUMIANIMATION_API float GetTransformRotationZC(Transform* transform);
-	CALUMIANIMATION_API float GetTransformRotationWC(Transform* transform);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param local Transform to measure in a new coordinate system
+	 * @param reference Reference Transform in the same coordinate system as the output transform
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteTransformC
+	 * @return Heap allocated transform representing the local input in the same coordinate system as the reference
+	 */
 	CALUMIANIMATION_API Transform* GetGlobalTransformC(Transform* local, Transform* reference);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return Error code:\n -1 = Invalid Ptr\n 0 = Successful Operation
+	 */
+	CALUMIANIMATION_API int SetTransformPositionC(Transform* transform, float x, float y, float z);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @param reference
+	 * @return Error code:\n -1 = Invalid Ptr\n 0 = Successful Operation
+	 */
+	CALUMIANIMATION_API int SetTransformPositionFromReferenceC(Transform* transform, Vector3* reference);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param w
+	 * @return Error code:\n -1 = Invalid Ptr\n 0 = Successful Operation
+	 */
+	CALUMIANIMATION_API int SetTransformRotationC(Transform* transform, float x, float y, float z, float w);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param eulerOrder Int value can be found via EulerOrder
+	 * @return Error code:\n -1 = Invalid Ptr\n 0 = Successful Operation
+	 */
+	CALUMIANIMATION_API int SetTransformEulerRotationC(Transform* transform, float x, float y, float z, int eulerOrder);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @param reference
+	 * @return Error code:\n -1 = Invalid Ptr\n 0 = Successful Operation
+	 */
+	CALUMIANIMATION_API int SetTransformRotationFromReferenceC(Transform* transform, Quaternion* reference);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @param first Ptr to float to receive the first operation
+	 * @param second Ptr to float to receive the second operation
+	 * @param third Ptr to float to receive the third operation
+	 * @param eulerOrder Int representation of a EulerDefinition::EulerOrder
+	 * @return Error code:\n -1 = Invalid Ptr\n 0 = Successful Operation
+	 */
+	CALUMIANIMATION_API int GetTransformEulerRotationC(Transform* transform,
+													   float* first,
+													   float* second,
+													   float* third,
+													   int eulerOrder);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteVector3C or use a direct
+	 * access function such as GetTransformPositionXC to avoid memory management
+	 * @return Heap allocated Vector3 representing the position of the given transform
+	 */
+	CALUMIANIMATION_API Vector3* GetTransformPositionC(Transform* transform);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @return Position's x value\n NaN will be returned if ptr is invalid
+	 */
+	CALUMIANIMATION_API float GetTransformPositionXC(Transform* transform);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @return Position's y value\n NaN will be returned if ptr is invalid
+	 */
+	CALUMIANIMATION_API float GetTransformPositionYC(Transform* transform);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @return Position's z value\n NaN will be returned if ptr is invalid
+	 */
+	CALUMIANIMATION_API float GetTransformPositionZC(Transform* transform);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteQuaternionC or use a direct
+	 * access function such as GetTransformRotationXC to avoid memory management
+	 * @return Heap allocated Quaternion representing the rotation of the given transform
+	 */
+	CALUMIANIMATION_API Quaternion* GetTransformRotationC(Transform* transform);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @return Rotation's x value\n NaN will be returned if ptr is invalid
+	 */
+	CALUMIANIMATION_API float GetTransformRotationXC(Transform* transform);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @return Rotation's y value\n NaN will be returned if ptr is invalid
+	 */
+	CALUMIANIMATION_API float GetTransformRotationYC(Transform* transform);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @return Rotation's z value\n NaN will be returned if ptr is invalid
+	 */
+	CALUMIANIMATION_API float GetTransformRotationZC(Transform* transform);
+	/**
+	 * @relates Transform
+	 * @name Extern "C"
+	 * @param transform
+	 * @return Rotation's w value\n NaN will be returned if ptr is invalid
+	 */
+	CALUMIANIMATION_API float GetTransformRotationWC(Transform* transform);
 	/**
 	 * @relates Transform
 	 * @name Extern "C"

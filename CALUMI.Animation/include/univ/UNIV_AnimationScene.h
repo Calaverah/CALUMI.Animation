@@ -26,8 +26,8 @@ namespace CALUMI::UNIV
 		void setSceneName(const Utilities::StringContainer& input);
 
 		bool addAnimationToScene(UNIV::Animation& animation, bool overwrite = true);
-		bool removeAnimationFromScene(Utilities::StringContainer& sceneToRemove);
-		bool removeAnimationFromScene(unsigned int idx);
+		bool removeAnimationFromScene(const Utilities::StringContainer& sceneToRemove) const;
+		bool removeAnimationFromScene(unsigned int idx) const;
 
 		//Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension);
 
@@ -62,5 +62,4 @@ CALUMIANIMATION_API CALUMI::UNIV::Animation* GetAnimationC(CALUMI::UNIV::Animati
 CALUMIANIMATION_API uint64_t GetAnimationCountC(CALUMI::UNIV::AnimationScene* source);
 CALUMIANIMATION_API const char* GetAnimationSceneNameC(CALUMI::UNIV::AnimationScene* source);
 CALUMIANIMATION_API CALUMI::UNIV::SkeletonRig* GetSkeletonRigC(CALUMI::UNIV::AnimationScene* source);
-CALUMIANIMATION_API bool HasSkeletonRigC(CALUMI::UNIV::AnimationScene* source);
 }

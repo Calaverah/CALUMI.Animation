@@ -56,7 +56,7 @@ namespace CALUMI::UNIV
         return true;
     }
 
-    bool AnimationScene::removeAnimationFromScene(Utilities::StringContainer& sceneToRemove)
+    bool AnimationScene::removeAnimationFromScene(const Utilities::StringContainer& sceneToRemove) const
     {
         for (unsigned int i = 0; i < pImpl->animations.size(); i++)
         {
@@ -69,9 +69,10 @@ namespace CALUMI::UNIV
         return false;
     }
 
-    bool AnimationScene::removeAnimationFromScene(unsigned int idx)
+    bool AnimationScene::removeAnimationFromScene(const unsigned int idx) const
     {
-        if (idx >= pImpl->animations.size() || idx < 0) return false;
+        if (idx >= pImpl->animations.size())
+            return false;
 
         pImpl->animations.erase(pImpl->animations.begin() + idx);
         return true;
@@ -147,25 +148,21 @@ namespace CALUMI::UNIV
         }
         return &source->animation(index);
     }
-    uint64_t GetAnimationCountC(AnimationScene* source)
+    uint64_t GetAnimationCountC(const AnimationScene* source)
     {
         return source->animationCount();
     }
-    const char* GetAnimationSceneNameC(AnimationScene* source)
+    const char* GetAnimationSceneNameC(const AnimationScene* source)
     {
         return source->sceneName();
     }
-    SkeletonRig* GetSkeletonRigC(AnimationScene* source)
+    SkeletonRig* GetSkeletonRigC(const AnimationScene* source)
     {
         return &source->rig();
     }
-    bool HasSkeletonRigC(AnimationScene* source)
-    {
-        return !source->rig().boneEntries().empty();
-    }
     AnimationScene* CreateAnimationSceneC(const char* sceneName)
     {
-        UNIV::AnimationScene* univAnimationScene = new UNIV::AnimationScene;
+        const auto univAnimationScene = new CALUMI::UNIV::AnimationScene;
         univAnimationScene->setSceneName(sceneName);
 
         return univAnimationScene;
@@ -176,11 +173,6 @@ namespace CALUMI::UNIV
         Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
         errorMessageHolder->clear();
 
-        if (rig->boneEntries().empty())
-        {
-            *errorMessageHolder += "[CALUMI.Animation API] No Bone Entries Found In Rig!";
-            return false;
-        }
         scene->rig() = *rig;
 
         if (rig)
@@ -218,8 +210,9 @@ namespace CALUMI::UNIV
             }
         }
         scene->addAnimationToScene(*animation);
-        if (animation)
-            delete animation;
+
+        delete animation;
+        animation = nullptr;
 
         *errorMessageHolder += "[CALUMI.Animation API] Animation Data Copied Into Animation Vector Successfully. Original Ptr Has Been Deleted!";
         return true;

@@ -8,8 +8,6 @@
 
 namespace CALUMI::UNIV
 {
-
-
 	/**
 		 * @brief RigPackages provide a convenient way for users to apply game specific data to a rig
 		 *
@@ -19,6 +17,7 @@ namespace CALUMI::UNIV
 		 */
 	class CALUMIANIMATION_API IRigPackage : public IPackage
 	{
+	public:
 		/** @name Initialization */
 		/// @{
 		IRigPackage() = default;
@@ -71,15 +70,23 @@ namespace CALUMI::UNIV
 		bool onBoneRename(const char* oldBone, const char* newName);
 		friend class SkeletonRig;
 	};
+}
+namespace CALUMI{
 
-	/**
-		 * @addtogroup extern_c
-		 * @{
-		 * @defgroup c_univ_rig_package Rig Package "C" API
-		 * @brief C Style API for Rig Packages
-		 * @{
-		 * @}
-		 * @}
-		 * */
-
+	 /// @addtogroup c_rig
+	 /// @{
+	 /// @defgroup c_rig_packages Rig Packages
+	 /// @{
+	 /// @defgroup c_univ_rig_packages Universal
+	 /// @brief C Style API for UNIV Rig Packages
+	 /// @{
+	 /// @}
+	 /// @}
+	 /// @}
+	 /// @defgroup rig
+	 /// @{
+	 /// @defgroup rig_packages Rig Packages
+	 /// @{
+	 /// @}
+	 /// @}
 }

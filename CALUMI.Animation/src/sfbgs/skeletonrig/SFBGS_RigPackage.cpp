@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "sfbgs/skeletonrig/SFBGS_SkeletonRig.h"
+#include "univ/skeletonrig/packages/UNIV_RigManifestPackage.h"
 
 namespace CALUMI::SFBGS
 {
@@ -127,7 +128,7 @@ namespace CALUMI::SFBGS
 		}
 	}
 
-	bool SFBGS_RigPackage::CreateNewSFBGSRigPackage(const UNIV::SkeletonRig& rig, const bool overwrite)
+	bool SFBGS_RigPackage::AddPackage(const UNIV::SkeletonRig& rig, const bool overwrite)
 	{
 		const auto& mgr = rig.getPackageManager();
 
@@ -143,12 +144,30 @@ namespace CALUMI::SFBGS
 		return false;
 	}
 
-	bool SFBGS_RigPackage::RemoveSFBGSRigPackage(const UNIV::SkeletonRig& rig)
+	bool SFBGS_RigPackage::RemovePackage(const UNIV::SkeletonRig& rig)
 	{
 		return rig.getPackageManager().removePackage(SFBGS_RIG_PACKAGE);
 	}
 
-	Utilities::S16Vector SFBGS_RigPackage::ConvertSFBGSRigPackage(const UNIV::SkeletonRig& rig)
+	SFBGS_RigPackage& SFBGS_RigPackage::GetPackage(const UNIV::SkeletonRig& rig)
+	{
+		auto& mgr = rig.getPackageManager();
+		if (const auto pkg = dynamic_cast<SFBGS_RigPackage*>(mgr.getPackage(SFBGS_RIG_PACKAGE)))
+		{
+			return *pkg;
+		}
+
+		AddPackage(rig, false);
+
+		if (const auto pkg = dynamic_cast<SFBGS_RigPackage*>(mgr.getPackage(SFBGS_RIG_PACKAGE)))
+		{
+			return *pkg;
+		}
+
+		throw std::runtime_error("RigMirrorPackage::GetPackage() could not find nor add rig package.");
+	}
+
+	Utilities::S16Vector SFBGS_RigPackage::ConvertMap(const Utilities::StringList& boneList) const
 	{
 		Utilities::S16Vector output;
 		output.resize(SFBGSMAPSIZE);
@@ -158,16 +177,10 @@ namespace CALUMI::SFBGS
 			output.at(i) = -1;
 		}
 
-		const auto rigPackage = dynamic_cast<SFBGS_RigPackage*>(rig.getPackageManager().getPackage(SFBGS_RIG_PACKAGE));
-
-		if (rigPackage == nullptr)
-		{
-			return output;
-		}
-
 		for (int i = 0; i < output.size(); i++)
 		{
-			if (const auto result = rig.findBone(rigPackage->boneNameFromKey(static_cast<BoneMapKey>(i))); result >= 0)
+			if (const auto result = boneList.find(boneNameFromKey(static_cast<BoneMapKey>(i)),-1); result >= 0
+				&& result < std::numeric_limits<int16_t>::max())
 			{
 				output.at(i) = static_cast<int16_t>(result);
 			}
@@ -424,7 +437,7 @@ namespace CALUMI::SFBGS
 		*errorMessageHolder += "[CALUMI.Animation API] ";
 		*errorMessageHolder += SFBGS_RIG_PACKAGE;
 
-		if (SFBGS_RigPackage::CreateNewSFBGSRigPackage(*rig, overwrite))
+		if (SFBGS_RigPackage::AddPackage(*rig, overwrite))
 		{
 			*errorMessageHolder += " Successfully Added To";
 			*errorMessageHolder += rig->name();
@@ -447,7 +460,7 @@ namespace CALUMI::SFBGS
 		*errorMessageHolder += "[CALUMI.Animation API] ";
 		*errorMessageHolder += SFBGS_RIG_PACKAGE;
 
-		if (SFBGS_RigPackage::RemoveSFBGSRigPackage(*rig))
+		if (SFBGS_RigPackage::RemovePackage(*rig))
 		{
 			*errorMessageHolder += " Successfully Removed From ";
 			*errorMessageHolder += rig->name();
