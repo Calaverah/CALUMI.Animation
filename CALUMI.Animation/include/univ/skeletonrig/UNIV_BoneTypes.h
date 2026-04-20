@@ -7,43 +7,52 @@
 
 namespace CALUMI::UNIV {
 
-	enum class BoneType : uint32_t
-	{
-		Default = 0,
-		Twist = 1,
-		UNDEFINED = 0xFFFFFFFF
-	};
-
     inline static constexpr auto DefaultBoneTypeStr = "Default";
     inline static constexpr auto TwistBoneTypeStr = "Twist";
-
-
-    /**
-     * @brief Global function to assist in string to enum conversion
-     * @param boneTypeStr c string of the type, likely #DefaultBoneTypeStr or #TwistBoneTypeStr
-     * @return Will return BoneType::UNDEFINED if the bonetypeStr is not found
-     */
-    CALUMIANIMATION_API BoneType BoneTypeFromString(const char* boneTypeStr);
 
     /**
      * @brief Abstract for Bone specific, universally defined properties. Behaves similarly to a strategy pattern in concept
      */
-    struct CALUMIANIMATION_API BoneTypeProperties
+    struct CALUMIANIMATION_API BoneTypeProperty
 	{
+		/**
+		 * @brief Bone Types Available
+		 */
+		enum class BoneType : uint32_t
+    	{
+    		Default = 0, ///< Default behavior at runtime
+			Twist = 1, ///< Motion is determined during runtime instead of by animation directly
+    		Max = Twist,
+			UNDEFINED = 0xFFFFFFFF
+		};
+
         [[nodiscard]] virtual BoneType getType() const = 0;
 
         [[nodiscard]] virtual const char* getTypeString() const = 0;
-		BoneTypeProperties() = default;
-		virtual ~BoneTypeProperties() = default;
+		BoneTypeProperty() = default;
+		virtual ~BoneTypeProperty() = default;
+
+    public:
+    	/**
+		 * @param boneTypeStr c string of the type, likely #DefaultBoneTypeStr or #TwistBoneTypeStr
+		 * @return Will return BoneType::UNDEFINED if the bonetypeStr is not found
+		 */
+    	static BoneType BoneTypeFromString(const char* boneTypeStr);
+
+	    /**
+	     * @param typeAsInteger
+	     * @return Safe enum conversion from integer
+	     */
+	    static BoneType GetBoneType(uint32_t typeAsInteger);
 	};
 
     /**
      * @brief Default Bone Type, has no data assigned to it
      */
-    struct CALUMIANIMATION_API DefaultBoneProperties : BoneTypeProperties
+    struct CALUMIANIMATION_API DefaultBoneProperty : BoneTypeProperty
 	{
-		DefaultBoneProperties() = default;
-		~DefaultBoneProperties() override = default;
+		DefaultBoneProperty() = default;
+		~DefaultBoneProperty() override = default;
         [[nodiscard]] const char* getTypeString() const override;
 
 		// Inherited via BoneTypeProperties
@@ -53,13 +62,13 @@ namespace CALUMI::UNIV {
 	/**
 	 * @brief Basic Twist Type, defines how the bone will behave at runtime
 	 */
-	struct CALUMIANIMATION_API TwistBoneProperties : BoneTypeProperties
+	struct CALUMIANIMATION_API TwistBoneProperty : BoneTypeProperty
 	{
 		/// @name Constructors
 		/// @{
-		TwistBoneProperties();
-        explicit TwistBoneProperties(const TwistBoneProperties& input);
-		~TwistBoneProperties() override;
+		TwistBoneProperty();
+        explicit TwistBoneProperty(const TwistBoneProperty& input);
+		~TwistBoneProperty() override;
 		/// @}
 		/// @name Twist Data
 		/// @{
@@ -83,7 +92,7 @@ namespace CALUMI::UNIV {
 		/// @}
 		/// @name Operators
 		/// @{
-		TwistBoneProperties& operator=(const TwistBoneProperties& input);
+		TwistBoneProperty& operator=(const TwistBoneProperty& input);
 		/// @}
 
 	private:

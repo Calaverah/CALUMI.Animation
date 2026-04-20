@@ -409,13 +409,13 @@ namespace CALUMI::SFBGS
 		 * @param rig
 		 * @return The SFBGS Rig Package on this SkeletonRig. If none exists, one will be created.
 		 */
-		static SFBGS_RigPackage& GetPackage(const UNIV::SkeletonRig& rig);
+		[[nodiscard]] static SFBGS_RigPackage& GetPackage(const UNIV::SkeletonRig& rig);
 		/**
 			 * @brief Creates a convenience SFBGS BoneMap vector in the expected Starfield format
 			 * @param boneList
 			 * @return
 			 */
-		Utilities::S16Vector ConvertMap(const Utilities::StringList& boneList) const;
+		[[nodiscard]] Utilities::S16Vector ConvertMap(const Utilities::StringList& boneList) const;
 		/// @}
 	};
 	/// @}

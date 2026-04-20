@@ -6,13 +6,10 @@
 #include "internalplatform.h"
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
 #include "utilities/CALUMI_Utilities.h"
-#include <set>
 #include <string>
 #include <vector>
 #include <memory>
 #include <limits>
-#include <ostream>
-#include <unordered_set>
 
 
 namespace CALUMI::UNIV
@@ -21,7 +18,7 @@ namespace CALUMI::UNIV
     struct SkeletonBone::Impl
     {
     public:
-        std::shared_ptr<BoneTypeProperties> m_boneTypeProperties = std::make_shared<DefaultBoneProperties>();
+        std::shared_ptr<BoneTypeProperty> m_boneTypeProperties = std::make_shared<DefaultBoneProperty>();
         Math::Transform m_localTransform;
         std::string m_name;
 
@@ -46,10 +43,6 @@ namespace CALUMI::UNIV
         pImpl = new Impl(parent);
         pImpl->m_name = name;
     }
-    // SkeletonBone::SkeletonBone(const SkeletonBone& other) : SkeletonBone(*other.pImpl->m_parent)
-    // {
-    //     *this = other;
-    // }
     SkeletonBone::~SkeletonBone()
     {
         if (pImpl)
@@ -58,24 +51,30 @@ namespace CALUMI::UNIV
             pImpl = nullptr;
         }
     }
-    // SkeletonBone& SkeletonBone::operator=(const SkeletonBone& other)
-    // {
-    //     if (this != &other)
-    //     {
-    //         pImpl->m_name = other.pImpl->m_name;
-    //         pImpl->m_localTransform = other.pImpl->m_localTransform;
-    //
-    //         pImpl->m_childBones.clear();
-    //         for (const auto& child : other.pImpl->m_childBones)
-    //         {
-    //             //
-    //         }
-    //
-    //         if (setBoneTypeProperty(other.pImpl->m_boneTypeProperties->getType(), true))
-    //             *pImpl->m_boneTypeProperties = *other.pImpl->m_boneTypeProperties;
-    //     }
-    //     return *this;
-    // }
+
+    void SkeletonBone::DeleteBone(const SkeletonBone*& bone)
+    {
+        if (!bone)
+            return;
+
+        if (bone->isRoot())
+            return;
+
+        const auto parent = dynamic_cast<const SkeletonBone*>(bone->parent());
+
+        if (!parent)
+            return;
+
+        for (uint32_t i = 0; i < parent->pImpl->m_childBones.size(); i++)
+        {
+            if (parent->pImpl->m_childBones.at(i).get() == bone)
+            {
+                parent->pImpl->m_childBones.erase(parent->pImpl->m_childBones.begin() + i);
+                bone = nullptr;
+                return;
+            }
+        }
+    }
 
     const ILineage* SkeletonBone::parent() const
     {
@@ -185,7 +184,7 @@ namespace CALUMI::UNIV
         return boneCount;
     }
 
-    unsigned int SkeletonBone::boneTypeCount(const BoneType type) const
+    unsigned int SkeletonBone::boneTypeCount(const BoneTypeProperty::BoneType type) const
     {
         unsigned int boneCount = 0;
         for (const auto& bone : pImpl->m_childBones)
@@ -250,7 +249,14 @@ namespace CALUMI::UNIV
         return true;
     }
 
-    bool SkeletonBone::setBoneTypeProperty(const BoneType boneType, const bool resetExisting) const
+    bool SkeletonBone::isRoot() const
+    {
+        const auto& rig = parentRig();
+
+        return this == rig.root();
+    }
+
+    bool SkeletonBone::setBoneTypeProperty(const BoneTypeProperty::BoneType boneType, const bool resetExisting) const
     {
         if (pImpl->m_boneTypeProperties)
         {
@@ -260,11 +266,11 @@ namespace CALUMI::UNIV
 
         switch (boneType)
         {
-        case BoneType::Default:
-            pImpl->m_boneTypeProperties = std::make_shared<DefaultBoneProperties>();
+        case BoneTypeProperty::BoneType::Default:
+            pImpl->m_boneTypeProperties = std::make_shared<DefaultBoneProperty>();
             break;
-        case BoneType::Twist:
-            pImpl->m_boneTypeProperties = std::make_shared<TwistBoneProperties>();
+        case BoneTypeProperty::BoneType::Twist:
+            pImpl->m_boneTypeProperties = std::make_shared<TwistBoneProperty>();
             break;
         default:
             return false;
@@ -272,12 +278,12 @@ namespace CALUMI::UNIV
         return true;
     }
 
-    const BoneTypeProperties* SkeletonBone::boneTypeProperty() const
+    const BoneTypeProperty* SkeletonBone::boneTypeProperty() const
     {
         return pImpl->m_boneTypeProperties.get();
     }
 
-    bool SkeletonBone::resetBoneTypeProperty(const BoneType boneType) const
+    bool SkeletonBone::resetBoneTypeProperty(const BoneTypeProperty::BoneType boneType) const
     {
         return this->setBoneTypeProperty(boneType, true);
     }
@@ -434,7 +440,7 @@ namespace CALUMI::UNIV
         pImpl->_rigName = _rigName;
     }
 
-    unsigned int SkeletonRig::boneTypeCount(const BoneType type) const
+    unsigned int SkeletonRig::boneTypeCount(const BoneTypeProperty::BoneType type) const
     {
         unsigned int pAnimatedBoneCount = 0;
 
@@ -451,9 +457,9 @@ namespace CALUMI::UNIV
         return pImpl->_root.boneCount() + 1;
     }
 
-    SkeletonBone& SkeletonRig::root() const
+    SkeletonBone* SkeletonRig::root() const
     {
-        return pImpl->_root;
+        return &pImpl->_root;
     }
 
     Utilities::StringList SkeletonRig::boneList() const
@@ -484,28 +490,57 @@ namespace CALUMI::UNIV
 }
 #pragma region EXTERN"C"
 
-    CALUMI::UNIV::SkeletonRig* CreateSkeletonRigC(const char* _rigName)
+    CALUMI::UNIV::SkeletonRig* CreateSkeletonRigC(const char* name)
     {
-        auto* outputSkeletonRig = new CALUMI::UNIV::SkeletonRig(_rigName);
+        const auto outputSkeletonRig = new CALUMI::UNIV::SkeletonRig(name);
         return outputSkeletonRig;
     }
-    bool DeleteSkeletonRigC(const CALUMI::UNIV::SkeletonRig* ptr)
+    int DeleteSkeletonRigC(const CALUMI::UNIV::SkeletonRig** ptrRef)
     {
-        if (ptr)
+        if (!ptrRef || !*ptrRef)
+            return -1;
+
+        try
         {
-            delete ptr;
-            ptr = nullptr;
-            return true;
+            delete *ptrRef;
+            *ptrRef = nullptr;
+            return 0;
+        } catch (std::bad_alloc&) {}
+        return -1;
+    }
+    CALUMI::UNIV::SkeletonBone* GetSkeletonRigRootC(const CALUMI::UNIV::SkeletonRig* rig)
+    {
+        if(!rig)
+            return nullptr;
+
+        try
+        {
+            return rig->root();
         }
-        return false;
+        catch (const std::exception&) {}
+        return nullptr;
     }
-    bool SetBoneTypeC(const CALUMI::UNIV::SkeletonBone* bone, uint32_t boneType)
+    int SetBoneTypeC(const CALUMI::UNIV::SkeletonBone* bone, const uint32_t boneType)
     {
-        return bone->setBoneTypeProperty(static_cast<CALUMI::UNIV::BoneType>(boneType));
+        if (!bone)
+            return -1;
+
+        try
+        {
+            return bone->setBoneTypeProperty(CALUMI::UNIV::BoneTypeProperty::GetBoneType(boneType)) ? 0 : 1;
+        }
+        catch (std::bad_alloc&) {}
+        return -1;
     }
-    bool SetBoneTypeFromStringC(const CALUMI::UNIV::SkeletonBone* bone, const char* boneType)
+    int SetBoneTypeFromStringC(const CALUMI::UNIV::SkeletonBone* bone, const char* boneType)
     {
-        return bone->setBoneTypeProperty(CALUMI::UNIV::BoneTypeFromString(boneType));
+        if (bone)
+        try
+        {
+            return bone->setBoneTypeProperty(CALUMI::UNIV::BoneTypeProperty::BoneTypeFromString(boneType)) ? 0 : 1;
+        }
+        catch (std::bad_alloc&) {}
+        return -1;
     }
     uint32_t GetBoneTypeC(const CALUMI::UNIV::SkeletonBone* bone)
     {
@@ -515,94 +550,217 @@ namespace CALUMI::UNIV
     {
         return bone->boneTypeProperty()->getTypeString();
     }
-    bool SetTwistBonePropertiesC(const CALUMI::UNIV::SkeletonBone* bone, const bool reassign, const char* twistDriver, const float twistDriverWeight, CALUMI::Utilities::StringContainer* errorMessage)
+    int SetTwistBonePropertiesC(const CALUMI::UNIV::SkeletonBone* bone, const bool reassign, const char* twistDriver,
+        const float twistDriverWeight)
     {
-        CALUMI::Utilities::StringContainer tempErrorMessage;
-        CALUMI::Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->clear();
-
-        if (bone->boneTypeProperty()->getType() != CALUMI::UNIV::BoneType::Twist)
+        if (bone)
+        try
         {
-            if (!reassign)
+            if (bone->boneTypeProperty()->getType() != CALUMI::UNIV::BoneTypeProperty::BoneType::Twist)
             {
-                *errorMessageHolder += std::format("[CALUMI.Animation API] Bone: {}'s Type Does Not Match Desired Values, Reassigned Set To False. No changes have been made.\n", bone->name()).c_str();
-                return false;
+                if (!reassign)
+                    return 1;
+
+                if (!bone->setBoneTypeProperty(CALUMI::UNIV::BoneTypeProperty::BoneType::Twist))
+                    return 2;
             }
 
-            if (!bone->setBoneTypeProperty(CALUMI::UNIV::BoneType::Twist))
+            const auto tProp = dynamic_cast<CALUMI::UNIV::TwistBoneProperty*>
+            (const_cast<CALUMI::UNIV::BoneTypeProperty*>(bone->boneTypeProperty()));
+
+            if (tProp)
             {
-                *errorMessageHolder += std::format("[CALUMI.Animation API] Bone Type Could Not Be Set For Bone: {} \n", bone->name()).c_str();
-                return false;
+                tProp->setTwistDriver(twistDriver);
+                tProp->setTwistDriverWeight(twistDriverWeight);
+                return 0;
             }
+
+            return 3;
         }
-
-        const CALUMI::UNIV::TwistBoneProperties* tProp = dynamic_cast<CALUMI::UNIV::TwistBoneProperties*>(const_cast<CALUMI::UNIV::BoneTypeProperties*>(bone->boneTypeProperty()));
-        tProp->setTwistDriver(twistDriver);
-        tProp->setTwistDriverWeight(twistDriverWeight);
-
-        return true;
+        catch (std::bad_alloc&) {}
+        return -1;
     }
-    const char* GetTwistBoneDriverC(const CALUMI::UNIV::SkeletonBone* bone, CALUMI::Utilities::StringContainer* errorMessage)
+    const char* GetTwistBoneDriverC(const CALUMI::UNIV::SkeletonBone* bone)
     {
-        CALUMI::Utilities::StringContainer tempErrorMessage;
-        CALUMI::Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->clear();
-
-        if (bone->boneTypeProperty()->getType() != CALUMI::UNIV::BoneType::Twist)
-        {
-            *errorMessageHolder += std::format("[CALUMI.Animation API] Bone: %s is not set to Twist Type, returning empty string\n", bone->name()).c_str();
+        if (!bone)
             return "";
-        }
 
-        const auto* tProp = dynamic_cast<CALUMI::UNIV::TwistBoneProperties*>(const_cast<CALUMI::UNIV::BoneTypeProperties*>(bone->boneTypeProperty()));
-
-        return tProp->twistDriver();
-    }
-    float GetTwistBoneDriverWeightC(const CALUMI::UNIV::SkeletonBone* bone, CALUMI::Utilities::StringContainer* errorMessage)
-    {
-        CALUMI::Utilities::StringContainer tempErrorMessage;
-        CALUMI::Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-        errorMessageHolder->clear();
-
-        if (bone->boneTypeProperty()->getType() != CALUMI::UNIV::BoneType::Twist)
+        try
         {
-            *errorMessageHolder += std::format("[CALUMI.Animation API] Bone: %s is not set to Twist Type, returning NaN Float\n", bone->name()).c_str();
-            return std::numeric_limits<float>::quiet_NaN();
-        }
+            const auto tProp = dynamic_cast<CALUMI::UNIV::TwistBoneProperty*>(const_cast<CALUMI::UNIV::BoneTypeProperty*>(bone->boneTypeProperty()));
 
-        const auto* tProp = dynamic_cast<CALUMI::UNIV::TwistBoneProperties*>(const_cast<CALUMI::UNIV::BoneTypeProperties*>(bone->boneTypeProperty()));
-        return tProp->twistDriverWeight();
+            if (tProp)
+                return tProp->twistDriver();
+        }
+        catch(const std::exception&){}
+        return "";
+    }
+    float GetTwistBoneDriverWeightC(const CALUMI::UNIV::SkeletonBone* bone)
+    {
+        if (bone)
+        try
+        {
+            const auto* tProp = dynamic_cast<CALUMI::UNIV::TwistBoneProperty*>(const_cast<CALUMI::UNIV::BoneTypeProperty*>(bone->boneTypeProperty()));
+
+            if (tProp)
+                return tProp->twistDriverWeight();
+        }
+        catch(const std::exception&){}
+        return std::numeric_limits<float>::quiet_NaN();
     }
     unsigned int GetSkeletonRigBoneCountC(const CALUMI::UNIV::SkeletonRig* source)
     {
-        return source->boneCount();
+        if (!source)
+            return 0;
+        try
+        {
+            return source->boneCount();
+        }
+        catch(const std::exception&){}
+        return 0;
     }
     unsigned int GetSkeletonRigAnimatedBoneCountC(const CALUMI::UNIV::SkeletonRig* source)
     {
-        return source->boneTypeCount(CALUMI::UNIV::BoneType::Default);
+        if (!source)
+            return 0;
+        try
+        {
+            return source->boneTypeCount(CALUMI::UNIV::BoneTypeProperty::BoneType::Default);
+        }
+        catch(const std::exception&){}
+        return 0;
     }
     unsigned int GetSkeletonRigNonAnimatedBoneCountC(const CALUMI::UNIV::SkeletonRig* source)
     {
-        return source->boneTypeCount(CALUMI::UNIV::BoneType::Twist);
+        if (!source)
+            return 0;
+        try
+        {
+            return source->boneTypeCount(CALUMI::UNIV::BoneTypeProperty::BoneType::Twist);
+        }
+        catch(const std::exception&){}
+        return 0;
     }
     const char* GetSkeletonRigNameC(const CALUMI::UNIV::SkeletonRig* source)
     {
-        return source->name();
+        if (!source)
+            return "";
+        try
+        {
+            return source->name();
+        }
+        catch(const std::exception&){}
+        return "";
     }
     const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneC(const CALUMI::UNIV::SkeletonRig* source, const char* boneName)
     {
-        return source->bone(boneName);
+        if (!source)
+            return nullptr;
+        try
+        {
+            return source->bone(boneName);
+        }
+        catch(const std::exception&){}
+        return nullptr;
     }
     const char* GetSkeletonBoneNameC(const CALUMI::UNIV::SkeletonBone* source)
     {
-        return source->name();
+        if (!source)
+            return "";
+        try
+        {
+            return source->name();
+        }
+        catch(const std::exception&){}
+        return "";
     }
     const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneParentC(const CALUMI::UNIV::SkeletonBone* source)
     {
-        return dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(source->parent());
+        if (!source)
+            return nullptr;
+        try
+        {
+            return dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(source->parent());
+        }
+        catch(const std::exception&){}
+        return nullptr;
     }
+    const CALUMI::Math::Quaternion* GetGlobalSkeletonBoneRotationC(const CALUMI::UNIV::SkeletonBone* source)
+    {
+        if (!source)
+            return nullptr;
 
+        auto output = new CALUMI::Math::Quaternion();
 
+        try
+        {
+            *output = source->globalTransform().rotation();
+        }
+        catch (const std::exception&)
+        {
+            delete output;
+            output = nullptr;
+        }
+
+        return output;
+    }
+    const CALUMI::Math::Quaternion* GetLocalSkeletonBoneRotationC(const CALUMI::UNIV::SkeletonBone* source)
+    {
+        if (!source)
+            return nullptr;
+
+        auto output = new CALUMI::Math::Quaternion();
+
+        try
+        {
+            *output = source->localTransform().rotation();
+        }
+        catch (const std::exception&)
+        {
+            delete output;
+            output = nullptr;
+        }
+
+        return output;
+    }
+    const CALUMI::Math::Vector3* GetGlobalSkeletonBonePositionC(const CALUMI::UNIV::SkeletonBone* source)
+    {
+        if (!source)
+            return nullptr;
+
+        auto output = new CALUMI::Math::Vector3();
+
+        try
+        {
+            *output = source->globalTransform().position();
+        }
+        catch (const std::exception&)
+        {
+            delete output;
+            output = nullptr;
+        }
+
+        return output;
+    }
+    const CALUMI::Math::Vector3* GetLocalSkeletonBonePositionC(const CALUMI::UNIV::SkeletonBone* source)
+    {
+        if (!source)
+            return nullptr;
+
+        auto output = new CALUMI::Math::Vector3();
+
+        try
+        {
+            *output = source->localTransform().position();
+        }
+        catch (const std::exception&)
+        {
+            delete output;
+            output = nullptr;
+        }
+
+        return output;
+    }
     int RenameBoneC(const CALUMI::UNIV::SkeletonRig* rig, const char* oldName, const char* newName)
     {
         if (!rig)
@@ -633,11 +791,78 @@ namespace CALUMI::UNIV
 
         return 0;
     }
+    int DeleteBoneC(const CALUMI::UNIV::SkeletonBone** ptrRef)
+    {
+        if (!ptrRef || !*ptrRef)
+            return -1;
 
+        try
+        {
+            CALUMI::UNIV::SkeletonBone::DeleteBone(*ptrRef);
+            return 0;
+        }
+        // ReSharper disable once CppDFAUnreachableCode
+        catch (const std::exception&){}
+        return -1;
+    }
+    CALUMI::UNIV::SkeletonBone* AddChildBoneC(const CALUMI::UNIV::SkeletonBone* parentBone, float posX, float posY,
+                                    float posZ, float rotX, float rotY, float rotZ, float rotW, const char* boneName)
+    {
+        if (!parentBone)
+            return nullptr;
+
+        try
+        {
+            const auto output = parentBone->addChildBone(boneName, {posX, posY, posZ}, {rotX, rotY, rotZ, rotW});
+            return output;
+        }
+        catch (const std::exception&) {}
+        return nullptr;
+    }
+    CALUMI::UNIV::SkeletonBone* AddChildBoneWithEulerC(const CALUMI::UNIV::SkeletonBone* parentBone,
+                                     const float posX, const float posY, float posZ,
+                                     const float rad1, const float rad2, const float rad3, const int eulerOrder,
+                                     const char* boneName)
+    {
+        if (!parentBone)
+            return nullptr;
+
+        try
+        {
+            const auto output = parentBone->addChildBone(boneName, {posX, posY, posZ},
+                                                         CALUMI::Math::EulerDefinition(rad1, rad2, rad3,
+                                                         CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder)));
+            return output;
+        }
+        catch (const std::exception&){}
+        return nullptr;
+    }
+    CALUMI::UNIV::SkeletonBone* AddChildBoneWithVectorC(const CALUMI::UNIV::SkeletonBone* parentBone,
+                                                        const CALUMI::Math::Vector3* position,
+                                                        const CALUMI::Math::Quaternion* rotation,
+                                                        const char* boneName)
+    {
+        if (!parentBone || !position || !rotation)
+            return nullptr;
+
+        try
+        {
+            const auto output = parentBone->addChildBone(boneName, *position, *rotation);
+            return output;
+        }
+        catch (const std::exception&) {}
+        return nullptr;
+    }
+    unsigned int GetSkeletonRigBoneTypeCountC(const CALUMI::UNIV::SkeletonRig* source, const uint32_t typeAsInteger)
+    {
+        if (!source)
+            return 0;
+
+        try
+        {
+            return source->boneTypeCount(CALUMI::UNIV::BoneTypeProperty::GetBoneType(typeAsInteger));
+        }
+        catch (const std::exception&) {}
+        return 0;
+    }
 #pragma endregion
-
-
-
-
-
-

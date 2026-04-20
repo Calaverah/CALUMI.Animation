@@ -84,7 +84,7 @@ namespace CALUMI::SFBGS
 		/// Returns the converted UNIV Bone Type
 		/// </summary>
 		/// <returns></returns>
-		[[nodiscard]] UNIV::BoneType getBoneTypeAsUNIVEnum() const;
+		[[nodiscard]] UNIV::BoneTypeProperty::BoneType getBoneTypeAsUNIVEnum() const;
 		[[nodiscard]] const char* getBoneTypeAsString() const;
 
 	private:

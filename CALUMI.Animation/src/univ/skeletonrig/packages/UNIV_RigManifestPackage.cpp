@@ -170,11 +170,11 @@ namespace CALUMI::UNIV
         const Utilities::StringList output;
         std::set<std::string> checkList;
 
-        const auto& root = rig.root();
+        const auto root = rig.root();
 
         //root must always come first, we can save time by adding it here
-        output.push_back(root.name());
-        checkList.insert(root.name());
+        output.push_back(root->name());
+        checkList.insert(root->name());
 
         //A little sanity check for preventing recursion looping to infinity
         uint16_t failSafe = 0;

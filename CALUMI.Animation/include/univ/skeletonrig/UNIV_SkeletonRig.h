@@ -31,6 +31,8 @@ namespace CALUMI::UNIV
 	public:
 		~SkeletonBone() override;
 
+		static void DeleteBone(const SkeletonBone*& bone);
+
 		/// @}
 		/** @name Operators*/
 		/// @{
@@ -67,7 +69,7 @@ namespace CALUMI::UNIV
 		 * @param type Bone type to search for
 		 * @return
 		 */
-		[[nodiscard]] unsigned int boneTypeCount(BoneType type) const;
+		[[nodiscard]] unsigned int boneTypeCount(BoneTypeProperty::BoneType type) const;
 		/// @}
 
 	public:
@@ -96,6 +98,7 @@ namespace CALUMI::UNIV
 		[[nodiscard]] const char* name() const;
 		[[nodiscard]] bool isValidName(const char* name) const;
 		bool setName(const char* name) const;
+		[[nodiscard]] bool isRoot() const;
 
 		/// @}
 		/** @name Properties*/
@@ -107,18 +110,18 @@ namespace CALUMI::UNIV
 		 * @param resetExisting If this bone is already set to the given type, will reset to this type's default values
 		 * @return Whether the operation was a success
 		 */
-		[[nodiscard]] bool setBoneTypeProperty(BoneType boneType, bool resetExisting = false) const;
+		[[nodiscard]] bool setBoneTypeProperty(BoneTypeProperty::BoneType boneType, bool resetExisting = false) const;
 		/**
 		 * @brief Gets the unique bone property
 		 * @return Ptr to the bone property type and its values
 		 */
-		[[nodiscard]] const BoneTypeProperties* boneTypeProperty() const;
+		[[nodiscard]] const BoneTypeProperty* boneTypeProperty() const;
 		/**
 		 * @brief Reset the bone properties values
 		 * @param boneType Type of bone properties to set this bone to
 		 * @return Whether the operation was a success
 		 */
-		bool resetBoneTypeProperty(BoneType boneType = BoneType::Default) const; // NOLINT(*-use-nodiscard)
+		bool resetBoneTypeProperty(BoneTypeProperty::BoneType boneType = BoneTypeProperty::BoneType::Default) const; // NOLINT(*-use-nodiscard)
 
 	public:
 		//TODO: docs
@@ -208,7 +211,7 @@ namespace CALUMI::UNIV
 		 * @param type Bone type to search for
 		 * @return
 		 */
-		[[nodiscard]] unsigned int boneTypeCount(BoneType type) const;
+		[[nodiscard]] unsigned int boneTypeCount(BoneTypeProperty::BoneType type) const;
 		/**
 		 * @brief Returns the total amount of bones in this rig
 		 */
@@ -216,7 +219,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		[[nodiscard]] SkeletonBone& root() const;
+		[[nodiscard]] SkeletonBone* root() const;
 		/**
 		 * @return Full list of bones in this rig, with the only guarantee being that parents proceed children
 		 */
@@ -264,89 +267,93 @@ namespace CALUMI::UNIV
 	extern  "C" {
 		/**
 		 * @brief Creates a brand new Skeleton Rig
-		 
-		 * @param _rigName Identifier for the rig, best if unique
+		 * @param name Identifier for the rig, best if unique
+		 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteSkeletonRigC
 		 * @return A dynamically allocated, universal, skeleton rig ptr
 		 */
-		CALUMIANIMATION_API CALUMI::UNIV::SkeletonRig* CreateSkeletonRigC(const char* _rigName);
+		CALUMIANIMATION_API CALUMI::UNIV::SkeletonRig* CreateSkeletonRigC(const char* name);
 		/**
-		 * @brief Deletes the dynamically allocated rig that was created, this is the preferred way to delete a rig
-
-		 * @param ptr Ptr to the rig to delete
-		 * @return Whether the operation was a success
+		 * @brief Deletes the dynamically allocated rig that was created, this is the preferred way to delete a rig.
+		 * @param ptrRef Reference to ptr of the rig to delete. This allows the ptr to safely be set to nullptr when
+		 * finished.
+		 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation
 		 */
-		CALUMIANIMATION_API bool DeleteSkeletonRigC(const CALUMI::UNIV::SkeletonRig* ptr);
+		CALUMIANIMATION_API int DeleteSkeletonRigC(const CALUMI::UNIV::SkeletonRig** ptrRef);
 		/**
-		 * @brief Adds a bone to the given universal skeleton rig
-		 
-		 * @param rig Universal skeleton rig this bone will be parented to
-		 * @param rotationX X component of a unit quaternion
-		 * @param rotationY Y component of a unit quaternion
-		 * @param rotationZ Z component of a unit quaternion
-		 * @param rotationW Imaginary component of a unit quaternion
-		 * @param positionX X component of the bone's position
-		 * @param positionY Y component of the bone's position
-		 * @param positionZ Z component of the bone's position
-		 * @param boneName Name of the bone, must be unique
-		 * @param parentName Name of this bone's parent
-		 * @param usingLocalValues Whether the given transform is relative to the origin (false) or the bone's parent (true)
-		 * @param errorMessage Ptr to a string container, if not null a status message is given here
-		 * @return Whether the operation was successful
+		 * @brief Proper method to reach the root bone of a rig
+		 * @param rig
+		 * @note The root bone is a permanent child to the rig and cannot be deleted, however its data can be affected the same as any other bone
+		 * @return Root bone that is tied to a rig
 		 */
-		CALUMIANIMATION_API CALUMI::UNIV::SkeletonBone* AddBoneToSkeletonRigC(
-			const CALUMI::UNIV::SkeletonRig* rig,
-			float rotationX, float rotationY, float rotationZ, float rotationW,
-			float positionX, float positionY, float positionZ,
-			const char* boneName,
-			const char* parentName,
-			bool usingLocalValues,
-			CALUMI::Utilities::StringContainer* errorMessage
-		);
+		CALUMIANIMATION_API CALUMI::UNIV::SkeletonBone* GetSkeletonRigRootC(const CALUMI::UNIV::SkeletonRig* rig);
 		/**
-		 * @brief Adds a bone to the given universal skeleton rig
-		 
-		 * @param rig Universal skeleton rig this bone will be parented to
-		 * @param rotationX X rotation in radians
-		 * @param rotationY Y rotation in radians
-		 * @param rotationZ Z rotation in radians
-		 * @param order Euler order to apply for quaternion calculation, XYZ = 0, see Math::Quaternion for the full enum and values
-		 * @param positionX X component of the bone's position
-		 * @param positionY Y component of the bone's position
-		 * @param positionZ Z component of the bone's position
-		 * @param boneName Name of the bone, must be unique
-		 * @param parentName Name of this bone's parent
-		 * @param usingLocalValues Whether the given transform is relative to the origin (false) or the bone's parent (true)
-		 * @param errorMessage Ptr to a string container, if not null a status message is given here
-		 * @return Whether the operation was successful
+		 * @brief Add a child bone to a given parent bone, using simple component input
+		 * @param parentBone Parent of the created bone
+		 * @param posX X component of the position
+		 * @param posY Y component of the position
+		 * @param posZ Z component of the position
+		 * @param rotX X component of the rotation quaternion
+		 * @param rotY Y component of the rotation quaternion
+		 * @param rotZ Z component of the rotation quaternion
+		 * @param rotW W component of the rotation quaternion
+		 * @param boneName Unique name (within the rig) of the bone
+		 * @note The object is under ownership of the given parent bone and does not need to be explicitly deleted
+		 * @return Ptr to the newly created bone or nullptr if unsuccessful
 		 */
-		CALUMIANIMATION_API bool AddBoneToSkeletonRigWithEulerC(
-			const CALUMI::UNIV::SkeletonRig* rig,
-			float rotationX, float rotationY, float rotationZ, uint8_t order,
-			float positionX, float positionY, float positionZ,
-			const char* boneName,
-			const char* parentName,
-			bool usingLocalValues,
-			CALUMI::Utilities::StringContainer* errorMessage
-		);
+		CALUMIANIMATION_API CALUMI::UNIV::SkeletonBone* AddChildBoneC(const CALUMI::UNIV::SkeletonBone* parentBone,
+		                                                              float posX, float posY, float posZ,
+		                                                              float rotX, float rotY, float rotZ, float rotW,
+		                                                              const char* boneName);
+		/**
+		 * @brief Add a child bone to a given parent bone, using euler based rotation
+		 * @param parentBone Parent of the created bone
+		 * @param posX X component of the position
+		 * @param posY Y component of the position
+		 * @param posZ Z component of the position
+		 * @param rad1 First rotational operation, in radians
+		 * @param rad2 Second rotational operation, in radians
+		 * @param rad3 Third rotational operation, in radians
+		 * @param eulerOrder Integer representation of the @ref CALUMI::Math::EulerDefinition::EulerOrder "Euler Order"
+		 * of choice
+		 * @param boneName Unique name (within the rig) of the bone
+		 * @note The object is under ownership of the given parent bone and does not need to be explicitly deleted
+		 * @return Ptr to the newly created bone or nullptr if unsuccessful
+		 */
+		CALUMIANIMATION_API CALUMI::UNIV::SkeletonBone* AddChildBoneWithEulerC(const CALUMI::UNIV::SkeletonBone* parentBone,
+		                                                                       float posX, float posY, float posZ,
+		                                                                       float rad1, float rad2, float rad3,
+		                                                                       int eulerOrder,
+		                                                                       const char* boneName);
+		/**
+		 * @brief Add a child bone to a given parent bone, using a reference to a Vector3 or Quaternion
+		 * @param parentBone Parent of the created bone
+		 * @param position
+		 * @param rotation
+		 * @param boneName Unique name (within the rig) of the bone
+		 * @note The object is under ownership of the given parent bone and does not need to be explicitly deleted
+		 * @return Ptr to the newly created bone or nullptr if unsuccessful
+		 */
+		CALUMIANIMATION_API CALUMI::UNIV::SkeletonBone* AddChildBoneWithVectorC(const CALUMI::UNIV::SkeletonBone* parentBone,
+		                                                                        const CALUMI::Math::Vector3* position,
+		                                                                        const CALUMI::Math::Quaternion* rotation,
+		                                                                        const char* boneName);
 
 		/**
 		 * @brief Sets bone property type
-		 
 		 * @param bone Ptr to bone receiving the new classification
-		 * @param boneType unsigned int form of the bone type enum, see Univ::BoneType
-		 * @return Whether the operation was successful
+		 * @param boneType unsigned int form of the bone type enum, see @ref CALUMI::UNIV::BoneTypeProperty
+		 * "Bone Type"
+		 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation\n 1 = Bone type could not be set
 		 */
-		CALUMIANIMATION_API bool SetBoneTypeC(const CALUMI::UNIV::SkeletonBone* bone, uint32_t boneType);
-		/**
-		 * @brief Removes a bone of the given name, from the rig
-		 * @param rig 
-		 * @param boneName 
-		 * @return Whether the operation was successful
-		 */
-		CALUMIANIMATION_API bool RemoveBoneC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName);
-
+		CALUMIANIMATION_API int SetBoneTypeC(const CALUMI::UNIV::SkeletonBone* bone, uint32_t boneType);
 		/**
 		 *
+		 * @param ptrRef Reference to ptr of the bone to delete, this allows safe handling and setting the ptr to
+		 * nullptr on completion.
+		 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation
+		 */
+		CALUMIANIMATION_API int DeleteBoneC(const CALUMI::UNIV::SkeletonBone** ptrRef);
+		/**
 		 * @param rig Skeleton rig in which this bone resides
 		 * @param oldName Name of the bone that will be renamed
 		 * @param newName New name of the bone (must be unique and valid)
@@ -355,106 +362,52 @@ namespace CALUMI::UNIV
 		 */
 		CALUMIANIMATION_API int RenameBoneC(const CALUMI::UNIV::SkeletonRig* rig, const char* oldName, const char* newName);
 		/**
-		 * @brief Normally the root of the rig is set to the 0th index of the bone entry vector, setting this will override that selection, if desired
-		 * @param rig 
-		 * @param boneName Bone to mark as the root override
-		 * @param keepRelative
-		 * @param keepChildrenRelative
-		 * @return 
-		 */
-		CALUMIANIMATION_API bool SetRootC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName, bool keepRelative, bool keepChildrenRelative);
-		/**
-		 * @brief Sets the given bone to a new index, if one exists
-		 * @param rig The rig that holds the vector containing the bone
-		 * @param boneName The bone to move
-		 * @param newIndex The index will be clamped to the bounds of the vector
-		 * @return The index the bone is now set to, if the operation failed, -1 is returned
-		 */
-		CALUMIANIMATION_API int SetBoneIndexC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName, int newIndex);
-		/**
 		 * @brief Sets bone property type
-		 
 		 * @param bone Ptr to bone receiving the new classification
 		 * @param boneType string form of the bone type enum, see Univ::BoneType
-		 * @return Whether the operation was successful
+		 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation\n 1 = The bone could not re-assigned
 		 */
-		CALUMIANIMATION_API bool SetBoneTypeFromStringC(const CALUMI::UNIV::SkeletonBone* bone, const char* boneType);
+		CALUMIANIMATION_API int SetBoneTypeFromStringC(const CALUMI::UNIV::SkeletonBone* bone, const char* boneType);
 		/**
 		 * @brief
-		 
 		 * @param bone Ptr to bone
 		 * @return The unsigned int/uint32_t form of the bone type enum
 		 */
 		CALUMIANIMATION_API uint32_t GetBoneTypeC(const CALUMI::UNIV::SkeletonBone* bone);
 		/**
 		 * @brief
-		 
 		 * @param bone Ptr to bone
 		 * @return The string form of the bone type enum
 		 */
 		CALUMIANIMATION_API const char* GetBoneTypeAsStringC(const CALUMI::UNIV::SkeletonBone* bone);
 		/**
 		 * @brief Set's the twist properties of this bone
-		 
 		 * @param bone Ptr to bone to set values for
 		 * @param reassign True if the type should be set if not already set as twist type
 		 * @param twistDriver
-		 * @param twistDriverWeight 
-		 * @param errorMessage Error message container
-		 * @return Whether the operation was successful
+		 * @param twistDriverWeight
+		 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation\n 1 = The bone was not reassigned and
+		 * remains unaffected\n 2 = Reassign bone type attempted but failed\n 3 = The operation could not be completed
 		 */
-		CALUMIANIMATION_API bool SetTwistBonePropertiesC(const CALUMI::UNIV::SkeletonBone* bone, bool reassign, const char* twistDriver, float twistDriverWeight, CALUMI::Utilities::StringContainer* errorMessage);
+		CALUMIANIMATION_API int SetTwistBonePropertiesC(const CALUMI::UNIV::SkeletonBone* bone, bool reassign, const
+			char* twistDriver, float twistDriverWeight);
 		/**
 		 * @brief 
-		 
-		 * @param bone 
-		 * @param errorMessage
-		 * @return Index of the bone that dynamically drives this bone in game, empty string if none exists or is not set
+		 * @param bone
+		 * @return Name of the bone that dynamically drives this bone in game, empty string if none exists or is not set
 		 */
-		CALUMIANIMATION_API const char* GetTwistBoneDriverC(const CALUMI::UNIV::SkeletonBone* bone, CALUMI::Utilities::StringContainer* errorMessage);
+		CALUMIANIMATION_API const char* GetTwistBoneDriverC(const CALUMI::UNIV::SkeletonBone* bone);
 		/**
-		 * @brief 
-		 
-		 * @param bone 
-		 * @param errorMessage
-		 * @return Drive parameter of the twist bone interaction, each game may have a different amount of weightedness for this value
+		 * @brief
+		 * @param bone
+		 * @return Drive parameter of the twist bone interaction, each game may have a different amount of
+		 * weightedness for this value. Will return NaN if unsuccessful
 		 */
-		CALUMIANIMATION_API float GetTwistBoneDriverWeightC(const CALUMI::UNIV::SkeletonBone* bone, CALUMI::Utilities::StringContainer* errorMessage);
-
-		
-		/**
-		 * @brief Creates an exclusive mirror between two bones
-		 
-		 * @param rig Ptr to rig in which the pair resides
-		 * @param bone1 bone name
-		 * @param bone2 bone name
-		 * @return Whether the operation was a success
-		 */
-		CALUMIANIMATION_API bool CreateBoneMirrorPairC(const CALUMI::UNIV::SkeletonRig* rig, const char* bone1, const char* bone2);
-		/**
-		 * @brief Unsets the given bone from having a mirrored bone
-		 * @param boneName
-		 * @param rig
-		 * @return Whether the operation was a success
-		 */
-		CALUMIANIMATION_API bool ResetBoneMirrorC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName);
-		/**
-		 * @brief Resets all bones in a given rig to have no mirror
-		 
-		 * @param rig Ptr to skeleton rig
-		 * @return Whether the operation was a success
-		 */
-		CALUMIANIMATION_API bool ResetAllBoneMirrorsC(const CALUMI::UNIV::SkeletonRig* rig);
-		/**
-		 * @brief Scans all bones in the given skeleton rig to verify the mirrors are exclusive or are set to default
-		 * @param rig Ptr to rig
-		 * @return Whether the operation was a success
-		 */
-		CALUMIANIMATION_API bool VerifyExclusiveBoneMirrorsC(const CALUMI::UNIV::SkeletonRig* rig);
+		CALUMIANIMATION_API float GetTwistBoneDriverWeightC(const CALUMI::UNIV::SkeletonBone* bone);
 		/**
 		 * @brief
 		 * @param source Ptr to skeleton rig to check
-		 * @return The total number of bones belonging to this rig
+		 * @return The total number of bones belonging to this rig, which always has a root
 		 */
 		CALUMIANIMATION_API unsigned int GetSkeletonRigBoneCountC(const CALUMI::UNIV::SkeletonRig* source);
 		/**
@@ -469,8 +422,16 @@ namespace CALUMI::UNIV
 		 */
 		CALUMIANIMATION_API unsigned int GetSkeletonRigNonAnimatedBoneCountC(const CALUMI::UNIV::SkeletonRig* source);
 		/**
-		 * @brief 
-		 
+		 * @brief Count the number of bones that are of a specific type. Currently, the UNIV system only uses two
+		 * basic types so this convention will follow closely to the Animated and Non-Animated type counts
+		 * @param source
+		 * @param typeAsInteger Int form of UNIV::BoneTypeProperty::BoneType
+		 * @return Count, or 0 if no rig or bones are found
+		 */
+		CALUMIANIMATION_API unsigned int GetSkeletonRigBoneTypeCountC(const CALUMI::UNIV::SkeletonRig* source,
+		                                                              uint32_t typeAsInteger);
+		/**
+		 * @brief
 		 * @param source Ptr to the skeleton to check
 		 * @return Name of skeleton rig
 		 */
@@ -498,52 +459,33 @@ namespace CALUMI::UNIV
 		 */
 		CALUMIANIMATION_API const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneParentC(const CALUMI::UNIV::SkeletonBone* source);
 		/**
-		 * @brief Returns the rotation of this bone, in global coordinates
-		 
+		 * @brief Returns the rotation of this bone, in global coordinates		 
 		 * @param source Ptr to the bone in question
-		 * @return Quaternion representation of the rotation
+		 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteQuaternionC
+		 * @return Quaternion representation of the bone's global rotation
 		 */
-		CALUMIANIMATION_API const CALUMI::Math::Quaternion* GetSkeletonBoneRotationC(const CALUMI::UNIV::SkeletonBone* source);
+		CALUMIANIMATION_API const CALUMI::Math::Quaternion* GetGlobalSkeletonBoneRotationC(const CALUMI::UNIV::SkeletonBone* source);
 		/**
 		 * @brief Returns a heap allocated quaternion of this bone's rotation relative to its parent, if one exists
-		 * @param rig 
-		 * @param boneName 
-		 * @return Nullptr if no bone is found, global rotation if no parent is found
+		 * @param source
+		 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteQuaternionC
+		 * @return Quaternion representation of the bone's rotation relative to its parent
 		 */
-		CALUMIANIMATION_API CALUMI::Math::Quaternion* GetRelativeSkeletonBoneRotationC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName);
+		CALUMIANIMATION_API const CALUMI::Math::Quaternion* GetLocalSkeletonBoneRotationC(const CALUMI::UNIV::SkeletonBone* source);
 		/**
 		 * @brief Returns the position of this bone, in global coordinates		 
 		 * @param source Ptr to the bone in question
-		 * @return Vector3 (float) representation of the position
+		 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteVector3C
+		 * @return Vector3 (float) representation of the bone's global position
 		 */
-		CALUMIANIMATION_API const CALUMI::Math::Vector3* GetSkeletonBonePositionC(const CALUMI::UNIV::SkeletonBone* source);
+		CALUMIANIMATION_API const CALUMI::Math::Vector3* GetGlobalSkeletonBonePositionC(const CALUMI::UNIV::SkeletonBone* source);
 		/**
-		 * @brief * @brief Returns a heap allocated vector3 of this bone's position relative to its parent, if one exists
-		 * @param rig 
-		 * @param boneName 
+		 * @brief Returns a heap allocated vector3 of this bone's position relative to its parent, if one exists
+		 * @param source
+		 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteVector3C
 		 * @return Nullptr if no bone is found, global position if no parent is found
 		 */
-		CALUMIANIMATION_API CALUMI::Math::Vector3* GetRelativeSkeletonBonePositionC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName);
-		/**
-		 * @brief Checks whether all bone names in this rig are unique
-		 * @param source Ptr to the skeleton rig in question
-		 * @return Whether all names in the rig are unique and valid
-		 */
-		CALUMIANIMATION_API bool ValidateSkeletonRigNamesC(const CALUMI::UNIV::SkeletonRig* source);
-		/**
-		 * @brief Returns the index of the bone in the rig's bone entry vector
-		 * @param rig 
-		 * @param boneName 
-		 * @return -1 if no bone is found
-		 */
-		CALUMIANIMATION_API int FindBoneInRigC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName);
-		/**
-		 * @brief Returns the index of the given bone's parent
-		 * @param rig 
-		 * @param boneName 
-		 * @return -1 if no bone, or parent bone, is found
-		 */
-		CALUMIANIMATION_API int FindBoneParentInRigC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName);
+		CALUMIANIMATION_API const CALUMI::Math::Vector3* GetLocalSkeletonBonePositionC(const CALUMI::UNIV::SkeletonBone* source);
 	}
 
 	/**

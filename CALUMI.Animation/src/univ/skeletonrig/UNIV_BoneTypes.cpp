@@ -10,7 +10,7 @@
 namespace CALUMI::UNIV {
 
 
-	BoneType BoneTypeFromString(const char* boneTypeStr)
+	BoneTypeProperty::BoneType BoneTypeProperty::BoneTypeFromString(const char* boneTypeStr)
 	{
 		if (SCOMPARE(boneTypeStr, TwistBoneTypeStr) == 0)
 			return BoneType::Twist;
@@ -20,43 +20,54 @@ namespace CALUMI::UNIV {
 		
 		return BoneType::UNDEFINED;
 	}
-    const char* DefaultBoneProperties::getTypeString() const
+
+	BoneTypeProperty::BoneType BoneTypeProperty::GetBoneType(uint32_t typeAsInteger)
+	{
+		auto type = BoneType::Default;
+
+		if (typeAsInteger <= static_cast<uint32_t>(BoneType::Max))
+			type = static_cast<BoneType>(typeAsInteger);
+
+		return type;
+	}
+
+	const char* DefaultBoneProperty::getTypeString() const
 	{
 		return DefaultBoneTypeStr;
 	}
-    BoneType DefaultBoneProperties::getType() const
+    BoneTypeProperty::BoneType DefaultBoneProperty::getType() const
 	{
 		return BoneType::Default;
 	}
 
 
-	struct TwistBoneProperties::Impl
+	struct TwistBoneProperty::Impl
 	{
 		std::string _twistDriver;
 		float _twistDriverWeight = 0.0f;
 		Impl() = default;
 	};
-    const char* TwistBoneProperties::twistDriver() const
+    const char* TwistBoneProperty::twistDriver() const
 	{
 		return pImpl->_twistDriver.c_str();
 	}
-    void TwistBoneProperties::setTwistDriver(const char* boneName) const
+    void TwistBoneProperty::setTwistDriver(const char* boneName) const
     {
 		pImpl->_twistDriver = boneName;
 	}
-    float TwistBoneProperties::twistDriverWeight() const
+    float TwistBoneProperty::twistDriverWeight() const
 	{
 		return pImpl->_twistDriverWeight;
 	}
-    void TwistBoneProperties::setTwistDriverWeight(const float wgt) const
+    void TwistBoneProperty::setTwistDriverWeight(const float wgt) const
     {
 		pImpl->_twistDriverWeight = wgt;
 	}
-	TwistBoneProperties::TwistBoneProperties()
+	TwistBoneProperty::TwistBoneProperty()
 	{
 		pImpl = new Impl;
 	}
-	TwistBoneProperties::~TwistBoneProperties()
+	TwistBoneProperty::~TwistBoneProperty()
 	{
 		if (pImpl)
 		{
@@ -64,19 +75,19 @@ namespace CALUMI::UNIV {
 			pImpl = nullptr;
 		}
 	}
-	TwistBoneProperties::TwistBoneProperties(const TwistBoneProperties& input) : TwistBoneProperties()
+	TwistBoneProperty::TwistBoneProperty(const TwistBoneProperty& input) : TwistBoneProperty()
 	{
 		*this = input;
 	}
-    const char* TwistBoneProperties::getTypeString() const
+    const char* TwistBoneProperty::getTypeString() const
 	{
 		return TwistBoneTypeStr;
 	}
-    BoneType TwistBoneProperties::getType() const
+    BoneTypeProperty::BoneType TwistBoneProperty::getType() const
 	{
 		return BoneType::Twist;
 	}
-	TwistBoneProperties& TwistBoneProperties::operator=(const TwistBoneProperties& input)
+	TwistBoneProperty& TwistBoneProperty::operator=(const TwistBoneProperty& input)
 	{
     	if (this != &input)
     	{

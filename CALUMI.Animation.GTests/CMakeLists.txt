@@ -31,7 +31,7 @@ add_executable(run_tests test_main.cpp
   sfbgs/datascan/sfbgs_common.h
         utilities/util_hash.cpp
         math/transform.cpp
-        #univ/univ_rig.cpp
+        univ/univ_rig.cpp
 )
 
 target_compile_definitions(run_tests PRIVATE DEBUG_BUILD)

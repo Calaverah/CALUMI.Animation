@@ -1880,7 +1880,7 @@ FULL_SIDEBAR           = NO
 # Minimum value: 0, maximum value: 20, default value: 4.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-ENUM_VALUES_PER_LINE   = 4
+ENUM_VALUES_PER_LINE   = 1
 
 # When the SHOW_ENUM_VALUES tag is set doxygen will show the specified
 # enumeration values besides the enumeration mnemonics.

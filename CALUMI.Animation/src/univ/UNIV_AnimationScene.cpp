@@ -175,10 +175,6 @@ namespace CALUMI::UNIV
 
         scene->rig() = *rig;
 
-        if (rig)
-            DeleteSkeletonRigC(rig);
-
-        *errorMessageHolder += "[CALUMI.Animation API] Rig Data Copied Successfully. Original Rig Has Been Deleted!";
         return true;
     }
     bool AddAnimationToAnimationSceneC(AnimationScene* scene, Animation* animation, bool overwrite, Utilities::StringContainer* errorMessage)

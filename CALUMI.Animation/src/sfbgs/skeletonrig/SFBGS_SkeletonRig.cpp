@@ -288,16 +288,16 @@ namespace CALUMI::SFBGS
 		addressIndex += sizeof(pImpl->_pad03);
 	}
 
-	UNIV::BoneType SkeletonBone::getBoneTypeAsUNIVEnum() const
+	UNIV::BoneTypeProperty::BoneType SkeletonBone::getBoneTypeAsUNIVEnum() const
 	{
 		switch (pImpl->_boneType)
 		{
 		case BoneType::Default:
-			return UNIV::BoneType::Default;
+			return UNIV::BoneTypeProperty::BoneType::Default;
 		case BoneType::Twist:
-			return UNIV::BoneType::Twist;
+			return UNIV::BoneTypeProperty::BoneType::Twist;
 		default:
-			return UNIV::BoneType::UNDEFINED;
+			return UNIV::BoneTypeProperty::BoneType::UNDEFINED;
 		}
 	}
 
@@ -906,17 +906,17 @@ namespace CALUMI::SFBGS
 	{
 		switch (univBone.boneTypeProperty()->getType())
 		{
-		case UNIV::BoneType::Default:
+		case UNIV::BoneTypeProperty::BoneType::Default:
 			sfbgsBone.pImpl->_boneType = SkeletonBone::BoneType::Default;
 			sfbgsBone.pImpl->_twistDriverIndex = -1;
 			sfbgsBone.pImpl->_twistDriverMqnIndex = -1;
 			sfbgsBone.pImpl->_twistDriverWeight = 0.0;
 			break;
-		case UNIV::BoneType::Twist:
+		case UNIV::BoneTypeProperty::BoneType::Twist:
 			{
 				sfbgsBone.pImpl->_boneType = SkeletonBone::BoneType::Twist;
 
-				const auto tProp = dynamic_cast<UNIV::TwistBoneProperties*>(const_cast<UNIV::BoneTypeProperties*>(univBone.boneTypeProperty()));
+				const auto tProp = dynamic_cast<UNIV::TwistBoneProperty*>(const_cast<UNIV::BoneTypeProperty*>(univBone.boneTypeProperty()));
 
 				int driverIndex = -1;
 
@@ -942,11 +942,11 @@ namespace CALUMI::SFBGS
 
 		switch (univBone.boneTypeProperty()->getType())
 		{
-		case UNIV::BoneType::Default:
+		case UNIV::BoneTypeProperty::BoneType::Default:
 			break;
-		case UNIV::BoneType::Twist:
+		case UNIV::BoneTypeProperty::BoneType::Twist:
 			{
-				const auto tProp = dynamic_cast<UNIV::TwistBoneProperties*>(const_cast<UNIV::BoneTypeProperties*>(univBone.boneTypeProperty()));
+				const auto tProp = dynamic_cast<UNIV::TwistBoneProperty*>(const_cast<UNIV::BoneTypeProperty*>(univBone.boneTypeProperty()));
 
 				if (const int idx = sfbgsBone.pImpl->_twistDriverIndex; idx >= 0)
 					tProp->setTwistDriver(pImpl->_stringArray.c_str(idx));
@@ -983,15 +983,15 @@ namespace CALUMI::SFBGS
 		//get and assign root
 		if (!pImpl->_boneEntries.empty() && !pImpl->_stringArray.empty())
 		{
-			const auto& uRootRef = output.root();
+			const auto uRootRef = output.root();
 			const auto& sfbgsRootRef = pImpl->_boneEntries.at(0);
-			if (!uRootRef.setName(pImpl->_stringArray.c_str(0)))
-				uRootRef.setName("unknownRootName");
+			if (!uRootRef->setName(pImpl->_stringArray.c_str(0)))
+				uRootRef->setName("unknownRootName");
 
-			uRootRef.setLocalTransform(sfbgsRootRef.pImpl->_position,sfbgsRootRef.pImpl->_localRotation);
-			setBoneTypeToUNIV(sfbgsRootRef, uRootRef);
-			uPtrs[uRootRef.name()] = &uRootRef;
-			manifestPackage.addBone(uRootRef.name());
+			uRootRef->setLocalTransform(sfbgsRootRef.pImpl->_position,sfbgsRootRef.pImpl->_localRotation);
+			setBoneTypeToUNIV(sfbgsRootRef, *uRootRef);
+			uPtrs[uRootRef->name()] = uRootRef;
+			manifestPackage.addBone(uRootRef->name());
 		}
 
 		for (unsigned int i = 1; i < pImpl->_boneEntries.size(); i++)
@@ -1004,7 +1004,7 @@ namespace CALUMI::SFBGS
 				uParentPtr = uPtrs[pImpl->_stringArray.c_str(pIdx)];
 
 			if (!uParentPtr)
-				uParentPtr = &output.root();
+				uParentPtr = output.root();
 
 			if (const auto uAddedBone = uParentPtr->addChildBone(pImpl->_stringArray.c_str(i), bone.pImpl->_position, bone .pImpl->_localRotation))
 			{
