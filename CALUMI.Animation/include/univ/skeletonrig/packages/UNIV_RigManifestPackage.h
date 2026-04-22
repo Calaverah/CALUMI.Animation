@@ -77,7 +77,7 @@ namespace CALUMI::UNIV
          * @param indents
          * @return
          */
-        [[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
+        [[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
 
     protected:
         /**

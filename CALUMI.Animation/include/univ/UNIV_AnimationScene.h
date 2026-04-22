@@ -31,7 +31,7 @@ namespace CALUMI::UNIV
 
 		//Utilities::ExpectedContainer<Utilities::VectorContainer<Utilities::PathContainer>, Utilities::StringContainer> GetFilePathsFromAnimationScene(const wchar_t* directoryPath, const char* extension);
 
-		Utilities::StringContainer toJSON(uint64_t indents) const;
+		[[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const;
 
 		AnimationScene();
 		AnimationScene(const Utilities::StringContainer& sceneName);

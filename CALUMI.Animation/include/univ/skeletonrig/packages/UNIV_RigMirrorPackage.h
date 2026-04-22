@@ -56,7 +56,12 @@ namespace CALUMI::UNIV
          * @return "RIG_MIRROR_PACKAGE"
          */
         [[nodiscard]] const char* getPackageType() const override;
-        [[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
+        /**
+         * @deprecated
+         * @param indents
+         * @return
+         */
+        [[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
 
     protected:
         /**

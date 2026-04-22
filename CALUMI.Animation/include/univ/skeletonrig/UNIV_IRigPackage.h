@@ -59,7 +59,7 @@ namespace CALUMI::UNIV
 			 * @param indents Spaces for formatting
 			 * @return The strContainer of the serialized struct
 			 */
-		[[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
+		[[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
 
 	private:
 		/**

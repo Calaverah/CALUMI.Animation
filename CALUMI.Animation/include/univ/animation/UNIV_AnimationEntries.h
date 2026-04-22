@@ -26,7 +26,12 @@ namespace CALUMI {namespace UNIV {
 
 		UNIV::Translation& operator=(const UNIV::Translation& other);
 
-        Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
+        /**
+         * @deprecated
+         * @param indents
+         * @return
+         */
+        [[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
 
 	private:
 		struct Impl;
@@ -55,7 +60,7 @@ namespace CALUMI {namespace UNIV {
 
 		UNIV::Rotation& operator=(const UNIV::Rotation& other);
 
-        Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
+        [[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
 	private:
 		struct Impl;
 		Impl* pImpl;
@@ -85,7 +90,7 @@ namespace CALUMI {namespace UNIV {
 
 		UNIV::Scalar& operator=(const UNIV::Scalar& other);
 
-        Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
+        [[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
 	private:
 		struct Impl;
 		Impl* pImpl;
@@ -111,9 +116,9 @@ namespace CALUMI {namespace UNIV {
 		Priority(const uint16_t& frame, const uint8_t& priority);
 		Priority(const Priority& input);
 
-		UNIV::Priority& operator=(const UNIV::Priority& other);
+		Priority& operator=(const UNIV::Priority& other);
 
-        Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
+        [[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
 
 	private:
 		struct Impl;
@@ -147,15 +152,6 @@ namespace CALUMI {namespace UNIV {
 	extern  "C" {
 		CALUMIANIMATION_API Rotation* CreateRotationEntryC(uint16_t frame, float x, float y, float z, float w);
 
-		/// <summary>
-		/// Creates a quaternion using euler operations.
-		/// </summary>
-		/// <param name="frame">Frame of the entry</param>
-		/// <param name="x">In Radians</param>
-		/// <param name="y">In Radians</param>
-		/// <param name="z">In Radians</param>
-		/// <param name="order">Enum found in the Math::Quaternion struct</param>
-		/// <returns></returns>
 		CALUMIANIMATION_API Rotation* CreateRotationEntryFromEulerC(uint16_t frame, float x, float y, float z, uint8_t order);
 		
 		CALUMIANIMATION_API bool DeleteRotationEntryC(const Rotation* ptr);
@@ -179,29 +175,13 @@ namespace CALUMI {namespace UNIV {
 		CALUMIANIMATION_API uint16_t GetFrameFromScalarEntryC(const Scalar* source);
 		
 		CALUMIANIMATION_API uint16_t GetFrameFromPriorityEntryC(const Priority* source);
-		/// <summary>
-		/// Returns a pointer to a rotation entry value (Quaternion). An array of 4 floats (4 bytes each)
-		/// </summary>
-		/// <param name="source"></param>
-		/// <returns></returns>
+
 		CALUMIANIMATION_API Math::Quaternion* GetValueFromRotationEntryC(const Rotation* source);
-		/// <summary>
-		/// Returns a pointer to the translation entry value (Vector3D). An array of 3 doubles  (8 bytes each)
-		/// </summary>
-		/// <param name="source"></param>
-		/// <returns></returns>
+
 		CALUMIANIMATION_API Math::Vector3D* GetValueFromTranslationEntryC(const Translation* source);
-		/// <summary>
-		/// Returns the scalar entry value (float)
-		/// </summary>
-		/// <param name="source"></param>
-		/// <returns></returns>
+
 		CALUMIANIMATION_API float GetValueFromScalarEntryC(const Scalar* source);
-		/// <summary>
-		/// Returns the priority entry value (uint8_t)
-		/// </summary>
-		/// <param name="source"></param>
-		/// <returns></returns>
+
 		CALUMIANIMATION_API uint8_t GetValueFromPriorityEntryC(const Priority* source);
 	}
 

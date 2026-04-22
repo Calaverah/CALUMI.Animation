@@ -154,11 +154,12 @@ namespace CALUMI::SFBGS
 		[[nodiscard]] const char* getPackageType() const override;
 
 		/**
+		 * @deprecated
 			 * @brief Serialization of the Starfield Animation Package
 			 * @param indents Amount of spaces for formatting
 			 * @return The serialized struct as a strContainer
 			 */
-		[[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
+		[[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
 
 	private:
 		struct Impl;

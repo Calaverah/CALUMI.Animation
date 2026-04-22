@@ -35,7 +35,7 @@ namespace CALUMI::UNIV
 			 * @param indents Amount of spaces for formatting
 			 * @return The serialized struct as a strContainer
 			 */
-		[[nodiscard]] virtual Utilities::StringContainer toJSON(uint64_t indents) const = 0;
+		[[deprecated]] [[nodiscard]] virtual Utilities::StringContainer toJSON(uint64_t indents) const = 0;
 
 	protected:
 

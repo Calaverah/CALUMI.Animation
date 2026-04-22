@@ -55,7 +55,7 @@ namespace CALUMI::UNIV
 		void clearPriorityEntries() const;
 		uint64_t priorityEntryCount() const;
 
-		Utilities::StringContainer toJSON(uint64_t indents = 0) const;
+		[[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents = 0) const;
 
 	private:
 		struct Impl;
