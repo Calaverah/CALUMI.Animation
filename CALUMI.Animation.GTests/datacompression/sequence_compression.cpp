@@ -5,15 +5,15 @@
 #define GTEST(x) TEST(SequenceCompression, x)
 
 #define ROTATIONENTRY(input, f, x,y,z,deg) {CALUMI::Math::Quaternion rotation(Vector3(x, y, z), ToRadians(deg)); uint16_t frame = f; \
-CALUMI::UNIV::Rotation entry(frame,rotation);\
+CALUMI::UNIV::RotationFrame entry(frame,rotation);\
     input.addRotationEntry(entry);}
 
 #define TRANSLATIONENTRY(input, f, x,y,z) { CALUMI::Math::Vector3D vec(x,y,z); uint16_t frame = f; \
-CALUMI::UNIV::Translation entry(frame,vec); \
+CALUMI::UNIV::TranslationFrame entry(frame,vec); \
     input.addTranslationEntry(entry); }
 
 #define SCALARENTRY(input, f, s) { uint16_t frame = f; float scalar = s; \
-CALUMI::UNIV::Scalar entry(frame,scalar);\
+CALUMI::UNIV::ScalarFrame entry(frame,scalar);\
     input.addScalarEntry(entry); }
 
 using namespace CALUMI::Math;

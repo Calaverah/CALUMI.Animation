@@ -52,7 +52,7 @@ namespace CALUMI::Utilities
 	struct HashRegistry::Impl
 	{
 		///@private
-		const std::unordered_map<uint32_t, std::string> _known_string_hash_list =
+		const std::unordered_map<uint32_t, std::string> m_known_string_hash_list =
 		{
 			{ 0, "" },
 			{ 1025567112UL, "AnimObjectRoot_ChronoMark" },
@@ -303,15 +303,15 @@ namespace CALUMI::Utilities
 			pImpl = nullptr;
 		}
 	}
-	HashRegistry& HashRegistry::getInstance()
+	HashRegistry& HashRegistry::Get()
 	{
 		static HashRegistry instance;
 		return instance;
 	}
-	const char* HashRegistry::getKnownHashString(const uint32_t hash) const
+	const char* HashRegistry::knownHashString(const uint32_t hash) const
 	{
-		if (pImpl->_known_string_hash_list.contains(hash))
-			return pImpl->_known_string_hash_list.at(hash).c_str();
+		if (pImpl->m_known_string_hash_list.contains(hash))
+			return pImpl->m_known_string_hash_list.at(hash).c_str();
 
 		if (pImpl->_registeredHashes.contains(hash))
 			return pImpl->_registeredHashes.at(hash).c_str();
@@ -320,13 +320,13 @@ namespace CALUMI::Utilities
 	}
 	bool HashRegistry::isKnownHash(const uint32_t hash) const
 	{
-		return pImpl->_known_string_hash_list.contains(hash) || pImpl->_registeredHashes.contains(hash);
+		return pImpl->m_known_string_hash_list.contains(hash) || pImpl->_registeredHashes.contains(hash);
 	}
 	uint32_t HashRegistry::registerHash(const char* string) const
 	{
-		const uint32_t hash = BGS_Str_CRC32(string);
+		const uint32_t hash = BGS_Str_CRC32C(string);
 
-		if (pImpl->_known_string_hash_list.contains(hash))
+		if (pImpl->m_known_string_hash_list.contains(hash))
 			return hash;
 
 		if (!pImpl->_registeredHashes.contains(hash))
@@ -336,7 +336,7 @@ namespace CALUMI::Utilities
 
 		return hash;
 	}
-	StringList HashRegistry::getRegisteredStrings() const
+	StringList HashRegistry::registeredStrings() const
 	{
 		StringList output;
 
@@ -355,9 +355,9 @@ namespace CALUMI::Utilities
 	{
 		StringList output;
 
-		for (const auto& [hash, string] : pImpl->_known_string_hash_list)
+		for (const auto& [hash, string] : pImpl->m_known_string_hash_list)
 		{
-			if (const uint32_t calculatedHash = BGS_Str_CRC32(string.c_str()); calculatedHash != hash)
+			if (const uint32_t calculatedHash = BGS_Str_CRC32C(string.c_str()); calculatedHash != hash)
 				output.push_back(std::format("Str: {}, Hash: {}, Calc: {}", string, hash, calculatedHash).c_str());
 		}
 
@@ -366,7 +366,7 @@ namespace CALUMI::Utilities
 #endif
 }
 
-uint32_t BGS_Str_CRC32(const char* string)
+uint32_t BGS_Str_CRC32C(const char* string)
 {
 	uint32_t output = 0;
 	const char* c = string;

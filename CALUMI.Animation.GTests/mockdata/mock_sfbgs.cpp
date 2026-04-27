@@ -91,7 +91,7 @@ GTEST(Rig00)
 	uint64_t offsetSum00 = 0;
 
 	if (!rig00Bones.empty())
-		offsetSum00 = rig00Bones.at(0).getNameOffset();
+		offsetSum00 = rig00Bones.at(0).nameOffset();
 
 	float twistW00[3] = { 0.0f,0.0f,0.67f };
 
@@ -102,25 +102,25 @@ GTEST(Rig00)
         EXPECT_TRUE(rig00Bones.at(i).localRotation().areEqual(q00Locals[i], 0.000001f)) << "Tested " << rig00Bones.at(i).localRotation().toString().c_str() << " \nExpected " << q00Locals[i].toString().c_str();
         EXPECT_TRUE(rig00Bones.at(i).globalRotation().areEqual(q00Locals[0], 0.000001f)) << "Tested " << rig00Bones.at(i).localRotation().toString().c_str() << " \nExpected " << q00Locals[i].toString().c_str();
 
-		//Unks
-		EXPECT_EQ(rig00Bones.at(i).getUnknownScalar(), unk00Floats[i]);
-		EXPECT_EQ(rig00Bones.at(i).getTerm05(), 4);
+		//Unknown
+		EXPECT_EQ(rig00Bones.at(i).unknownScalar(), unk00Floats[i]);
 
 		//Bone Info
-		EXPECT_EQ(rig00Bones.at(i).getBoneType(), SFBGS::SkeletonBone::BoneType::Default);
-		EXPECT_EQ(rig00Bones.at(i).getParentBoneIndex() + 1, i);
-		EXPECT_EQ(rig00Bones.at(i).getTwistDriverMqnIndex(), -1);
-		EXPECT_EQ(rig00Bones.at(i).getTwistDriverIndex(), -1);
-		EXPECT_EQ(rig00Bones.at(i).getTwistDriverWeight(), twistW00[i]);
-		EXPECT_EQ(rig00Bones.at(i).getMirrorBoneIndex(), i);
+		EXPECT_EQ(rig00Bones.at(i).boneType(), SFBGS::SkeletonBone::BoneType::Default);
+		EXPECT_EQ(rig00Bones.at(i).parentBoneIndex() + 1, i);
+		EXPECT_EQ(rig00Bones.at(i).twistDriverMqnIndex(), -1);
+		EXPECT_EQ(rig00Bones.at(i).twistDriverIndex(), -1);
+		EXPECT_EQ(rig00Bones.at(i).twistDriverWeight(), twistW00[i]);
+		EXPECT_EQ(rig00Bones.at(i).mirrorBoneIndex(), i);
+		EXPECT_EQ(rig00Bones.at(i).levelOfDetail(), 4);
 
 		//Padding
 #ifdef DEBUG_BUILD
-        EXPECT_EQ(rig00Bones.at(i).getPad01(), -1);
-		EXPECT_EQ(rig00Bones.at(i).getPad02(), 0);
+        EXPECT_EQ(rig00Bones.at(i).pad01(), -1);
+		EXPECT_EQ(rig00Bones.at(i).pad02(), 0);
 #endif
 		//Strings
-		EXPECT_EQ(offsetSum00, rig00Bones.at(i).getNameOffset());
+		EXPECT_EQ(offsetSum00, rig00Bones.at(i).nameOffset());
 		offsetSum00 += str00.stringLength(i, true);
 	}
 
@@ -211,33 +211,33 @@ GTEST(Rig00)
 
 	if (!rig00COPYBones.empty())
 		//We use the source offset to begin, as we do not have that until export/serialization
-		offsetSum00COPY = rig00Bones.at(0).getNameOffset();
+		offsetSum00COPY = rig00Bones.at(0).nameOffset();
 
 	for (uint8_t i = 0; i < rig00COPYBones.size() && i < str00COPY.size(); i++)
 	{
 		//Rotations
 		EXPECT_QUATNEAR(rig00COPYBones.at(i).localRotation(), rig00Bones.at(i).localRotation(), 0.000001f);
 		EXPECT_QUATNEAR(rig00COPYBones.at(i).globalRotation(), rig00Bones.at(i).globalRotation(), 0.000001f);
-		//Unks
+		//Unknowns
 		//EXPECT_EQ(rig00COPYBones.at(i).getUnknownScalar(), unk00Floats[i]);
 		//EXPECT_EQ(rig00COPYBones.at(i).getTerm05(), 4);
 
 		//Bone Info
-		EXPECT_EQ(rig00COPYBones.at(i).getBoneType(), rig00Bones.at(i).getBoneType());
-		EXPECT_EQ(rig00COPYBones.at(i).getParentBoneIndex(), rig00Bones.at(i).getParentBoneIndex());
-		EXPECT_EQ(rig00COPYBones.at(i).getTwistDriverMqnIndex(), rig00Bones.at(i).getTwistDriverMqnIndex());
-		EXPECT_EQ(rig00COPYBones.at(i).getTwistDriverIndex(), -1); //These bones were set to default and should be different from the source on output as the values are corrected
-		EXPECT_EQ(rig00COPYBones.at(i).getTwistDriverWeight(), 0.0f); //These bones were set to default and should be different from the source on output as the values are corrected
-		EXPECT_EQ(rig00COPYBones.at(i).getMirrorBoneIndex(), rig00Bones.at(i).getMirrorBoneIndex());
+		EXPECT_EQ(rig00COPYBones.at(i).boneType(), rig00Bones.at(i).boneType());
+		EXPECT_EQ(rig00COPYBones.at(i).parentBoneIndex(), rig00Bones.at(i).parentBoneIndex());
+		EXPECT_EQ(rig00COPYBones.at(i).twistDriverMqnIndex(), rig00Bones.at(i).twistDriverMqnIndex());
+		EXPECT_EQ(rig00COPYBones.at(i).twistDriverIndex(), -1); //These bones were set to default and should be different from the source on output as the values are corrected
+		EXPECT_EQ(rig00COPYBones.at(i).twistDriverWeight(), 0.0f); //These bones were set to default and should be different from the source on output as the values are corrected
+		EXPECT_EQ(rig00COPYBones.at(i).mirrorBoneIndex(), rig00Bones.at(i).mirrorBoneIndex());
 
 		//Padding 
 #ifdef DEBUG_BUILD
-		EXPECT_EQ(rig00COPYBones.at(i).getPad01(), rig00Bones.at(i).getPad01());
-		EXPECT_EQ(rig00COPYBones.at(i).getPad02(), rig00Bones.at(i).getPad02());
+		EXPECT_EQ(rig00COPYBones.at(i).pad01(), rig00Bones.at(i).pad01());
+		EXPECT_EQ(rig00COPYBones.at(i).pad02(), rig00Bones.at(i).pad02());
 #endif
 		//Strings
 		//We use the source offset as the copy version isn't produced until export/serialization
-		EXPECT_EQ(offsetSum00COPY, rig00Bones.at(i).getNameOffset());
+		EXPECT_EQ(offsetSum00COPY, rig00Bones.at(i).nameOffset());
 		offsetSum00COPY += str00COPY.stringLength(i, true);
 	}
 
@@ -283,8 +283,8 @@ GTEST(ScratchAnimation)
 	EXPECT_STREQ(uAnim.animationTitle(), "TestAnim");
 	EXPECT_EQ(uAnim.animationBlockCount(), 0);
 	EXPECT_EQ(uAnim.animationBlockCount(), uAnim.animationBlocks().size());
-	EXPECT_NO_THROW(uAnim.getPackageManager());
-	EXPECT_EQ(uAnim.getPackageManager().packageCount(), 0);
+	EXPECT_NO_THROW(uAnim.packageManager());
+	EXPECT_EQ(uAnim.packageManager().packageCount(), 0);
 	EXPECT_EQ(uAnim.frameCount(), 0);
 	EXPECT_NO_THROW(uAnim.clearAnimationBlocks());
 	EXPECT_NO_THROW(uAnim.setAnimationTitle("NewTitle"));
@@ -296,10 +296,10 @@ GTEST(ScratchAnimation)
 		block.setBoneName("Base");
 		EXPECT_STREQ(block.boneName(), "Base");
 
-		UNIV::Rotation r5(5, Math::Quaternion(0.0, 0.0, 1.0, 1.0));
-		UNIV::Rotation r0(0, Math::Quaternion(1.0, 0.0, 0.0, 0.0));
-		UNIV::Rotation r2(2, Math::Quaternion(0.0, 1.0, 0.0, 1.0));
-		UNIV::Rotation r2n(2, Math::Quaternion(1.0, 0.0, 0.0, 1.0));
+		UNIV::RotationFrame r5(5, Math::Quaternion(0.0, 0.0, 1.0, 1.0));
+		UNIV::RotationFrame r0(0, Math::Quaternion(1.0, 0.0, 0.0, 0.0));
+		UNIV::RotationFrame r2(2, Math::Quaternion(0.0, 1.0, 0.0, 1.0));
+		UNIV::RotationFrame r2n(2, Math::Quaternion(1.0, 0.0, 0.0, 1.0));
 		
 		EXPECT_TRUE(block.addRotationEntry(r5));
 		EXPECT_TRUE(block.addRotationEntry(r0));
@@ -334,9 +334,9 @@ GTEST(ScratchAnimation)
 		block.setBoneName("Table");
 		EXPECT_STREQ(block.boneName(), "Table");
 
-		UNIV::Rotation r0(0, Math::Quaternion(0.0, 0.0, 0.0, 1.0));
-		UNIV::Rotation r1(15, Math::Quaternion(0.0, 0.0, 0.5, 1.0));
-		UNIV::Rotation r2(30, Math::Quaternion(0.0, 0.0, 1.0, 1.0));
+		UNIV::RotationFrame r0(0, Math::Quaternion(0.0, 0.0, 0.0, 1.0));
+		UNIV::RotationFrame r1(15, Math::Quaternion(0.0, 0.0, 0.5, 1.0));
+		UNIV::RotationFrame r2(30, Math::Quaternion(0.0, 0.0, 1.0, 1.0));
 
 		EXPECT_TRUE(block.addRotationEntry(r0));
 		EXPECT_TRUE(block.addRotationEntry(r1));

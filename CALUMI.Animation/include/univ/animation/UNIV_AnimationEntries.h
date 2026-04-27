@@ -7,182 +7,594 @@
 #include "math/Math.h"
 #include "utilities/CALUMI_Utilities.h"
 
-namespace CALUMI {namespace UNIV {
-
-	
-
-	struct CALUMIANIMATION_API Translation
+namespace CALUMI::UNIV
+{
+	/**
+	 * @brief Translation Sequence Entry With Frame
+	 */
+	struct CALUMIANIMATION_API TranslationFrame
 	{
-        uint16_t frame() const;
-        void setFrame(uint16_t frame) const;
-        Math::Vector3D& translationVector() const;
+		/// @name Data
+		/// @{
 
-		~Translation();
-		Translation();
-		Translation(const uint16_t& frame, const CALUMI::Math::Vector3D& translation);
-		Translation(const Translation& input);
+		/**
+		 * @return The frame of this entry
+		 */
+		uint16_t frame() const;
+		/**
+		 * @param frame 0 based frame
+		 */
+		void setFrame(uint16_t frame) const;
+		/**
+		 *
+		 * @return
+		 */
+		Math::Vector3D& translationVector() const;
 
-        bool isIdentical(const Translation& input) const;
+		/// @}
+		/// @name Initialization
+		/// @{
 
-		UNIV::Translation& operator=(const UNIV::Translation& other);
+		~TranslationFrame();
+		TranslationFrame();
+		/**
+		 * @param frame 0 based frame
+		 * @param translation high precision vector3
+		 */
+		TranslationFrame(const uint16_t& frame, const Math::Vector3D& translation);
+		/**
+		 * @param input
+		 */
+		TranslationFrame(const TranslationFrame& input);
 
-        /**
-         * @deprecated
-         * @param indents
-         * @return
-         */
-        [[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
+		/// @}
+		/// @name Operators
+		/// @{
+
+		/**
+		 * @param other
+		 * @return
+		 */
+		TranslationFrame& operator=(const TranslationFrame& other);
+
+		/// @}
+		/// @name True Comparison
+		/// @{
+
+		/**
+		 * @return Whether the two entries are equal for all struct members
+		 */
+		bool isIdentical(const TranslationFrame& input) const;
+
+		/// @}
 
 	private:
 		struct Impl;
 		Impl* pImpl;
 	};
 
-    CALUMIANIMATION_API bool operator<(const UNIV::Translation& A, const UNIV::Translation& B);
-    CALUMIANIMATION_API bool operator<=(const UNIV::Translation& A, const UNIV::Translation& B);
-    CALUMIANIMATION_API bool operator>(const UNIV::Translation& A, const UNIV::Translation& B);
-    CALUMIANIMATION_API bool operator>=(const UNIV::Translation& A, const UNIV::Translation& B);
-    CALUMIANIMATION_API bool operator==(const UNIV::Translation& A, const UNIV::Translation& B);
-    CALUMIANIMATION_API bool operator!=(const UNIV::Translation& A, const UNIV::Translation& B);
+	/**
+	 * @relates TranslationFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator<(const TranslationFrame& A, const TranslationFrame& B);
+	/**
+	 * @relates TranslationFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator<=(const TranslationFrame& A, const TranslationFrame& B);
+	/**
+	 * @relates TranslationFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator>(const TranslationFrame& A, const TranslationFrame& B);
+	/**
+	 * @relates TranslationFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator>=(const TranslationFrame& A, const TranslationFrame& B);
+	/**
+	 * @relates TranslationFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator==(const TranslationFrame& A, const TranslationFrame& B);
+	/**
+	 * @relates TranslationFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator!=(const TranslationFrame& A, const TranslationFrame& B);
 
-	struct CALUMIANIMATION_API Rotation
+	/**
+	 * @brief Rotation Sequence Entry With Frame
+	 */
+	struct CALUMIANIMATION_API RotationFrame
 	{
-        uint16_t frame() const;
-        void setFrame(uint16_t frame) const;
-        Math::Quaternion& rotationQuaternion() const;
+		/// @name Data
+		/// @{
 
-		Rotation();
-		Rotation(const uint16_t& frame, const CALUMI::Math::Quaternion& rotation);
-		Rotation(const Rotation& input);
-		~Rotation();
+		/**
+		 * @return The frame of this entry
+		 */
+		uint16_t frame() const;
+		/**
+		 * @param frame 0 based frame
+		 */
+		void setFrame(uint16_t frame) const;
+		/**
+		 * @return
+		 */
+		Math::Quaternion& rotationQuaternion() const;
 
-        bool isIdentical(const Rotation& input) const;
+		/// @}
+		/// @name Initialization
+		/// @{
 
-		UNIV::Rotation& operator=(const UNIV::Rotation& other);
+		RotationFrame();
+		/**
+		 * @param frame 0 based frame
+		 * @param rotation Quaternion based rotation
+		 */
+		RotationFrame(const uint16_t& frame, const Math::Quaternion& rotation);
+		/**
+		 * @param input
+		 */
+		RotationFrame(const RotationFrame& input);
+		~RotationFrame();
 
-        [[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
+		/// @}
+		/// @name Operators
+		/// @{
+
+		/**
+		 * @param other
+		 * @return
+		 */
+		RotationFrame& operator=(const RotationFrame& other);
+
+		/// @}
+		/// @name True Comparison
+		/// @{
+
+		/**
+		 * @return Whether the two entries are equal for all struct members
+		 */
+		bool isIdentical(const RotationFrame& input) const;
+
+		/// @}
+
 	private:
 		struct Impl;
 		Impl* pImpl;
 	};
 
-    CALUMIANIMATION_API bool operator<(const UNIV::Rotation& A, const UNIV::Rotation& B);
-    CALUMIANIMATION_API bool operator<=(const UNIV::Rotation& A, const UNIV::Rotation& B);
-    CALUMIANIMATION_API bool operator>(const UNIV::Rotation& A, const UNIV::Rotation& B);
-    CALUMIANIMATION_API bool operator>=(const UNIV::Rotation& A, const UNIV::Rotation& B);
-    CALUMIANIMATION_API bool operator==(const UNIV::Rotation& A, const UNIV::Rotation& B);
-    CALUMIANIMATION_API bool operator!=(const UNIV::Rotation& A, const UNIV::Rotation& B);
+	/**
+	 * @relates RotationFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator<(const RotationFrame& A, const RotationFrame& B);
+	/**
+	 * @relates RotationFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator<=(const RotationFrame& A, const RotationFrame& B);
+	/**
+	 * @relates RotationFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator>(const RotationFrame& A, const RotationFrame& B);
+	/**
+	 * @relates RotationFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator>=(const RotationFrame& A, const RotationFrame& B);
+	/**
+	 * @relates RotationFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator==(const RotationFrame& A, const RotationFrame& B);
+	/**
+	 * @relates RotationFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator!=(const RotationFrame& A, const RotationFrame& B);
 
 
-	struct CALUMIANIMATION_API Scalar
+	/**
+	 * @brief Scalar Sequence Entry With Frame
+	 */
+	struct CALUMIANIMATION_API ScalarFrame
 	{
-        uint16_t frame() const;
-        void setFrame(uint16_t frame) const;
-        float scalarValue() const;
-        void setScalarValue(float value) const;
+		/// @name Data
+		/// @{
 
-		Scalar();
-		~Scalar();
-		Scalar(const uint16_t& frame, float scalar);
-		Scalar(const Scalar& input);
+		/**
+		 * @return The frame of this entry
+		 */
+		uint16_t frame() const;
+		/**
+		 *
+		 * @param frame 0 based frame
+		 */
+		void setFrame(uint16_t frame) const;
+		/**
+		 * @return
+		 */
+		float scalarValue() const;
+		/**
+		 * @param value
+		 */
+		void setScalarValue(float value) const;
 
-        bool isIdentical(const Scalar& input) const;
+		/// @}
+		/// @name Initialization
+		/// @{
 
-		UNIV::Scalar& operator=(const UNIV::Scalar& other);
+		ScalarFrame();
+		~ScalarFrame();
+		/**
+		 * @param frame 0 based frame
+		 * @param scalar
+		 */
+		ScalarFrame(const uint16_t& frame, float scalar);
+		/**
+		 * @param input
+		 */
+		ScalarFrame(const ScalarFrame& input);
 
-        [[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
+		/// @}
+		/// @name Operators
+		/// @{
+
+		/**
+		 * @param other
+		 * @return
+		 */
+		ScalarFrame& operator=(const ScalarFrame& other);
+
+		/// @}
+		/// @name True Comparison
+		/// @{
+
+		/**
+		 * @return Whether the two entries are equal for all struct members
+		 */
+		bool isIdentical(const ScalarFrame& input) const;
+
+		/// @}
 	private:
 		struct Impl;
 		Impl* pImpl;
 	};
 
-    CALUMIANIMATION_API bool operator<(const UNIV::Scalar& A, const UNIV::Scalar& B);
-    CALUMIANIMATION_API bool operator<=(const UNIV::Scalar& A, const UNIV::Scalar& B);
-    CALUMIANIMATION_API bool operator>(const UNIV::Scalar& A, const UNIV::Scalar& B);
-    CALUMIANIMATION_API bool operator>=(const UNIV::Scalar& A, const UNIV::Scalar& B);
-    CALUMIANIMATION_API bool operator==(const UNIV::Scalar& A, const UNIV::Scalar& B);
-    CALUMIANIMATION_API bool operator!=(const UNIV::Scalar& A, const UNIV::Scalar& B);
+	/**
+	 * @relates ScalarFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator<(const ScalarFrame& A, const ScalarFrame& B);
+	/**
+	 * @relates ScalarFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator<=(const ScalarFrame& A, const ScalarFrame& B);
+	/**
+	 * @relates ScalarFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator>(const ScalarFrame& A, const ScalarFrame& B);
+	/**
+	 * @relates ScalarFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator>=(const ScalarFrame& A, const ScalarFrame& B);
+	/**
+	 * @relates ScalarFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator==(const ScalarFrame& A, const ScalarFrame& B);
+	/**
+	 * @relates ScalarFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator!=(const ScalarFrame& A, const ScalarFrame& B);
 
 
-	struct CALUMIANIMATION_API Priority
+	/**
+	 * @brief Priority Sequence Entry With Frame
+	 */
+	struct CALUMIANIMATION_API PriorityFrame
 	{
-        uint16_t frame() const;
-        void setFrame(uint16_t frame) const;
-        uint8_t priorityValue() const;
-        void setPriorityValue(uint8_t value) const;
+		/// @name Data
+		/// @{
 
-		Priority();
-		~Priority();
-		Priority(const uint16_t& frame, const uint8_t& priority);
-		Priority(const Priority& input);
+		/**
+		 * @return The frame of this entry
+		 */
+		uint16_t frame() const;
+		/**
+		 * @param frame 0 based frame
+		 */
+		void setFrame(uint16_t frame) const;
+		/**
+		 * @return
+		 */
+		uint8_t priorityValue() const;
+		/**
+		 * @param value
+		 */
+		void setPriorityValue(uint8_t value) const;
 
-		Priority& operator=(const UNIV::Priority& other);
+		/// @}
+		/// @name Initialization
+		/// @{
 
-        [[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(const uint64_t indents = 0) const;
+		PriorityFrame();
+		~PriorityFrame();
+		/**
+		 * @param frame 0 based frame
+		 * @param priority
+		 */
+		PriorityFrame(const uint16_t& frame, const uint8_t& priority);
+		/**
+		 * @param input
+		 */
+		PriorityFrame(const PriorityFrame& input);
+
+		/// @}
+		/// @name Operators
+		/// @{
+
+		/**
+		 * @param other
+		 * @return
+		 */
+		PriorityFrame& operator=(const PriorityFrame& other);
+		///@}
 
 	private:
 		struct Impl;
 		Impl* pImpl;
 	};
 
-    CALUMIANIMATION_API bool operator<(const UNIV::Priority& A, const UNIV::Priority& B);
-    CALUMIANIMATION_API bool operator<=(const UNIV::Priority& A, const UNIV::Priority& B);
-    CALUMIANIMATION_API bool operator>(const UNIV::Priority& A, const UNIV::Priority& B);
-    CALUMIANIMATION_API bool operator>=(const UNIV::Priority& A, const UNIV::Priority& B);
-    CALUMIANIMATION_API bool operator==(const UNIV::Priority& A, const UNIV::Priority& B);
-    CALUMIANIMATION_API bool operator!=(const UNIV::Priority& A, const UNIV::Priority& B);
+	/**
+	 * @relates PriorityFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator<(const PriorityFrame& A, const PriorityFrame& B);
+	/**
+	 * @relates PriorityFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator<=(const PriorityFrame& A, const PriorityFrame& B);
+	/**
+	 * @relates PriorityFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator>(const PriorityFrame& A, const PriorityFrame& B);
+	/**
+	 * @relates PriorityFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator>=(const PriorityFrame& A, const PriorityFrame& B);
+	/**
+	 * @relates PriorityFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator==(const PriorityFrame& A, const PriorityFrame& B);
+	/**
+	 * @relates PriorityFrame
+	 * @param A
+	 * @param B
+	 * @return Frame Comparison
+	 */
+	CALUMIANIMATION_API bool operator!=(const PriorityFrame& A, const PriorityFrame& B);
 
 	struct TranslationSequence;
 	struct RotationSequence;
 	struct ScalarSequence;
 	struct PrioritySequence;
 
+	/**
+	 * @relates TranslationFrame
+	 * @brief Sorts the sequence by frame
+	 * @param sq
+	 * @param highToLow
+	 */
 	CALUMIANIMATION_API void SortTranslationSequence(const TranslationSequence& sq, bool highToLow = false);
+	/**
+	 * @relates RotationFrame
+	 * @brief Sorts the sequence by frame
+	 * @param sq
+	 * @param highToLow
+	 */
 	CALUMIANIMATION_API void SortRotationSequence(const RotationSequence& sq, bool highToLow = false);
+	/**
+	 * @relates ScalarFrame
+	 * @brief Sorts the sequence by frame
+	 * @param sq
+	 * @param highToLow
+	 */
 	CALUMIANIMATION_API void SortScalarSequence(const ScalarSequence& sq, bool highToLow = false);
+	/**
+	 * @relates PriorityFrame
+	 * @brief Sorts the sequence by frame
+	 * @param sq
+	 * @param highToLow
+	 */
 	CALUMIANIMATION_API void SortPrioritySequence(const PrioritySequence& sq, bool highToLow = false);
 
-    VECTORDECF(TranslationSequence, Translation, friend void SortTranslationSequence(const TranslationSequence& sq, bool highToLow);)
-    VECTORDECF(RotationSequence, Rotation, friend void SortRotationSequence(const RotationSequence& sq, bool highToLow);)
-    VECTORDECF(ScalarSequence, Scalar, friend void SortScalarSequence(const ScalarSequence& sq, bool highToLow);)
-    VECTORDECF(PrioritySequence, Priority, friend void SortPrioritySequence(const PrioritySequence& sq, bool highToLow);)
+	VECTORDECF(TranslationSequence, TranslationFrame, friend void SortTranslationSequence(const TranslationSequence& sq, bool highToLow);)
+	VECTORDECF(RotationSequence, RotationFrame, friend void SortRotationSequence(const RotationSequence& sq, bool highToLow);)
+	VECTORDECF(ScalarSequence, ScalarFrame, friend void SortScalarSequence(const ScalarSequence& sq, bool highToLow);)
+	VECTORDECF(PrioritySequence, PriorityFrame, friend void SortPrioritySequence(const PrioritySequence& sq, bool highToLow);)
 
-	
+}
+
+	/// @addtogroup extern_c
+	/// @{
+	/// @addtogroup c_univ_anim
+	/// @{
 
 	extern  "C" {
-		CALUMIANIMATION_API Rotation* CreateRotationEntryC(uint16_t frame, float x, float y, float z, float w);
-
-		CALUMIANIMATION_API Rotation* CreateRotationEntryFromEulerC(uint16_t frame, float x, float y, float z, uint8_t order);
-		
-		CALUMIANIMATION_API bool DeleteRotationEntryC(const Rotation* ptr);
-
-		CALUMIANIMATION_API Translation* CreateTranslationEntryC(uint16_t frame, double x, double y, double z);
-		
-		CALUMIANIMATION_API bool DeleteTranslationEntryC(const Translation* ptr);
-		
-		CALUMIANIMATION_API Scalar* CreateScalarEntryC(uint16_t frame, float scalar);
-		
-		CALUMIANIMATION_API bool DeleteScalarEntryC(const Scalar* ptr);
-		
-		CALUMIANIMATION_API Priority* CreatePriorityEntryC(uint16_t frame, uint8_t priority);
-		
-		CALUMIANIMATION_API bool DeletePriorityEntryC(const Priority* ptr);
-		
-		CALUMIANIMATION_API uint16_t GetFrameFromRotationEntryC(const Rotation* source);
-		
-		CALUMIANIMATION_API uint16_t GetFrameFromTranslationEntryC(const Translation* source);
-		
-		CALUMIANIMATION_API uint16_t GetFrameFromScalarEntryC(const Scalar* source);
-		
-		CALUMIANIMATION_API uint16_t GetFrameFromPriorityEntryC(const Priority* source);
-
-		CALUMIANIMATION_API Math::Quaternion* GetValueFromRotationEntryC(const Rotation* source);
-
-		CALUMIANIMATION_API Math::Vector3D* GetValueFromTranslationEntryC(const Translation* source);
-
-		CALUMIANIMATION_API float GetValueFromScalarEntryC(const Scalar* source);
-
-		CALUMIANIMATION_API uint8_t GetValueFromPriorityEntryC(const Priority* source);
+		/**
+		 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteRotationFrameC
+		 * @param frame
+		 * @param x
+		 * @param y
+		 * @param z
+		 * @param w
+		 * @return Heap allocated RotationFrame
+		 */
+		CALUMIANIMATION_API CALUMI::UNIV::RotationFrame* CreateRotationFrameC(uint16_t frame, float x, float y, float z, float w);
+		/**
+		 * @brief Quaternion creation with @ref CALUMI::Math::EulerDefinition::EulerOrder "Euler Order"
+		 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteRotationFrameC
+		 * @param frame
+		 * @param x
+		 * @param y
+		 * @param z
+		 * @param order See @ref CALUMI::Math::EulerDefinition::EulerOrder "Euler Order"
+		 * @return Heap allocated RotationFrame
+		 */
+		CALUMIANIMATION_API CALUMI::UNIV::RotationFrame* CreateRotationFrameFromEulerC(uint16_t frame, float x, float y, float z, uint8_t order);
+		/**
+		 * @param ptr Pointer Reference that is set to nullptr on completion
+		 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successfully Deleted
+		 */
+		CALUMIANIMATION_API int DeleteRotationFrameC(const CALUMI::UNIV::RotationFrame** ptr);
+		/**
+		 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteTranslationFrameC
+		 * @param frame
+		 * @param x
+		 * @param y
+		 * @param z
+		 * @return Heap allocated TranslationFrame
+		 */
+		CALUMIANIMATION_API CALUMI::UNIV::TranslationFrame* CreateTranslationFrameC(uint16_t frame, double x, double y, double z);
+		/**
+		 * @param ptr Pointer Reference that is set to nullptr on completion
+		 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successfully Deleted
+		 */
+		CALUMIANIMATION_API int DeleteTranslationFrameC(const CALUMI::UNIV::TranslationFrame** ptr);
+		/**
+		 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteScalarFrameC
+		 * @param frame
+		 * @param scalar
+		 * @return Heap allocated ScalarFrame
+		 */
+		CALUMIANIMATION_API CALUMI::UNIV::ScalarFrame* CreateScalarFrameC(uint16_t frame, float scalar);
+		/**
+		 * @param ptr Pointer Reference that is set to nullptr on completion
+		 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successfully Deleted
+		 */
+		CALUMIANIMATION_API int DeleteScalarFrameC(const CALUMI::UNIV::ScalarFrame** ptr);
+		/**
+		 * @warning Heap allocated return value, if not nullptr, must be deleted using DeletePriorityFrameC
+		 * @param frame
+		 * @param priority
+		 * @return Heap allocated PriorityFrame
+		 */
+		CALUMIANIMATION_API CALUMI::UNIV::PriorityFrame* CreatePriorityFrameC(uint16_t frame, uint8_t priority);
+		/**
+		 * @param ptr Pointer Reference that is set to nullptr on completion
+		 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successfully Deleted
+		 */
+		CALUMIANIMATION_API int DeletePriorityFrameC(const CALUMI::UNIV::PriorityFrame** ptr);
+		/**
+		 *
+		 * @param source
+		 * @return Frame or 0 if error
+		 */
+		CALUMIANIMATION_API uint16_t GetFrameFromRotationFrameC(const CALUMI::UNIV::RotationFrame* source);
+		/**
+		 *
+		 * @param source
+		 * @return Frame or 0 if error
+		 */
+		CALUMIANIMATION_API uint16_t GetFrameFromTranslationFrameC(const CALUMI::UNIV::TranslationFrame* source);
+		/**
+		 *
+		 * @param source
+		 * @return Frame or 0 if error
+		 */
+		CALUMIANIMATION_API uint16_t GetFrameFromScalarFrameC(const CALUMI::UNIV::ScalarFrame* source);
+		/**
+		 *
+		 * @param source
+		 * @return Frame or 0 if error
+		 */
+		CALUMIANIMATION_API uint16_t GetFrameFromPriorityFrameC(const CALUMI::UNIV::PriorityFrame* source);
+		/**
+		 *
+		 * @param source
+		 * @return Quaternion reference or nullptr if error
+		 */
+		CALUMIANIMATION_API CALUMI::Math::Quaternion* GetValueFromRotationFrameC(const CALUMI::UNIV::RotationFrame* source);
+		/**
+		 *
+		 * @param source
+		 * @return Vector reference or nullptr if error
+		 */
+		CALUMIANIMATION_API CALUMI::Math::Vector3D* GetValueFromTranslationFrameC(const CALUMI::UNIV::TranslationFrame* source);
+		/**
+		 *
+		 * @param source
+		 * @return Scale value or NaN if error
+		 */
+		CALUMIANIMATION_API float GetValueFromScalarFrameC(const CALUMI::UNIV::ScalarFrame* source);
+		/**
+		 *
+		 * @param source
+		 * @return Priority value or 0 if error
+		 */
+		CALUMIANIMATION_API uint8_t GetValueFromPriorityFrameC(const CALUMI::UNIV::PriorityFrame* source);
 	}
 
-}}
+
+	/// @}
+	/// @}

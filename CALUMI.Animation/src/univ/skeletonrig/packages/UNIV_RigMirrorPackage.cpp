@@ -53,7 +53,7 @@ namespace CALUMI::UNIV
         pImpl->m_mirrors.emplace_back(std::string(bone1), std::string(bone2));
     }
 
-    const char* RigMirrorPackage::getPairedBone(const char* bone) const
+    const char* RigMirrorPackage::pairedBone(const char* bone) const
     {
         for (const auto& [first, second] : pImpl->m_mirrors)
         {
@@ -67,12 +67,12 @@ namespace CALUMI::UNIV
         return "";
     }
 
-    unsigned int RigMirrorPackage::getPairCount() const
+    unsigned int RigMirrorPackage::pairCount() const
     {
         return pImpl->m_mirrors.size();
     }
 
-    const char* RigMirrorPackage::getFirstOfPair(const unsigned int index) const
+    const char* RigMirrorPackage::firstOfPair(const unsigned int index) const
     {
         if (index >= pImpl->m_mirrors.size())
             return "";
@@ -80,7 +80,7 @@ namespace CALUMI::UNIV
         return pImpl->m_mirrors[index].first.c_str();
     }
 
-    const char* RigMirrorPackage::getSecondOfPair(const unsigned int index) const
+    const char* RigMirrorPackage::secondOfPair(const unsigned int index) const
     {
         if (index >= pImpl->m_mirrors.size())
             return "";
@@ -88,14 +88,9 @@ namespace CALUMI::UNIV
         return pImpl->m_mirrors[index].second.c_str();
     }
 
-    const char* RigMirrorPackage::getPackageType() const
+    const char* RigMirrorPackage::packageType() const
     {
         return MIRROR_RIG_PACKAGE;
-    }
-
-    Utilities::StringContainer RigMirrorPackage::toJSON(uint64_t indents) const
-    {
-        return "";
     }
 
     IPackage* RigMirrorPackage::clone() const
@@ -144,7 +139,7 @@ namespace CALUMI::UNIV
 
     bool RigMirrorPackage::AddPackage(const SkeletonRig& rig, const bool overwrite)
     {
-        const auto& mgr = rig.getPackageManager();
+        const auto& mgr = rig.packageManager();
 
         auto* pkg = new RigMirrorPackage();
 
@@ -160,20 +155,20 @@ namespace CALUMI::UNIV
 
     bool RigMirrorPackage::RemovePackage(const SkeletonRig& rig)
     {
-        return rig.getPackageManager().removePackage(MIRROR_RIG_PACKAGE);
+        return rig.packageManager().removePackage(MIRROR_RIG_PACKAGE);
     }
 
     RigMirrorPackage& RigMirrorPackage::GetPackage(const SkeletonRig& rig)
     {
-        auto& mgr = rig.getPackageManager();
-        if (const auto pkg = dynamic_cast<RigMirrorPackage*>(mgr.getPackage(MIRROR_RIG_PACKAGE)))
+        auto& mgr = rig.packageManager();
+        if (const auto pkg = dynamic_cast<RigMirrorPackage*>(mgr.package(MIRROR_RIG_PACKAGE)))
         {
             return *pkg;
         }
 
         AddPackage(rig, false);
 
-        if (const auto pkg = dynamic_cast<RigMirrorPackage*>(mgr.getPackage(MIRROR_RIG_PACKAGE)))
+        if (const auto pkg = dynamic_cast<RigMirrorPackage*>(mgr.package(MIRROR_RIG_PACKAGE)))
         {
             return *pkg;
         }
@@ -223,8 +218,8 @@ namespace CALUMI::UNIV
 
         try
         {
-            auto& mgr = rig->getPackageManager();
-            const auto pkg = dynamic_cast<CALUMI::UNIV::RigMirrorPackage*>(mgr.getPackage
+            auto& mgr = rig->packageManager();
+            const auto pkg = dynamic_cast<CALUMI::UNIV::RigMirrorPackage*>(mgr.package
                 (CALUMI::UNIV::MIRROR_RIG_PACKAGE));
 
             if (!pkg)
@@ -244,14 +239,14 @@ namespace CALUMI::UNIV
 
         try
         {
-            auto& mgr = rig->getPackageManager();
-            const auto pkg = dynamic_cast<CALUMI::UNIV::RigMirrorPackage*>(mgr.getPackage
+            auto& mgr = rig->packageManager();
+            const auto pkg = dynamic_cast<CALUMI::UNIV::RigMirrorPackage*>(mgr.package
                 (CALUMI::UNIV::MIRROR_RIG_PACKAGE));
 
             if (!pkg)
                 return 0;
 
-            return pkg->getPairCount();
+            return pkg->pairCount();
         }
         catch ( const std::exception&) {}
         return -1;
@@ -264,14 +259,14 @@ namespace CALUMI::UNIV
 
         try
         {
-            auto& mgr = rig->getPackageManager();
-            const auto pkg = dynamic_cast<CALUMI::UNIV::RigMirrorPackage*>(mgr.getPackage
+            auto& mgr = rig->packageManager();
+            const auto pkg = dynamic_cast<CALUMI::UNIV::RigMirrorPackage*>(mgr.package
                 (CALUMI::UNIV::MIRROR_RIG_PACKAGE));
 
             if (!pkg)
                 return "";
 
-            return pkg->getFirstOfPair(index);
+            return pkg->firstOfPair(index);
         }
         catch ( const std::exception&) {}
         return nullptr;
@@ -284,14 +279,14 @@ namespace CALUMI::UNIV
 
         try
         {
-            auto& mgr = rig->getPackageManager();
-            const auto pkg = dynamic_cast<CALUMI::UNIV::RigMirrorPackage*>(mgr.getPackage
+            auto& mgr = rig->packageManager();
+            const auto pkg = dynamic_cast<CALUMI::UNIV::RigMirrorPackage*>(mgr.package
                 (CALUMI::UNIV::MIRROR_RIG_PACKAGE));
 
             if (!pkg)
                 return "";
 
-            return pkg->getSecondOfPair(index);
+            return pkg->secondOfPair(index);
         }
         catch ( const std::exception&) {}
         return nullptr;

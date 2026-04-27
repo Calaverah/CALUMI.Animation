@@ -10,7 +10,7 @@
 
 namespace CALUMI::UNIV
 {
-	struct AnimationBlock;
+	class AnimationBlock;
     class Animation;
 }
 
@@ -46,7 +46,7 @@ namespace CALUMI::SFBGS
 		 * @brief The amount of amended animation curves that apply to non skeleton.rig components, AnimObjects for instance
 		 * @return Count
 		 */
-		[[nodiscard]] uint16_t getAmendedBlockCount() const;
+		[[nodiscard]] uint16_t amendedBlockCount() const;
 
 		/**
 		 * @brief Set's the precision to use when compressing this set of AnimationBlocks, will override the SkeletonRig that houses this package
@@ -58,7 +58,7 @@ namespace CALUMI::SFBGS
 			 * @brief Returns the PrecisionSet that will be used if set to override the rig's precision
 			 * @return
 			 */
-		[[nodiscard]] PrecisionSet getOverridePrecisionSet() const;
+		[[nodiscard]] PrecisionSet overridePrecisionSet() const;
 		/**
 			 * @brief
 			 * @return Whether this animation block set will be compressed using rig precision or its own precision
@@ -131,14 +131,14 @@ namespace CALUMI::SFBGS
 			 * @param index
 			 * @return
 			 */
-		[[nodiscard]] UNIV::AnimationBlock* getAmendedBlock(int index) const;
+		[[nodiscard]] UNIV::AnimationBlock* amendedBlock(int index) const;
 
 		/**
 			 * @brief Returns the hash associated with the block at the given index
 			 * @param index
 			 * @return Hash key, 0xFFFFFFFF if index is out of bounds
 			 */
-		[[nodiscard]] uint32_t getAmendedBlockHash(int index) const;
+		[[nodiscard]] uint32_t amendedBlockHash(int index) const;
 
 
 		/// @}
@@ -151,15 +151,7 @@ namespace CALUMI::SFBGS
 			 * @brief A way to get a string describing the package.
 			 * @return A string of the package type, SFBGS_ANIM_PACKAGE
 			 */
-		[[nodiscard]] const char* getPackageType() const override;
-
-		/**
-		 * @deprecated
-			 * @brief Serialization of the Starfield Animation Package
-			 * @param indents Amount of spaces for formatting
-			 * @return The serialized struct as a strContainer
-			 */
-		[[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
+		[[nodiscard]] const char* packageType() const override;
 
 	private:
 		struct Impl;
@@ -184,187 +176,203 @@ namespace CALUMI::SFBGS
 	 */
 	static bool RemovePackage(const UNIV::Animation& animation);
 
+	/**
+	 *
+	 * @param rig
+	 * @return The SFBGS Animation Package on this Animation. If none exists, one will be created.
+	 */
+	[[nodiscard]] static SFBGS_AnimationPackage& GetPackage(const UNIV::Animation& rig);
+
 	};
 	/// @}
 	/// @}
 }
 
 	/**
-		 *
-		 *
-		 * @addtogroup c_anim_packages
-		 * @{
-		 * @defgroup c_sfbgs_anim_package Starfield
-		 * @{
-		 */
+	 *
+	 *
+	 * @addtogroup c_anim_packages
+	 * @{
+	 * @defgroup c_sfbgs_anim_package Starfield
+	 * @{
+	 */
 	extern "C"
 	{
 	/**
-			 * @brief Adds a new Starfield Animation Package to the given animation
-			 * @param animation UNIV Animation
-			 * @param errorMessage *optional* Error message container
-			 * @param overwrite Will reset the existing package to it's initial state if found
-			 * @return Whether the package was successfully added
-			 */
-	CALUMIANIMATION_API bool SFBGSAnimationPackage_AddPackageToAnimationC(const CALUMI::UNIV::Animation* animation, CALUMI::Utilities::StringContainer* errorMessage, bool overwrite);
+	 * @brief Adds a new Starfield Animation Package to the given animation
+	 * @param animation UNIV Animation
+	 * @param overwrite Will reset the existing package to it's initial state if found
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Package Added\n 1 = Package Was Not Added
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_AddPackageToAnimationC(const CALUMI::UNIV::Animation* animation, bool
+		overwrite);
 	/**
-			 * @brief Removes a Starfield Animation Package from the given animation
-			 * @param animation CALUMI::UNIV Animation
-			 * @param errorMessage *optional* Error message container
-			 * @return Whether the package was successfully removed
-			 */
-	CALUMIANIMATION_API bool SFBGSAnimationPackage_RemovePackageFromAnimationC(const CALUMI::UNIV::Animation* animation, CALUMI::Utilities::StringContainer* errorMessage);
+	 * @brief Removes a Starfield Animation Package from the given animation
+	 * @param animation CALUMI::UNIV Animation
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Package Removed\n 1 = Package Was Not Removed
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_RemovePackageFromAnimationC(const CALUMI::UNIV::Animation* animation);
 
 	/**
-			 * @brief Searches for an amended block with a hash generated with the given name
-			 * @param animation
-			 * @param name Used to generate hash
-			 * @return Whether the amended block exists
-			 */
-	CALUMIANIMATION_API bool SFBGSAnimationPackage_HasAmendedBlockC(const CALUMI::UNIV::Animation* animation, const char* name);
+	 * @brief Searches for an amended block with a hash generated with the given name
+	 * @param animation
+	 * @param name Used to generate hash, empty strings are allowed
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = False\n 1 = True
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_HasAmendedBlockC(const CALUMI::UNIV::Animation* animation, const
+		char* name);
 	/**
-			 * @brief Searches for an amended block with a given hash
-			 * @param animation
-			 * @param hash Generated hash
-			 * @return Whether the amended block exists
-			 */
-	CALUMIANIMATION_API bool SFBGSAnimationPackage_HasAmendedBlockHashC(const CALUMI::UNIV::Animation* animation, uint32_t hash);
+	 * @brief Searches for an amended block with a given hash
+	 * @param animation
+	 * @param hash Generated hash
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = False\n 1 = True
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_HasAmendedBlockHashC(const CALUMI::UNIV::Animation* animation,
+		uint32_t hash);
 
 	/**
-			 * @brief
-			 * @param animation
-			 * @return size of amended block vector
-			 */
-	CALUMIANIMATION_API uint16_t SFBGSAnimationPackage_GetAmendedBlockCountC(const CALUMI::UNIV::Animation* animation);
+	 * @brief
+	 * @param animation
+	 * @return Size of amended block vector or -1 if there is an error
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_GetAmendedBlockCountC(const CALUMI::UNIV::Animation* animation);
 
 	/**
-			 * @brief Sets the amended animation block to use its own *Default* precision values when compressing. Not recommended.
-			 * @param animation
-			 */
-	CALUMIANIMATION_API void SFBGSAnimationPackage_OverrideRigWithDefaultPrecisionC(const CALUMI::UNIV::Animation* animation);
+	 * @brief Sets the amended animation block to use its own *Default* precision values when compressing. Not recommended.
+	 * @param animation
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_OverrideRigWithDefaultPrecisionC(const CALUMI::UNIV::Animation* animation);
 	/**
-			 * @brief Sets the amended animation block to use its own *First Person* precision values when compressing. Not recommended.
-			 * @param animation
-			 */
-	CALUMIANIMATION_API void SFBGSAnimationPackage_OverrideRigWith1stPersonPrecisionC(const CALUMI::UNIV::Animation* animation);
+	 * @brief Sets the amended animation block to use its own *First Person* precision values when compressing. Not recommended.
+	 * @param animation
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_OverrideRigWith1stPersonPrecisionC(const CALUMI::UNIV::Animation*
+		animation);
 	/**
-			 * @brief Sets the amended animation block to use its own *Ship* precision values when compressing. Not recommended.
-			 * @param animation
-			 */
-	CALUMIANIMATION_API void SFBGSAnimationPackage_OverrideRigWithShipPrecisionC(const CALUMI::UNIV::Animation* animation);
+	 * @brief Sets the amended animation block to use its own *Ship* precision values when compressing. Not recommended.
+	 * @param animation
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_OverrideRigWithShipPrecisionC(const CALUMI::UNIV::Animation*
+		animation);
 	/**
-			 * @brief Sets the amended animation block to use its own *Custom* precision values when compressing. Not recommended.
-			 * @param animation
-			 * @param custom1
-			 * @param custom2
-			 */
-	CALUMIANIMATION_API void SFBGSAnimationPackage_OverrideRigWithCustomPrecisionC(const CALUMI::UNIV::Animation* animation, float custom1, float custom2);
+	 * @brief Sets the amended animation block to use its own *Custom* precision values when compressing. Not recommended.
+	 * @param animation
+	 * @param custom1
+	 * @param custom2
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_OverrideRigWithCustomPrecisionC(const CALUMI::UNIV::Animation*
+		animation, float custom1, float custom2);
 
 	/**
-			 * @brief If set to override the rig's precision values, the block will use the returned value for High precision
-			 * @param animation
-			 * @return High precision value to use if set to override
-			 */
+	 * @brief If set to override the rig's precision values, the block will use the returned value for High precision
+	 * @param animation
+	 * @return High precision value to use if set to override, NaN if there is an error
+	 */
 	CALUMIANIMATION_API float SFBGSAnimationPackage_GetOverridePrecisionHighC(const CALUMI::UNIV::Animation* animation);
 	/**
-			 * @brief If set to override the rig's precision values, the block will use the returned value for Low precision
-			 * @param animation
-			 * @return Low precision value to use if set to override
-			 */
+	 * @brief If set to override the rig's precision values, the block will use the returned value for Low precision
+	 * @param animation
+	 * @return Low precision value to use if set to override, NaN if there is an error
+	 */
 	CALUMIANIMATION_API float SFBGSAnimationPackage_GetOverridePrecisionLowC(const CALUMI::UNIV::Animation* animation);
 
 	/**
-			 * @brief A convenient method for determining the name of the precision set.
-			 * @param animation
-			 * @return Will return "Follows Rig" if the package is not set to override
-			 */
+	 * @brief A convenient method for determining the name of the precision set.
+	 * @param animation
+	 * @return Will return "Follows Rig" if the package is not set to override, or nullptr if there is an error
+	 */
 	CALUMIANIMATION_API const char* SFBGSAnimationPackage_GetPrecisionSet(const CALUMI::UNIV::Animation* animation);
 	/**
-			 * @brief
-			 * @param animation
-			 * @return Whether the precision is set to follow rig (*true*) or override (*false*)
-			 */
-	CALUMIANIMATION_API bool SFBGSAnimationPackage_UsesRigPrecision(const CALUMI::UNIV::Animation* animation);
+	 * @brief
+	 * @param animation
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = False\n 1 = True
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_UsesRigPrecision(const CALUMI::UNIV::Animation* animation);
 	/**
-			 * @brief Resets the package to follow the rig's precision set
-			 * @param animation
-			 */
-	CALUMIANIMATION_API void SFBGSAnimationPackage_ResetPrecision(const CALUMI::UNIV::Animation* animation);
+	 * @brief Resets the package to follow the rig's precision set
+	 * @param animation
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Reset
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_ResetPrecision(const CALUMI::UNIV::Animation* animation);
 
 	/**
-			 * @brief Adds an amended block to the animation to represent a non rig based animation block
-			 * @param animation
-			 * @param block Ptr to block to add, once added, ptr will then point to the package-owned block
-			 * @param errorMessage *optional* Error message container
-			 * @param overwrite If a block with the same name generated hash is found, setting this to true will overwrite it
-			 * @return
-			 */
-	CALUMIANIMATION_API bool SFBGSAnimationPackage_AddAmendedBlockWithNameC(const CALUMI::UNIV::Animation* animation, const CALUMI::UNIV::AnimationBlock* block, CALUMI::Utilities::StringContainer* errorMessage, bool overwrite);
+	 * @brief Adds an amended block to the animation to represent a non rig based animation block
+	 * @param animation
+	 * @param block Ptr to block to add, once added, ptr will then point to the package-owned block
+	 * @param overwrite If a block with the same name generated hash is found, setting this to true will overwrite it
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Addition\n 1 = Block Was Not Added
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_AddAmendedBlockWithNameC(const CALUMI::UNIV::Animation* animation,
+		const CALUMI::UNIV::AnimationBlock* block, bool overwrite);
 	/**
-			 * @brief Adds an amended block to the animation to represent a non rig based animation block
-			 * @param animation
-			 * @param hash Hash used to store the animation block during export
-			 * @param block Ptr to block to add, once added, ptr will then point to the package-owned block
-			 * @param errorMessage *optional* Error message container
-			 * @param overwrite If a block with the same hash is found, setting this to true will overwrite it
-			 * @return
-			 */
-	CALUMIANIMATION_API bool SFBGSAnimationPackage_AddAmendedBlockWithHashC(const CALUMI::UNIV::Animation* animation, uint32_t hash, const CALUMI::UNIV::AnimationBlock* block, CALUMI::Utilities::StringContainer* errorMessage, bool overwrite);
+	 * @brief Adds an amended block to the animation to represent a non rig based animation block
+	 * @param animation
+	 * @param hash Hash used to store the animation block during export
+	 * @param block Ptr to block to add, once added, ptr will then point to the package-owned block
+	 * @param overwrite If a block with the same hash is found, setting this to true will overwrite it
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Addition\n 1 = Block Was Not Added
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_AddAmendedBlockWithHashC(const CALUMI::UNIV::Animation* animation,
+		uint32_t hash, const CALUMI::UNIV::AnimationBlock* block, bool overwrite);
 
 	/**
-			 * @brief Will remove an animation block with a matching hash generated from the given name
-			 * @param animation
-			 * @param name Generates hash
-			 * @param errorMessage *optional* Error message container
-			 * @return Whether the block was removed
-			 */
-	CALUMIANIMATION_API bool SFBGSAnimationPackage_RemoveAmendedBlockWithNameC(const CALUMI::UNIV::Animation* animation, const char* name, CALUMI::Utilities::StringContainer* errorMessage);
+	 * @brief Will remove an animation block with a matching hash generated from the given name
+	 * @param animation
+	 * @param name Generates hash
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Removal\n 1 = Block Was Not Removed
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_RemoveAmendedBlockWithNameC(const CALUMI::UNIV::Animation* animation, const char* name);
 	/**
-			 * @brief Will remove an animation block with a matching hash
-			 * @param animation
-			 * @param hash Hash used to store block
-			 * @param errorMessage *optional* Error message container
-			 * @return
-			 */
-	CALUMIANIMATION_API bool SFBGSAnimationPackage_RemoveAmendedBlockWithHashC(const CALUMI::UNIV::Animation* animation, uint32_t hash, CALUMI::Utilities::StringContainer* errorMessage);
+	 * @brief Will remove an animation block with a matching hash
+	 * @param animation
+	 * @param hash Hash used to store block
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Removal\n 1 = Block Was Not Removed
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_RemoveAmendedBlockWithHashC(const CALUMI::UNIV::Animation* animation,
+		uint32_t hash);
 	/**
-			 * @brief Will remove an animation block with at the given index
-			 * @param animation
-			 * @param index Index of block
-			 * @param errorMessage *optional* Error message container
-			 * @return
-			 */
-	CALUMIANIMATION_API bool SFBGSAnimationPackage_RemoveAmendedBlockWithIndexC(const CALUMI::UNIV::Animation* animation, uint16_t index, CALUMI::Utilities::StringContainer* errorMessage);
+	 * @brief Will remove an animation block with at the given index
+	 * @param animation
+	 * @param index Index of block
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Removal\n 1 = Block Was Not Removed
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_RemoveAmendedBlockWithIndexC(const CALUMI::UNIV::Animation* animation, uint16_t index);
 	/**
-			 * @brief
-			 * @param animation
-			 * @param name
-			 * @return
-			 */
-	CALUMIANIMATION_API bool SFBGSAnimationPackage_HasAmendedBlockWithNameC(const CALUMI::UNIV::Animation* animation, const char* name);
+	 * @brief
+	 * @param animation
+	 * @param name
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = False\n 1 = True
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_HasAmendedBlockWithNameC(const CALUMI::UNIV::Animation* animation,
+		const char* name);
 	/**
-			 * @brief
-			 * @param animation
-			 * @param hash
-			 * @return
-			 */
-	CALUMIANIMATION_API bool SFBGSAnimationPackage_HasAmendedBlockWithHashC(const CALUMI::UNIV::Animation* animation, uint32_t hash);
+	 * @brief
+	 * @param animation
+	 * @param hash
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = False\n 1 = True
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_HasAmendedBlockWithHashC(const CALUMI::UNIV::Animation* animation,
+		uint32_t hash);
 	/**
-			 * @brief Finds an amended block and returns the index
-			 * @param animation
-			 * @param name Used to generate hash
-			 * @return -1 if not found
-			 */
+	 * @brief Finds an amended block and returns the index
+	 * @param animation
+	 * @param name Used to generate hash
+	 * @return Error Code:\n -1 = Invalid Ptr\n n = Index
+	 */
 	CALUMIANIMATION_API int SFBGSAnimationPackage_FindAmendedBlockWithNameC(const CALUMI::UNIV::Animation* animation, const char* name);
 	/**
-			 * @brief Finds an amended block and returns the index
-			 * @param animation
-			 * @param hash Generated hash used to store block
-			 * @return
-			 */
+	 * @brief Finds an amended block and returns the index
+	 * @param animation
+	 * @param hash Generated hash used to store block
+	 * @return Error Code:\n -1 = Invalid Ptr\n n = Index
+	 */
 	CALUMIANIMATION_API int SFBGSAnimationPackage_FindAmendedBlockWithHashC(const CALUMI::UNIV::Animation* animation, uint32_t hash);
 	}
 
-	/// @}
-		/// @}
+/// @}
+/// @}
 

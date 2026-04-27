@@ -29,6 +29,8 @@ union ErrorStatus {
 		bool negativeTwistOnHigherIndex : 1 = false;
 		bool unkBoneType : 1 = false;
 		bool defaultBoneTypeHasValues : 1 = false;
+		bool lodEnumAbove5 : 1 = false;
+		bool lodGreaterOnChild : 1 = false;
 
 	} flags;
 
@@ -105,7 +107,7 @@ GTEST(RigScan)
 
 		filesScanned++;
 
-		ErrorStatus status = { 0 };
+		ErrorStatus status = { false };
 
 		status.flags.wrongVersion = !(ISKNOWNVERSION(rig.versionNumber()));
 
@@ -141,25 +143,38 @@ GTEST(RigScan)
 		for (int boneIndex = 0; boneIndex < rig.boneEntries().size(); boneIndex++)
 		{
 			const auto& bone = rig.boneEntries().at(boneIndex);
+			const SFBGS::SkeletonBone* parentBone = bone.parentBoneIndex() < 0 ?
+													nullptr :
+													&rig.boneEntries().at(bone.parentBoneIndex());
 
 			//Twist Bone Data
-			if (bone.getBoneType() == SFBGS::SkeletonBone::BoneType::Twist)
+			if (bone.boneType() == SFBGS::SkeletonBone::BoneType::Twist)
 			{
-				if (bone.getTwistDriverIndex() < 0)
+				if (bone.twistDriverIndex() < 0)
 					status.flags.twistBoneHasNegativeInfluence = true;
 
-				else if (bone.getTwistDriverWeight() < 0.0 && bone.getTwistDriverIndex() >= boneIndex)
+				else if (bone.twistDriverWeight() < 0.0 && bone.twistDriverIndex() >= boneIndex)
 					status.flags.negativeTwistOnHigherIndex = true;
 			}
-			else if (bone.getBoneType() == SFBGS::SkeletonBone::BoneType::Default)
+			else if (bone.boneType() == SFBGS::SkeletonBone::BoneType::Default)
 			{
-				if (bone.getTwistDriverIndex() != -1 || bone.getTwistDriverMqnIndex() != -1 || bone.getTwistDriverWeight() != 0.0f)
+				if (bone.twistDriverIndex() != -1 || bone.twistDriverMqnIndex() != -1 || bone.twistDriverWeight() != 0.0f)
 					status.flags.defaultBoneTypeHasValues = true;
 			}
 			else
 			{
 				status.flags.unkBoneType = true;
 			}
+
+			if (bone.levelOfDetail() > 5 || bone.levelOfDetail() < 0)
+				status.flags.lodEnumAbove5 = true;
+
+			if (parentBone && entry.path().string().contains("actors"))
+			{
+				if (parentBone->levelOfDetail() < bone.levelOfDetail())
+					status.flags.lodGreaterOnChild =  true;
+			}
+
 		}
 		
 		//Strings
@@ -170,18 +185,19 @@ GTEST(RigScan)
 			uint64_t current = 0;
 			for (uint64_t bIdx = 0; bIdx < rig.boneEntries().size() && bIdx < rig.stringArray().size(); bIdx++)
 			{
-				if(rig.boneEntries().at(bIdx).getNameOffset() < current)
+				if(rig.boneEntries().at(bIdx).nameOffset() < current)
 					status.flags.stringArrayOutOfOrder = true;
 				
-				if (rig.boneEntries().at(bIdx).getNameOffset() == rig.stringArray().getOffset(bIdx))
+				if (rig.boneEntries().at(bIdx).nameOffset() == rig.stringArray().offset(bIdx))
 					status.flags.stringArrayMisalignedToBones = true;
 
-				current = rig.boneEntries().at(bIdx).getNameOffset();
+				current = rig.boneEntries().at(bIdx).nameOffset();
 			}
 		}
 
 		//End Of File Process Results
-		if (status.raw == 0) continue;
+		if (status.raw == 0)
+			continue;
 
 		filesUnexpected++;
 
@@ -231,6 +247,12 @@ GTEST(RigScan)
 
 		if (status.flags.unkBoneType)
 			std::cout << _BMAGENTA("Unknown Bone Type") << "!" << std::endl;
+
+		if (status.flags.lodEnumAbove5)
+			std::cout << _BRED("Lod on Bone above 5 or below 0!") << std::endl;
+
+		if (status.flags.lodGreaterOnChild)
+			std::cout << _BRED("Child LOD") << " Greater than " << _BRED("Parent LOD") << std::endl;
 
 	}
 

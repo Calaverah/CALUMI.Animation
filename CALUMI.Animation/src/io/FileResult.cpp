@@ -55,17 +55,17 @@ namespace CALUMI::Utilities
 		return pImpl->_fileCode != FileErrorCode::Success;
 	}
 
-	FileResult::FileErrorCode FileResult::getFileErrorCode() const
+	FileResult::FileErrorCode FileResult::fileErrorCode() const
 	{
 		return pImpl->_fileCode;
 	}
 
-	PathContainer FileResult::getFilePath() const
+	PathContainer FileResult::filePath() const
 	{
 		return pImpl->_path;
 	}
 
-	const char* FileResult::getOpMessage() const
+	const char* FileResult::operationMessage() const
 	{
 		return pImpl->_message.c_str();
 	}

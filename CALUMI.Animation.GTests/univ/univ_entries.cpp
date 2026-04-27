@@ -9,10 +9,10 @@ GTEST(RotationSequence)
 {
     UNIV::RotationSequence sq;
 
-    sq.push_back(UNIV::Rotation(3, Math::Quaternion(0.0,0.0,0.0,1.0)));
-    sq.push_back(UNIV::Rotation(0, Math::Quaternion(1.0,0.0,0.0,1.0)));
-    sq.push_back(UNIV::Rotation(2, Math::Quaternion(0.0,1.0,0.0,1.0)));
-    sq.push_back(UNIV::Rotation(1, Math::Quaternion(0.0,0.0,1.0,1.0)));
+    sq.push_back(UNIV::RotationFrame(3, Math::Quaternion(0.0,0.0,0.0,1.0)));
+    sq.push_back(UNIV::RotationFrame(0, Math::Quaternion(1.0,0.0,0.0,1.0)));
+    sq.push_back(UNIV::RotationFrame(2, Math::Quaternion(0.0,1.0,0.0,1.0)));
+    sq.push_back(UNIV::RotationFrame(1, Math::Quaternion(0.0,0.0,1.0,1.0)));
 
     UNIV::RotationSequence sqR = sq;
 
@@ -51,10 +51,10 @@ GTEST(TranslationSequence)
 {
     UNIV::TranslationSequence sq;
 
-    sq.push_back(UNIV::Translation(3, Math::Vector3D(3.0,3.0,3.0)));
-    sq.push_back(UNIV::Translation(0, Math::Vector3D(0.0,0.0,0.0)));
-    sq.push_back(UNIV::Translation(2, Math::Vector3D(2.0,2.0,2.0)));
-    sq.push_back(UNIV::Translation(1, Math::Vector3D(1.0,1.0,1.0)));
+    sq.push_back(UNIV::TranslationFrame(3, Math::Vector3D(3.0,3.0,3.0)));
+    sq.push_back(UNIV::TranslationFrame(0, Math::Vector3D(0.0,0.0,0.0)));
+    sq.push_back(UNIV::TranslationFrame(2, Math::Vector3D(2.0,2.0,2.0)));
+    sq.push_back(UNIV::TranslationFrame(1, Math::Vector3D(1.0,1.0,1.0)));
 
     UNIV::TranslationSequence sqR = sq;
 
@@ -93,10 +93,10 @@ GTEST(ScalarSequence)
 {
     UNIV::ScalarSequence sq;
 
-    sq.push_back(UNIV::Scalar(3, 3.0f));
-    sq.push_back(UNIV::Scalar(0, 0.0f));
-    sq.push_back(UNIV::Scalar(2, 2.0f));
-    sq.push_back(UNIV::Scalar(1, 1.0f));
+    sq.push_back(UNIV::ScalarFrame(3, 3.0f));
+    sq.push_back(UNIV::ScalarFrame(0, 0.0f));
+    sq.push_back(UNIV::ScalarFrame(2, 2.0f));
+    sq.push_back(UNIV::ScalarFrame(1, 1.0f));
 
     UNIV::ScalarSequence sqR = sq;
 
@@ -135,10 +135,10 @@ GTEST(PrioritySequence)
 {
     UNIV::PrioritySequence sq;
 
-    sq.push_back(UNIV::Priority(3, 30));
-    sq.push_back(UNIV::Priority(0, 0));
-    sq.push_back(UNIV::Priority(2, 20));
-    sq.push_back(UNIV::Priority(1, 10));
+    sq.push_back(UNIV::PriorityFrame(3, 30));
+    sq.push_back(UNIV::PriorityFrame(0, 0));
+    sq.push_back(UNIV::PriorityFrame(2, 20));
+    sq.push_back(UNIV::PriorityFrame(1, 10));
 
     UNIV::PrioritySequence sqR = sq;
 

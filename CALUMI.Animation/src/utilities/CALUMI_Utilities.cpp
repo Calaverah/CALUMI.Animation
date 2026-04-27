@@ -52,10 +52,6 @@ namespace CALUMI::Utilities
 		currentIndex += variableSize;
 	}
 
-	StringContainer Indent(const uint64_t indents) {
-		return {indents * 2, ' '};
-	}
-
 	bool IsNumeric(const StringContainer& str)
 	{
 		for (uint64_t i = 0; i < str.length(); i++)
@@ -485,11 +481,11 @@ namespace CALUMI::Utilities
 	{
 		pImpl->strings.emplace_back(string);
 	}
-	uint64_t StringList::getOffset(const unsigned int idx) const
+	uint64_t StringList::offset(const unsigned int idx) const
 	{
 		return pImpl->strings.at(idx).offset;
 	}
-	uint64_t StringList::getFinalOffset() const
+	uint64_t StringList::finalOffset() const
 	{
 		return pImpl->finalOffset;
 	}
@@ -520,7 +516,7 @@ namespace CALUMI::Utilities
 		return pImpl->strings.size();
 	}
 
-	int64_t StringList::find(const char* string, int64_t defValue) const
+	int64_t StringList::find(const char* string, const int64_t defValue) const
 	{
 		for (int i = 0; i < pImpl->strings.size(); i++)
 		{
@@ -539,32 +535,6 @@ namespace CALUMI::Utilities
 	}
 #pragma endregion
 
-#pragma region EXTERN"C"
-
-	StringContainer* CreateStringContainerC()
-	{
-		return new StringContainer();
-	}
-
-	const char* GetStringFromContainerC(const StringContainer* source)
-	{
-		return source->c_str();
-	}
-
-	uint64_t GetStringContainerSizeC(const StringContainer* source)
-	{
-		return source->length();
-	}
-
-	void DeleteStringContainerC(const StringContainer* ptr)
-	{
-		if (ptr)
-		{
-			delete ptr;
-			ptr = nullptr;
-		}
-	}
-#pragma endregion
 
 	struct BufferObject::PrivateBuffer
 	{
@@ -636,3 +606,46 @@ namespace CALUMI::Utilities
 	}
 
 }
+
+#pragma region EXTERN"C"
+
+CALUMI::Utilities::StringContainer* CreateStringContainerC()
+{
+	return new CALUMI::Utilities::StringContainer();
+}
+
+const char* GetStringFromContainerC(const CALUMI::Utilities::StringContainer* source)
+{
+	if (source)
+		try
+		{
+			return source->c_str();
+		}
+		catch ( std::bad_alloc& ) {}
+
+	return nullptr;
+}
+
+uint64_t GetStringContainerSizeC(const CALUMI::Utilities::StringContainer* source)
+{
+	if (source)
+		try
+		{
+			return source->length();
+		}
+	catch ( std::bad_alloc& ){}
+
+	return 0;
+}
+
+void DeleteStringContainerC(const CALUMI::Utilities::StringContainer** ptr)
+{
+	if (ptr && *ptr)
+		try
+		{
+			delete *ptr;
+			*ptr = nullptr;
+		}
+		catch ( std::bad_alloc& ){}
+}
+#pragma endregion

@@ -3,32 +3,33 @@
 //Contact: Calaverahmedia@gmail.com
 
 
+// ReSharper disable CppConstValueFunctionReturnType
 #include <AnimStarfield>
 #include <utility>
 #include <vector>
 #include <algorithm>
-#include <cstring>
 #include <cmath>
 #include "internal/internalvectordef.h"
 
 
-namespace CALUMI { namespace SFBGS{
+namespace CALUMI::SFBGS
+{
 
 #pragma region ROTATIONPREFIX
 
 	struct RotationPrefix::Impl
 	{
-		int8_t _first : 7 = 0;
-		bool _firstFlag : 1 = false;
+		int8_t m_first : 7 = 0;
+		bool m_firstFlag : 1 = false;
 
-		int8_t _second : 7 = 0;
-		bool _secondFlag : 1 = false;
+		int8_t m_second : 7 = 0;
+		bool m_secondFlag : 1 = false;
 
-		int8_t _third : 7 = 0;
-		bool _thirdFlag : 1 = false;
+		int8_t m_third : 7 = 0;
+		bool m_thirdFlag : 1 = false;
 
-		uint8_t _count : 6 = 0;
-		uint8_t _missing : 2 = 0b11;
+		uint8_t m_count : 6 = 0;
+		uint8_t m_missing : 2 = 0b11;
 		Impl() = default;
 	};
 	RotationPrefix::RotationPrefix()
@@ -37,33 +38,36 @@ namespace CALUMI { namespace SFBGS{
 	}
 	RotationPrefix::RotationPrefix(const RotationPrefix& input) : RotationPrefix()
 	{
-		pImpl->_first = input.pImpl->_first;
-		pImpl->_firstFlag = input.pImpl->_firstFlag;
-		pImpl->_second = input.pImpl->_second;
-		pImpl->_secondFlag = input.pImpl->_secondFlag;
-		pImpl->_third = input.pImpl->_third;
-		pImpl->_thirdFlag = input.pImpl->_thirdFlag;
-		pImpl->_count= input.pImpl->_count;
-		pImpl->_missing = input.pImpl->_missing;
+		pImpl->m_first = input.pImpl->m_first;
+		pImpl->m_firstFlag = input.pImpl->m_firstFlag;
+		pImpl->m_second = input.pImpl->m_second;
+		pImpl->m_secondFlag = input.pImpl->m_secondFlag;
+		pImpl->m_third = input.pImpl->m_third;
+		pImpl->m_thirdFlag = input.pImpl->m_thirdFlag;
+		pImpl->m_count= input.pImpl->m_count;
+		pImpl->m_missing = input.pImpl->m_missing;
 	}
 	RotationPrefix::~RotationPrefix()
 	{
 		if (pImpl)
+		{
 			delete pImpl;
+			pImpl = nullptr;
+		}
 	}
-	RotationPrefix::RotationPrefix(int8_t X, bool QX, int8_t Y, bool QY, int8_t Z, bool QZ, uint8_t C, uint8_t ID) : RotationPrefix()
+	RotationPrefix::RotationPrefix(const int8_t X, const bool QX, const int8_t Y, const bool QY, const int8_t Z, const bool QZ, const uint8_t C, const uint8_t ID) : RotationPrefix()
 	{
-		pImpl->_first = std::clamp((int)X, 0b0, 0b01111111);
-		pImpl->_firstFlag = std::clamp((int)QX, 0b0, 0b01);
+		pImpl->m_first = std::clamp(static_cast<int>(X), 0b0, 0b01111111);
+		pImpl->m_firstFlag = std::clamp(static_cast<int>(QX), 0b0, 0b01);
 
-		pImpl->_second = std::clamp((int)Y, 0b0, 0b01111111);
-		pImpl->_secondFlag = std::clamp((int)QY, 0b0, 0b01);
+		pImpl->m_second = std::clamp(static_cast<int>(Y), 0b0, 0b01111111);
+		pImpl->m_secondFlag = std::clamp(static_cast<int>(QY), 0b0, 0b01);
 
-		pImpl->_third = std::clamp((int)Z, 0b0, 0b01111111);
-		pImpl->_thirdFlag = std::clamp((int)QZ, 0b0, 0b01);
+		pImpl->m_third = std::clamp(static_cast<int>(Z), 0b0, 0b01111111);
+		pImpl->m_thirdFlag = std::clamp(static_cast<int>(QZ), 0b0, 0b01);
 
-		pImpl->_count = std::clamp((int)C, 0b0, 0b00111111);
-		pImpl->_missing = std::clamp((int)ID, 0b0, 0b11);
+		pImpl->m_count = std::clamp(static_cast<int>(C), 0b0, 0b00111111);
+		pImpl->m_missing = std::clamp(static_cast<int>(ID), 0b0, 0b11);
 	}
 
 	RotationPrefix::RotationPrefix(const unsigned char* buffer) : RotationPrefix()
@@ -73,13 +77,13 @@ namespace CALUMI { namespace SFBGS{
 
 	bool RotationPrefix::operator==(const RotationPrefix& other) const
 	{
-		return pImpl->_first == other.pImpl->_first 
-			&& pImpl->_firstFlag == other.pImpl->_firstFlag 
-			&& pImpl->_second == other.pImpl->_second 
-			&& pImpl->_secondFlag == other.pImpl->_secondFlag 
-			&& pImpl->_third == other.pImpl->_third 
-			&& pImpl->_thirdFlag == other.pImpl->_thirdFlag 
-			&& pImpl->_missing == other.pImpl->_missing;
+		return pImpl->m_first == other.pImpl->m_first
+			&& pImpl->m_firstFlag == other.pImpl->m_firstFlag
+			&& pImpl->m_second == other.pImpl->m_second
+			&& pImpl->m_secondFlag == other.pImpl->m_secondFlag
+			&& pImpl->m_third == other.pImpl->m_third
+			&& pImpl->m_thirdFlag == other.pImpl->m_thirdFlag
+			&& pImpl->m_missing == other.pImpl->m_missing;
 	}
 
 	bool RotationPrefix::operator!=(const RotationPrefix& other) const
@@ -88,14 +92,14 @@ namespace CALUMI { namespace SFBGS{
 	}
 	RotationPrefix& RotationPrefix::operator=(const RotationPrefix& input)
 	{
-		pImpl->_first = input.pImpl->_first;
-		pImpl->_firstFlag = input.pImpl->_firstFlag;
-		pImpl->_second = input.pImpl->_second;
-		pImpl->_secondFlag = input.pImpl->_secondFlag;
-		pImpl->_third = input.pImpl->_third;
-		pImpl->_thirdFlag = input.pImpl->_thirdFlag;
-		pImpl->_count = input.pImpl->_count;
-		pImpl->_missing = input.pImpl->_missing;
+		pImpl->m_first = input.pImpl->m_first;
+		pImpl->m_firstFlag = input.pImpl->m_firstFlag;
+		pImpl->m_second = input.pImpl->m_second;
+		pImpl->m_secondFlag = input.pImpl->m_secondFlag;
+		pImpl->m_third = input.pImpl->m_third;
+		pImpl->m_thirdFlag = input.pImpl->m_thirdFlag;
+		pImpl->m_count = input.pImpl->m_count;
+		pImpl->m_missing = input.pImpl->m_missing;
 		return *this;
 	}
 	RotationPrefix& RotationPrefix::operator=(const unsigned char* buffer)
@@ -103,70 +107,71 @@ namespace CALUMI { namespace SFBGS{
 		std::memcpy(pImpl, buffer, sizeof(Impl));
 		return *this;
 	}
-    int8_t SFBGS::RotationPrefix::first() const
+	int8_t RotationPrefix::first() const
 	{
-		return pImpl->_first;
+		return pImpl->m_first;
 	}
-    void RotationPrefix::setFirst(int8_t input)
+	void RotationPrefix::setFirst(const int8_t input) const
 	{
-		pImpl->_first = input;
+		pImpl->m_first = input;
 	}
-    bool SFBGS::RotationPrefix::firstFlag() const
+	bool RotationPrefix::firstFlag() const
 	{
-		return pImpl->_firstFlag;
+		return pImpl->m_firstFlag;
 	}
-    void RotationPrefix::setFirstFlag(bool input)
+	void RotationPrefix::setFirstFlag(const bool input) const
 	{
-		pImpl->_firstFlag = input;
+		pImpl->m_firstFlag = input;
 	}
-    int8_t SFBGS::RotationPrefix::second() const
+	int8_t RotationPrefix::second() const
 	{
-		return pImpl->_second;
+		return pImpl->m_second;
 	}
-    void RotationPrefix::setSecond(int8_t input)
+	void RotationPrefix::setSecond(const int8_t input) const
 	{
-		pImpl->_second = input;
+		pImpl->m_second = input;
 	}
-    bool SFBGS::RotationPrefix::secondFlag() const
+	bool RotationPrefix::secondFlag() const
 	{
-		return pImpl->_secondFlag;
+		return pImpl->m_secondFlag;
 	}
-    void RotationPrefix::setSecondFlag(bool input)
+	void RotationPrefix::setSecondFlag(const bool input) const
 	{
-		pImpl->_secondFlag = input;
+		pImpl->m_secondFlag = input;
 	}
-    int8_t SFBGS::RotationPrefix::third() const
+	int8_t RotationPrefix::third() const
 	{
-		return pImpl->_third;
+		return pImpl->m_third;
 	}
-    void RotationPrefix::setThird(int8_t input)
+	void RotationPrefix::setThird(const int8_t input) const
 	{
-		pImpl->_third = input;
+		pImpl->m_third = input;
 	}
-    bool SFBGS::RotationPrefix::thirdFlag() const
+	bool RotationPrefix::thirdFlag() const
 	{
-		return pImpl->_thirdFlag;
+		return pImpl->m_thirdFlag;
 	}
-    void RotationPrefix::setThirdFlag(bool input)
+	void RotationPrefix::setThirdFlag(const bool input) const
 	{
-		pImpl->_thirdFlag = input;
+		pImpl->m_thirdFlag = input;
 	}
-    uint8_t SFBGS::RotationPrefix::count() const
+	uint8_t RotationPrefix::count() const
 	{
-		return pImpl->_count;
+		return pImpl->m_count;
 	}
-    void RotationPrefix::setCount(uint8_t input)
+	void RotationPrefix::setCount(const uint8_t input) const
 	{
-		pImpl->_count = input;
+		pImpl->m_count = input;
 	}
-    uint8_t SFBGS::RotationPrefix::missing() const
+	uint8_t RotationPrefix::missing() const
 	{
-		return pImpl->_missing;
+		return pImpl->m_missing;
 	}
-    void RotationPrefix::setMissing(uint8_t input)
+	void RotationPrefix::setMissing(const uint8_t input) const
 	{
-		pImpl->_missing = input;	
+		pImpl->m_missing = input;
 	}
+
 	const void* const RotationPrefix::data() const
 	{
 		return pImpl;
@@ -176,15 +181,18 @@ namespace CALUMI { namespace SFBGS{
 #pragma region ROTATION
 	struct RotationEntry::Impl
 	{
-		int8_t _first = 0;
-		int8_t _second = 0;
-		int8_t _third = 0;
+		int8_t m_first = 0;
+		int8_t m_second = 0;
+		int8_t m_third = 0;
 		Impl() = default;
 	};
 	RotationEntry::~RotationEntry()
 	{
 		if (pImpl)
+		{
 			delete pImpl;
+			pImpl = nullptr;
+		}
 	}
 	RotationEntry::RotationEntry()
 	{
@@ -192,15 +200,15 @@ namespace CALUMI { namespace SFBGS{
 	}
 	RotationEntry::RotationEntry(const RotationEntry& input) : RotationEntry()
 	{
-		pImpl->_first = input.pImpl->_first;
-		pImpl->_second = input.pImpl->_second;
-		pImpl->_third = input.pImpl->_third;
+		pImpl->m_first = input.pImpl->m_first;
+		pImpl->m_second = input.pImpl->m_second;
+		pImpl->m_third = input.pImpl->m_third;
 	}
 	RotationEntry::RotationEntry(const int8_t& first, const int8_t& second, const int8_t& third) : RotationEntry()
 	{
-		pImpl->_first = first;
-		pImpl->_second = second;
-		pImpl->_third = third;
+		pImpl->m_first = first;
+		pImpl->m_second = second;
+		pImpl->m_third = third;
 	}
 	RotationEntry::RotationEntry(const unsigned char* buffer) : RotationEntry()
 	{
@@ -208,9 +216,9 @@ namespace CALUMI { namespace SFBGS{
 	}
 	RotationEntry& RotationEntry::operator=(const RotationEntry& input)
 	{
-		pImpl->_first = input.pImpl->_first;
-		pImpl->_second = input.pImpl->_second;
-		pImpl->_third = input.pImpl->_third;
+		pImpl->m_first = input.pImpl->m_first;
+		pImpl->m_second = input.pImpl->m_second;
+		pImpl->m_third = input.pImpl->m_third;
 		return *this;
 	}
 
@@ -220,29 +228,29 @@ namespace CALUMI { namespace SFBGS{
 		return *this;
 	}
 
-    int8_t SFBGS::RotationEntry::first() const
+	int8_t RotationEntry::first() const
 	{
-		return pImpl->_first;
+		return pImpl->m_first;
 	}
-    void RotationEntry::setFirst(int8_t input)
+	void RotationEntry::setFirst(const int8_t input) const
 	{
-		pImpl->_first = input;
+		pImpl->m_first = input;
 	}
-    int8_t SFBGS::RotationEntry::second() const
+	int8_t RotationEntry::second() const
 	{
-		return pImpl->_second;
+		return pImpl->m_second;
 	}
-    void RotationEntry::setSecond(int8_t input)
+	void RotationEntry::setSecond(const int8_t input) const
 	{
-		pImpl->_second = input;
+		pImpl->m_second = input;
 	}
-    int8_t SFBGS::RotationEntry::third() const
+	int8_t RotationEntry::third() const
 	{
-		return pImpl->_third;
+		return pImpl->m_third;
 	}
-    void RotationEntry::setThird(int8_t input)
+	void RotationEntry::setThird(const int8_t input) const
 	{
-		pImpl->_third = input;
+		pImpl->m_third = input;
 	}
 
 	const void* const RotationEntry::data() const
@@ -256,10 +264,10 @@ namespace CALUMI { namespace SFBGS{
 
 	struct TranslationPrefix::Impl
 	{
-		int16_t _x = 0;
-		int16_t _y = 0;
-		int16_t _z = 0;
-		uint16_t _count = 1; //This RLE uses non-zero based numbering for some reason
+		int16_t m_x = 0;
+		int16_t m_y = 0;
+		int16_t m_z = 0;
+		uint16_t m_count = 1; //This RLE uses non-zero based numbering for some reason
 		Impl() = default;
 	};
 	TranslationPrefix::TranslationPrefix()
@@ -268,24 +276,29 @@ namespace CALUMI { namespace SFBGS{
 	}
 	TranslationPrefix::~TranslationPrefix()
 	{
-		if (pImpl) delete pImpl;
+		if (pImpl)
+		{
+			delete pImpl;
+			pImpl = nullptr;
+		}
 	}
-	int16_t TranslationPrefix::x() const { return pImpl->_x; }
-	int16_t TranslationPrefix::y() const { return pImpl->_y; }
-	int16_t TranslationPrefix::z() const { return pImpl->_z; }
-	uint16_t TranslationPrefix::count() const { return pImpl->_count; }
-	void TranslationPrefix::setX(int16_t x) { pImpl->_x = x; }
-	void TranslationPrefix::setY(int16_t y) { pImpl->_y = y; }
-	void TranslationPrefix::setZ(int16_t z) { pImpl->_z = z; }
-	void TranslationPrefix::setCount(uint16_t count) { pImpl->_count = count; }
+	int16_t TranslationPrefix::x() const { return pImpl->m_x; }
+	int16_t TranslationPrefix::y() const { return pImpl->m_y; }
+	int16_t TranslationPrefix::z() const { return pImpl->m_z; }
+	uint16_t TranslationPrefix::count() const { return pImpl->m_count; }
+	void TranslationPrefix::setX(const int16_t x) const { pImpl->m_x = x; }
+	void TranslationPrefix::setY(const int16_t y) const { pImpl->m_y = y; }
+	void TranslationPrefix::setZ(const int16_t z) const { pImpl->m_z = z; }
+	void TranslationPrefix::setCount(const uint16_t count) const { pImpl->m_count = count; }
 
-	TranslationPrefix::TranslationPrefix(int16_t x, int16_t y, int16_t z, uint16_t count) : TranslationPrefix()
+	TranslationPrefix::TranslationPrefix(const int16_t x, const int16_t y, const int16_t z, const uint16_t count) :
+	TranslationPrefix()
 	{
-		pImpl->_x = x; pImpl->_y = y; pImpl->_z = z; pImpl->_count = count;
+		pImpl->m_x = x; pImpl->m_y = y; pImpl->m_z = z; pImpl->m_count = count;
 	}
 	TranslationPrefix::TranslationPrefix(const TranslationPrefix& input) : TranslationPrefix()
 	{
-		pImpl->_x = input.pImpl->_x; pImpl->_y = input.pImpl->_y; pImpl->_z = input.pImpl->_z; pImpl->_count = input.pImpl->_count;
+		pImpl->m_x = input.pImpl->m_x; pImpl->m_y = input.pImpl->m_y; pImpl->m_z = input.pImpl->m_z; pImpl->m_count = input.pImpl->m_count;
 	}
 	TranslationPrefix::TranslationPrefix(const unsigned char* buffer) : TranslationPrefix()
 	{
@@ -298,11 +311,11 @@ namespace CALUMI { namespace SFBGS{
 	}
 	TranslationPrefix& TranslationPrefix::operator=(const TranslationPrefix& input)
 	{
-		pImpl->_x = input.pImpl->_x; pImpl->_y = input.pImpl->_y; pImpl->_z = input.pImpl->_z; pImpl->_count = input.pImpl->_count; return *this;
+		pImpl->m_x = input.pImpl->m_x; pImpl->m_y = input.pImpl->m_y; pImpl->m_z = input.pImpl->m_z; pImpl->m_count = input.pImpl->m_count; return *this;
 	}
 	bool TranslationPrefix::operator==(const TranslationPrefix& other) const
 	{
-		return pImpl->_x == other.pImpl->_x && pImpl->_y == other.pImpl->_y && pImpl->_z == other.pImpl->_z;
+		return pImpl->m_x == other.pImpl->m_x && pImpl->m_y == other.pImpl->m_y && pImpl->m_z == other.pImpl->m_z;
 	}
 	bool TranslationPrefix::operator!=(const TranslationPrefix& other) const
 	{
@@ -316,11 +329,11 @@ namespace CALUMI { namespace SFBGS{
 
 	static std::tuple<int8_t, int8_t, bool> GetSFBGSRotationComponents(const float& component)
 	{
-		float lowPrecision = static_cast<float>(CLA_SQRT1_2 / 64.0); //1.0 / (sqrt(2) * 64.0);		//2^6
-		float highPrecision = static_cast<float>(CLA_SQRT1_2 / 16384.0); //1.0 / (sqrt(2) * 16384.0);	//2^14
+		constexpr float lowPrecision = CLA_SQRT1_2 / 64.0; //1.0 / (sqrt(2) * 64.0);		//2^6
+		constexpr float highPrecision = CLA_SQRT1_2 / 16384.0; //1.0 / (sqrt(2) * 16384.0);	//2^14
 
 		float value = 0.0;
-		if(component != 0)
+		if(std::abs(component) != 0.0f)
 			value = component + std::copysignf(highPrecision / 10.0f, component); //increase the value by just enough to correct rounding errors on conversion to int
 
 		int8_t sVal = 0;
@@ -328,7 +341,7 @@ namespace CALUMI { namespace SFBGS{
 		float tempS = 0;
 		bool flag = false;
 
-		lVal = std::clamp((int)(value / lowPrecision), -64, 63);
+		lVal = std::clamp(static_cast<int>(value / lowPrecision), -64, 63);
 		if (lVal == -64 || lVal == 63)
 		{
 			tempS = (value - lVal * lowPrecision) / highPrecision;
@@ -345,7 +358,7 @@ namespace CALUMI { namespace SFBGS{
 		else
 		{
 			sVal = static_cast<int8_t>(fmod(value, lowPrecision) / highPrecision);
-			lVal = static_cast<int8_t>((value - (sVal * highPrecision)) / lowPrecision);
+			lVal = static_cast<int8_t>((value - sVal * highPrecision) / lowPrecision);
 		}
 		return std::make_tuple(lVal, sVal, flag);
 	}
@@ -353,9 +366,9 @@ namespace CALUMI { namespace SFBGS{
 #pragma region TRANSLATION
 	struct TranslationEntry::Impl
 	{
-		int8_t _x = 0;
-		int8_t _y = 0;
-		int8_t _z = 0;
+		int8_t m_x = 0;
+		int8_t m_y = 0;
+		int8_t m_z = 0;
 		Impl() = default;
 	};
 
@@ -367,11 +380,14 @@ namespace CALUMI { namespace SFBGS{
 	TranslationEntry::~TranslationEntry()
 	{
 		if (pImpl)
+		{
 			delete pImpl;
+			pImpl = nullptr;
+		}
 	}
-	TranslationEntry::TranslationEntry(int8_t x, int8_t y, int8_t z) : TranslationEntry()
+	TranslationEntry::TranslationEntry(const int8_t x, const int8_t y, const int8_t z) : TranslationEntry()
 	{
-		pImpl->_x = x; pImpl->_y = y; pImpl->_z = z;
+		pImpl->m_x = x; pImpl->m_y = y; pImpl->m_z = z;
 	}
 	TranslationEntry::TranslationEntry(const unsigned char* buffer) : TranslationEntry()
 	{
@@ -379,7 +395,7 @@ namespace CALUMI { namespace SFBGS{
 	}
 	TranslationEntry::TranslationEntry(const TranslationEntry& input) : TranslationEntry()
 	{
-		pImpl->_x = input.pImpl->_x; pImpl->_y = input.pImpl->_y; pImpl->_z = input.pImpl->_z;
+		pImpl->m_x = input.pImpl->m_x; pImpl->m_y = input.pImpl->m_y; pImpl->m_z = input.pImpl->m_z;
 	}
 	TranslationEntry& TranslationEntry::operator=(const unsigned char* buffer)
 	{
@@ -388,95 +404,21 @@ namespace CALUMI { namespace SFBGS{
 	}
 	TranslationEntry& TranslationEntry::operator=(const TranslationEntry& input)
 	{
-		pImpl->_x = input.pImpl->_x; pImpl->_y = input.pImpl->_y; pImpl->_z = input.pImpl->_z;
+		pImpl->m_x = input.pImpl->m_x; pImpl->m_y = input.pImpl->m_y; pImpl->m_z = input.pImpl->m_z;
 		return *this;
 	}
-	int8_t TranslationEntry::x() const { return pImpl->_x; }
-	int8_t TranslationEntry::y() const { return pImpl->_y; }
-	int8_t TranslationEntry::z() const { return pImpl->_z; }
-	void TranslationEntry::setX(int8_t x) { pImpl->_x = x; }
-	void TranslationEntry::setY(int8_t y) { pImpl->_y = y; }
-	void TranslationEntry::setZ(int8_t z) { pImpl->_z = z; }
+	int8_t TranslationEntry::x() const { return pImpl->m_x; }
+	int8_t TranslationEntry::y() const { return pImpl->m_y; }
+	int8_t TranslationEntry::z() const { return pImpl->m_z; }
+	void TranslationEntry::setX(const int8_t x) const { pImpl->m_x = x; }
+	void TranslationEntry::setY(const int8_t y) const { pImpl->m_y = y; }
+	void TranslationEntry::setZ(const int8_t z) const { pImpl->m_z = z; }
 
 	const void* const TranslationEntry::data() const
 	{
 		return pImpl;
 	}
 #pragma endregion
-
-
-	/// <summary>
-	/// Will return pair of SFBGS Compressed rotations. The RLE value, or the prefix, will always have a count of 0 (1).
-	/// Use the RLE scheme to fold a vector of these prefix values into a counted RLE vector.
-	/// </summary>
-	/// <param name="input"></param>
-	/// <returns></returns>
-	CompressedRotation GetSFBGSRotationPair(const CALUMI::Math::Quaternion& input)
-	{
-		RotationPrefix prefix;
-		CALUMI::Math::Quaternion tempInput = input;
-
-        prefix.setMissing(3);
-        if (std::abs(input.x()) > CLA_SQRT1_2) prefix.setMissing(0);
-        if (std::abs(input.y()) > CLA_SQRT1_2) prefix.setMissing(1);
-        if (std::abs(input.z()) > CLA_SQRT1_2) prefix.setMissing(2);
-
-		//We must flip the quaternion values such that the missing value is positive. When derived, the missing will always be positive. So long as all values flip the quaternion is equal.
-        if (prefix.missing() == 0 && input.x() < 0) tempInput = -input;
-        if (prefix.missing() == 1 && input.y() < 0) tempInput = -input;
-        if (prefix.missing() == 2 && input.z() < 0) tempInput = -input;
-        if (prefix.missing() == 3 && input.w() < 0) tempInput = -input;
-
-		std::vector<float> fResults; fResults.reserve(3);
-        if (prefix.missing() != 0) fResults.push_back(tempInput.x());
-        if (prefix.missing() != 1) fResults.push_back(tempInput.y());
-        if (prefix.missing() != 2) fResults.push_back(tempInput.z());
-        if (prefix.missing() != 3) fResults.push_back(tempInput.w());
-
-		auto first = GetSFBGSRotationComponents(fResults.at(0));
-		auto second = GetSFBGSRotationComponents(fResults.at(1));
-		auto third = GetSFBGSRotationComponents(fResults.at(2));
-
-        prefix.setFirst(std::get<0>(first));
-        prefix.setFirstFlag(std::get<2>(first));
-        prefix.setSecond(std::get<0>(second));
-        prefix.setSecondFlag(std::get<2>(second));
-        prefix.setThird(std::get<0>(third));
-        prefix.setThirdFlag(std::get<2>(third));
-        prefix.setCount(0);
-
-		RotationEntry suffix(std::get<1>(first), std::get<1>(second), std::get<1>(third) );
-
-		
-		return { prefix, suffix };
-	}
-
-	CALUMI::Math::Quaternion GetUniversalRotation(const CALUMI::SFBGS::RotationPrefix& prefix, const CALUMI::SFBGS::RotationEntry& suffix)
-	{
-		double lowPrecision		= CLA_SQRT1_2 / 64.0;
-		double highPrecision	= CLA_SQRT1_2 / 16384.0;
-
-        uint8_t s1 = 1 << (3 * prefix.firstFlag());
-        uint8_t s2 = 1 << (3 * prefix.secondFlag());
-        uint8_t s3 = 1 << (3 * prefix.thirdFlag());
-
-        double component1 = lowPrecision * prefix.first() + highPrecision * suffix.first() * s1;
-        double component2 = lowPrecision * prefix.second() + highPrecision * suffix.second() * s2;
-        double component3 = lowPrecision * prefix.third() + highPrecision * suffix.third() * s3;
-		double component4 = sqrt(1 - pow(component1, 2) - pow(component2, 2) - pow(component3, 2));
-
-		CALUMI::Math::Quaternion output;
-
-        switch (prefix.missing())
-		{
-		case 0:     output.setX(static_cast<float>(component4)); output.setY(static_cast<float>(component1)); output.setZ(static_cast<float>(component2)); output.setW(static_cast<float>(component3)); break;
-		case 1:     output.setY(static_cast<float>(component4)); output.setX(static_cast<float>(component1)); output.setZ(static_cast<float>(component2)); output.setW(static_cast<float>(component3)); break;
-		case 2:     output.setZ(static_cast<float>(component4)); output.setX(static_cast<float>(component1)); output.setY(static_cast<float>(component2)); output.setW(static_cast<float>(component3)); break;
-		default:    output.setW(static_cast<float>(component4)); output.setX(static_cast<float>(component1)); output.setY(static_cast<float>(component2)); output.setZ(static_cast<float>(component3)); break;
-		}
-
-		return output;
-	}
 
 	static std::pair<int16_t, int8_t> GetSFBGSTranslationComponents(const double& component, const float& highPrecision, const float& lowPrecision)
 	{
@@ -490,29 +432,9 @@ namespace CALUMI { namespace SFBGS{
 		return std::make_pair(lVal, sVal);
 	}
 
-	CompressedTranslation GetSFBGSTranslationPair(const CALUMI::Math::Vector3D& input, const float& highPrecision, const float& lowPrecision)
+	TranslationPrefixSequence UnfoldTranslationPrefixSequence(const TranslationPrefixSequence& input)
 	{
-		auto x = GetSFBGSTranslationComponents(input.x(), highPrecision, lowPrecision);
-		auto y = GetSFBGSTranslationComponents(input.y(), highPrecision, lowPrecision);
-		auto z = GetSFBGSTranslationComponents(input.z(), highPrecision, lowPrecision);
-
-		TranslationPrefix prefix(x.first, y.first, z.first, static_cast < uint16_t>(1));
-		TranslationEntry suffix(x.second, y.second, z.second);
-
-		return { prefix, suffix };
-	}
-
-	CALUMI::Math::Vector3D GetUniversalTranslation(const CALUMI::SFBGS::TranslationPrefix& prefix, const CALUMI::SFBGS::TranslationEntry& suffix, const float& highPrecision, const float& lowPrecision)
-	{
-		//std::println("PRE AND SUFF {} {} {} & {} {} {}", prefix._x, prefix._y, prefix._z, suffix._x, suffix._y, suffix._z);
-		CALUMI::Math::Vector3D output((prefix.x() * lowPrecision + suffix.x() * highPrecision), (prefix.y() * lowPrecision + suffix.y() * highPrecision), (prefix.z() * lowPrecision + suffix.z() * highPrecision));
-		//std::println("Output {} {} {}", output._x, output._y, output._z);
-		return output;
-	}
-	
-	SFBGS::TranslationPrefixSequence UnfoldTranslationPrefixSequence(const SFBGS::TranslationPrefixSequence& input)
-	{
-		SFBGS::TranslationPrefixSequence output;
+		TranslationPrefixSequence output;
 		uint16_t totalSize = 0;
 		for (int i = 0; i<input.size();i++)
 		{
@@ -526,7 +448,7 @@ namespace CALUMI { namespace SFBGS{
 		{
 			for (uint32_t j = 0; j < input.at(i).count(); j++) //Translations use classical counters
 			{
-				CALUMI::SFBGS::TranslationPrefix newPrefix = input.at(i);
+				TranslationPrefix newPrefix = input.at(i);
 				newPrefix.setCount(1);
 				output.push_back(newPrefix);
 			}
@@ -535,12 +457,12 @@ namespace CALUMI { namespace SFBGS{
 		return output;
 	}
 
-	SFBGS::TranslationPrefixSequence FoldTranslationPrefixSequence(const SFBGS::TranslationPrefixSequence& input)
+	TranslationPrefixSequence FoldTranslationPrefixSequence(const TranslationPrefixSequence& input)
 	{
 		if (input.size() < 2)return input;
 
-		SFBGS::TranslationPrefixSequence outputList; outputList.reserve(input.size());
-		CALUMI::SFBGS::TranslationPrefix referencePrefix = input.at(0);
+		TranslationPrefixSequence outputList; outputList.reserve(input.size());
+		TranslationPrefix referencePrefix = input.at(0);
 		for (uint16_t i = 1; i < input.size(); i++)
 		{
 			if (referencePrefix == input.at(i) && referencePrefix.count() <0xFFFF)
@@ -558,44 +480,44 @@ namespace CALUMI { namespace SFBGS{
 		return outputList;
 	}
 
-	SFBGS::RotationPrefixSequence UnfoldRotationPrefixSequence(const SFBGS::RotationPrefixSequence& input)
+	RotationPrefixSequence UnfoldRotationPrefixSequence(const RotationPrefixSequence& input)
 	{
-		SFBGS::RotationPrefixSequence output;
+		RotationPrefixSequence output;
 		uint16_t totalSize = 0;
 		for (int i =0; i < input.size(); i++)
 		{
 			totalSize++;
-            totalSize += input.at(i).count();
+			totalSize += input.at(i).count();
 		}
 
 		output.reserve(totalSize);
 
 		for (int z =0; z < input.size(); z++)
 		{
-            for (uint8_t i = 0; i <= input.at(z).count(); i++) //Rotations use programming counters
+			for (uint8_t i = 0; i <= input.at(z).count(); i++) //Rotations use programming counters
 			{
-				CALUMI::SFBGS::RotationPrefix newPrefix = input.at(z);
-                newPrefix.setCount(0);
+				RotationPrefix newPrefix = input.at(z);
+				newPrefix.setCount(0);
 				output.push_back(newPrefix);
 			}
 		}
 		return output;
 	}
 
-	SFBGS::RotationPrefixSequence FoldRotationPrefixSequence(const SFBGS::RotationPrefixSequence& input)
+	RotationPrefixSequence FoldRotationPrefixSequence(const RotationPrefixSequence& input)
 	{
 		if (input.size() < 2)return input;
-		
-		SFBGS::RotationPrefixSequence outputList;
+
+		RotationPrefixSequence outputList;
 		outputList.reserve(input.size());
-		
-		CALUMI::SFBGS::RotationPrefix referencePrefix = input.at(0);
+
+		RotationPrefix referencePrefix = input.at(0);
 
 		for (uint16_t i = 1; i < input.size(); i++)
 		{
-            if (referencePrefix == input.at(i) && referencePrefix.count() < 63)
+			if (referencePrefix == input.at(i) && referencePrefix.count() < 63)
 			{
-                referencePrefix.setCount(referencePrefix.count()+1);
+				referencePrefix.setCount(referencePrefix.count()+1);
 			}
 			else
 			{
@@ -611,14 +533,54 @@ namespace CALUMI { namespace SFBGS{
 
 	struct CompressedRotation::Impl
 	{
-		RotationPrefix _prefix;
-		RotationEntry _suffix;
+		RotationPrefix m_prefix;
+		RotationEntry m_suffix;
 	};
 
 	CompressedRotation::CompressedRotation(const RotationPrefix& prefix, const RotationEntry& entry) : pImpl(new Impl())
 	{
-		pImpl->_prefix = prefix;
-		pImpl->_suffix = entry;
+		pImpl->m_prefix = prefix;
+		pImpl->m_suffix = entry;
+	}
+
+	CompressedRotation::CompressedRotation(const Math::Quaternion& input) : pImpl(new Impl())
+	{
+		const RotationPrefix prefix;
+		Math::Quaternion tempInput = input;
+
+		prefix.setMissing(3);
+		if (std::abs(input.x()) > CLA_SQRT1_2) prefix.setMissing(0);
+		if (std::abs(input.y()) > CLA_SQRT1_2) prefix.setMissing(1);
+		if (std::abs(input.z()) > CLA_SQRT1_2) prefix.setMissing(2);
+
+		//We must flip the quaternion values such that the missing value is positive. When derived, the missing will always be positive. So long as all values flip the quaternion is equal.
+		if (prefix.missing() == 0 && input.x() < 0) tempInput = -input;
+		if (prefix.missing() == 1 && input.y() < 0) tempInput = -input;
+		if (prefix.missing() == 2 && input.z() < 0) tempInput = -input;
+		if (prefix.missing() == 3 && input.w() < 0) tempInput = -input;
+
+		std::vector<float> fResults; fResults.reserve(3);
+		if (prefix.missing() != 0) fResults.push_back(tempInput.x());
+		if (prefix.missing() != 1) fResults.push_back(tempInput.y());
+		if (prefix.missing() != 2) fResults.push_back(tempInput.z());
+		if (prefix.missing() != 3) fResults.push_back(tempInput.w());
+
+		const auto first = GetSFBGSRotationComponents(fResults.at(0));
+		const auto second = GetSFBGSRotationComponents(fResults.at(1));
+		const auto third = GetSFBGSRotationComponents(fResults.at(2));
+
+		prefix.setFirst(std::get<0>(first));
+		prefix.setFirstFlag(std::get<2>(first));
+		prefix.setSecond(std::get<0>(second));
+		prefix.setSecondFlag(std::get<2>(second));
+		prefix.setThird(std::get<0>(third));
+		prefix.setThirdFlag(std::get<2>(third));
+		prefix.setCount(0);
+
+		const RotationEntry suffix(std::get<1>(first), std::get<1>(second), std::get<1>(third) );
+
+		pImpl->m_prefix = prefix;
+		pImpl->m_suffix = suffix;
 	}
 
 	CompressedRotation::~CompressedRotation()
@@ -632,24 +594,65 @@ namespace CALUMI { namespace SFBGS{
 
 	const RotationPrefix& CompressedRotation::prefix() const
 	{
-		return pImpl->_prefix;
+		return pImpl->m_prefix;
 	}
 
 	const RotationEntry& CompressedRotation::suffix() const
 	{
-		return pImpl->_suffix;
+		return pImpl->m_suffix;
 	}
 
-	struct CompressedTranslation::Impl 
+	Math::Quaternion CompressedRotation::toQuaternion() const
 	{
-		TranslationPrefix _prefix;
-		TranslationEntry _suffix;
+		constexpr double lowPrecision		= CLA_SQRT1_2 / 64.0;
+		constexpr double highPrecision	= CLA_SQRT1_2 / 16384.0;
+
+		const uint8_t s1 = 1 << (3 * pImpl->m_prefix.firstFlag());
+		const uint8_t s2 = 1 << (3 * pImpl->m_prefix.secondFlag());
+		const uint8_t s3 = 1 << (3 * pImpl->m_prefix.thirdFlag());
+
+		const double component1 = lowPrecision * pImpl->m_prefix.first() + highPrecision * pImpl->m_suffix.first() * s1;
+		const double component2 = lowPrecision * pImpl->m_prefix.second() + highPrecision * pImpl->m_suffix.second()
+		* s2;
+		const double component3 = lowPrecision * pImpl->m_prefix.third() + highPrecision * pImpl->m_suffix.third() * s3;
+		const double component4 = sqrt(1 - pow(component1, 2) - pow(component2, 2) - pow(component3, 2));
+
+		Math::Quaternion output;
+
+		switch (pImpl->m_prefix.missing())
+		{
+		case 0:     output.setX(static_cast<float>(component4)); output.setY(static_cast<float>(component1)); output.setZ(static_cast<float>(component2)); output.setW(static_cast<float>(component3)); break;
+		case 1:     output.setY(static_cast<float>(component4)); output.setX(static_cast<float>(component1)); output.setZ(static_cast<float>(component2)); output.setW(static_cast<float>(component3)); break;
+		case 2:     output.setZ(static_cast<float>(component4)); output.setX(static_cast<float>(component1)); output.setY(static_cast<float>(component2)); output.setW(static_cast<float>(component3)); break;
+		default:    output.setW(static_cast<float>(component4)); output.setX(static_cast<float>(component1)); output.setY(static_cast<float>(component2)); output.setZ(static_cast<float>(component3)); break;
+		}
+
+		return output;
+	}
+
+	struct CompressedTranslation::Impl
+	{
+		TranslationPrefix m_prefix;
+		TranslationEntry m_suffix;
 	};
 
 	CompressedTranslation::CompressedTranslation(const TranslationPrefix& prefix, const TranslationEntry& entry) : pImpl(new Impl())
 	{
-		pImpl->_prefix = prefix;
-		pImpl->_suffix = entry;
+		pImpl->m_prefix = prefix;
+		pImpl->m_suffix = entry;
+	}
+
+	CompressedTranslation::CompressedTranslation(const Math::Vector3D& input, const float& highPrecision, const float& lowPrecision) : pImpl(new Impl())
+	{
+		auto [xPrefix, xSuffix] = GetSFBGSTranslationComponents(input.x(), highPrecision, lowPrecision);
+		auto [yPrefix, ySuffix] = GetSFBGSTranslationComponents(input.y(), highPrecision, lowPrecision);
+		auto [zPrefix, zSuffix] = GetSFBGSTranslationComponents(input.z(), highPrecision, lowPrecision);
+
+		const TranslationPrefix prefix(xPrefix, yPrefix, zPrefix, 1);
+		const TranslationEntry suffix(xSuffix, ySuffix, zSuffix);
+
+		pImpl->m_prefix = prefix;
+		pImpl->m_suffix = suffix;
 	}
 
 	CompressedTranslation::~CompressedTranslation()
@@ -663,12 +666,21 @@ namespace CALUMI { namespace SFBGS{
 
 	const TranslationPrefix& CompressedTranslation::prefix() const
 	{
-		return pImpl->_prefix;
+		return pImpl->m_prefix;
 	}
 
 	const TranslationEntry& CompressedTranslation::suffix() const
 	{
-		return pImpl->_suffix;
+		return pImpl->m_suffix;
+	}
+
+	Math::Vector3D CompressedTranslation::toVector3D(const float lowPrecision, const float highPrecision) const
+	{
+		Math::Vector3D output(
+			pImpl->m_prefix.x() * lowPrecision + pImpl->m_suffix.x() * highPrecision,
+			pImpl->m_prefix.y() * lowPrecision + pImpl->m_suffix.y() * highPrecision,
+			pImpl->m_prefix.z() * lowPrecision + pImpl->m_suffix.z() * highPrecision);
+		return output;
 	}
 
 	VECTORDEF(RotationEntrySequence, RotationEntry)
@@ -676,5 +688,4 @@ namespace CALUMI { namespace SFBGS{
 	VECTORDEF(RotationPrefixSequence, RotationPrefix)
 	VECTORDEF(TranslationPrefixSequence, TranslationPrefix)
 
-}
 }

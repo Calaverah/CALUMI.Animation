@@ -6,3 +6,5 @@
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
 #include "univ/skeletonrig/UNIV_BoneTypes.h"
 #include "univ/UNIV_AnimationScene.h"
+#include "univ/skeletonrig/packages/UNIV_RigManifestPackage.h"
+#include "univ/skeletonrig/packages/UNIV_RigMirrorPackage.h"

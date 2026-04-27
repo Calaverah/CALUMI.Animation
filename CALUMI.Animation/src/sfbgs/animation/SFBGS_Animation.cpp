@@ -669,7 +669,7 @@ namespace CALUMI::SFBGS {
 		for (int i =0; i < input.size(); i++)
 		{
 			rotationKeyFrames().push_back(input.at(i).frame());
-			auto result = GetSFBGSRotationPair(input.at(i).rotationQuaternion());
+			auto result = CompressedRotation(input.at(i).rotationQuaternion());
 			rotationPrefixEntries().push_back(result.prefix());
 			rotationEntries().push_back(result.suffix());
 		}
@@ -685,7 +685,7 @@ namespace CALUMI::SFBGS {
 		RotationPrefixSequence unfoldedPrefixes = UnfoldRotationPrefixSequence(rotationPrefixEntries());
 		for (unsigned int i = 0; i < rotationCount(); i++)
 		{
-			UNIV::Rotation toAdd(rotationKeyFrames().at(i), GetUniversalRotation(unfoldedPrefixes.at(i), rotationEntries().at(i)));
+			UNIV::RotationFrame toAdd(rotationKeyFrames().at(i), CompressedRotation(unfoldedPrefixes.at(i), rotationEntries().at(i)).toQuaternion());
 			output.push_back(toAdd);
 		}
 		SortRotationSequence(output,false);
@@ -701,7 +701,7 @@ namespace CALUMI::SFBGS {
 		for (int i = 0; i < input.size(); i++)
 		{
 			translationKeyFrames().push_back(input.at(i).frame());
-			auto result = GetSFBGSTranslationPair(input.at(i).translationVector(), highPrecision, lowPrecision);
+			auto result = CompressedTranslation(input.at(i).translationVector(), highPrecision, lowPrecision);
 			translationPrefixEntries().push_back(result.prefix());
 			translationEntries().push_back(result.suffix());
 		}
@@ -716,7 +716,7 @@ namespace CALUMI::SFBGS {
 		TranslationPrefixSequence unfoldedPrefixes = UnfoldTranslationPrefixSequence(translationPrefixEntries());
 		for (unsigned int i = 0; i < translationCount(); i++)
 		{
-			UNIV::Translation toAdd(translationKeyFrames().at(i), GetUniversalTranslation(unfoldedPrefixes.at(i), translationEntries().at(i), highPrecision, lowPrecision));
+			UNIV::TranslationFrame toAdd(translationKeyFrames().at(i), CompressedTranslation(unfoldedPrefixes.at(i), translationEntries().at(i)).toVector3D(lowPrecision, highPrecision));
 			output.push_back(toAdd);
 		}
 		SortTranslationSequence(output);
@@ -741,7 +741,7 @@ namespace CALUMI::SFBGS {
 		output.reserve(scalarCount());
 		for (unsigned int i = 0; i < scalarCount(); i++)
 		{
-			UNIV::Scalar toAdd(scalarKeyFrames().at(i), static_cast<float>(scalarEntries().at(i))/5000.0f);
+			UNIV::ScalarFrame toAdd(scalarKeyFrames().at(i), static_cast<float>(scalarEntries().at(i))/5000.0f);
 			output.push_back(toAdd);
 		}
 		SortScalarSequence(output);
@@ -766,7 +766,7 @@ namespace CALUMI::SFBGS {
 		output.reserve(priorityCount());
 		for (unsigned int i = 0; i < priorityCount(); i++)
 		{
-			UNIV::Priority toAdd(priorityKeyFrames().at(i), priorityEntries().at(i));
+			UNIV::PriorityFrame toAdd(priorityKeyFrames().at(i), priorityEntries().at(i));
 			output.push_back(toAdd);
 		}
 		SortPrioritySequence(output);

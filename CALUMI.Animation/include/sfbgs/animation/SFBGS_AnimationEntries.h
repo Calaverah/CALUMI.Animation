@@ -2,15 +2,17 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppNonExplicitConvertingConstructor
 #pragma once
 #include "utilities/CALUMI_Common.h"
 #include "math/Math.h"
 
+/// TODO: Fill out SFBGS Animation Entry Documentation
 
 namespace CALUMI::SFBGS{
 
 	/**
-	 * @brief Prefix RLE based entry component for Rotations
+	 * @brief Low precision RLE component of a compressed rotation
 	 */
 	struct CALUMIANIMATION_API RotationPrefix
 	{
@@ -32,21 +34,21 @@ namespace CALUMI::SFBGS{
 		/// @{
 		
         [[nodiscard]] int8_t first() const;
-        void setFirst(int8_t input);
+        void setFirst(int8_t input) const;
         [[nodiscard]] bool firstFlag() const;
-        void setFirstFlag(bool input);
+        void setFirstFlag(bool input) const;
         [[nodiscard]] int8_t second() const;
-        void setSecond(int8_t input);
+        void setSecond(int8_t input) const;
         [[nodiscard]] bool secondFlag() const;
-        void setSecondFlag(bool input);
+        void setSecondFlag(bool input) const;
         [[nodiscard]] int8_t third() const;
-        void setThird(int8_t input);
+        void setThird(int8_t input) const;
         [[nodiscard]] bool thirdFlag() const;
-        void setThirdFlag(bool input);
+        void setThirdFlag(bool input) const;
         [[nodiscard]] uint8_t count() const;
-        void setCount(uint8_t input);
+        void setCount(uint8_t input) const;
         [[nodiscard]] uint8_t missing() const;
-        void setMissing(uint8_t input);
+        void setMissing(uint8_t input) const;
 
 		[[nodiscard]] const void* const data() const;
 
@@ -82,17 +84,16 @@ namespace CALUMI::SFBGS{
 	};
 
 	/**
-	 * @brief Basic entry component for Rotations
+	 * @brief High precision component of a compressed rotation
 	 */
 	struct CALUMIANIMATION_API RotationEntry
 	{
-		//TODO: Documentation for SFBGS Rotation Entry
         [[nodiscard]] int8_t first() const;
-        void setFirst(int8_t input);
+        void setFirst(int8_t input) const;
         [[nodiscard]] int8_t second() const;
-        void setSecond(int8_t input);
+        void setSecond(int8_t input) const;
         [[nodiscard]] int8_t third() const;
-        void setThird(int8_t input);
+        void setThird(int8_t input) const;
 
 		RotationEntry();
 		RotationEntry(const RotationEntry& input);
@@ -110,7 +111,9 @@ namespace CALUMI::SFBGS{
 		Impl* pImpl;
 	};
 
-	//TODO: Documentation for SFBGS Translation Prefix
+	/**
+	 * @brief Low precision RLE component of a compressed translation
+	 */
 	struct CALUMIANIMATION_API TranslationPrefix
 	{
 		[[nodiscard]] int16_t x() const;
@@ -118,10 +121,10 @@ namespace CALUMI::SFBGS{
 		[[nodiscard]] int16_t z() const;
 		[[nodiscard]] uint16_t count() const;
 
-		void setX(int16_t x);
-		void setY(int16_t x);
-		void setZ(int16_t x);
-		void setCount(uint16_t x);
+		void setX(int16_t x) const;
+		void setY(int16_t y) const;
+		void setZ(int16_t z) const;
+		void setCount(uint16_t count) const;
 
 		TranslationPrefix();
 		~TranslationPrefix();
@@ -142,15 +145,17 @@ namespace CALUMI::SFBGS{
 		Impl* pImpl;
 	};
 
-	//TODO: Documentation for SFBGS Translation Entry
+	/**
+	 * @brief High precision component of a compressed translation
+	 */
 	struct CALUMIANIMATION_API TranslationEntry
 	{
 		[[nodiscard]] int8_t x() const;
 		[[nodiscard]] int8_t y() const;
 		[[nodiscard]] int8_t z() const;
-		void setX(int8_t x);
-		void setY(int8_t y);
-		void setZ(int8_t z);
+		void setX(int8_t x) const;
+		void setY(int8_t y) const;
+		void setZ(int8_t z) const;
 
 		TranslationEntry();
 		~TranslationEntry();
@@ -173,10 +178,13 @@ namespace CALUMI::SFBGS{
 	struct CALUMIANIMATION_API CompressedRotation
 	{
 		CompressedRotation(const RotationPrefix& prefix, const RotationEntry& entry);
+		CompressedRotation(const Math::Quaternion& input);
 		~CompressedRotation();
 
 		[[nodiscard]] const RotationPrefix& prefix() const;
 		[[nodiscard]] const RotationEntry& suffix() const;
+
+		Math::Quaternion toQuaternion() const;
 
 	private:
 		struct Impl;
@@ -189,10 +197,13 @@ namespace CALUMI::SFBGS{
 	struct CALUMIANIMATION_API CompressedTranslation
 	{
 		CompressedTranslation(const TranslationPrefix& prefix, const TranslationEntry& entry);
+		CompressedTranslation(const Math::Vector3D& input, const float& highPrecision, const float& lowPrecision);
 		~CompressedTranslation();
 
 		[[nodiscard]] const TranslationPrefix& prefix() const;
 		[[nodiscard]] const TranslationEntry& suffix() const;
+
+		Math::Vector3D toVector3D(float lowPrecision, float highPrecision) const;
 
 	private:
 		struct Impl;
@@ -203,19 +214,15 @@ namespace CALUMI::SFBGS{
 	VECTORDEC(TranslationEntrySequence, TranslationEntry)
 	VECTORDEC(RotationPrefixSequence, RotationPrefix)
 	VECTORDEC(TranslationPrefixSequence, TranslationPrefix)
-
 	
-
-    CALUMIANIMATION_API CompressedRotation GetSFBGSRotationPair(const Math::Quaternion& input);
-    CALUMIANIMATION_API Math::Quaternion GetUniversalRotation(const RotationPrefix& prefix, const RotationEntry& suffix);
-
-    CALUMIANIMATION_API CompressedTranslation GetSFBGSTranslationPair(const Math::Vector3D& input, const float& highPrecision, const float& lowPrecision);
-    CALUMIANIMATION_API Math::Vector3D GetUniversalTranslation(const TranslationPrefix& prefix, const TranslationEntry& suffix, const float& highPrecision, const float& lowPrecision);
-	
+	/// @relates TranslationPrefix
     CALUMIANIMATION_API TranslationPrefixSequence UnfoldTranslationPrefixSequence(const TranslationPrefixSequence& input);
+	/// @relates TranslationPrefix
     CALUMIANIMATION_API TranslationPrefixSequence FoldTranslationPrefixSequence(const TranslationPrefixSequence& input);
 
+	/// @relates RotationPrefix
     CALUMIANIMATION_API RotationPrefixSequence UnfoldRotationPrefixSequence(const RotationPrefixSequence& input);
+	/// @relates RotationPrefix
     CALUMIANIMATION_API RotationPrefixSequence FoldRotationPrefixSequence (const RotationPrefixSequence& input);
 
 }

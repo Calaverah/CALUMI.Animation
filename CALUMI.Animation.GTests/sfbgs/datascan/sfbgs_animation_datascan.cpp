@@ -62,7 +62,7 @@ using namespace CALUMI;
 
 		const SFBGS::AnimationBlock animBlock = anim.animationBlocks().at(1);
 
-		const Math::Quaternion rotation = SFBGS::GetUniversalRotation(animBlock.rotationPrefixEntries().at(animBlock.rotationPrefixCount() - 1), animBlock.rotationEntries().at(animBlock.rotationCount() - 1));
+		const Math::Quaternion rotation = SFBGS::CompressedRotation(animBlock.rotationPrefixEntries().at(animBlock.rotationPrefixCount() - 1), animBlock.rotationEntries().at(animBlock.rotationCount() - 1)).toQuaternion();
 		const Math::Quaternion expected(Math::Vector3(0.0, 0.0, 1.0), Math::ToRadians(-89.99301));
 
 		ASSERT_TRUE(rotation.areEqual(expected, 0.000000000000000000000000000000000000000000001f)) << "Rotation: " << rotation.toString().c_str() << " Expected: " << expected.toString().c_str() << std::endl;
@@ -81,9 +81,9 @@ using namespace CALUMI;
 		const SFBGS::AnimationBlock animBlockLeft = anim.animationBlocks().at(1);
 		const SFBGS::AnimationBlock animBlockRight = anim.animationBlocks().at(4);
 
-		const Math::Quaternion rotationLeft = SFBGS::GetUniversalRotation(animBlockLeft.rotationPrefixEntries().at(animBlockLeft.rotationPrefixCount() - 1), animBlockLeft.rotationEntries().at(animBlockLeft.rotationCount() - 1));
+		const Math::Quaternion rotationLeft = SFBGS::CompressedRotation(animBlockLeft.rotationPrefixEntries().at(animBlockLeft.rotationPrefixCount() - 1), animBlockLeft.rotationEntries().at(animBlockLeft.rotationCount() - 1)).toQuaternion();
 		const Math::Quaternion expectedLeft(Math::Vector3(0.0, 0.0, 1.0), Math::ToRadians(90.0f));
-		const Math::Quaternion rotationRight = SFBGS::GetUniversalRotation(animBlockRight.rotationPrefixEntries().at(animBlockRight.rotationPrefixCount() - 1), animBlockRight.rotationEntries().at(animBlockRight.rotationCount() - 1));
+		const Math::Quaternion rotationRight = SFBGS::CompressedRotation(animBlockRight.rotationPrefixEntries().at(animBlockRight.rotationPrefixCount() - 1), animBlockRight.rotationEntries().at(animBlockRight.rotationCount() - 1)).toQuaternion();
 		const Math::Quaternion expectedRight(Math::Vector3(0.0, 0.0, 1.0), Math::ToRadians(-89.99301f));
 
 		EXPECT_TRUE(rotationLeft.areEqual(expectedLeft, 0.000001f)) << "Rotation Left: " << rotationLeft.toString().c_str() << " Expected Left: " << expectedLeft.toString().c_str() << std::endl;

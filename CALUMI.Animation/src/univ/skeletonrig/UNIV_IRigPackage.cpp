@@ -11,21 +11,15 @@ namespace CALUMI::UNIV
 {
 #pragma region RIGPACKAGEMANAGER
 
-    Utilities::StringContainer RigPackageManager::toJSON(uint64_t indents) const
-    {
-        //TODO: RigPackageManager JSON
-        return {};
-    }
-
     bool RigPackageManager::onBoneRename(const char* oldBone, const char* newName)
     {
         bool output = true;
 
-        const auto keys = getPackageList();
+        const auto keys = packageList();
 
         for (uint64_t i = 0; i < keys.size(); i++)
         {
-            if (const auto pkg = dynamic_cast<IRigPackage*>(getPackage(keys.c_str(i))))
+            if (const auto pkg = dynamic_cast<IRigPackage*>(package(keys.c_str(i))))
             {
                 if (!pkg->handleBoneRename(oldBone, newName))
                     output = false;

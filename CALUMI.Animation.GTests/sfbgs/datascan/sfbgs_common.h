@@ -1,4 +1,5 @@
 // ReSharper disable CppUnusedIncludeDirective
+// ReSharper disable CppDFANotInitializedField
 #pragma once
 #include <gtest/gtest.h>
 #include <fstream>

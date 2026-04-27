@@ -15,7 +15,6 @@
 
 namespace CALUMI::UNIV
 {
-
 #pragma region ANIMATION
 	struct Animation::Impl
 	{
@@ -70,6 +69,9 @@ namespace CALUMI::UNIV
 
 	bool Animation::addAnimationBlock(const AnimationBlock& blockToAdd, const bool overwrite) const
 	{
+		if (SCOMPARE(blockToAdd.boneName(), "") == 0)
+			return false;
+
 		for (unsigned int i = 0; i < pImpl->_animationBlocks.size(); i ++)
 		{
 			if (SCOMPARE(pImpl->_animationBlocks.at(i).boneName(), blockToAdd.boneName()) == 0)
@@ -98,7 +100,7 @@ namespace CALUMI::UNIV
 
 		return -1;
 	}
-	AnimationPackageManager& Animation::getPackageManager() const { return pImpl->_packageManager; }
+	AnimationPackageManager& Animation::packageManager() const { return pImpl->_packageManager; }
 
 	unsigned int Animation::frameCount() const
 	{
@@ -114,7 +116,7 @@ namespace CALUMI::UNIV
 				pImpl->_animationBlocks.at(i).translationEntryCount() > 0)
 				entryFound = true;
 
-			if (const unsigned int temp = pImpl->_animationBlocks.at(i).GetLastFrameInBlock(); temp > output)
+			if (const unsigned int temp = pImpl->_animationBlocks.at(i).lastFrameInBlock(); temp > output)
 			{
 				output = temp;
 			}
@@ -122,17 +124,6 @@ namespace CALUMI::UNIV
 		if(entryFound)
 			output++; //adding one to sum up total frames in animation. If final frame is 50, the count is 51
 
-		return output;
-	}
-	Utilities::StringContainer Animation::toJSON(const uint64_t indents) const
-	{
-		Utilities::StringContainer output = Utilities::Indent(indents).c_str();
-		output += "{\n";
-		output += std::format("{0}\"animationTitle\":\"{1}\",\n{0}\"animationBlocks\":", Utilities::Indent(indents + 1).c_str(), pImpl->_animationTitle.c_str() /*, boneCount*/).c_str(); //    \n{0}\"boneCount\":{2},
-		// output += Utilities::VectorToJSON(pImpl->_animationBlocks, indents + 1);
-		output += "\n";
-		output += Utilities::Indent(indents).c_str();
-		output += "}";
 		return output;
 	}
 
@@ -143,7 +134,7 @@ namespace CALUMI::UNIV
 	struct AnimationBlock::Impl
 	{
 		///@privatesection
-			///@{
+		///@{
 		Utilities::StringContainer boneName = "UNNAMED";
 		RotationSequence rotationSequence;
 		TranslationSequence translationSequence;
@@ -181,7 +172,7 @@ namespace CALUMI::UNIV
 		return *this;
 	}
 
-	unsigned int AnimationBlock::GetLastFrameInBlock() const
+	unsigned int AnimationBlock::lastFrameInBlock() const
 	{
 		unsigned int output = 0;
 		if (!pImpl->rotationSequence.empty()) {
@@ -227,7 +218,7 @@ namespace CALUMI::UNIV
 		return pImpl->rotationSequence;
 	}
 
-	bool AnimationBlock::addRotationEntry(const Rotation& input, const bool overwrite) const
+	bool AnimationBlock::addRotationEntry(const RotationFrame& input, const bool overwrite) const
 	{
 
 		for (uint64_t i = 0; i < pImpl->rotationSequence.size(); i++)
@@ -351,7 +342,7 @@ namespace CALUMI::UNIV
 		return pImpl->translationSequence;
 	}
 
-	bool AnimationBlock::addTranslationEntry(const Translation& input, const bool overwrite) const
+	bool AnimationBlock::addTranslationEntry(const TranslationFrame& input, const bool overwrite) const
 	{
 		for (uint64_t i = 0; i < pImpl->translationSequence.size(); i++)
 		{
@@ -463,7 +454,7 @@ namespace CALUMI::UNIV
 		return pImpl->scalarSequence;
 	}
 
-	bool AnimationBlock::addScalarEntry(const Scalar& input, const bool overwrite) const
+	bool AnimationBlock::addScalarEntry(const ScalarFrame& input, const bool overwrite) const
 	{
 		for (uint64_t i = 0; i < pImpl->scalarSequence.size(); i++)
 		{
@@ -577,7 +568,7 @@ namespace CALUMI::UNIV
 		return pImpl->prioritySequence;
 	}
 
-	bool AnimationBlock::addPriorityEntry(const Priority& input, const bool overwrite) const
+	bool AnimationBlock::addPriorityEntry(const PriorityFrame& input, const bool overwrite) const
 	{
 		for (uint64_t i = 0; i < pImpl->prioritySequence.size(); i++)
 		{
@@ -622,266 +613,426 @@ namespace CALUMI::UNIV
 
 	uint64_t AnimationBlock::priorityEntryCount() const { return pImpl->prioritySequence.size(); }
 
-	Utilities::StringContainer AnimationBlock::toJSON(const uint64_t indents) const {
-		Utilities::StringContainer output = Utilities::Indent(indents).c_str();
-		output += "{\n";
-		output += std::format("{0}\"boneName\":\"{1}\",\n", Utilities::Indent(indents + 1).c_str(), pImpl->boneName.c_str()).c_str();
-		// output += std::format("{0}\"rotationSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->rotationSequence, indents + 1).c_str()).c_str();
-		// output += std::format("{0}\"translationSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->translationSequence, indents + 1).c_str()).c_str();
-		// output += std::format("{0}\"scalarSequence\":{1},\n", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->scalarSequence, indents + 1).c_str()).c_str();
-		// output += std::format("{0}\"prioritySequence\":{1}\n{2}", Utilities::Indent(indents + 1).c_str(), Utilities::VectorToJSON(pImpl->prioritySequence, indents + 1).c_str(), Utilities::Indent(indents).c_str()).c_str();
-		output += "}";
-		return output;
-	}
-
 #pragma endregion
 
 	VECTORDEF(AnimationBlockVector, AnimationBlock)
 	VECTORDEF(AnimationVector, Animation)
+}
 
 #pragma region EXTERN"C"
 
-	Animation* CreateAnimationC(const char* animationTitle, const unsigned int rigBoneCount)
-	{
-		const auto outputAnimation = new Animation(animationTitle, rigBoneCount);
-		return outputAnimation;
-	}
-	AnimationBlock* GetAnimationBlockC(const Animation* source, const char* boneName, Utilities::StringContainer* errorMessage)
-	{
-		Utilities::StringContainer tempErrorMessage;
-		Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-		errorMessageHolder->clear();
-
-		const int index = source->findAnimationBlock(boneName);
-
-		if (source->animationBlocks().size() <= index || index < 0)
-		{
-			*errorMessageHolder += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
-			return nullptr;
-		}
-		return &source->animationBlocks().at(index);
-	}
-	uint64_t GetAnimationBlockCountC(const Animation* source)
-	{
-		return source->animationBlocks().size();
-	}
-	const char* GetAnimationTitleC(const Animation* source)
-	{
-		return source->animationTitle();
-	}
-	uint64_t GetFrameCountC(const Animation* source)
-	{
-		return source->frameCount();
-	}
-	bool DeleteAnimationC(const Animation* ptr)
-	{
-		if (ptr)
-		{
-			delete ptr;
-			ptr = nullptr;
-			return true;
-		}
-		return false;
-	}
-	bool AddAnimBlockToAnimationC(const Animation* anim, const AnimationBlock* blockToAdd, const bool overwrite, Utilities::StringContainer* errorMessage)
-	{
-		Utilities::StringContainer tempErrorMessage;
-		Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-		errorMessageHolder->clear();
-
-		if (!anim->addAnimationBlock(*blockToAdd, overwrite))
-		{
-			*errorMessageHolder += "[CALUMI.Animation API] Existing Animation Block Found and Not Overwritten!";
-			return false;
-		}
-		delete blockToAdd;
-		*errorMessageHolder += "[CALUMI.Animation API] Animation Block Copied Into Animation Successfully. Original Block Deleted!";
-		return true;
-	}
-	AnimationBlock* CreateAnimBlockC(const char* boneName, Utilities::StringContainer* errorMessage)
-	{
-		Utilities::StringContainer tempErrorMessage;
-		Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-		errorMessageHolder->clear();
-
-		if (std::string(boneName).empty())
-		{
-			*errorMessageHolder += "[CALUMI.Animation API] Animation Block Must Have Bone Name!";
-			return nullptr;
-		}
-		const auto outputAnimationBlock = new AnimationBlock;
-		outputAnimationBlock->setBoneName(boneName);
-		*errorMessageHolder += "[CALUMI.Animation API] Animation Block Created!";
-		return outputAnimationBlock;
-	}
-	bool DeleteAnimationBlockC(const AnimationBlock* ptr)
-	{
-		if (ptr)
-		{
-			delete ptr;
-			ptr = nullptr;
-			return true;
-		}
-		return false;
-	}
-	const char* GetAnimBlockBoneNameC(const AnimationBlock* source)
-	{
-		return source->boneName();
-	}
-	unsigned int GetLastFrameInAnimBlockC(const AnimationBlock* source)
-	{
-		return source->GetLastFrameInBlock();
-	}
-	bool AddRotationSqToAnimBlockC(const AnimationBlock* block, const Rotation* rotSq, const unsigned int size, const bool overwrite)
-	{
-		for (unsigned int i = 0; i < size; i++)
-		{
-			if(!block->addRotationEntry(rotSq[i],overwrite))
-				return false;
-		}
-		return true;
-	}
-	Rotation* GetRotationSqArrayC(const AnimationBlock* source)
-	{
-		if(source->rotationSequence().empty())
-			return nullptr;
-
-		return source->rotationSequence().data();
-	}
-	Rotation* GetRotationFromSqC(const AnimationBlock* source, const int index, Utilities::StringContainer* errorMessage)
-	{
-		Utilities::StringContainer tempErrorMessage;
-		Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-		errorMessageHolder->clear();
-
-		if (index >= source->rotationSequence().size() || index < 0)
-		{
-			*errorMessageHolder += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
-			return nullptr;
-		}
-		return &source->rotationSequence().at(index);
-	}
-	uint64_t GetRotationSqSizeC(const AnimationBlock* source)
-	{
-		return source->rotationSequence().size();
-	}
-	void ExecuteRDPReduction_RotationC(const AnimationBlock* source, const float tolerance)
-	{
-		if (!source) return;
-
-		source->executeRDPReduction_Rotation(tolerance);
-	}
-	bool AddTranslationSqToAnimBlockC(const AnimationBlock* block, const Translation* trnSq, const unsigned int size, const bool overwrite)
-	{
-		for (unsigned int i = 0; i < size; i++)
-		{
-			if (!block->addTranslationEntry(trnSq[i], overwrite))
-				return false;
-		}
-		return true;
-	}
-	Translation* GetTranslationSqArrayC(const AnimationBlock* source)
-	{
-		if (source->translationSequence().empty())
-			return nullptr;
-
-		return source->translationSequence().data();
-	}
-	Translation* GetTranslationFromSqC(const AnimationBlock* source, const int index, Utilities::StringContainer* errorMessage)
-	{
-		Utilities::StringContainer tempErrorMessage;
-		Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-		errorMessageHolder->clear();
-
-		if (index >= source->translationSequence().size() || index < 0)
-		{
-			*errorMessageHolder += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
-			return nullptr;
-		}
-		return &source->translationSequence().at(index);
-	}
-	uint64_t GetTranslationSqSizeC(const AnimationBlock* source)
-	{
-		return source->translationSequence().size();
-	}
-	void ExecuteRDPReduction_TranslationC(const AnimationBlock* source, const float tolerance)
-	{
-		if (!source) return;
-
-		source->executeRDPReduction_Translation(tolerance);
-	}
-	bool AddScalarSqToAnimBlockC(const AnimationBlock* block, const Scalar* sclrSq, const unsigned int size, const bool overwrite)
-	{
-		for (unsigned int i = 0; i < size; i++)
-		{
-			if (!block->addScalarEntry(sclrSq[i], overwrite))
-				return false;
-		}
-		return true;
-	}
-	Scalar* GetScalarSqArrayC(const AnimationBlock* source)
-	{
-		if(source->scalarSequence().empty())
-			return nullptr;
-
-		return source->scalarSequence().data();
-	}
-	Scalar* GetScalarFromSqC(const AnimationBlock* source, const int index, Utilities::StringContainer* errorMessage)
-	{
-		Utilities::StringContainer tempErrorMessage;
-		Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-		errorMessageHolder->clear();
-
-		if (index >= source->scalarSequence().size() || index < 0)
-		{
-			*errorMessageHolder += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
-			return nullptr;
-		}
-		return &source->scalarSequence().at(index);
-	}
-	uint64_t GetScalarSqSizeC(const AnimationBlock* source)
-	{
-		return source->scalarSequence().size();
-	}
-	void ExecuteRDPReduction_ScalarC(const AnimationBlock* source, const float tolerance)
-	{
-		if (!source) return;
-
-		source->executeRDPReduction_Scalar(tolerance);
-	}
-	bool AddPrioritySqToAnimBlockC(const AnimationBlock* block, const Priority* prtySq, const unsigned int size, const bool overwrite)
-	{
-		for (unsigned int i = 0; i < size; i++)
-		{
-			if (!block->addPriorityEntry(prtySq[i], overwrite))
-				return false;
-		}
-		return true;
-	}
-	Priority* GetPrioritySqArrayC(const AnimationBlock* source)
-	{
-		if(source->prioritySequence().empty())
-			return nullptr;
-
-		return source->prioritySequence().data();
-	}
-	Priority* GetPriorityFromSqC(const AnimationBlock* source, const int index, Utilities::StringContainer* errorMessage)
-	{
-		Utilities::StringContainer tempErrorMessage;
-		Utilities::StringContainer* errorMessageHolder = errorMessage ? errorMessage : &tempErrorMessage;
-		errorMessageHolder->clear();
-
-		if (index >= source->prioritySequence().size() || index < 0)
-		{
-			*errorMessageHolder += "[CALUMI.Animation API] Input Index Exceeds Vector Entries";
-			return nullptr;
-		}
-		return &source->prioritySequence().at(index);
-	}
-	uint64_t GetPrioritySqSizeC(const AnimationBlock* source)
-	{
-		return source->prioritySequence().size();
-	}
-#pragma endregion
-
+CALUMI::UNIV::Animation* CreateAnimationC(const char* animationTitle, const unsigned int rigBoneCount)
+{
+	const auto outputAnimation = new CALUMI::UNIV::Animation(animationTitle, rigBoneCount);
+	return outputAnimation;
 }
+
+CALUMI::UNIV::AnimationBlock* GetAnimationBlockC(const CALUMI::UNIV::Animation* source, const char* boneName)
+{
+	if (source)
+		try
+		{
+			const int index = source->findAnimationBlock(boneName);
+
+			if (source->animationBlocks().size() <= index || index < 0)
+			{
+				return nullptr;
+			}
+			return &source->animationBlocks().at(index);
+		}
+	catch (std::exception&)
+	{
+	}
+	return nullptr;
+}
+
+uint64_t GetAnimationBlockCountC(const CALUMI::UNIV::Animation* source)
+{
+	if (source)
+		try
+		{
+			return source->animationBlocks().size();
+		}
+	catch (std::exception&)
+	{
+	}
+	return 0;
+}
+
+const char* GetAnimationTitleC(const CALUMI::UNIV::Animation* source)
+{
+	if (source)
+		try
+		{
+			return source->animationTitle();
+		}
+	catch (std::exception&)
+	{
+	}
+	return nullptr;
+}
+
+uint64_t GetFrameCountC(const CALUMI::UNIV::Animation* source)
+{
+	if (source)
+		try
+		{
+			return source->frameCount();
+		}
+		catch (std::exception&)
+		{
+		}
+	return 0;
+}
+
+int DeleteAnimationC(const CALUMI::UNIV::Animation** ptr)
+{
+	if (ptr && *ptr)
+	{
+		delete ptr;
+		ptr = nullptr;
+		return 0;
+	}
+
+	return -1;
+}
+
+int AddAnimBlockToAnimationC(const CALUMI::UNIV::Animation* anim,
+							  const CALUMI::UNIV::AnimationBlock* blockToAdd,
+							  const bool overwrite)
+{
+	if (anim && blockToAdd)
+		try
+		{
+			return anim->addAnimationBlock(*blockToAdd, overwrite) ? 0 : 1;
+		}
+	catch (std::exception&)
+	{
+	}
+	return -1;
+}
+
+CALUMI::UNIV::AnimationBlock* CreateAnimBlockC(const char* boneName)
+{
+	if (!boneName)
+	{
+		return nullptr;
+	}
+
+	const auto outputAnimationBlock = new CALUMI::UNIV::AnimationBlock;
+	outputAnimationBlock->setBoneName(boneName);
+	return outputAnimationBlock;
+}
+
+int DeleteAnimationBlockC(const CALUMI::UNIV::AnimationBlock** ptr)
+{
+	if (ptr && *ptr)
+	{
+		delete *ptr;
+		*ptr = nullptr;
+		return 0;
+	}
+	return -1;
+}
+
+const char* GetAnimBlockBoneNameC(const CALUMI::UNIV::AnimationBlock* source)
+{
+	if (source)
+		return source->boneName();
+
+	return nullptr;
+}
+
+unsigned int GetLastFrameInAnimBlockC(const CALUMI::UNIV::AnimationBlock* source)
+{
+	if (source)
+		return source->lastFrameInBlock();
+
+	return 0;
+}
+
+unsigned int AddRotationSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block,
+									   const CALUMI::UNIV::RotationFrame* rotSq,
+									   const unsigned int size,
+									   const bool overwrite)
+{
+	unsigned int added = 0;
+
+	if (block && rotSq)
+		try
+		{
+			for (unsigned int i = 0; i < size; i++)
+			{
+				if (!block->addRotationEntry(rotSq[i], overwrite))
+					return added;
+
+				added++;
+			}
+		}
+	catch (std::exception&)
+	{
+	}
+
+	return added;
+}
+
+CALUMI::UNIV::RotationFrame* GetRotationSqArrayC(const CALUMI::UNIV::AnimationBlock* source)
+{
+	if (!source || source->rotationSequence().empty())
+		return nullptr;
+
+	return source->rotationSequence().data();
+}
+
+CALUMI::UNIV::RotationFrame* GetRotationFromSqC(const CALUMI::UNIV::AnimationBlock* source, const int index)
+{
+	if (source)
+		try
+		{
+			if (index >= source->rotationSequence().size() || index < 0)
+			{
+				return nullptr;
+			}
+			return &source->rotationSequence().at(index);
+		}
+	catch (std::exception&)
+	{
+	}
+	return nullptr;
+}
+
+uint64_t GetRotationSqSizeC(const CALUMI::UNIV::AnimationBlock* source)
+{
+	if (source)
+		return source->rotationSequence().size();
+
+	return 0;
+}
+
+int ExecuteRDPReduction_RotationC(const CALUMI::UNIV::AnimationBlock* source, const float tolerance)
+{
+	if (source)
+		try
+		{
+			source->executeRDPReduction_Rotation(tolerance);
+			return 0;
+		}
+	catch (std::exception&)
+	{
+	}
+
+	return -1;
+}
+
+unsigned int AddTranslationSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block,
+								  const CALUMI::UNIV::TranslationFrame* trnSq,
+								  const unsigned int size,
+								  const bool overwrite)
+{
+	unsigned int added = 0;
+
+	if (block && trnSq)
+		try
+		{
+			for (unsigned int i = 0; i < size; i++)
+			{
+				if (!block->addTranslationEntry(trnSq[i], overwrite))
+					return added;
+
+				added++;
+			}
+		}
+	catch (std::exception&)
+	{
+	}
+
+	return added;
+}
+
+CALUMI::UNIV::TranslationFrame* GetTranslationSqArrayC(const CALUMI::UNIV::AnimationBlock* source)
+{
+	if (!source || source->translationSequence().empty())
+		return nullptr;
+
+	return source->translationSequence().data();
+}
+
+CALUMI::UNIV::TranslationFrame* GetTranslationFromSqC(const CALUMI::UNIV::AnimationBlock* source, const int index)
+{
+	if (source)
+		try
+		{
+			if (index >= source->translationSequence().size() || index < 0)
+			{
+				return nullptr;
+			}
+			return &source->translationSequence().at(index);
+		}
+	catch (std::exception&)
+	{
+	}
+	return nullptr;
+}
+
+uint64_t GetTranslationSqSizeC(const CALUMI::UNIV::AnimationBlock* source)
+{
+	if (source)
+		try
+		{
+			return source->translationSequence().size();
+		}
+	catch (std::exception&)
+	{
+	}
+	return 0;
+}
+
+int ExecuteRDPReduction_TranslationC(const CALUMI::UNIV::AnimationBlock* source, const float tolerance)
+{
+	if (source)
+		try
+		{
+			source->executeRDPReduction_Translation(tolerance);
+			return 0;
+		}
+	catch (std::exception&)
+	{
+	}
+
+	return -1;
+}
+
+unsigned int AddScalarSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block,
+									 const CALUMI::UNIV::ScalarFrame* sclrSq, const unsigned int size, const bool overwrite)
+{
+	unsigned int added = 0;
+
+	if (block && sclrSq)
+		try
+		{
+			for (unsigned int i = 0; i < size; i++)
+			{
+				if (!block->addScalarEntry(sclrSq[i], overwrite))
+					return added;
+
+				added++;
+			}
+		}
+	catch (std::exception&)
+	{
+	}
+	return added;
+}
+
+CALUMI::UNIV::ScalarFrame* GetScalarSqArrayC(const CALUMI::UNIV::AnimationBlock* source)
+{
+	if (!source || source->scalarSequence().empty())
+		return nullptr;
+
+	return source->scalarSequence().data();
+}
+
+CALUMI::UNIV::ScalarFrame* GetScalarFromSqC(const CALUMI::UNIV::AnimationBlock* source, const int index)
+{
+	if (source)
+		try
+		{
+			if (index >= source->scalarSequence().size() || index < 0)
+			{
+				return nullptr;
+			}
+			return &source->scalarSequence().at(index);
+		}
+	catch (std::exception&)
+	{
+	}
+	return nullptr;
+}
+
+uint64_t GetScalarSqSizeC(const CALUMI::UNIV::AnimationBlock* source)
+{
+	if (source)
+		try
+		{
+			return source->scalarSequence().size();
+		}
+	catch (std::exception&)
+	{
+	}
+	return 0;
+}
+
+int ExecuteRDPReduction_ScalarC(const CALUMI::UNIV::AnimationBlock* source, const float tolerance)
+{
+	if (source)
+		try
+		{
+			source->executeRDPReduction_Scalar(tolerance);
+			return 0;
+		}
+	catch (std::exception&)
+	{
+	}
+	return -1;
+}
+
+bool AddPrioritySqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block, const CALUMI::UNIV::PriorityFrame* prtySq,
+							   const unsigned int size, const bool overwrite)
+{
+	unsigned int added = 0;
+
+	if (block && prtySq)
+		try
+		{
+			for (unsigned int i = 0; i < size; i++)
+			{
+				if (!block->addPriorityEntry(prtySq[i], overwrite))
+					return added;
+
+				added++;
+			}
+		}
+	catch (std::exception&)
+	{
+	}
+	return added;
+}
+
+CALUMI::UNIV::PriorityFrame* GetPrioritySqArrayC(const CALUMI::UNIV::AnimationBlock* source)
+{
+	if (!source || source->prioritySequence().empty())
+		return nullptr;
+
+	return source->prioritySequence().data();
+}
+
+CALUMI::UNIV::PriorityFrame* GetPriorityFromSqC(const CALUMI::UNIV::AnimationBlock* source, const int index)
+{
+	if (source)
+		try
+		{
+			if (index >= source->scalarSequence().size() || index < 0)
+			{
+				return nullptr;
+			}
+			return &source->prioritySequence().at(index);
+		}
+	catch (std::exception&)
+	{
+	}
+	return nullptr;
+}
+
+uint64_t GetPrioritySqSizeC(const CALUMI::UNIV::AnimationBlock* source)
+{
+	if (source)
+		try
+		{
+			return source->prioritySequence().size();
+		}
+	catch (std::exception&)
+	{
+	}
+	return 0;
+}
+#pragma endregion

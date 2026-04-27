@@ -33,14 +33,14 @@ namespace CALUMI::Utilities
 			 * @brief Returns the singleton for the Hashing Registry
 			 * @return
 			 */
-		[[nodiscard]] CALUMIANIMATION_API static HashRegistry& getInstance();
+		[[nodiscard]] CALUMIANIMATION_API static HashRegistry& Get();
 
 		/**
 			 * @brief Returns the string that generates the given hash key, if known currently.
 			 * @param hash Hash Key to check known values for
-			 * @return Nullptr if there is no known input value, however if the key is 0x0, then the entry may just be an emptry string. With that in mind, it is important to also check if the known input exists.
+			 * @return Nullptr if there is no known input value, however if the key is 0x0, then the entry may just be an empty string. With that in mind, it is important to also check if the known input exists.
 			 */
-		[[nodiscard]] CALUMIANIMATION_API const char* getKnownHashString(uint32_t hash) const;
+		[[nodiscard]] CALUMIANIMATION_API const char* knownHashString(uint32_t hash) const;
 		/**
 			 * @brief A simple way to see if a known input is paired to this hash key
 			 * @param hash
@@ -57,7 +57,7 @@ namespace CALUMI::Utilities
 			 * @brief A simple way to get a list of the user's registered strings for storage/cache outside the application
 			 * @return
 			 */
-		[[nodiscard]] CALUMIANIMATION_API StringList getRegisteredStrings() const;
+		[[nodiscard]] CALUMIANIMATION_API StringList registeredStrings() const;
 
 #ifdef DEBUG_BUILD
 		/**
@@ -91,7 +91,7 @@ namespace CALUMI::Utilities
 			 * @param string Null terminated c string
 			 * @return Generated hash
 			 */
-	CALUMIANIMATION_API uint32_t BGS_Str_CRC32(const char* string);
+	CALUMIANIMATION_API uint32_t BGS_Str_CRC32C(const char* string);
 	}
 	/// @}
 	/// @}

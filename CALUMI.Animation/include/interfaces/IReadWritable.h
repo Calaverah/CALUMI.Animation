@@ -17,19 +17,29 @@ namespace CALUMI {
 
 	public:
 		/**
-		 * @brief Reads in a file from a given file _path
+		 * @brief Reads in a file from a given file path
 		 * @param inputFilePath 
 		 * @return Expected container with error status and success result
 		 */
         virtual Utilities::FileResult readFromFile(Utilities::PathContainer& inputFilePath) = 0;
-        virtual Utilities::FileResult readFromFile(Utilities::PathContainer&& inputFilePath) = 0;
 		/**
-		 * @brief Writes to a file at a given file _path
+		 * @brief Reads in a file from a given file path
+		 * @param inputFilePath
+		 * @return Expected container with error status and success result
+		 */
+		virtual Utilities::FileResult readFromFile(Utilities::PathContainer&& inputFilePath) = 0;
+		/**
+		 * @brief Writes to a file at a given file path
 		 * @param outputFilePath
 		 * @return Expected container with error status and file result
 		 */
         virtual Utilities::FileResult writeToFile(Utilities::PathContainer& outputFilePath) = 0;
-        virtual Utilities::FileResult writeToFile(Utilities::PathContainer&& outputFilePath) = 0;
+		/**
+		 * @brief Writes to a file at a given file path
+		 * @param outputFilePath
+		 * @return Expected container with error status and file result
+		 */
+		virtual Utilities::FileResult writeToFile(Utilities::PathContainer&& outputFilePath) = 0;
 	};
 }
 

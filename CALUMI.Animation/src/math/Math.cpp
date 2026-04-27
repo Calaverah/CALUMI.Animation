@@ -265,39 +265,6 @@ namespace CALUMI::Math
 		return {A / B.x(), A / B.y(), A / B.z()};
 	}
 
-	Vector3* CreateVector3C(float x, float y, float z)
-	{
-		return new Vector3(x, y, z);
-	}
-	float GetVector3XC(Vector3* source)
-	{
-		return source->x();
-	}
-
-	float GetVector3YC(Vector3* source)
-	{
-		return source->y();
-	}
-
-	float GetVector3ZC(Vector3* source)
-	{
-		return source->z();
-	}
-	int DeleteVector3C(Vector3* ptr)
-	{
-		if (!ptr)
-			return -1;
-
-		try
-		{
-			delete ptr;
-			return 0;
-		}
-		catch (std::bad_alloc&){}
-
-		return -1;
-	}
-
 #pragma endregion
 
 #pragma region VECTOR3D
@@ -545,45 +512,13 @@ namespace CALUMI::Math
 		return {A / B.x(), A / B.y(), A / B.z()};
 	}
 
-	Vector3D* CreateVector3DC(double x, double y, double z)
-	{
-		return new Vector3D(x, y, z);
-	}
-	double GetVector3DXC(Vector3D* source)
-	{
-		return source->x();
-	}
-
-	double GetVector3DYC(Vector3D* source)
-	{
-		return source->y();
-	}
-
-	double GetVector3DZC(Vector3D* source)
-	{
-		return source->z();
-	}
-	int DeleteVector3DC(Vector3D* ptr)
-	{
-		if (!ptr)
-			return -1;
-
-		try
-		{
-			delete ptr;
-			return 0;
-		}
-		catch (std::bad_alloc&){}
-
-		return -1;
-	}
 #pragma endregion
 
 #pragma region EULER_DEFINITIONS
 	struct EulerDefinition::Impl
 	{
 		float first{}, second{}, third{};
-		EulerOrder order = EulerOrder::Default;
+		EulerOrder order = DefaultEulerOrder;
 	};
 
 	EulerDefinition::EulerDefinition(float first, float second, float third, EulerOrder euler) : pImpl(new Impl)
@@ -688,14 +623,14 @@ namespace CALUMI::Math
 		pImpl->order = order;
 	}
 
-	int EulerDefinition::toInt(EulerOrder order)
+	int EulerDefinition::ToInt(EulerOrder order)
 	{
 		return static_cast<int>(order);
 	}
 
 	EulerDefinition::EulerOrder EulerDefinition::GetEulerOrder(int order)
 	{
-		if (order < 0 || order >= static_cast<int>(EulerOrder::Max))
+		if (order < 0 || order >= MaxEulerOrder)
 			order = 0;
 
 		return static_cast<EulerOrder>(order);
@@ -1340,109 +1275,7 @@ namespace CALUMI::Math
 		B.inverse(nB);
 		return A * nB;
 	}
-	Quaternion* CreateQuaternionC(float x, float y, float z, float w)
-	{
-		return new Quaternion(x, y, z, w);
-	}
-	Quaternion* CreateQuaternionFromEulerC(float x, float y, float z, int eulerOrder)
-	{
-		const auto euler = EulerDefinition(x,y,z,EulerDefinition::GetEulerOrder(eulerOrder));
 
-		return new Quaternion(euler);
-	}
-	float GetQuaternionXC(Quaternion* source)
-	{
-		return source->x();
-	}
-	float GetQuaternionYC(Quaternion* source)
-	{
-		return source->y();
-	}
-	float GetQuaternionZC(Quaternion* source)
-	{
-		return source->z();
-	}
-	float GetQuaternionWC(Quaternion* source)
-	{
-		return source->w();
-	}
-	int RotateQuaternionByAxisAngleC(Quaternion* input, Quaternion* result, float x, float y, float z, float radians)
-	{
-		if (!input || !result)
-			return -1;
-
-		if (x == 0 && y == 0 && z == 0)
-			return 1;
-
-		try
-		{
-			const Quaternion rotation(Vector3(x,y,z) , radians);
-			*result = rotation * *input;
-			return 0;
-		}
-		catch ( std::bad_alloc& ){}
-
-		return -1;
-	}
-	int GetQuaternionToEulerC(Quaternion* input, int eulerOrder, float* first, float* second, float* third)
-	{
-		if (!input || !first || !second || !third)
-			return -1;
-
-		const auto euler = EulerDefinition::GetEulerOrder(eulerOrder);
-
-		try
-		{
-			const auto result = input->toEuler(euler);
-			*first = result.first();
-			*second = result.second();
-			*third = result.third();
-			return 0;
-		}
-		catch ( std::bad_alloc& ){}
-		return -1;
-	}
-	int RotateQuaternionByQuaternionC(Quaternion* input, Quaternion* offset, Quaternion* result)
-	{
-		if (!input || !offset || !result)
-			return -1;
-
-		try
-		{
-			*result = *input;
-			result->rotateBy(*offset);
-			return 0;
-		}
-		catch (std::bad_alloc&){}
-		return -1;
-	}
-	int GetQuaternionOffsetC(Quaternion* input, Quaternion* reference, Quaternion* result)
-	{
-		if (!input || !reference || !result)
-			return -1;
-
-		try
-		{
-			*result = Quaternion::rotationOffset(*reference, *input);
-			return 0;
-		}
-		catch (std::bad_alloc&){}
-		return -1;
-	}
-	int DeleteQuaternionC(Quaternion* ptr)
-	{
-		if (!ptr)
-			return -1;
-
-		try
-		{
-			delete ptr;
-			return 0;
-		}
-		catch ( std::bad_alloc&) { }
-
-		return -1;
-	}
 #pragma endregion
 
 #pragma region VECTOR2
@@ -1566,11 +1399,11 @@ namespace CALUMI::Math
 		return {-pImpl->x,-pImpl->y};
 	}
 
-	float Vector2::Length() const
+	float Vector2::length() const
 	{
 		return sqrt(pImpl->x * pImpl->x + pImpl->y * pImpl->y);
 	}
-	float Vector2::LengthSquared() const
+	float Vector2::lengthSquared() const
 	{
 		return pImpl->x * pImpl->x + pImpl->y * pImpl->y;
 	}
@@ -1579,26 +1412,26 @@ namespace CALUMI::Math
 		return std::abs(pImpl->x - input.pImpl->x) < tolerance &&
 			   std::abs(pImpl->y - input.pImpl->y) < tolerance;
 	}
-	float Vector2::Dot(const Vector2& other) const
+	float Vector2::dot(const Vector2& other) const
 	{
 		return pImpl->x * other.pImpl->x + pImpl->y * other.pImpl->y;
 	}
 
-	void Vector2::Cross(const Vector2& other, Vector2& result) const
+	void Vector2::cross(const Vector2& other, Vector2& result) const
 	{
 		result.pImpl->x = result.pImpl->y = pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x;
 	}
-	Vector2 Vector2::Cross(const Vector2& other) const
+	Vector2 Vector2::cross(const Vector2& other) const
 	{
 		float result = pImpl->x * other.pImpl->y - pImpl->y * other.pImpl->x;
 		return {result, result};
 	}
 
-	void Vector2::Normalize()
+	void Vector2::normalize()
 	{
-		*this /= this->Length();
+		*this /= this->length();
 	}
-	Utilities::StringContainer Vector2::ToString() const
+	Utilities::StringContainer Vector2::toString() const
 	{
 		Utilities::StringContainer output;
 		output += std::format("x: {}, y: {}", pImpl->x, pImpl->y).c_str();
@@ -1637,28 +1470,7 @@ namespace CALUMI::Math
 	{
 		return {A/B.x(),A/B.y()};
 	}
-	float GetVector2XC(Vector2* source)
-	{
-		return source->x();
-	}
-	float GetVector2YC(Vector2* source)
-	{
-		return source->y();
-	}
-	int DeleteVector2C(Vector2* ptr)
-	{
-		if (!ptr)
-			return -1;
 
-		try
-		{
-			delete ptr;
-			return 0;
-		}
-		catch (std::bad_alloc&){}
-
-		return -1;
-	}
 #pragma endregion
 
 #pragma region VECTOR2D
@@ -1866,32 +1678,7 @@ namespace CALUMI::Math
 	{
 		return {A / B.x(), A / B.y()};
 	}
-	Vector2D* CreateVector2DC(float x, float y)
-	{
-		return new Vector2D(x, y);
-	}
-	double GetVector2DXC(Vector2D* source)
-	{
-		return source->x();
-	}
-	double GetVector2DYC(Vector2D* source)
-	{
-		return source->y();
-	}
-	int DeleteVector2DC(Vector2D* ptr)
-	{
-		if (!ptr)
-			return -1;
 
-		try
-		{
-			delete ptr;
-			return 0;
-		}
-		catch (std::bad_alloc&){}
-
-		return -1;
-	}
 #pragma endregion
 
 #pragma region Tranform
@@ -2001,301 +1788,521 @@ namespace CALUMI::Math
 	{
 		pImpl->m_position = position;
 	}
-	Transform* CreateTransformC()
-	{
-		return new Transform;
-	}
-	int DeleteTransformC(Transform* ptr)
-	{
-		if (!ptr)
-			return -1;
 
-		try
-		{
-			delete ptr;
-			return 0;
-		}
-		catch (std::bad_alloc&){}
-
-		return -1;
-	}
-
-	int SetTransformFromReferenceC(Transform* transform, Transform* reference)
-	{
-		if (!transform || !reference)
-			return -1;
-
-		try
-		{
-			*transform = *reference;
-			return 0;
-		}
-		catch (std::bad_alloc&){}
-
-		return -1;
-	}
-
-	Transform* GetLocalTransformC(Transform* global, Transform* reference)
-	{
-		if (!global || !reference)
-			return nullptr;
-
-		const auto output = new Transform;
-
-		try
-		{
-			*output = global->local(*reference);
-			return output;
-		}
-		catch (std::bad_alloc&)
-		{
-			delete output;
-		}
-
-		return nullptr;
-	}
-	Transform* GetGlobalTransformC(Transform* local, Transform* reference)
-	{
-		if (!local || !reference)
-			return nullptr;
-
-		const auto output = new Transform;
-
-		try
-		{
-			*output = local->global(*reference);
-			return output;
-		}
-		catch (std::bad_alloc&)
-		{
-			delete output;
-		}
-
-		return nullptr;
-	}
-	int SetTransformPositionC(Transform* transform, float x, float y, float z)
-	{
-		if (!transform)
-			return -1;
-
-		try
-		{
-			transform->setPosition({x,y,z});
-			return 0;
-		}
-		catch (std::bad_alloc&){}
-		return -1;
-	}
-	int SetTransformPositionFromReferenceC(Transform* transform, Vector3* reference)
-	{
-		if (!transform || !reference)
-			return -1;
-
-		try
-		{
-			transform->setPosition(*reference);
-			return 0;
-		}
-		catch (std::bad_alloc&){}
-
-		return -1;
-	}
-	int SetTransformRotationC(Transform* transform, float x, float y, float z, float w)
-	{
-		if (!transform)
-			return -1;
-
-		try
-		{
-			transform->setRotation({x,y,z,w});
-			return 0;
-		}
-		catch (std::bad_alloc&){}
-		return -1;
-	}
-	int SetTransformEulerRotationC(Transform* transform, float x, float y, float z, int eulerOrder)
-	{
-		if (!transform)
-			return -1;
-
-		const auto euler = EulerDefinition(x,y,z, EulerDefinition::GetEulerOrder(eulerOrder));
-
-		try
-		{
-			transform->setRotation(euler);
-			return 0;
-		}
-		catch (std::bad_alloc&){}
-		return -1;
-	}
 #pragma endregion
-	int SetTransformRotationFromReferenceC(Transform* transform, Quaternion* reference)
-	{
-		if (!transform || !reference)
-			return -1;
 
-		try
-		{
-			transform->setRotation(*reference);
-			return 0;
-		}
-		catch (std::bad_alloc&){}
-		return -1;
-	}
-
-	Vector3* GetTransformPositionC(Transform* transform)
-	{
-		if (!transform)
-			return nullptr;
-
-		const auto output = new Vector3;
-		try
-		{
-			*output = transform->position();
-			return output;
-		}
-		catch (std::bad_alloc&)
-		{
-			delete output;
-		}
-		return nullptr;
-	}
-
-	float GetTransformPositionXC(Transform* transform)
-	{
-		constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
-
-		if (!transform)
-			return nanOutput;
-
-		try
-		{
-			return transform->position().x();
-		}
-		catch (std::bad_alloc&){}
-		return nanOutput;
-	}
-
-	float GetTransformPositionYC(Transform* transform)
-	{
-		constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
-
-		if (!transform)
-			return nanOutput;
-
-		try
-		{
-			return transform->position().y();
-		}
-		catch (std::bad_alloc&){}
-		return nanOutput;
-	}
-
-	float GetTransformPositionZC(Transform* transform)
-	{
-		constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
-
-		if (!transform)
-			return nanOutput;
-
-		try
-		{
-			return transform->position().z();
-		}
-		catch (std::bad_alloc&){}
-		return nanOutput;
-	}
-
-	Quaternion* GetTransformRotationC(Transform* transform)
-	{
-		if (!transform)
-			return nullptr;
-
-		const auto output = new Quaternion;
-
-		try
-		{
-			*output = transform->rotation();
-			return output;
-		}
-		catch (std::bad_alloc&){}
-		return nullptr;
-	}
-
-	float GetTransformRotationXC(Transform* transform)
-	{
-		constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
-
-		if (!transform)
-			return nanOutput;
-
-		try
-		{
-			return transform->rotation().x();
-		}
-		catch (std::bad_alloc&){}
-		return nanOutput;
-	}
-	float GetTransformRotationYC(Transform* transform)
-	{
-		constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
-
-		if (!transform)
-			return nanOutput;
-
-		try
-		{
-			return transform->rotation().y();
-		}
-		catch (std::bad_alloc&){}
-		return nanOutput;
-	}
-	float GetTransformRotationZC(Transform* transform)
-	{
-		constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
-
-		if (!transform)
-			return nanOutput;
-
-		try
-		{
-			return transform->rotation().z();
-		}
-		catch (std::bad_alloc&){}
-		return nanOutput;
-	}
-	float GetTransformRotationWC(Transform* transform)
-	{
-		constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
-
-		if (!transform)
-			return nanOutput;
-
-		try
-		{
-			return transform->rotation().w();
-		}
-		catch (std::bad_alloc&){}
-		return nanOutput;
-	}
-
-	int GetTransformEulerRotationC(Transform* transform, float* first, float* second, float* third, int eulerOrder)
-	{
-		if (!transform || !first || !second || !third)
-			return -1;
-
-		const auto euler = EulerDefinition::GetEulerOrder(eulerOrder);
-
-		try
-		{
-			const auto result = transform->rotation().toEuler(euler);
-			*first = result.first();
-			*second = result.second();
-			*third = result.third();
-			return 0;
-		}
-		catch (std::bad_alloc&){}
-		return -1;
-	}
 }
 
+CALUMI::Math::Vector3* CreateVector3C(float x, float y, float z)
+{
+	return new CALUMI::Math::Vector3(x, y, z);
+}
+float GetVector3XC(CALUMI::Math::Vector3* source)
+{
+	return source->x();
+}
+
+float GetVector3YC(CALUMI::Math::Vector3* source)
+{
+	return source->y();
+}
+
+float GetVector3ZC(CALUMI::Math::Vector3* source)
+{
+	return source->z();
+}
+int DeleteVector3C(CALUMI::Math::Vector3* ptr)
+{
+	if (!ptr)
+		return -1;
+
+	try
+	{
+		delete ptr;
+		return 0;
+	}
+	catch (std::bad_alloc&){}
+
+	return -1;
+}
+
+CALUMI::Math::Vector3D* CreateVector3DC(double x, double y, double z)
+{
+	return new CALUMI::Math::Vector3D(x, y, z);
+}
+double GetVector3DXC(CALUMI::Math::Vector3D* source)
+{
+	return source->x();
+}
+
+double GetVector3DYC(CALUMI::Math::Vector3D* source)
+{
+	return source->y();
+}
+
+double GetVector3DZC(CALUMI::Math::Vector3D* source)
+{
+	return source->z();
+}
+int DeleteVector3DC(CALUMI::Math::Vector3D* ptr)
+{
+	if (!ptr)
+		return -1;
+
+	try
+	{
+		delete ptr;
+		return 0;
+	}
+	catch (std::bad_alloc&){}
+
+	return -1;
+}
+CALUMI::Math::Vector2D* CreateVector2DC(float x, float y)
+{
+	return new CALUMI::Math::Vector2D(x, y);
+}
+double GetVector2DXC(CALUMI::Math::Vector2D* source)
+{
+	return source->x();
+}
+double GetVector2DYC(CALUMI::Math::Vector2D* source)
+{
+	return source->y();
+}
+int DeleteVector2DC(CALUMI::Math::Vector2D* ptr)
+{
+	if (!ptr)
+		return -1;
+
+	try
+	{
+		delete ptr;
+		return 0;
+	}
+	catch (std::bad_alloc&){}
+
+	return -1;
+}
+float GetVector2XC(CALUMI::Math::Vector2* source)
+{
+	return source->x();
+}
+float GetVector2YC(CALUMI::Math::Vector2* source)
+{
+	return source->y();
+}
+int DeleteVector2C(CALUMI::Math::Vector2* ptr)
+{
+	if (!ptr)
+		return -1;
+
+	try
+	{
+		delete ptr;
+		return 0;
+	}
+	catch (std::bad_alloc&){}
+
+	return -1;
+}
+CALUMI::Math::Quaternion* CreateQuaternionC(float x, float y, float z, float w)
+{
+	return new CALUMI::Math::Quaternion(x, y, z, w);
+}
+CALUMI::Math::Quaternion* CreateQuaternionFromEulerC(float x, float y, float z, int eulerOrder)
+{
+	const auto euler = CALUMI::Math::EulerDefinition(x,y,z,CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder));
+
+	return new CALUMI::Math::Quaternion(euler);
+}
+float GetQuaternionXC(CALUMI::Math::Quaternion* source)
+{
+	return source->x();
+}
+float GetQuaternionYC(CALUMI::Math::Quaternion* source)
+{
+	return source->y();
+}
+float GetQuaternionZC(CALUMI::Math::Quaternion* source)
+{
+	return source->z();
+}
+float GetQuaternionWC(CALUMI::Math::Quaternion* source)
+{
+	return source->w();
+}
+int RotateQuaternionByAxisAngleC(CALUMI::Math::Quaternion* input, CALUMI::Math::Quaternion* result, float x, float y, float z, float radians)
+{
+	if (!input || !result)
+		return -1;
+
+	if (x == 0 && y == 0 && z == 0)
+		return 1;
+
+	try
+	{
+		const CALUMI::Math::Quaternion rotation(CALUMI::Math::Vector3(x,y,z) , radians);
+		*result = rotation * *input;
+		return 0;
+	}
+	catch ( std::bad_alloc& ){}
+
+	return -1;
+}
+int GetQuaternionToEulerC(CALUMI::Math::Quaternion* input, int eulerOrder, float* first, float* second, float* third)
+{
+	if (!input || !first || !second || !third)
+		return -1;
+
+	const auto euler = CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder);
+
+	try
+	{
+		const auto result = input->toEuler(euler);
+		*first = result.first();
+		*second = result.second();
+		*third = result.third();
+		return 0;
+	}
+	catch ( std::bad_alloc& ){}
+	return -1;
+}
+int RotateQuaternionByQuaternionC(CALUMI::Math::Quaternion* input, CALUMI::Math::Quaternion* offset, CALUMI::Math::Quaternion* result)
+{
+	if (!input || !offset || !result)
+		return -1;
+
+	try
+	{
+		*result = *input;
+		result->rotateBy(*offset);
+		return 0;
+	}
+	catch (std::bad_alloc&){}
+	return -1;
+}
+int GetQuaternionOffsetC(CALUMI::Math::Quaternion* input, CALUMI::Math::Quaternion* reference, CALUMI::Math::Quaternion* result)
+{
+	if (!input || !reference || !result)
+		return -1;
+
+	try
+	{
+		*result = CALUMI::Math::Quaternion::rotationOffset(*reference, *input);
+		return 0;
+	}
+	catch (std::bad_alloc&){}
+	return -1;
+}
+int DeleteQuaternionC(CALUMI::Math::Quaternion* ptr)
+{
+	if (!ptr)
+		return -1;
+
+	try
+	{
+		delete ptr;
+		return 0;
+	}
+	catch ( std::bad_alloc&) { }
+
+	return -1;
+}
+
+int SetTransformRotationFromReferenceC(CALUMI::Math::Transform* transform, CALUMI::Math::Quaternion* reference)
+{
+	if (!transform || !reference)
+		return -1;
+
+	try
+	{
+		transform->setRotation(*reference);
+		return 0;
+	}
+	catch (std::bad_alloc&){}
+	return -1;
+}
+
+CALUMI::Math::Vector3* GetTransformPositionC(CALUMI::Math::Transform* transform)
+{
+	if (!transform)
+		return nullptr;
+
+	const auto output = new CALUMI::Math::Vector3;
+	try
+	{
+		*output = transform->position();
+		return output;
+	}
+	catch (std::bad_alloc&)
+	{
+		delete output;
+	}
+	return nullptr;
+}
+
+float GetTransformPositionXC(CALUMI::Math::Transform* transform)
+{
+	constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
+
+	if (!transform)
+		return nanOutput;
+
+	try
+	{
+		return transform->position().x();
+	}
+	catch (std::bad_alloc&){}
+	return nanOutput;
+}
+
+float GetTransformPositionYC(CALUMI::Math::Transform* transform)
+{
+	constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
+
+	if (!transform)
+		return nanOutput;
+
+	try
+	{
+		return transform->position().y();
+	}
+	catch (std::bad_alloc&){}
+	return nanOutput;
+}
+
+float GetTransformPositionZC(CALUMI::Math::Transform* transform)
+{
+	constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
+
+	if (!transform)
+		return nanOutput;
+
+	try
+	{
+		return transform->position().z();
+	}
+	catch (std::bad_alloc&){}
+	return nanOutput;
+}
+
+CALUMI::Math::Quaternion* GetTransformRotationC(CALUMI::Math::Transform* transform)
+{
+	if (!transform)
+		return nullptr;
+
+	const auto output = new CALUMI::Math::Quaternion;
+
+	try
+	{
+		*output = transform->rotation();
+		return output;
+	}
+	catch (std::bad_alloc&){}
+	return nullptr;
+}
+
+float GetTransformRotationXC(CALUMI::Math::Transform* transform)
+{
+	constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
+
+	if (!transform)
+		return nanOutput;
+
+	try
+	{
+		return transform->rotation().x();
+	}
+	catch (std::bad_alloc&){}
+	return nanOutput;
+}
+float GetTransformRotationYC(CALUMI::Math::Transform* transform)
+{
+	constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
+
+	if (!transform)
+		return nanOutput;
+
+	try
+	{
+		return transform->rotation().y();
+	}
+	catch (std::bad_alloc&){}
+	return nanOutput;
+}
+float GetTransformRotationZC(CALUMI::Math::Transform* transform)
+{
+	constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
+
+	if (!transform)
+		return nanOutput;
+
+	try
+	{
+		return transform->rotation().z();
+	}
+	catch (std::bad_alloc&){}
+	return nanOutput;
+}
+float GetTransformRotationWC(CALUMI::Math::Transform* transform)
+{
+	constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
+
+	if (!transform)
+		return nanOutput;
+
+	try
+	{
+		return transform->rotation().w();
+	}
+	catch (std::bad_alloc&){}
+	return nanOutput;
+}
+
+int GetTransformEulerRotationC(CALUMI::Math::Transform* transform, float* first, float* second, float* third, int eulerOrder)
+{
+	if (!transform || !first || !second || !third)
+		return -1;
+
+	const auto euler = CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder);
+
+	try
+	{
+		const auto result = transform->rotation().toEuler(euler);
+		*first = result.first();
+		*second = result.second();
+		*third = result.third();
+		return 0;
+	}
+	catch (std::bad_alloc&){}
+	return -1;
+}
+
+CALUMI::Math::Transform* CreateTransformC()
+{
+	return new CALUMI::Math::Transform;
+}
+int DeleteTransformC(CALUMI::Math::Transform* ptr)
+{
+	if (!ptr)
+		return -1;
+
+	try
+	{
+		delete ptr;
+		return 0;
+	}
+	catch (std::bad_alloc&){}
+
+	return -1;
+}
+
+int SetTransformFromReferenceC(CALUMI::Math::Transform* transform, CALUMI::Math::Transform* reference)
+{
+	if (!transform || !reference)
+		return -1;
+
+	try
+	{
+		*transform = *reference;
+		return 0;
+	}
+	catch (std::bad_alloc&){}
+
+	return -1;
+}
+
+CALUMI::Math::Transform* GetLocalTransformC(CALUMI::Math::Transform* global, CALUMI::Math::Transform* reference)
+{
+	if (!global || !reference)
+		return nullptr;
+
+	const auto output = new CALUMI::Math::Transform;
+
+	try
+	{
+		*output = global->local(*reference);
+		return output;
+	}
+	catch (std::bad_alloc&)
+	{
+		delete output;
+	}
+
+	return nullptr;
+}
+CALUMI::Math::Transform* GetGlobalTransformC(CALUMI::Math::Transform* local, CALUMI::Math::Transform* reference)
+{
+	if (!local || !reference)
+		return nullptr;
+
+	const auto output = new CALUMI::Math::Transform;
+
+	try
+	{
+		*output = local->global(*reference);
+		return output;
+	}
+	catch (std::bad_alloc&)
+	{
+		delete output;
+	}
+
+	return nullptr;
+}
+int SetTransformPositionC(CALUMI::Math::Transform* transform, float x, float y, float z)
+{
+	if (!transform)
+		return -1;
+
+	try
+	{
+		transform->setPosition({x,y,z});
+		return 0;
+	}
+	catch (std::bad_alloc&){}
+	return -1;
+}
+int SetTransformPositionFromReferenceC(CALUMI::Math::Transform* transform, CALUMI::Math::Vector3* reference)
+{
+	if (!transform || !reference)
+		return -1;
+
+	try
+	{
+		transform->setPosition(*reference);
+		return 0;
+	}
+	catch (std::bad_alloc&){}
+
+	return -1;
+}
+int SetTransformRotationC(CALUMI::Math::Transform* transform, float x, float y, float z, float w)
+{
+	if (!transform)
+		return -1;
+
+	try
+	{
+		transform->setRotation({x,y,z,w});
+		return 0;
+	}
+	catch (std::bad_alloc&){}
+	return -1;
+}
+int SetTransformEulerRotationC(CALUMI::Math::Transform* transform, float x, float y, float z, int eulerOrder)
+{
+	if (!transform)
+		return -1;
+
+	const auto euler = CALUMI::Math::EulerDefinition(x,y,z, CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder));
+
+	try
+	{
+		transform->setRotation(euler);
+		return 0;
+	}
+	catch (std::bad_alloc&){}
+	return -1;
+}

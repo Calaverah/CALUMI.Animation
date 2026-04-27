@@ -204,18 +204,6 @@ namespace CALUMI::UNIV
 		[[nodiscard]] bool isAncestor(const SkeletonBone& boneCandidate) const;
 
 		/// @}
-		/** @name Serialization*/
-		/// @{
-
-		/**
-		 * @deprecated
-		 * @brief Serialization
-		 * @param indents Spaces for formatting
-		 * @return The strContainer of the serialized struct
-		 */
-		[[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const;
-
-		/// @}
 
 	private:
 		struct Impl;
@@ -279,7 +267,7 @@ namespace CALUMI::UNIV
 		 * @brief
 		 * @return Reference to this rig's package manager
 		 */
-		[[nodiscard]] RigPackageManager& getPackageManager() const;
+		[[nodiscard]] RigPackageManager& packageManager() const;
 
 		/// @}
 
@@ -315,17 +303,7 @@ namespace CALUMI::UNIV
 		/// @}
 
 	public:
-		/** @name Serialization */
-		/// @{
 
-		/**
-		 * @brief Serialization
-		 * @param indents Spaces for formatting
-		 * @return The strContainer of the serialized struct
-		 */
-		[[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const;
-
-		/// @}
 		/** @name Static Members
 		*/
 		/// @{
@@ -345,8 +323,7 @@ namespace CALUMI::UNIV
 /**
  * @addtogroup extern_c
  * @{
- * @defgroup c_rig SkeletonRig
- * @brief Provides C Style API for the UNIV SkeletonRig and its data
+ * @addtogroup c_rig
  * @{
  */
 

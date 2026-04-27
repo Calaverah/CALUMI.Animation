@@ -6,8 +6,6 @@
 #pragma once
 #include "CALUMI_Common.h"
 
-
-
 namespace CALUMI::Utilities
 {
 	/**
@@ -17,8 +15,13 @@ namespace CALUMI::Utilities
 	 */
 	struct CALUMIANIMATION_API BufferObject
 	{
+		/// @name Initializer
+		/// @{
 		BufferObject();
 		virtual ~BufferObject();
+		/// @}
+		/// @name Data
+		/// @{
 
 		/**
 		 * @return Non-const ptr to the beginning of this vector
@@ -34,13 +37,39 @@ namespace CALUMI::Utilities
 		 */
 		[[nodiscard]] virtual uint64_t size() const;
 
+		/**
+		 * @param idx
+		 * @return
+		 */
 		[[nodiscard]] virtual const char& at(uint64_t idx) const;
+		/**
+		 * @param idx
+		 * @return
+		 */
 		virtual char& at(uint64_t idx);
+		/**
+		 * @param pos
+		 * @param size
+		 * @param item
+		 */
 		virtual void insert(uint64_t pos, uint64_t size, char item);
+		/**
+		 * @param size
+		 */
 		virtual void reserve(uint64_t size);
+		/**
+		 * @param size
+		 */
 		virtual void resize(uint64_t size);
+		/**
+		 * @param c
+		 */
 		virtual void push_back(const char& c);
+		/**
+		 * @param c
+		 */
 		virtual void push_back(char&& c);
+		/// @}
 
 	private:
 		struct PrivateBuffer;
@@ -52,28 +81,85 @@ namespace CALUMI::Utilities
 	 */
 	struct CALUMIANIMATION_API StringContainer
 	{
+		/// @name Initialization
+		/// @{
+
+		/**
+		 * @param cString
+		 */
 		StringContainer(const char* cString);
+		/**
+		 * @brief Mimics the std::string constructor
+		 * @param count
+		 * @param c
+		 */
 		StringContainer(uint64_t count, char c);
+		/**
+		 * @param source
+		 */
 		StringContainer(const StringContainer& source);
+		/**
+		 * @param source
+		 */
 		StringContainer(StringContainer&& source) noexcept;
 		StringContainer();
 		~StringContainer();
 
+		/// @}
+		/// @name Data
+		/// @{
+
+		/**
+		 * @return
+		 */
 		[[nodiscard]] const char* c_str() const;
+		/**
+		 * @return
+		 */
 		[[nodiscard]] const char* data() const;
+		/**
+		 * @brief Clears the string
+		 */
 		void clear() const;
+		/**
+		 * @return
+		 */
 		[[nodiscard]] bool empty() const;
+		/**
+		 * @param includeNull
+		 * @return
+		 */
 		[[nodiscard]] uint64_t length(bool includeNull = false) const;
 
+		/**
+		 * @param str
+		 */
+		void assign(const char* str) const;
+
+		/**
+		 * @param s
+		 * @param pos
+		 * @return
+		 */
 		uint64_t find(const char* s, uint64_t pos = 0) const;
+
+		/**
+		 * @param idx
+		 * @return
+		 */
+		[[nodiscard]] char at(uint64_t idx) const;
+		/// @}
+		/// @name Comparisons
+		/// @{
 
 		[[nodiscard]] int compare(const StringContainer& other, bool caseSensitive = true) const noexcept;
 		[[nodiscard]] int compare(uint64_t pos, uint64_t len, const StringContainer& other) const;
 		[[nodiscard]] int compare(uint64_t pos, uint64_t len, const StringContainer& other, uint64_t subPos, uint64_t subLngth) const;
+		/// @}
+		/// @name Operators
+		/// @{
 
-		void assign(const char* str) const;
 
-		[[nodiscard]] char at(uint64_t idx) const;
 		StringContainer& operator+=(const char* other);
 		StringContainer& operator+=(const StringContainer& other);
 		StringContainer& operator=(const StringContainer& other);
@@ -87,18 +173,13 @@ namespace CALUMI::Utilities
 		bool operator<(const StringContainer& other) const;
 		bool operator>(const StringContainer& other) const;
 
+		/// @}
 
 	protected:
 		struct Impl;
 		Impl* pImpl;
 	};
 
-	/**
-	 *
-	 * @param indents Amount of spaces
-	 * @return A simple, empty string of only ' 's to assist with indentation
-	 */
-	StringContainer Indent(uint64_t indents);
 	/**
 	 * @brief Extremely simple string check for numeric characters
 	 * @param str
@@ -161,8 +242,8 @@ namespace CALUMI::Utilities
 		void push_back(const char* string, uint64_t offset) const;
 		void push_back(const char* string) const;
 
-		[[nodiscard]] uint64_t getOffset(unsigned int idx) const;
-		[[nodiscard]] uint64_t getFinalOffset() const;
+		[[nodiscard]] uint64_t offset(unsigned int idx) const;
+		[[nodiscard]] uint64_t finalOffset() const;
 		[[nodiscard]] bool hasOffset(unsigned int idx) const;
 		void setFinalOffset(uint64_t offset) const;
 		void reserve(unsigned int size) const;
@@ -247,15 +328,38 @@ struct CALUMIANIMATION_API CLASS \
 	void AlignBuffer(unsigned long long& currentIndex, int alignmentSize);
 	void AlignBufferAndRead(BufferObject& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, void* Destination);
 	void AlignFillBufferAndWrite(BufferObject& buffer, unsigned long long& currentIndex, int alignmentSize, int variableSize, const void* Source);
-
-#pragma region EXTERN "C"
-	extern "C" {
-	CALUMIANIMATION_API StringContainer* CreateStringContainerC();
-	CALUMIANIMATION_API const char* GetStringFromContainerC(const StringContainer* source);
-	CALUMIANIMATION_API uint64_t GetStringContainerSizeC(const StringContainer* source);
-	CALUMIANIMATION_API void DeleteStringContainerC(const StringContainer* ptr);
-	}
-#pragma endregion
-
 }
 
+/// @addtogroup extern_c
+/// @{
+/// @defgroup extern_c_utilities Utilities
+/// @{
+
+	extern "C" {
+	/**
+	 * @brief Creates an empty, heap allocated, string container
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteStringContainerC
+	 * @return Ptr to a heap allocated string container
+	 */
+	CALUMIANIMATION_API CALUMI::Utilities::StringContainer* CreateStringContainerC();
+	/**
+	 * @brief
+	 * @param source
+	 * @return nullptr if error or cString contained within the string container
+	 */
+	CALUMIANIMATION_API const char* GetStringFromContainerC(const CALUMI::Utilities::StringContainer* source);
+	/**
+	 *
+	 * @param source
+	 * @return length of the string or simply 0 if there is an error
+	 */
+	CALUMIANIMATION_API uint64_t GetStringContainerSizeC(const CALUMI::Utilities::StringContainer* source);
+	/**
+	 * @param ptr Reference to the ptr of the string container, the ptr will be set to nullptr upon completion if
+	 * successful
+	 */
+	CALUMIANIMATION_API void DeleteStringContainerC(const CALUMI::Utilities::StringContainer** ptr);
+	}
+
+/// @}
+/// @}

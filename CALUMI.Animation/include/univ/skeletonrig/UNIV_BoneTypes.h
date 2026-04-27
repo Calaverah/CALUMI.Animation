@@ -22,13 +22,15 @@ namespace CALUMI::UNIV {
     	{
     		Default = 0, ///< Default behavior at runtime
 			Twist = 1, ///< Motion is determined during runtime instead of by animation directly
-    		Max = Twist,
+
 			UNDEFINED = 0xFFFFFFFF
 		};
 
-        [[nodiscard]] virtual BoneType getType() const = 0;
+    	static constexpr auto BoneTypeMax = static_cast<uint32_t>(BoneType::Twist);
 
-        [[nodiscard]] virtual const char* getTypeString() const = 0;
+        [[nodiscard]] virtual BoneType type() const = 0;
+
+        [[nodiscard]] virtual const char* typeAsString() const = 0;
 		BoneTypeProperty() = default;
 		virtual ~BoneTypeProperty() = default;
 
@@ -53,10 +55,10 @@ namespace CALUMI::UNIV {
 	{
 		DefaultBoneProperty() = default;
 		~DefaultBoneProperty() override = default;
-        [[nodiscard]] const char* getTypeString() const override;
+        [[nodiscard]] const char* typeAsString() const override;
 
 		// Inherited via BoneTypeProperties
-        [[nodiscard]] BoneType getType() const override;
+        [[nodiscard]] BoneType type() const override;
 	};
 
 	/**
@@ -86,9 +88,9 @@ namespace CALUMI::UNIV {
 		/// @}
 		/// @name Inherited
 		/// @{
-        [[nodiscard]] const char* getTypeString() const override;
+        [[nodiscard]] const char* typeAsString() const override;
 
-        [[nodiscard]] BoneType getType() const override;
+        [[nodiscard]] BoneType type() const override;
 		/// @}
 		/// @name Operators
 		/// @{

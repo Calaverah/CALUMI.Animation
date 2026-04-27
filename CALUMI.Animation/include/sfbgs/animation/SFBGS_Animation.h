@@ -33,6 +33,12 @@ namespace CALUMI::SFBGS
          * @name Operators
          * @{
          */
+
+        /**
+         *
+         * @param input
+         * @return
+         */
         HeaderFlags& operator=(const HeaderFlags& input);
         /// @}
 
@@ -126,8 +132,19 @@ namespace CALUMI::SFBGS
          * @{
          */
 
+
         AnimationBlock();
+        /**
+         *
+         * @param input
+         */
         AnimationBlock(const AnimationBlock& input);
+        /**
+         *
+         * @param buffer
+         * @param addressIndex
+         * @param flags
+         */
         AnimationBlock(Utilities::BufferObject& buffer, unsigned long long& addressIndex, const HeaderFlags& flags);
         ~AnimationBlock();
 
@@ -135,6 +152,11 @@ namespace CALUMI::SFBGS
         /// @name Operators
         /// @{
 
+        /**
+         *
+         * @param input
+         * @return
+         */
         AnimationBlock& operator=(const AnimationBlock& input);
 
         /// @}
@@ -173,12 +195,35 @@ namespace CALUMI::SFBGS
          */
         [[nodiscard]] uint16_t priorityCount() const;
 
-
+        /**
+         *
+         * @param input
+         */
         void setRotationCount(uint16_t input) const;
+        /**
+         *
+         * @param input
+         */
         void setRotationPrefixCount(uint16_t input) const;
+        /**
+         *
+         * @param input
+         */
         void setTranslationCount(uint16_t input) const;
+        /**
+         *
+         * @param input
+         */
         void setTranslationPrefixCount(uint16_t input) const;
+        /**
+         *
+         * @param input
+         */
         void setScalarCount(uint16_t input) const;
+        /**
+         *
+         * @param input
+         */
         void setPriorityCount(uint16_t input) const;
 
         /// @}
@@ -264,13 +309,49 @@ namespace CALUMI::SFBGS
         /// @name Conversion
         /// @{
 
+        /**
+         *
+         * @param input
+         */
         void setRotationSequenceFromUNIV(UNIV::RotationSequence& input) const;
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] UNIV::RotationSequence rotationSequenceAsUNIV() const;
+        /**
+         *
+         * @param input
+         * @param highPrecision
+         * @param lowPrecision
+         */
         void setTranslationSequenceFromUNIV(UNIV::TranslationSequence& input, const float& highPrecision, const float& lowPrecision) const;
+        /**
+         *
+         * @param highPrecision
+         * @param lowPrecision
+         * @return
+         */
         [[nodiscard]] UNIV::TranslationSequence translationSequenceAsUNIV(const float& highPrecision, const float& lowPrecision) const;
+        /**
+         *
+         * @param input
+         */
         void setScalarSequenceFromUNIV(UNIV::ScalarSequence& input) const;
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] UNIV::ScalarSequence scalarSequenceAsUNIV() const;
+        /**
+         *
+         * @param input
+         */
         void setPrioritySequenceFromUNIV(UNIV::PrioritySequence& input) const;
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] UNIV::PrioritySequence prioritySequenceAsUNIV() const;
 
     private:
@@ -334,6 +415,10 @@ namespace CALUMI::SFBGS
          */
 
         Animation();
+        /**
+         *
+         * @param input
+         */
         Animation(const Animation& input);
         ~Animation() override;
 
@@ -341,6 +426,11 @@ namespace CALUMI::SFBGS
         /// @name Operators
         /// @{
 
+        /**
+         *
+         * @param input
+         * @return
+         */
         Animation& operator=(const Animation& input);
 
         /// @}
@@ -349,35 +439,109 @@ namespace CALUMI::SFBGS
         ///
         [[nodiscard]] uint64_t sourceFileSize() const;
 
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] Utilities::StringContainer& animationFileName() const;
+        /**
+         *
+         * @param input
+         */
         void setAnimationFileName(const Utilities::StringContainer& input) const;
 
         /// @}
         /// @name Header Data
         /// @{
 
+        /**
+         * @return
+         */
         [[nodiscard]] uint64_t magicNumber() const;
+        /**
+         *
+         * @param input
+         */
         void setMagicNumber(uint64_t input) const;
 
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] Math::Quaternion& headerRotation() const;
+        /**
+         *
+         * @param input
+         */
         void setHeaderRotation(const Math::Quaternion& input) const;
 
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] Math::Vector3& headerTranslation() const;
+        /**
+         *
+         * @param input
+         */
         void setHeaderTranslation(const Math::Vector3& input) const;
 
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] HeaderFlags& headerFlags() const;
+        /**
+         *
+         * @param input
+         */
         void setHeaderFlags(const HeaderFlags& input) const;
+        /**
+         * @brief Will assign proper flag values based on the current Animation data
+         */
         void evaluateHeaderFlags() const;
 
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] short versionNumber() const;
+        /**
+         *
+         * @param v
+         */
         void setVersionNumber(short v) const;
 
 
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] uint16_t boneCount() const;
+        /**
+         *
+         * @param input
+         */
         void setBoneCount(uint16_t input) const;
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] uint16_t frameCount() const;
+        /**
+         *
+         * @param input
+         */
         void setFrameCount(uint16_t input) const;
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] uint16_t indexAtlasCount() const;
+        /**
+         *
+         * @param input
+         */
         void setIndexAtlasCount(uint16_t input) const;
 
         /**
@@ -385,12 +549,31 @@ namespace CALUMI::SFBGS
          * @return
          */
         [[nodiscard]] uint16_t amendedBlockCount() const;
+        /**
+         *
+         * @param input
+         */
         void setAmendedBlockCount(uint16_t input) const;
-
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] uint16_t preambleOffset() const;
+        /**
+         *
+         * @param input
+         */
         void setPreambleOffset(uint16_t input) const;
 
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] Utilities::FloatVector nZeroFloats() const;
+        /**
+         *
+         * @param input
+         */
         void setNZeroFloats(const float input[3]) const;
 
         /**
@@ -398,11 +581,31 @@ namespace CALUMI::SFBGS
          * @return
          */
         [[nodiscard]] Utilities::U32Vector& amendedHashSet() const;
+        /**
+         *
+         * @param input
+         */
         void setAmendedHashSet(const Utilities::U32Vector& input) const;
 
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] uint32_t preambleCount() const;
+        /**
+         *
+         * @param input
+         */
         void setPreambleCount(uint32_t input) const;
+        /**
+         *
+         * @return
+         */
         [[nodiscard]] PreambleVector& preamble() const;
+        /**
+         *
+         * @param input
+         */
         void setPreamble(const PreambleVector& input) const;
 
 
@@ -430,12 +633,20 @@ namespace CALUMI::SFBGS
          * @return
          */
         [[nodiscard]] AnimationBlockVector& animationBlocks() const;
+        /**
+         *
+         * @param input
+         */
         void setAnimationBlocks(const AnimationBlockVector& input) const;
         /**
          * @brief The array of animation blocks that are applied by hash value in game, to some form of AnimObject
          * @return
          */
         [[nodiscard]] AnimationBlockVector& amendedAnimationBlocks() const;
+        /**
+         *
+         * @param input
+         */
         void setAmendedAnimationBlocks(const AnimationBlockVector& input) const;
 
         /// @}

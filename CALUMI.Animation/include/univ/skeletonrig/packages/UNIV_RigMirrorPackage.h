@@ -33,35 +33,29 @@ namespace CALUMI::UNIV
          * @param bone The bone whose mirror should be found
          * @return The mirroring bone to the input, or an empty string if none were found
          */
-        [[nodiscard]] const char* getPairedBone(const char* bone) const;
+        [[nodiscard]] const char* pairedBone(const char* bone) const;
         /**
          *
          * @return The amount of pairs that exist in the package
          */
-        [[nodiscard]] unsigned int getPairCount() const;
+        [[nodiscard]] unsigned int pairCount() const;
         /**
          *
          * @param index
          * @return The name of the first of the pairing at the given index
          */
-        [[nodiscard]] const char* getFirstOfPair(unsigned int index) const;
+        [[nodiscard]] const char* firstOfPair(unsigned int index) const;
         /**
          *
          * @param index
          * @return The name of the second of the pairing at the given index
          */
-        [[nodiscard]] const char* getSecondOfPair(unsigned int index) const;
+        [[nodiscard]] const char* secondOfPair(unsigned int index) const;
         /**
          *
          * @return "RIG_MIRROR_PACKAGE"
          */
-        [[nodiscard]] const char* getPackageType() const override;
-        /**
-         * @deprecated
-         * @param indents
-         * @return
-         */
-        [[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
+        [[nodiscard]] const char* packageType() const override;
 
     protected:
         /**

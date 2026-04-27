@@ -37,6 +37,12 @@ namespace CALUMI {
 	 * @defgroup extern_c Extern "C" API
 	 * @brief Group of C Style functions to be used by non c++ functions such as Python with C-Types
 	 * @{
+	 * @defgroup c_animation_scene Animation Scene
+	 * @{
+	 * @}
+	 * @defgroup c_rig Skeleton Rig
+	 * @{
+	 * @}
 	 * @}
 	 *
 	 * @defgroup Singletons

@@ -38,16 +38,6 @@ namespace CALUMI::UNIV
 		~AnimationPackageManager() override = default;
 		///@}
 
-	public:
-
-		/**
-		 * @deprecated
-			 * @brief Serialization
-			 * @param indents Spaces for formatting
-			 * @return The strContainer of the serialized struct
-			 */
-		[[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
-
 	private:
 		friend class Animation;
 	};

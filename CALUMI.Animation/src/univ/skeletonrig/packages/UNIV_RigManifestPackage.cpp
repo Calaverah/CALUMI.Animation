@@ -97,7 +97,7 @@ namespace CALUMI::UNIV
 
     bool RigManifestPackage::AddPackage(const SkeletonRig& rig, const bool overwrite)
     {
-        const auto& mgr = rig.getPackageManager();
+        const auto& mgr = rig.packageManager();
 
         auto* pkg = new RigManifestPackage;
 
@@ -113,15 +113,15 @@ namespace CALUMI::UNIV
 
     RigManifestPackage& RigManifestPackage::GetPackage(const SkeletonRig& rig)
     {
-        auto& mgr = rig.getPackageManager();
-        if (const auto pkg = dynamic_cast<RigManifestPackage*>(mgr.getPackage(MANIFEST_RIG_PACKAGE)))
+        auto& mgr = rig.packageManager();
+        if (const auto pkg = dynamic_cast<RigManifestPackage*>(mgr.package(MANIFEST_RIG_PACKAGE)))
         {
             return *pkg;
         }
 
         AddPackage(rig, false);
 
-        if (const auto pkg = dynamic_cast<RigManifestPackage*>(mgr.getPackage(MANIFEST_RIG_PACKAGE)))
+        if (const auto pkg = dynamic_cast<RigManifestPackage*>(mgr.package(MANIFEST_RIG_PACKAGE)))
         {
             return *pkg;
         }
@@ -131,14 +131,15 @@ namespace CALUMI::UNIV
 
     bool RigManifestPackage::RemovePackage(const SkeletonRig& rig)
     {
-        return rig.getPackageManager().removePackage(MANIFEST_RIG_PACKAGE);
+        return rig.packageManager().removePackage(MANIFEST_RIG_PACKAGE);
     }
 
     static void s_RecursiveLineageManifest(const Utilities::StringList& list,
                                            std::set<std::string>& checkList,
                                            const SkeletonRig& rig,
                                            const SkeletonBone& bone,
-                                           uint16_t& failSafe)
+                                           uint16_t& failSafe,
+                                           const bool forceLineage)
     {
         if (failSafe >= SkeletonRig::MaxBoneCount + 1)
             return;
@@ -150,14 +151,14 @@ namespace CALUMI::UNIV
 
         failSafe++;
 
-        if (parent)
-            s_RecursiveLineageManifest(list, checkList, rig, *parent, failSafe);
+        if (parent && forceLineage)
+            s_RecursiveLineageManifest(list, checkList, rig, *parent, failSafe, forceLineage);
 
         uint64_t offset = 0;
 
         if (!list.empty())
         {
-            offset += list.getOffset(list.size() -1);
+            offset += list.offset(list.size() -1);
             offset += list.stringLength(list.size()-1, true);
         }
 
@@ -165,16 +166,10 @@ namespace CALUMI::UNIV
         checkList.insert(bone.name());
     }
 
-    Utilities::StringList RigManifestPackage::processPackage(const SkeletonRig& rig) const
+    Utilities::StringList RigManifestPackage::processPackage(const SkeletonRig& rig, const bool forceLineage) const
     {
         const Utilities::StringList output;
         std::set<std::string> checkList;
-
-        const auto root = rig.root();
-
-        //root must always come first, we can save time by adding it here
-        output.push_back(root->name());
-        checkList.insert(root->name());
 
         //A little sanity check for preventing recursion looping to infinity
         uint16_t failSafe = 0;
@@ -182,7 +177,7 @@ namespace CALUMI::UNIV
         for (auto& entry : pImpl->m_list)
         {
             if (const auto bPtr = dynamic_cast<const SkeletonBone*>(rig.bone(entry.c_str())))
-                s_RecursiveLineageManifest(output, checkList, rig, *bPtr, failSafe);
+                s_RecursiveLineageManifest(output, checkList, rig, *bPtr, failSafe, forceLineage);
         }
 
         //repeat the process for the entire rig, which skips bones already added
@@ -190,12 +185,12 @@ namespace CALUMI::UNIV
         for (int i = 0; i < fullList.size(); i++)
         {
             if (const auto bPtr = dynamic_cast<const SkeletonBone*>(rig.bone(fullList.c_str(i))))
-                s_RecursiveLineageManifest(output, checkList, rig, *bPtr, failSafe);
+                s_RecursiveLineageManifest(output, checkList, rig, *bPtr, failSafe, forceLineage);
         }
 
         if (!output.empty())
         {
-            uint64_t finalOffset = output.getOffset(output.size() - 1);
+            uint64_t finalOffset = output.offset(output.size() - 1);
             finalOffset += output.stringLength(output.size() - 1, true);
             output.setFinalOffset(finalOffset);
         }
@@ -203,14 +198,9 @@ namespace CALUMI::UNIV
         return output;
     }
 
-   const char* RigManifestPackage::getPackageType() const
+   const char* RigManifestPackage::packageType() const
     {
         return MANIFEST_RIG_PACKAGE;
-    }
-
-    Utilities::StringContainer RigManifestPackage::toJSON(uint64_t indents) const
-    {
-        return {};
     }
 
     IPackage* RigManifestPackage::clone() const
@@ -234,4 +224,88 @@ namespace CALUMI::UNIV
 
         return true;
     }
+}
+
+int UNIVManifestRigPackage_AddPackageToSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig, const bool overwrite)
+{
+    if (rig)
+        try
+        {
+            return CALUMI::UNIV::RigManifestPackage::AddPackage(*rig, overwrite) ? 0 : 1;
+        }
+        catch ( std::exception&){}
+
+    return -1;
+}
+
+int UNIVManifestRigPackage_RemoveRigPackageFromSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig)
+{
+    if (rig)
+        try
+        {
+            return CALUMI::UNIV::RigManifestPackage::RemovePackage(*rig) ? 0 : 1;
+        }
+        catch ( std::exception&){}
+
+    return -1;
+}
+
+int UNIVManifestRigPackage_AddBoneC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName)
+{
+    if (rig)
+        try
+        {
+            return CALUMI::UNIV::RigManifestPackage::GetPackage(*rig).addBone(boneName) ? 0 : 1;
+        }
+        catch ( std::exception&){}
+
+    return -1;
+}
+
+int UNIVManifestRigPackage_InsertBoneC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName, const unsigned int index)
+{
+    if (rig)
+        try
+        {
+            return CALUMI::UNIV::RigManifestPackage::GetPackage(*rig).insertBone(boneName, index) ? 0 : 1;
+        }
+        catch ( std::exception&){}
+
+    return -1;
+}
+
+int UNIVManifestRigPackage_RemoveBoneC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName)
+{
+    if (rig)
+        try
+        {
+            return CALUMI::UNIV::RigManifestPackage::GetPackage(*rig).removeBone(boneName) ? 0 : 1;
+        }
+        catch ( std::exception&){}
+
+    return -1;
+}
+
+int64_t UNIVManifestRigPackage_GetCountC(const CALUMI::UNIV::SkeletonRig* rig)
+{
+    if (rig)
+        try
+        {
+              return CALUMI::UNIV::RigManifestPackage::GetPackage(*rig).count();
+        }
+        catch ( std::exception&){}
+
+    return -1;
+}
+
+const char* UNIVManifestRigPackage_GetBoneC(const CALUMI::UNIV::SkeletonRig* rig, unsigned int index)
+{
+    if (rig)
+        try
+        {
+            return CALUMI::UNIV::RigManifestPackage::GetPackage(*rig).bone(index);
+        }
+        catch ( std::exception&){}
+
+    return nullptr;
 }

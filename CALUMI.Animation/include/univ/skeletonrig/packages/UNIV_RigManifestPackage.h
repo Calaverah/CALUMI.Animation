@@ -24,11 +24,18 @@ namespace CALUMI::UNIV
         /// @name Constructors
         /// @{
         RigManifestPackage();
+        /**
+         * @param other
+         */
         RigManifestPackage(const RigManifestPackage& other);
         ~RigManifestPackage() override;
         /// @}
         /// @name Operators
         /// @{
+        /**
+         * @param other
+         * @return
+         */
         RigManifestPackage& operator=(const RigManifestPackage& other);
         /// @}
 
@@ -72,12 +79,7 @@ namespace CALUMI::UNIV
          *
          * @return "MANIFEST_RIG_PACKAGE"
          */
-        [[nodiscard]] const char* getPackageType() const override;
-        /**
-         * @param indents
-         * @return
-         */
-        [[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
+        [[nodiscard]] const char* packageType() const override;
 
     protected:
         /**
@@ -119,9 +121,10 @@ namespace CALUMI::UNIV
          * desired index order. The only entries that would come before those listed in the manifest, would be
          * the parent/ancestors of those bones so that a child never comes before its parent.
          * @param rig
+         * @param forceLineage
          * @return A string list of the bone entries in the rig in a specific order
          */
-        [[nodiscard]] Utilities::StringList processPackage(const SkeletonRig& rig) const;
+        [[nodiscard]] Utilities::StringList processPackage(const SkeletonRig& rig, bool forceLineage = false) const;
         /// @}
 
     private:
@@ -132,3 +135,65 @@ namespace CALUMI::UNIV
 
     /// @}
 }
+
+/// @addtogroup c_univ_rig_packages
+/// @{
+/// @defgroup c_univ_manifest_rig_package Manifest Rig Package
+/// @{
+
+extern "C"
+{
+    /**
+     *
+     * @brief Adds a Manifest Package to the UNIV Skeleton Rig
+     * @param rig
+     * @param overwrite If this package already exists, will reset it to default
+     * @return Error Code:\n -1 Invalid Ptr\n 0 = Successful Operation\n 1 = Package was not added to rig
+     */
+    CALUMIANIMATION_API int UNIVManifestRigPackage_AddPackageToSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig, bool overwrite);
+    /**
+     * @brief Removes the Manifest Package from a UNIV Skeleton Rig
+     * @param rig
+     * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation\n 1 = Package was not removed
+     */
+    CALUMIANIMATION_API int UNIVManifestRigPackage_RemoveRigPackageFromSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig);
+    /**
+     * @brief
+     * @param rig
+     * @param boneName
+     * @return Error Code:\n -1 = Invalid Ptr\n 0 = Bone successfully added\n 1 = Bone was not added to manifest
+     */
+    CALUMIANIMATION_API int UNIVManifestRigPackage_AddBoneC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName);
+    /**
+     *
+     * @param rig
+     * @param boneName
+     * @param index
+     * @return Error Code:\n -1 = Invalid Ptr\n 0 = Bone successfully added\n 1 = Bone was not added to manifest
+     */
+    CALUMIANIMATION_API int UNIVManifestRigPackage_InsertBoneC(const CALUMI::UNIV::SkeletonRig* rig,
+                                                               const char* boneName, unsigned int index);
+    /**
+     *
+     * @param rig
+     * @param boneName
+     * @return Error Code:\n -1 = Invalid Ptr\n 0 = Bone successfully added\n 1 = Bone was not added to manifest
+     */
+    CALUMIANIMATION_API int UNIVManifestRigPackage_RemoveBoneC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName);
+    /**
+     *
+     * @param rig
+     * @return Bone count or -1 if error occurs
+     */
+    CALUMIANIMATION_API int64_t UNIVManifestRigPackage_GetCountC(const CALUMI::UNIV::SkeletonRig* rig);
+    /**
+     *
+     * @param rig
+     * @param index
+     * @return Bone name or nullptr if index is out of range or there is an error
+     */
+    CALUMIANIMATION_API const char* UNIVManifestRigPackage_GetBoneC(const CALUMI::UNIV::SkeletonRig* rig, unsigned int index);
+}
+
+/// @}
+/// @}

@@ -14,7 +14,7 @@ namespace CALUMI::UNIV
 
     struct IPackageManager::Impl
     {
-        std::unordered_map<std::string, std::shared_ptr<IPackage>> _packages;
+        std::unordered_map<std::string, std::shared_ptr<IPackage>> m_packages;
     };
     IPackageManager::IPackageManager() : pImpl(new Impl()) {}
 
@@ -26,9 +26,9 @@ namespace CALUMI::UNIV
     {
         if (this != &other)
         {
-            pImpl->_packages.clear();
+            pImpl->m_packages.clear();
 
-            for (const auto& pkg : other.pImpl->_packages | std::views::values)
+            for (const auto& pkg : other.pImpl->m_packages | std::views::values)
             {
                 addPackage(pkg->clone(),true);
             }
@@ -44,18 +44,18 @@ namespace CALUMI::UNIV
         }
     }
 
-    IPackage* IPackageManager::getPackage(const char* packageName)
+    IPackage* IPackageManager::package(const char* packageName)
     {
-        if (!pImpl->_packages.contains(packageName))
+        if (!pImpl->m_packages.contains(packageName))
             return nullptr;
 
-        return pImpl->_packages.at(packageName).get();
+        return pImpl->m_packages.at(packageName).get();
     }
 
-    Utilities::StringList IPackageManager::getPackageList() const
+    Utilities::StringList IPackageManager::packageList() const
     {
         Utilities::StringList output;
-        for (auto& pkg : pImpl->_packages | std::views::keys)
+        for (auto& pkg : pImpl->m_packages | std::views::keys)
         {
             output.push_back(pkg.c_str());
         }
@@ -64,21 +64,21 @@ namespace CALUMI::UNIV
 
     bool IPackageManager::removePackage(const char* packageName)
     {
-        return static_cast<bool>(pImpl->_packages.erase(packageName));
+        return static_cast<bool>(pImpl->m_packages.erase(packageName));
     }
 
     bool IPackageManager::addPackage(IPackage* package, const bool overwrite) const
     {
-        if (pImpl->_packages.contains(package->getPackageType()) && !overwrite)
+        if (pImpl->m_packages.contains(package->packageType()) && !overwrite)
             return false;
 
 
-        pImpl->_packages[package->getPackageType()] = std::shared_ptr<IPackage>(package);
+        pImpl->m_packages[package->packageType()] = std::shared_ptr<IPackage>(package);
         return true;
     }
 
     uint64_t IPackageManager::packageCount() const
     {
-        return pImpl->_packages.size();
+        return pImpl->m_packages.size();
     }
 }

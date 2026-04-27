@@ -28,14 +28,7 @@ namespace CALUMI::UNIV
 			 * @brief A way to get a string describing the package.
 			 * @return A c string of the package type
 			 */
-		[[nodiscard]] virtual const char* getPackageType() const = 0;
-
-		/**
-			 * @brief Serialization of the class
-			 * @param indents Amount of spaces for formatting
-			 * @return The serialized struct as a strContainer
-			 */
-		[[deprecated]] [[nodiscard]] virtual Utilities::StringContainer toJSON(uint64_t indents) const = 0;
+		[[nodiscard]] virtual const char* packageType() const = 0;
 
 	protected:
 
@@ -78,9 +71,9 @@ namespace CALUMI::UNIV
 			 * @param packageName Name/Type
 			 * @return The first package ptr that matches, if it exists
 			 */
-		[[nodiscard]] IPackage* getPackage(const char* packageName);
+		[[nodiscard]] IPackage* package(const char* packageName);
 
-		[[nodiscard]] Utilities::StringList getPackageList() const;
+		[[nodiscard]] Utilities::StringList packageList() const;
 
 		/**
 			 * @brief Removes a package
@@ -102,13 +95,6 @@ namespace CALUMI::UNIV
 			 * @return Number of packages
 			 */
 		[[nodiscard]] uint64_t packageCount() const;
-
-		/**
-			 * @brief Serialization
-			 * @param indents Spaces for formatting
-			 * @return The strContainer of the serialized struct
-			 */
-		[[nodiscard]] virtual Utilities::StringContainer toJSON(uint64_t indents) const = 0;
 
 
 

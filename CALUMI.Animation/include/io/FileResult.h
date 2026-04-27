@@ -46,36 +46,32 @@ namespace CALUMI::Utilities
 		/// @{
 		FileResult& operator=(const FileResult& source);
 		/// @}
-
-		/** @name Result Info */
+		/// @name Result Info
 		/// @{
 
 		/**
-			 * @brief Simple way to check for error in the result
-			 * @return
-			 */
+		 * @brief Simple way to check for error in the result
+		 * @return
+		 */
 		[[nodiscard]] bool hasError() const;
-
 		/**
-			 * @brief Error Code Enum
-			 * @return Enum
-			 */
-		[[nodiscard]] FileErrorCode getFileErrorCode() const;
+		 * @brief Error Code Enum
+		 * @return Enum
+		 */
+		[[nodiscard]] FileErrorCode fileErrorCode() const;
 		/**
-			 * @brief File _path in question
-			 * @return Path Container of the file _path
-			 */
-		[[nodiscard]] PathContainer getFilePath() const;
+		 * @brief File path in question
+		 * @return Path Container of the file path
+		 */
+		[[nodiscard]] PathContainer filePath() const;
 		/**
 		 * @brief Message specific to the operation
 		 * @return
 		 */
-		[[nodiscard]] const char* getOpMessage() const;
+		[[nodiscard]] const char* operationMessage() const;
 		/// @}
-
 		/// @name Serialization
 		/// @{
-
 		/**
 		 * @brief Combines the message, error code, and filepath into a human read-able format
 		 * @return String container with formatted message
@@ -89,14 +85,20 @@ namespace CALUMI::Utilities
 	};
 
 	/**
-		 * @brief File result with simple vector based file buffer
-		 */
+	 * @brief File result with simple vector based file buffer
+	 */
 	struct CALUMIANIMATION_API FileBufferResult : BufferObject
 	{
 		FileBufferResult();
 		~FileBufferResult() override;
 
+		/**
+		 * @param result
+		 */
 		void setResult(const FileResult& result) const;
+		/**
+		 * @return
+		 */
 		[[nodiscard]] const FileResult& result() const;
 
 	private:

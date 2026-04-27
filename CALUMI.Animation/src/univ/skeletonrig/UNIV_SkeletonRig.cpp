@@ -192,7 +192,7 @@ namespace CALUMI::UNIV
             if (!bone)
                 continue;
 
-            if (bone->pImpl->m_boneTypeProperties->getType() == type)
+            if (bone->pImpl->m_boneTypeProperties->type() == type)
                 boneCount++;
 
             boneCount += bone->boneTypeCount(type);
@@ -265,7 +265,7 @@ namespace CALUMI::UNIV
     {
         if (pImpl->m_boneTypeProperties)
         {
-            if (!resetExisting && boneType == pImpl->m_boneTypeProperties->getType())
+            if (!resetExisting && boneType == pImpl->m_boneTypeProperties->type())
                 return false;
         }
 
@@ -352,37 +352,6 @@ namespace CALUMI::UNIV
         return false;
     }
 
-    Utilities::StringContainer SkeletonBone::toJSON(const uint64_t indents = 0) const {
-
-        std::string boneTypeOutput = pImpl->m_boneTypeProperties == nullptr ?
-                                "ERROR" : pImpl->m_boneTypeProperties->getTypeString();
-
-        //using this to clear clang tidy output. Will fix JSON output later TODO: Fix JSON
-        boneTypeOutput += std::format("{}",indents);
-
-        // std::string output = (
-        //     Utilities::Indent(indents) + "{\n" +
-        //     Utilities::Indent(indents+1).c_str() + "\"name\":" + pImpl->m_name.c_str() + "\",\n" +
-        //     Utilities::Indent(indents+1).c_str() + "\"parentBone\":" + pImpl->_parentBone.c_str() + ",\n" +
-        //     Utilities::Indent(indents + 1).c_str() + "\"boneType\":" + boneTypeOutput.c_str() + ",\n" //+
-        //     //Utilities::Indent(indents + 1).c_str() + "\"mirrorBoneIndex\":" + std::to_string(pImpl->mirrorBoneIndex).c_str() + ",\n"
-        //     ).c_str();
-        //
-        // //output += (Utilities::Indent(indents+1) + "\"localRotation\": [").c_str();
-        // //output += std::to_string(pImpl->localRotation.getX()) + ", " + std::to_string(pImpl->localRotation.getY()) + ", " + std::to_string(pImpl->localRotation.getZ()) + ", " + std::to_string(pImpl->localRotation.getW()) + "],\n";
-        //
-        // output += (Utilities::Indent(indents + 1) + "\"globalRotation\": [").c_str();
-        // output += std::to_string(pImpl->globalRotation.x()) + ", " + std::to_string(pImpl->globalRotation.y()) + ", " + std::to_string(pImpl->globalRotation.z()) + ", " + std::to_string(pImpl->globalRotation.w()) + "],\n";
-        //
-        // //output += (Utilities::Indent(indents + 1) + "\"localPosition\": [").c_str();
-        // //output += std::to_string(pImpl->localPosition.getX()) + ", " + std::to_string(pImpl->localPosition.getY()) + ", " + std::to_string(pImpl->localPosition.getZ()) + "],\n";
-        //
-        // output += (Utilities::Indent(indents + 1) + "\"globalPosition\": [").c_str();
-        // output += std::to_string(pImpl->globalPosition.x()) + ", " + std::to_string(pImpl->globalPosition.y()) + ", " + std::to_string(pImpl->globalPosition.z()) + "]\n";
-        //
-        // output += (Utilities::Indent(indents) + "}").c_str();
-        return ""; // output.c_str();
-    }
 #pragma endregion
 
 
@@ -416,7 +385,7 @@ namespace CALUMI::UNIV
 
         return pImpl->_root.childBone(boneName, true);
     }
-    RigPackageManager& SkeletonRig::getPackageManager() const
+    RigPackageManager& SkeletonRig::packageManager() const
     {
         return pImpl->_rigPackageManager;
     }
@@ -449,7 +418,7 @@ namespace CALUMI::UNIV
     {
         unsigned int pAnimatedBoneCount = 0;
 
-        if (pImpl->_root.boneTypeProperty()->getType() == type)
+        if (pImpl->_root.boneTypeProperty()->type() == type)
             pAnimatedBoneCount++;
 
         pAnimatedBoneCount += pImpl->_root.boneTypeCount(type);
@@ -477,17 +446,6 @@ namespace CALUMI::UNIV
             output.push_back(entry.c_str());
         }
 
-        return output;
-    }
-
-    Utilities::StringContainer SkeletonRig::toJSON(const uint64_t indents = 0) const {
-        Utilities::StringContainer output = Utilities::Indent(indents).c_str();
-        output += "{\n";
-        output += std::format("{0}\"rigName\":\"{1}\",\n{0}\"boneEntries\":", Utilities::Indent(indents + 1).c_str(), pImpl->_rigName).c_str();
-        // output += Utilities::VectorToJSON(pImpl->_boneEntries,indents + 1);
-        output += "\n ";
-        output += Utilities::Indent(indents).c_str();
-        output += "}";
         return output;
     }
 
@@ -549,11 +507,11 @@ int SetBoneTypeFromStringC(const CALUMI::UNIV::SkeletonBone* bone, const char* b
 }
 uint32_t GetBoneTypeC(const CALUMI::UNIV::SkeletonBone* bone)
 {
-    return static_cast<uint32_t>(bone->boneTypeProperty()->getType());
+    return static_cast<uint32_t>(bone->boneTypeProperty()->type());
 }
 const char* GetBoneTypeAsStringC(const CALUMI::UNIV::SkeletonBone* bone)
 {
-    return bone->boneTypeProperty()->getTypeString();
+    return bone->boneTypeProperty()->typeAsString();
 }
 int SetTwistBonePropertiesC(const CALUMI::UNIV::SkeletonBone* bone, const bool reassign, const char* twistDriver,
     const float twistDriverWeight)
@@ -561,7 +519,7 @@ int SetTwistBonePropertiesC(const CALUMI::UNIV::SkeletonBone* bone, const bool r
     if (bone)
     try
     {
-        if (bone->boneTypeProperty()->getType() != CALUMI::UNIV::BoneTypeProperty::BoneType::Twist)
+        if (bone->boneTypeProperty()->type() != CALUMI::UNIV::BoneTypeProperty::BoneType::Twist)
         {
             if (!reassign)
                 return 1;

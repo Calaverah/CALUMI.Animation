@@ -25,17 +25,17 @@ namespace CALUMI::UNIV {
 	{
 		auto type = BoneType::Default;
 
-		if (typeAsInteger <= static_cast<uint32_t>(BoneType::Max))
+		if (typeAsInteger <= BoneTypeMax)
 			type = static_cast<BoneType>(typeAsInteger);
 
 		return type;
 	}
 
-	const char* DefaultBoneProperty::getTypeString() const
+	const char* DefaultBoneProperty::typeAsString() const
 	{
 		return DefaultBoneTypeStr;
 	}
-    BoneTypeProperty::BoneType DefaultBoneProperty::getType() const
+    BoneTypeProperty::BoneType DefaultBoneProperty::type() const
 	{
 		return BoneType::Default;
 	}
@@ -43,25 +43,25 @@ namespace CALUMI::UNIV {
 
 	struct TwistBoneProperty::Impl
 	{
-		std::string _twistDriver;
-		float _twistDriverWeight = 0.0f;
+		std::string m_twistDriver;
+		float m_twistDriverWeight = 0.0f;
 		Impl() = default;
 	};
     const char* TwistBoneProperty::twistDriver() const
 	{
-		return pImpl->_twistDriver.c_str();
+		return pImpl->m_twistDriver.c_str();
 	}
     void TwistBoneProperty::setTwistDriver(const char* boneName) const
     {
-		pImpl->_twistDriver = boneName;
+		pImpl->m_twistDriver = boneName;
 	}
     float TwistBoneProperty::twistDriverWeight() const
 	{
-		return pImpl->_twistDriverWeight;
+		return pImpl->m_twistDriverWeight;
 	}
     void TwistBoneProperty::setTwistDriverWeight(const float wgt) const
     {
-		pImpl->_twistDriverWeight = wgt;
+		pImpl->m_twistDriverWeight = wgt;
 	}
 	TwistBoneProperty::TwistBoneProperty()
 	{
@@ -79,11 +79,11 @@ namespace CALUMI::UNIV {
 	{
 		*this = input;
 	}
-    const char* TwistBoneProperty::getTypeString() const
+    const char* TwistBoneProperty::typeAsString() const
 	{
 		return TwistBoneTypeStr;
 	}
-    BoneTypeProperty::BoneType TwistBoneProperty::getType() const
+    BoneTypeProperty::BoneType TwistBoneProperty::type() const
 	{
 		return BoneType::Twist;
 	}
@@ -91,8 +91,8 @@ namespace CALUMI::UNIV {
 	{
     	if (this != &input)
     	{
-    		pImpl->_twistDriver = input.pImpl->_twistDriver;
-    		pImpl->_twistDriverWeight = input.pImpl->_twistDriverWeight;
+    		pImpl->m_twistDriver = input.pImpl->m_twistDriver;
+    		pImpl->m_twistDriverWeight = input.pImpl->m_twistDriverWeight;
     	}
 		return *this;
 	}

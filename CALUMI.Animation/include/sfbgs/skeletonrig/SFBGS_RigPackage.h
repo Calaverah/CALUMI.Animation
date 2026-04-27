@@ -6,7 +6,6 @@
 #include "utilities/CALUMI_Common.h"
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
 
-inline constexpr int SFBGSMAPSIZE = 157;
 
 namespace CALUMI::SFBGS
 {
@@ -14,6 +13,10 @@ namespace CALUMI::SFBGS
 	 * @relates SFBGS_RigPackage
 	 */
 	inline constexpr auto SFBGS_RIG_PACKAGE = "SFBGS_RIG_PACKAGE";
+	/**
+	 * @relates SFBGS_RigPackage
+	 */
+	inline constexpr int SFBGSMAPSIZE = 157;
 
 	/**
 	 * @brief Simple pair of values used to compress translations on Starfield animations
@@ -31,6 +34,9 @@ namespace CALUMI::SFBGS
 		 * @param value2
 		 */
 		PrecisionSet(float value1, float value2);
+		/**
+		 * @param other
+		 */
 		PrecisionSet(const PrecisionSet& other);
 		~PrecisionSet();
 		/// @}
@@ -246,17 +252,17 @@ namespace CALUMI::SFBGS
 			R_Biceps_Twist = 155, ///< _
 			R_Biceps_Twist1 = 156, ///< _
 
-
-
 			None = 0xFF
 		};
+
+		static constexpr auto MaxBoneMapKey = static_cast<uint8_t>(BoneMapKey::R_Biceps_Twist1);
 
 		/**
 			 * @brief Convenience function when static casting int to enum
 			 * @param input
 			 * @return
 			 */
-		static bool BoneTagExists(BoneMapKey input);
+		static BoneMapKey GetBoneTag(uint8_t input);
 		/// @}
 		/// @name Constructors
 		/// @{
@@ -353,6 +359,55 @@ namespace CALUMI::SFBGS
 		/// @{
 		SFBGS_RigPackage& operator=(const SFBGS_RigPackage& other);
 		/// @}
+		/// @name Level Of Detail (LOD)
+		/// @{
+
+		/**
+		 * @brief Level Of Detail Setting
+		 */
+		enum class LODSetting : int8_t
+		{
+			UNDEFINED = -1,
+			LOD0 = 0, ///< Expected Cut-Off Distance ~7.62m
+			LOD1 = 1, ///< Expected Cut-Off Distance ~21.5m
+			LOD2 = 2, ///< Expected Cut-Off Distance ~43.6m
+			LOD3 = 3, ///< Expected Cut-Off Distance ~88.0m
+			LOD4 = 4, ///< Unknown, Expected Persistent with Conditions
+			LOD5 = 5  ///< Unknown, Expected Persistent without Conditions
+
+		};
+
+		/**
+		 * @relates LODSetting
+		 */
+		static constexpr auto DefaultLOD = LODSetting::LOD5;
+		/**
+		 * @relates LODSetting
+		 */
+		static constexpr auto MaxLOD = static_cast<int8_t>(LODSetting::LOD5);
+
+		/**
+		 *
+		 * @param value
+		 * @return
+		 */
+		static LODSetting IntToLOD(int value);
+
+		/**
+		 *
+		 * @param boneName
+		 * @param level
+		 */
+		void setBoneLod(const char* boneName, LODSetting level) const;
+		/**
+		 *
+		 * @param boneName
+		 * @return Current LOD Setting for the given bone, or @ref
+		 * CALUMI::SFBGS::SFBGS_RigPackage::LODSetting::Default "Default" if no bone is found
+		 */
+		LODSetting boneLod(const char* boneName) const;
+
+		/// @}
 		/// @name Inherited
 		/// @{
 
@@ -360,13 +415,7 @@ namespace CALUMI::SFBGS
 			 * @brief Returns a string of the package type
 			 * @return
 			 */
-		[[nodiscard]] const char* getPackageType() const override;
-		/**
-			 * @brief NOT YET IMPLEMENTED
-			 * @param indents
-			 * @return
-			 */
-		[[deprecated]] [[nodiscard]] Utilities::StringContainer toJSON(uint64_t indents) const override;
+		[[nodiscard]] const char* packageType() const override;
 
 	protected:
 		/**
@@ -415,8 +464,9 @@ namespace CALUMI::SFBGS
 			 * @param boneList
 			 * @return
 			 */
-		[[nodiscard]] Utilities::S16Vector ConvertMap(const Utilities::StringList& boneList) const;
+		[[nodiscard]] Utilities::S16Vector convertMap(const Utilities::StringList& boneList) const;
 		/// @}
+		///
 	};
 	/// @}
 }
@@ -424,79 +474,79 @@ namespace CALUMI::SFBGS
 
 
 
-	 /// @addtogroup c_rig_packages
-	 /// @{
-	 /// @defgroup c_sfbgs_rig_package Starfield
-	 /// @{
-	extern "C"
-	{
+ /// @addtogroup c_rig_packages
+ /// @{
+ /// @defgroup c_sfbgs_rig_package Starfield
+ /// @{
+extern "C"
+{
 	/**
 	 * @brief Adds a Starfield Rig Package to the UNIV Skeleton Rig
 	 * @param rig UNIV Rig
-	 * @param errorMessage *optional* error message container for returning error statements
 	 * @param overwrite If set to true, will replace the Starfield Rig package, if one exists
-	 * @return Whether the operation was successful
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation\n 1 = Package was not added to rig
 	 */
-	CALUMIANIMATION_API bool SFBGSRigPackage_AddPackageToSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig, CALUMI::Utilities::StringContainer* errorMessage, bool overwrite);
+	CALUMIANIMATION_API int SFBGSRigPackage_AddPackageToSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig, bool overwrite);
 	/**
 	 * @brief
 	 * @param rig UNIV Rig
-	 * @param errorMessage *optional* error message container for returning error statements
-	 * @return Whether the operation was successful
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation\n 1 = Package was not removed from rig
 	 */
-	CALUMIANIMATION_API bool SFBGSRigPackage_RemoveRigPackageFromSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig, CALUMI::Utilities::StringContainer* errorMessage);
+	CALUMIANIMATION_API int SFBGSRigPackage_RemoveRigPackageFromSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig);
 
 	/**
 	 * @brief
 	 * @param rig UNIV Rig
 	 * @param boneName Bone to check for
-	 * @return Whether the bone name in question is mapped to any keys/tags
+	 * @return Result Code:\n -1 = Invalid Ptr\n 0 = False \n 1 = True
 	 */
-	CALUMIANIMATION_API bool SFBGSRigPackage_BoneIsMappedC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName);
+	CALUMIANIMATION_API int SFBGSRigPackage_BoneIsMappedC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName);
 	/**
 	 * @brief
 	 * @param rig UNIV Rig
 	 * @param key uint8_t form of the BoneMapKey
-	 * @return Whether a bone is mapped to the given key/tag
+	 * @return Result Code:\n -1 = Invalid Ptr\n 0 = False \n 1 = True
 	 */
-	CALUMIANIMATION_API bool SFBGSRigPackage_KeyIsMappedC(const CALUMI::UNIV::SkeletonRig* rig, uint8_t key);
+	CALUMIANIMATION_API int SFBGSRigPackage_KeyIsMappedC(const CALUMI::UNIV::SkeletonRig* rig, uint8_t key);
 
 	/**
 	 * @brief
 	 * @param rig UNIV Rig
 	 * @param key uint8_t form of the BoneMapKey
 	 * @param boneName Bone to add
-	 * @param errorMessage *optional* error message container for returning error statements
 	 * @param overwrite If set to true, will replace the bone that currently is assigned to this key/tag, if
 	 * one exists
-	 * @return Whether the operation was successful
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation\n 1 = Bone was not added to map
 	 */
-	CALUMIANIMATION_API bool SFBGSRigPackage_AddBoneNameToMapC(const CALUMI::UNIV::SkeletonRig* rig, uint8_t key, const char* boneName, CALUMI::Utilities::StringContainer* errorMessage, bool overwrite);
+	CALUMIANIMATION_API int SFBGSRigPackage_AddBoneNameToMapC(const CALUMI::UNIV::SkeletonRig* rig, uint8_t key,
+		const char* boneName, bool overwrite);
 	/**
 	 * @brief
 	 * @param rig UNIV Rig
 	 * @param key uint8_t form of the BoneMapKey
 	 * @param bone Bone to add, will use the bone's given name
-	 * @param errorMessage *optional* error message container for returning error statements
 	 * @param overwrite If set to true, will overwrite the bone assigned to this key/tag, if one exists
-	 * @return Whether the operation was successful
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation\n 1 = Bone was not added to map
 	 */
-	CALUMIANIMATION_API bool SFBGSRigPackage_AddBoneToMapC(const CALUMI::UNIV::SkeletonRig* rig, uint8_t key, const CALUMI::UNIV::SkeletonBone* bone, CALUMI::Utilities::StringContainer* errorMessage, bool overwrite);
+	CALUMIANIMATION_API int SFBGSRigPackage_AddBoneToMapC(const CALUMI::UNIV::SkeletonRig* rig, uint8_t key,
+		const CALUMI::UNIV::SkeletonBone* bone, bool overwrite);
 
 	/**
 	 * @brief Removes a bone assignment from the given key/tag
 	 * @param rig UNIV Rig
 	 * @param key uint8_t form of the BoneMapKey
-	 * @return Whether the operation was successful
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation\n 1 = Bone was not removed from map
 	 */
-	CALUMIANIMATION_API bool SFBGSRigPackage_RemoveBoneFromMapUsingKeyC(const CALUMI::UNIV::SkeletonRig* rig, uint8_t key);
+	CALUMIANIMATION_API int SFBGSRigPackage_RemoveBoneFromMapUsingKeyC(const CALUMI::UNIV::SkeletonRig* rig,
+		uint8_t key);
 	/**
 	 * @brief Removes the given bone from any assignments
 	 * @param rig UNIV Rig
 	 * @param boneName
-	 * @return Whether the operation was successful
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation\n 1 = Bone was not removed from map
 	 */
-	CALUMIANIMATION_API bool SFBGSRigPackage_RemoveBoneFromMapUsingNameC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName);
+	CALUMIANIMATION_API int SFBGSRigPackage_RemoveBoneFromMapUsingNameC(const CALUMI::UNIV::SkeletonRig* rig,
+		const char* boneName);
 
 	/**
 	 * @brief Returns the key assigned to a bone name, if one is assigned
@@ -509,7 +559,7 @@ namespace CALUMI::SFBGS
 	 * @brief Returns the name of the bone assigned to this key, if one is assigned
 	 * @param rig UNIV Rig
 	 * @param key uint8_t form of the BoneMapKey
-	 * @return
+	 * @return nullptr if error or "" if none found
 	 */
 	CALUMIANIMATION_API const char* SFBGSRigPackage_GetBoneNameFromKeyC(const CALUMI::UNIV::SkeletonRig* rig, uint8_t key);
 
@@ -517,15 +567,15 @@ namespace CALUMI::SFBGS
 	 * @brief Sets the rig to be processed as a mannequin when exporting as a Starfield skeleton.rig
 	 * @param rig UNIV Rig
 	 * @param isMannequin
-	 * @return Whether the operation was successful
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation
 	 */
-	CALUMIANIMATION_API bool SFBGSRigPackage_SetMannequinC(const CALUMI::UNIV::SkeletonRig* rig, bool isMannequin);
+	CALUMIANIMATION_API int SFBGSRigPackage_SetMannequinC(const CALUMI::UNIV::SkeletonRig* rig, bool isMannequin);
 	/**
 	 * @brief Returns if the rig is set to process as a mannequin when exporting as a Starfield skeleton.rig
 	 * @param rig UNIV Rig
-	 * @return
+	 * @return Result Code:\n -1 = Invalid Ptr\n 0 = False \n 1 = True
 	 */
-	CALUMIANIMATION_API bool SFBGSRigPackage_IsMannequinC(const CALUMI::UNIV::SkeletonRig* rig);
+	CALUMIANIMATION_API int SFBGSRigPackage_IsMannequinC(const CALUMI::UNIV::SkeletonRig* rig);
 	/**
 	 * @brief Returns the size of the Rig BoneMap which is always 157 (or *Pi* / 0.02 :) )
 	 * @return 157
@@ -536,49 +586,70 @@ namespace CALUMI::SFBGS
 	 * @brief Sets the rig to process all relative translations with the *Default* precision set
 	 * @details Default Values High: 1/4000f and Low: 1/32f
 	 * @param rig UNIV Rig
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation
 	 */
-	CALUMIANIMATION_API void SFBGSRigPackage_SetPrecisionToDefaultC(const CALUMI::UNIV::SkeletonRig* rig);
+	CALUMIANIMATION_API int SFBGSRigPackage_SetPrecisionToDefaultC(const CALUMI::UNIV::SkeletonRig* rig);
 	/**
 	 * @brief Sets the rig to process all relative translations with the *1st Person* precision set
 	 * @param rig UNIV Rig
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation
 	 */
-	CALUMIANIMATION_API void SFBGSRigPackage_SetPrecisionToFirstPersonC(const CALUMI::UNIV::SkeletonRig* rig);
+	CALUMIANIMATION_API int SFBGSRigPackage_SetPrecisionToFirstPersonC(const CALUMI::UNIV::SkeletonRig* rig);
 	/**
 	 * @brief Sets the rig to process all relative translations with the *Ship* precision set
 	 * @param rig UNIV Rig
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation
 	 */
-	CALUMIANIMATION_API void SFBGSRigPackage_SetPrecisionToShipValuesC(const CALUMI::UNIV::SkeletonRig* rig);
+	CALUMIANIMATION_API int SFBGSRigPackage_SetPrecisionToShipValuesC(const CALUMI::UNIV::SkeletonRig* rig);
 	/**
 	 * @brief Sets the rig to process all relative translations with *Custom* precision values
 	 * @details Will automatically sort the two custom values into a high and low precision set
 	 * @param rig UNIV Rig
 	 * @param custom1 Non zero value
 	 * @param custom2 Non zero value
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation
 	 */
-	CALUMIANIMATION_API void SFBGSRigPackage_SetPrecisionToCustomC(const CALUMI::UNIV::SkeletonRig* rig, float custom1, float custom2);
+	CALUMIANIMATION_API int SFBGSRigPackage_SetPrecisionToCustomC(const CALUMI::UNIV::SkeletonRig* rig, float custom1, float custom2);
 
 	/**
 	 * @brief Returns the precision type that this rig is set to use when compressing into the Starfield format
 	 * @details This method is a convenience method for UI building or message passing to the user
 	 * @param rig UNIV Rig
-	 * @return A string representing the set (Default, Ship, First Person, Custom)
+	 * @return A string representing the set (Default, Ship, First Person, Custom) or nullptr if error
 	 */
 	CALUMIANIMATION_API const char* SFBGSRigPackage_GetPrecisionType(const CALUMI::UNIV::SkeletonRig* rig);
 	/**
 	 * @brief The high precision value used by this rig for compressing into the Starfield format
 	 * @param rig UNIV Rig
-	 * @return
+	 * @return NaN if error
 	 */
 	CALUMIANIMATION_API float SFBGSRigPackage_GetHighPrecisionValueC(const CALUMI::UNIV::SkeletonRig* rig);
 	/**
 	 * @brief The low precision value used by this rig for compressing into the Starfield format
 	 * @param rig UNIV Rig
-	 * @return
+	 * @return NaN if error
 	 */
 	CALUMIANIMATION_API float SFBGSRigPackage_GetLowPrecisionValueC(const CALUMI::UNIV::SkeletonRig* rig);
+	/**
+	 * @brief
+	 * @param rig
+	 * @param boneName
+	 * @return The integer form of this Bone's @ref CALUMI::SFBGS::SFBGS_SkeletonRig::LODSetting "Level of Detail" or
+	 * -1 if there's an error occurs
+	 */
+	CALUMIANIMATION_API int SFBGSRigPackage_GetBoneLODValueC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName);
+	/**
+	 * @param rig
+	 * @param boneName
+	 * @param value If value is invalid, will be set to @ref CALUMI::SFBGS::SFBGS_SkeletonRig::DefaultLOD "Default"
+	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successfully set LOD value\n 1 = LOD value not set
+	 */
+	CALUMIANIMATION_API int SFBGSRigPackage_SetBoneLODValueC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName,
+	                                                         int value);
 
-	}
+}
 
-	/// @}
-	/// @}
+
+/// @}
+/// @}
 
