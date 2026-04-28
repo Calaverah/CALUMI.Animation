@@ -81,10 +81,10 @@ namespace CALUMI::UNIV
 		/**
 		 *
 		 * @param name
-		 * @param includeDescendents
+		 * @param recursive If true, will search the bone's entire lineage instead of just the direct children
 		 * @return
 		 */
-		[[nodiscard]] SkeletonBone* childBone(const char* name, bool includeDescendents = true) const;
+		[[nodiscard]] SkeletonBone* childBone(const char* name, bool recursive = true) const;
 		/**
 		 * @bried index method of getting a child bone, mostly useful during for loops
 		 * @param index Index of the direct child
@@ -524,6 +524,22 @@ extern  "C"
 	 * @return The name of the source bone's parent, if none exist, will return as empty
 	 */
 	CALUMIANIMATION_API const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneParentC(const CALUMI::UNIV::SkeletonBone* source);
+	/**
+	 * @note This does not include recursive children/grandchildren of the parent bone
+	 * @param parent
+	 * @param index Index of the child belonging to this parent bone
+	 * @return Pointer to the existing child bone, nullptr if none exists or if there is an error
+	 */
+	CALUMIANIMATION_API const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneChildC(const CALUMI::UNIV::SkeletonBone* parent, unsigned int index);
+	/**
+	 *
+	 * @param parent
+	 * @param name
+	 * @param recursive If true, will search the entire lineage of each bone instead just the immediate children of
+	 * the given parent bone
+	 * @return Pointer to the existing child bone, nullptr if none exists or if there is an error
+	 */
+	CALUMIANIMATION_API const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneChildWithNameC(const CALUMI::UNIV::SkeletonBone* parent, const char* name, bool recursive);
 	/**
 	 * @brief Returns the rotation of this bone, in global coordinates
 	 * @param source Ptr to the bone in question

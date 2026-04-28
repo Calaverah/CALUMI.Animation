@@ -131,17 +131,20 @@ namespace CALUMI::UNIV
         return addChildBone(name, transform);
     }
 
-    SkeletonBone* SkeletonBone::childBone(const char* name, const bool includeDescendents) const
+    SkeletonBone* SkeletonBone::childBone(const char* name, const bool recursive) const
     {
         for (const auto& bone : pImpl->m_childBones)
         {
             if (SCOMPARE(bone->name(), name) == 0)
                 return bone.get();
 
-            const auto& childBone = bone->childBone(name, includeDescendents);
+            if (recursive)
+            {
+                const auto& childBone = bone->childBone(name, recursive);
 
-            if (childBone)
-                return childBone;
+                if (childBone)
+                    return childBone;
+            }
         }
 
         return nullptr;
@@ -648,6 +651,26 @@ const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneParentC(const CALUMI::UNIV::Ske
     catch(const std::exception&){}
     return nullptr;
 }
+const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneChildC(const CALUMI::UNIV::SkeletonBone* parent, const unsigned int index)
+{
+    if (parent)
+        try
+        {
+            return parent->childBone(index);
+        }
+    catch (const std::exception&) {}
+    return nullptr;
+}
+const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneChildWithNameC(const CALUMI::UNIV::SkeletonBone* parent, const char* name, const bool recursive)
+{
+    if (parent)
+        try
+        {
+            return parent->childBone(name, recursive);
+        }
+    catch (const std::exception&) {}
+    return nullptr;
+}
 const CALUMI::Math::Quaternion* GetGlobalSkeletonBoneRotationC(const CALUMI::UNIV::SkeletonBone* source)
 {
     if (!source)
@@ -1026,4 +1049,5 @@ int SetSkeletonBoneParentC(const CALUMI::UNIV::SkeletonBone* bone, const CALUMI:
     catch (const std::exception&) {}
     return -1;
 }
+
 #pragma endregion
