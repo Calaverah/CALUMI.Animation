@@ -3,4 +3,5 @@ PUBLIC
 CALUMI_Common.h
 CALUMI_Hashes.h
 CALUMI_Utilities.h
+CALUMI_Json.h
 )
