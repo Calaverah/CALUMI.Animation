@@ -81,4 +81,16 @@ namespace CALUMI::UNIV
     {
         return pImpl->m_packages.size();
     }
+
+    Utilities::JsonObject IPackageManager::toJson() const
+    {
+        Utilities::JsonObject output;
+
+        for (const auto& [key, package] : pImpl->m_packages)
+        {
+            output[key.c_str()] = package->toJson();
+        }
+
+        return output;
+    }
 }

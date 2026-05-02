@@ -3,6 +3,7 @@
 //Contact: Calaverahmedia@gmail.com
 
 #pragma once
+#include "utilities/CALUMI_Json.h"
 #include "utilities/CALUMI_Utilities.h"
 
 namespace CALUMI::UNIV
@@ -22,6 +23,8 @@ namespace CALUMI::UNIV
 		virtual ~IPackage() = default;
 
 		/// @}
+		/// @name Data
+		/// @{
 
 	public:
 		/**
@@ -29,6 +32,12 @@ namespace CALUMI::UNIV
 			 * @return A c string of the package type
 			 */
 		[[nodiscard]] virtual const char* packageType() const = 0;
+
+		/// @}
+		/// @name Json
+		/// @{
+		virtual Utilities::JsonObject toJson() const = 0;
+		/// @}
 
 	protected:
 
@@ -63,7 +72,9 @@ namespace CALUMI::UNIV
 	public:
 		IPackageManager& operator=(const IPackageManager& other);
 
-		///@}
+		/// @}
+		/// @name Data
+		/// @{
 
 	public:
 		/**
@@ -73,6 +84,9 @@ namespace CALUMI::UNIV
 			 */
 		[[nodiscard]] IPackage* package(const char* packageName);
 
+		/**
+		 * @return
+		 */
 		[[nodiscard]] Utilities::StringList packageList() const;
 
 		/**
@@ -95,6 +109,12 @@ namespace CALUMI::UNIV
 			 * @return Number of packages
 			 */
 		[[nodiscard]] uint64_t packageCount() const;
+
+		/// @}
+		/// @name Json
+		/// @{
+		Utilities::JsonObject toJson() const;
+		/// @}
 
 
 

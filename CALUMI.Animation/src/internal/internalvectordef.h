@@ -31,7 +31,7 @@
 		const T& CLASS::at(uint64_t i) const { return pImpl->vector.at(i); } \
 		T& CLASS::at(uint64_t i) { return pImpl->vector.at(i); } \
 		void CLASS::push_back(const T& input) { pImpl->vector.push_back(input); } \
-		void CLASS::push_back(const T&& input) { pImpl->vector.push_back(input); } \
+		void CLASS::push_back(T&& input) noexcept { pImpl->vector.push_back(input); } \
 		void CLASS::clear() { pImpl->vector.clear(); } \
 		uint64_t CLASS::size() const { return pImpl->vector.size(); } \
 		bool CLASS::empty() const { return pImpl->vector.empty(); } \

@@ -126,6 +126,10 @@ namespace CALUMI::UNIV
          */
         [[nodiscard]] Utilities::StringList processPackage(const SkeletonRig& rig, bool forceLineage = false) const;
         /// @}
+        /// @name Json
+        /// @{
+        Utilities::JsonObject toJson() const override;
+        /// @}
 
     private:
         struct Impl;

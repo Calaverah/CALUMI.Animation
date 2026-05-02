@@ -180,6 +180,10 @@ namespace CALUMI::UNIV
 		uint64_t priorityEntryCount() const;
 
 		/// @}
+		/// @name Json
+		/// @{
+		Utilities::JsonObject toJson() const;
+		/// @}
 
 	private:
 		struct Impl;

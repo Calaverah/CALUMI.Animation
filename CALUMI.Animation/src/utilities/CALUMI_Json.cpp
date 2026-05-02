@@ -454,8 +454,86 @@ namespace CALUMI::Utilities
         return output;
     }
 
+    StringContainer JsonValue::serialize(const unsigned int indentOffset, const bool raw) const
+    {
+        const std::string indent = !raw ? "\t" : "";
+        std::string newline = !raw ? "\n" : "";
 
-    StringContainer JsonObject::serialize(unsigned int indentOffset, const bool raw) const
+        for (unsigned int i = 0; i < indentOffset; i++)
+        {
+            newline += indent;
+        }
+
+        std::string output;
+
+        switch (varType())
+            {
+            case VarType::Char:
+                output += std::format("{}", toChar()).c_str();
+                break;
+            case VarType::String:
+                output += std::format(R"("{}")", toString()).c_str();
+                break;
+            case VarType::Int8:
+                output += std::format("{}", toInt8()).c_str();
+                break;
+            case VarType::UInt8:
+                output += std::format("{}", toUInt8()).c_str();
+                break;
+            case VarType::Int16:
+                output += std::format("{}", toInt16()).c_str();
+                break;
+            case VarType::UInt16:
+                output += std::format("{}", toUInt16()).c_str();
+                break;
+            case VarType::Int32:
+                output += std::format("{}", toInt()).c_str();
+                break;
+            case VarType::UInt32:
+                output += std::format("{}", toUInt()).c_str();
+                break;
+            case VarType::Int64:
+                output += std::format("{}", toInt64()).c_str();
+                break;
+            case VarType::UInt64:
+                output += std::format("{}", toUInt64()).c_str();
+                break;
+            case VarType::Float:
+                output += std::format("{}", toFloat()).c_str();
+                break;
+            case VarType::Double:
+                output += std::format("{}", toDouble()).c_str();
+                break;
+            case VarType::Bool:
+                output += toBool() ? "true" : "false";
+                break;
+            case VarType::JsonObject:
+                output += toObject().serialize(indentOffset+1,raw).c_str();
+                break;
+            case VarType::JsonArray:
+                {
+                    output += "[";
+
+                    uint64_t count = 0;
+                    for (const auto arrayCopy = toArray(); const auto& entry : arrayCopy.pImpl->vector)
+                    {
+                        count++;
+                        output += newline + indent + entry.serialize(indentOffset + 1, raw).c_str();
+
+                        if (count < arrayCopy.pImpl->vector.size())
+                            output += ", ";
+                    }
+                    output += newline + "]";
+                    break;
+                }
+            default:
+                output += "null";
+                break;
+            }
+        return output.c_str();
+    }
+
+    StringContainer JsonObject::serialize(const unsigned int indentOffset, const bool raw) const
     {
         const std::string indent = !raw ? "\t" : "";
         std::string newline = !raw ? "\n" : "";
@@ -466,77 +544,24 @@ namespace CALUMI::Utilities
         }
 
 
-        std::string output = "{" + newline + indent;
+        std::string output = "{";
         uint64_t keyCount = 0;
         for (const auto& [key, value] : pImpl->m_values)
         {
             keyCount++;
+            output += newline;
             output += std::format(R"("{}": )", key);
 
-            switch (value.varType())
-            {
-            case JsonValue::VarType::Char:
-                output += std::format("{}", value.toChar()).c_str();
-                break;
-            case JsonValue::VarType::String:
-                output += std::format(R"("{}")", value.toString()).c_str();
-                break;
-            case JsonValue::VarType::Int8:
-                output += std::format("{}", value.toInt8()).c_str();
-                break;
-            case JsonValue::VarType::UInt8:
-                output += std::format("{}", value.toUInt8()).c_str();
-                break;
-            case JsonValue::VarType::Int16:
-                output += std::format("{}", value.toInt16()).c_str();
-                break;
-            case JsonValue::VarType::UInt16:
-                output += std::format("{}", value.toUInt16()).c_str();
-                break;
-            case JsonValue::VarType::Int32:
-                output += std::format("{}", value.toInt()).c_str();
-                break;
-            case JsonValue::VarType::UInt32:
-                output += std::format("{}", value.toUInt()).c_str();
-                break;
-            case JsonValue::VarType::Int64:
-                output += std::format("{}", value.toInt64()).c_str();
-                break;
-            case JsonValue::VarType::UInt64:
-                output += std::format("{}", value.toUInt64()).c_str();
-                break;
-            case JsonValue::VarType::Float:
-                output += std::format("{}", value.toFloat()).c_str();
-                break;
-            case JsonValue::VarType::Double:
-                output += std::format("{}", value.toDouble()).c_str();
-                break;
-            case JsonValue::VarType::Bool:
-                output += value.toBool() ? "true" : "false";
-                break;
-            case JsonValue::VarType::JsonObject:
-                output += value.toObject().serialize(indentOffset+2,raw).c_str();
-                break;
-            case JsonValue::VarType::JsonArray:
-                {
-                    output += newline + indent + indent + "[";
+            output += value.serialize(indentOffset+1, raw).c_str();
 
-                    for (const auto arrayCopy = value.toArray(); const auto& entry : arrayCopy.pImpl->vector)
-                    {
-                        output += newline + indent + indent + indent + entry.serialize(indent + 4, raw).c_str();
-                    }
-                    break;
-                }
-            default:
-                output += "null";
-                break;
-            }
             if (keyCount < pImpl->m_values.size())
                 output += ",";
         }
 
-        output += newline.c_str();
-        output += offset.c_str();
+        if (!raw && indentOffset > 0)
+            newline.pop_back();
+
+        output += newline;
         output += "}";
 
         return output.c_str();

@@ -298,3 +298,29 @@ GTEST(Offset)
     q1.rotateBy(qDist);
     EXPECT_QUATNEAR(q1, q2, 0.000001f);
 }
+
+GTEST(Json)
+{
+    const CALUMI::Utilities::JsonObject q0 = Quaternion().toJson();
+    EXPECT_EQ(0.0f, q0["x"].toFloat());
+    EXPECT_EQ(0.0f, q0["y"].toFloat());
+    EXPECT_EQ(0.0f, q0["z"].toFloat());
+    EXPECT_EQ(1.0f, q0["w"].toFloat());
+
+    const CALUMI::Utilities::JsonObject q1 = Quaternion(1.0f,0.0f,0.0f,1.0f,true).toJson();
+    EXPECT_EQ(static_cast<float>(CLA_SQRT1_2), q1["x"].toFloat());
+    EXPECT_EQ(0.0f, q1["y"].toFloat());
+    EXPECT_EQ(0.0f, q1["z"].toFloat());
+    EXPECT_EQ(static_cast<float>(CLA_SQRT1_2), q1["w"].toFloat());
+
+    const CALUMI::Utilities::JsonObject qP;
+    CALUMI::Utilities::JsonArray q01Array;
+
+    q01Array.push_back(q0);
+    q01Array.push_back(q1);
+    q01Array.push_back(100);
+
+    qP["-"] = q01Array;
+
+    std::cout << qP.serialize(0, true).c_str() << std::endl;
+}

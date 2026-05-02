@@ -281,7 +281,7 @@ struct CALUMIANIMATION_API CLASS \
 		\
 		\
 		void push_back(const T& input);\
-		void push_back(const T&& input);\
+		void push_back(T&& input) noexcept;\
 		void resize(uint64_t n);\
 		void reserve(uint64_t n);\
 		void shrink_to_fit();\

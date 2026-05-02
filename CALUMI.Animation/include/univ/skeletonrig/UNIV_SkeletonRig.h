@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "interfaces/ILineage.h"
+#include "utilities/CALUMI_Json.h"
 
 namespace CALUMI::UNIV
 {
@@ -204,6 +205,12 @@ namespace CALUMI::UNIV
 		[[nodiscard]] bool isAncestor(const SkeletonBone& boneCandidate) const;
 
 		/// @}
+		/// @name Json
+		/// @{
+
+		Utilities::JsonObject toJson() const;
+
+		/// @}
 
 	private:
 		struct Impl;
@@ -312,6 +319,12 @@ namespace CALUMI::UNIV
 		 * @brief It is unlikely to even need this many bones, no supported game allows this many bones to be added
 		 */
 		static constexpr unsigned int MaxBoneCount = 512;
+
+		/// @}
+		/// @name Json
+		/// @{
+
+		Utilities::JsonObject toJson() const;
 
 		/// @}
 	private:

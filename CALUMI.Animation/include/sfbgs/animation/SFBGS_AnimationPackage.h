@@ -146,6 +146,10 @@ namespace CALUMI::SFBGS
 		/// @{
 		SFBGS_AnimationPackage& operator=(const SFBGS_AnimationPackage& other);
 		/// @}
+		/// @name Json
+		/// @{
+		Utilities::JsonObject toJson() const override;
+		/// @}
 	public:
 		/**
 			 * @brief A way to get a string describing the package.

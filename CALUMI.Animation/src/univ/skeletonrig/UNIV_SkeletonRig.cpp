@@ -355,6 +355,25 @@ namespace CALUMI::UNIV
         return false;
     }
 
+    Utilities::JsonObject SkeletonBone::toJson() const
+    {
+        Utilities::JsonObject output;
+
+        output["name"] = pImpl->m_name.c_str();
+        output["property"] = pImpl->m_boneTypeProperties->toJson();
+        output["transform"] = pImpl->m_localTransform.toJson();
+
+        Utilities::JsonArray childBones;
+        for (const auto& cBone : pImpl->m_childBones)
+        {
+            childBones.push_back(cBone->toJson());
+        }
+
+        output["children"] = childBones;
+
+        return output;
+    }
+
 #pragma endregion
 
 
@@ -362,35 +381,35 @@ namespace CALUMI::UNIV
 
     struct SkeletonRig::Impl
     {
-        std::string _rigName = "MySkeletonRig";
-        RigPackageManager _rigPackageManager;
+        std::string m_rigName = "MySkeletonRig";
+        RigPackageManager m_rigPackageManager;
 
-        SkeletonBone _root;
+        SkeletonBone m_root;
 
-        explicit Impl(const SkeletonRig& owner) : _root(&owner, "root") {}
+        explicit Impl(const SkeletonRig& owner) : m_root(&owner, "root") {}
     };
 
-    const char* SkeletonRig::name() const { return pImpl->_rigName.c_str(); }
+    const char* SkeletonRig::name() const { return pImpl->m_rigName.c_str(); }
 
     bool SkeletonRig::setName(const char* name) const
     {
         if (SCOMPARE(name, "") == 0)
             return false;
 
-        pImpl->_rigName = name;
+        pImpl->m_rigName = name;
         return true;
     }
 
     SkeletonBone* SkeletonRig::bone(const char* boneName) const
     {
-        if (SCOMPARE(boneName, pImpl->_root.name()) == 0)
-            return &pImpl->_root;
+        if (SCOMPARE(boneName, pImpl->m_root.name()) == 0)
+            return &pImpl->m_root;
 
-        return pImpl->_root.childBone(boneName, true);
+        return pImpl->m_root.childBone(boneName, true);
     }
     RigPackageManager& SkeletonRig::packageManager() const
     {
-        return pImpl->_rigPackageManager;
+        return pImpl->m_rigPackageManager;
     }
     SkeletonRig::SkeletonRig()
     {
@@ -410,44 +429,55 @@ namespace CALUMI::UNIV
     }
     SkeletonRig::SkeletonRig(const Utilities::StringContainer& _rigName) : SkeletonRig()
     {
-        pImpl->_rigName = _rigName.c_str();
+        pImpl->m_rigName = _rigName.c_str();
     }
     SkeletonRig::SkeletonRig(const char* _rigName) : SkeletonRig()
     {
-        pImpl->_rigName = _rigName;
+        pImpl->m_rigName = _rigName;
     }
 
     unsigned int SkeletonRig::boneTypeCount(const BoneTypeProperty::BoneType type) const
     {
         unsigned int pAnimatedBoneCount = 0;
 
-        if (pImpl->_root.boneTypeProperty()->type() == type)
+        if (pImpl->m_root.boneTypeProperty()->type() == type)
             pAnimatedBoneCount++;
 
-        pAnimatedBoneCount += pImpl->_root.boneTypeCount(type);
+        pAnimatedBoneCount += pImpl->m_root.boneTypeCount(type);
 
         return pAnimatedBoneCount;
     }
 
     unsigned int SkeletonRig::boneCount() const
     {
-        return pImpl->_root.boneCount() + 1;
+        return pImpl->m_root.boneCount() + 1;
     }
 
     SkeletonBone* SkeletonRig::root() const
     {
-        return &pImpl->_root;
+        return &pImpl->m_root;
     }
 
     Utilities::StringList SkeletonRig::boneList() const
     {
         const Utilities::StringList output;
-        output.push_back(pImpl->_root.name());
+        output.push_back(pImpl->m_root.name());
 
-        for (const auto list = pImpl->_root.pImpl->lineageList(); const auto& entry : list)
+        for (const auto list = pImpl->m_root.pImpl->lineageList(); const auto& entry : list)
         {
             output.push_back(entry.c_str());
         }
+
+        return output;
+    }
+
+    Utilities::JsonObject SkeletonRig::toJson() const
+    {
+        Utilities::JsonObject output;
+
+        output["name"] = pImpl->m_rigName.c_str();
+        output["root"] = pImpl->m_root.toJson();
+        output["packages"] = pImpl->m_rigPackageManager.toJson();
 
         return output;
     }

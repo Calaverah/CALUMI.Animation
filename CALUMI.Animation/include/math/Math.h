@@ -5,6 +5,7 @@
 // ReSharper disable CppNonExplicitConvertingConstructor
 #pragma once
 #include "utilities/CALUMI_Common.h"
+#include "utilities/CALUMI_Json.h"
 #include "utilities/CALUMI_Utilities.h"
 
 	/**
@@ -119,6 +120,10 @@ namespace CALUMI::Math
 		[[nodiscard]] Utilities::StringContainer toString() const;
 
 		/// @}
+		/// @name Json
+		/// @{
+		Utilities::JsonObject toJson() const;
+		/// @}
 
 	private:
 		struct Impl;
@@ -214,6 +219,10 @@ namespace CALUMI::Math
 		/// @name Print
 		/// @{
 		[[nodiscard]] Utilities::StringContainer toString() const;
+		/// @}
+		/// @name Json
+		/// @{
+		Utilities::JsonObject toJson() const;
 		/// @}
 
 	private:
@@ -318,6 +327,10 @@ namespace CALUMI::Math
 		[[nodiscard]] Utilities::StringContainer toString() const;
 
 		/// @}
+		/// @name Json
+		/// @{
+		Utilities::JsonObject toJson() const;
+		/// @}
 
 	private:
 		struct Impl;
@@ -419,6 +432,10 @@ namespace CALUMI::Math
 
 		[[nodiscard]] Utilities::StringContainer toString() const;
 
+		/// @}
+		/// @name Json
+		/// @{
+		Utilities::JsonObject toJson() const;
 		/// @}
 
 	private:
@@ -649,6 +666,10 @@ namespace CALUMI::Math
 		[[nodiscard]] Utilities::StringContainer toString() const;
 
 		/// @}
+		/// @name Json
+		/// @{
+		Utilities::JsonObject toJson() const;
+		/// @}
 
 	private:
 		struct Impl;
@@ -715,6 +736,10 @@ namespace CALUMI::Math
 		 * @param position
 		 */
 		void setPosition(Vector3&& position);
+		/**
+		 * @return
+		 */
+		Utilities::JsonObject toJson() const;
 
 	private:
 		struct Impl;

@@ -18,34 +18,34 @@ namespace CALUMI::UNIV
 #pragma region ANIMATION
 	struct Animation::Impl
 	{
-		Utilities::StringContainer _animationTitle = "NO TITLE";
-		AnimationBlockVector _animationBlocks;
+		Utilities::StringContainer m_animationTitle = "NO TITLE";
+		AnimationBlockVector m_animationBlocks;
 
-		AnimationPackageManager _packageManager;
+		AnimationPackageManager m_packageManager;
 
 		Impl() = default;
 	};
 	Animation::Animation() { pImpl = new Impl; }
 	AnimationBlockVector& Animation::animationBlocks() const
 	{
-		return pImpl->_animationBlocks;
+		return pImpl->m_animationBlocks;
 	}
 	const char* Animation::animationTitle() const
 	{
-		return pImpl->_animationTitle.c_str();
+		return pImpl->m_animationTitle.c_str();
 	}
 	void Animation::setAnimationTitle(const char* title) const
 	{
-		pImpl->_animationTitle = title;
+		pImpl->m_animationTitle = title;
 	}
 	void Animation::setAnimationTitle(const Utilities::StringContainer& title) const
 	{
-		pImpl->_animationTitle = title;
+		pImpl->m_animationTitle = title;
 	}
 	Animation::Animation(const Utilities::StringContainer& title, const unsigned int initialBlockCount = 8) : Animation()
 	{
-		pImpl->_animationTitle = title;
-		pImpl->_animationBlocks.reserve(initialBlockCount);
+		pImpl->m_animationTitle = title;
+		pImpl->m_animationBlocks.reserve(initialBlockCount);
 	}
 	Animation::Animation(const Animation& input) : Animation()
 	{
@@ -72,35 +72,35 @@ namespace CALUMI::UNIV
 		if (SCOMPARE(blockToAdd.boneName(), "") == 0)
 			return false;
 
-		for (unsigned int i = 0; i < pImpl->_animationBlocks.size(); i ++)
+		for (unsigned int i = 0; i < pImpl->m_animationBlocks.size(); i ++)
 		{
-			if (SCOMPARE(pImpl->_animationBlocks.at(i).boneName(), blockToAdd.boneName()) == 0)
+			if (SCOMPARE(pImpl->m_animationBlocks.at(i).boneName(), blockToAdd.boneName()) == 0)
 			{
 				if (!overwrite)
 					return false;
 
-				pImpl->_animationBlocks.at(i) = blockToAdd;
+				pImpl->m_animationBlocks.at(i) = blockToAdd;
 				return true;
 			}
 		}
 
-		pImpl->_animationBlocks.push_back(blockToAdd);
+		pImpl->m_animationBlocks.push_back(blockToAdd);
 		return true;
 	}
 
-	void Animation::clearAnimationBlocks() const { pImpl->_animationBlocks.clear(); }
-	uint64_t Animation::animationBlockCount() const { return pImpl->_animationBlocks.size(); }
+	void Animation::clearAnimationBlocks() const { pImpl->m_animationBlocks.clear(); }
+	uint64_t Animation::animationBlockCount() const { return pImpl->m_animationBlocks.size(); }
 	int Animation::findAnimationBlock(const char* boneName) const
 	{
-		for (int i = 0; i < pImpl->_animationBlocks.size() && i < std::numeric_limits<int>::max(); i++)
+		for (int i = 0; i < pImpl->m_animationBlocks.size() && i < std::numeric_limits<int>::max(); i++)
 		{
-			if (SCOMPARE(pImpl->_animationBlocks.at(i).boneName(), boneName) == 0)
+			if (SCOMPARE(pImpl->m_animationBlocks.at(i).boneName(), boneName) == 0)
 				return i;
 		}
 
 		return -1;
 	}
-	AnimationPackageManager& Animation::packageManager() const { return pImpl->_packageManager; }
+	AnimationPackageManager& Animation::packageManager() const { return pImpl->m_packageManager; }
 
 	unsigned int Animation::frameCount() const
 	{
@@ -108,15 +108,15 @@ namespace CALUMI::UNIV
 		bool entryFound = false;
 
 
-		for (unsigned int i = 0; i < pImpl->_animationBlocks.size(); i++)
+		for (unsigned int i = 0; i < pImpl->m_animationBlocks.size(); i++)
 		{
-			if (pImpl->_animationBlocks.at(i).priorityEntryCount() > 0 ||
-				pImpl->_animationBlocks.at(i).scalarEntryCount() > 0 ||
-				pImpl->_animationBlocks.at(i).rotationEntryCount() > 0 ||
-				pImpl->_animationBlocks.at(i).translationEntryCount() > 0)
+			if (pImpl->m_animationBlocks.at(i).priorityEntryCount() > 0 ||
+				pImpl->m_animationBlocks.at(i).scalarEntryCount() > 0 ||
+				pImpl->m_animationBlocks.at(i).rotationEntryCount() > 0 ||
+				pImpl->m_animationBlocks.at(i).translationEntryCount() > 0)
 				entryFound = true;
 
-			if (const unsigned int temp = pImpl->_animationBlocks.at(i).lastFrameInBlock(); temp > output)
+			if (const unsigned int temp = pImpl->m_animationBlocks.at(i).lastFrameInBlock(); temp > output)
 			{
 				output = temp;
 			}
@@ -135,14 +135,55 @@ namespace CALUMI::UNIV
 	{
 		///@privatesection
 		///@{
-		Utilities::StringContainer boneName = "UNNAMED";
-		RotationSequence rotationSequence;
-		TranslationSequence translationSequence;
-		ScalarSequence scalarSequence;
-		PrioritySequence prioritySequence;
+		Utilities::StringContainer m_boneName = "UNNAMED";
+		RotationSequence m_rotationSequence;
+		TranslationSequence m_translationSequence;
+		ScalarSequence m_scalarSequence;
+		PrioritySequence m_prioritySequence;
 		Impl() = default;
 		///@}
 	};
+
+	Utilities::JsonObject AnimationBlock::toJson() const
+	{
+		Utilities::JsonObject output;
+
+		output["bone"] = pImpl->m_boneName.c_str();
+
+		const Utilities::JsonObject rotations;
+		for (uint64_t i = 0; i < pImpl->m_rotationSequence.size(); i++)
+		{
+			const auto& entry = pImpl->m_rotationSequence.at(i);
+			rotations[std::to_string(entry.frame()).c_str()] = entry.rotationQuaternion().toJson();
+		}
+		output["rotations"] = rotations;
+
+		const Utilities::JsonObject translations;
+		for (uint64_t i = 0; i < pImpl->m_translationSequence.size(); i++)
+		{
+			const auto& entry = pImpl->m_translationSequence.at(i);
+			translations[std::to_string(entry.frame()).c_str()] = entry.translationVector().toJson();
+		}
+		output["translations"] = translations;
+
+		const Utilities::JsonObject scalars;
+		for (uint64_t i = 0; i < pImpl->m_scalarSequence.size(); i++)
+		{
+			const auto& entry = pImpl->m_scalarSequence.at(i);
+			scalars[std::to_string(entry.frame()).c_str()] = entry.scalarValue();
+		}
+		output["scalars"] = scalars;
+
+		const Utilities::JsonObject priorities;
+		for (uint64_t i = 0; i < pImpl->m_prioritySequence.size(); i++)
+		{
+			const auto& entry = pImpl->m_prioritySequence.at(i);
+			priorities[std::to_string(entry.frame()).c_str()] = entry.priorityValue();
+		}
+		output["priorities"] = priorities;
+
+		return output;
+	}
 
 	AnimationBlock::AnimationBlock() : pImpl(new Impl()) {}
 
@@ -162,11 +203,11 @@ namespace CALUMI::UNIV
 	{
 		if (this != &other)
 		{
-			pImpl->boneName = other.pImpl->boneName;
-			pImpl->rotationSequence = other.pImpl->rotationSequence;
-			pImpl->translationSequence = other.pImpl->translationSequence;
-			pImpl->scalarSequence = other.pImpl->scalarSequence;
-			pImpl->prioritySequence = other.pImpl->prioritySequence;
+			pImpl->m_boneName = other.pImpl->m_boneName;
+			pImpl->m_rotationSequence = other.pImpl->m_rotationSequence;
+			pImpl->m_translationSequence = other.pImpl->m_translationSequence;
+			pImpl->m_scalarSequence = other.pImpl->m_scalarSequence;
+			pImpl->m_prioritySequence = other.pImpl->m_prioritySequence;
 		}
 
 		return *this;
@@ -175,28 +216,28 @@ namespace CALUMI::UNIV
 	unsigned int AnimationBlock::lastFrameInBlock() const
 	{
 		unsigned int output = 0;
-		if (!pImpl->rotationSequence.empty()) {
-			if (pImpl->rotationSequence.at(pImpl->rotationSequence.size()-1).frame() > output)
+		if (!pImpl->m_rotationSequence.empty()) {
+			if (pImpl->m_rotationSequence.at(pImpl->m_rotationSequence.size()-1).frame() > output)
 			{
-				output = pImpl->rotationSequence.at(pImpl->rotationSequence.size()-1).frame();
+				output = pImpl->m_rotationSequence.at(pImpl->m_rotationSequence.size()-1).frame();
 			}
 		}
-		if (!pImpl->translationSequence.empty()) {
-			if (pImpl->translationSequence.at(pImpl->translationSequence.size()-1).frame() > output)
+		if (!pImpl->m_translationSequence.empty()) {
+			if (pImpl->m_translationSequence.at(pImpl->m_translationSequence.size()-1).frame() > output)
 			{
-				output = pImpl->translationSequence.at(pImpl->translationSequence.size() - 1).frame();
+				output = pImpl->m_translationSequence.at(pImpl->m_translationSequence.size() - 1).frame();
 			}
 		}
-		if (!pImpl->scalarSequence.empty()) {
-			if (pImpl->scalarSequence.at(pImpl->scalarSequence.size()-1).frame() > output)
+		if (!pImpl->m_scalarSequence.empty()) {
+			if (pImpl->m_scalarSequence.at(pImpl->m_scalarSequence.size()-1).frame() > output)
 			{
-				output = pImpl->scalarSequence.at(pImpl->scalarSequence.size() - 1).frame();
+				output = pImpl->m_scalarSequence.at(pImpl->m_scalarSequence.size() - 1).frame();
 			}
 		}
-		if (!pImpl->prioritySequence.empty()) {
-			if (pImpl->prioritySequence.at(pImpl->prioritySequence.size()-1).frame() > output)
+		if (!pImpl->m_prioritySequence.empty()) {
+			if (pImpl->m_prioritySequence.at(pImpl->m_prioritySequence.size()-1).frame() > output)
 			{
-				output = pImpl->prioritySequence.at(pImpl->prioritySequence.size() - 1).frame();
+				output = pImpl->m_prioritySequence.at(pImpl->m_prioritySequence.size() - 1).frame();
 			}
 		}
 
@@ -205,50 +246,50 @@ namespace CALUMI::UNIV
 
 	const char* AnimationBlock::boneName() const
 	{
-		return pImpl->boneName.c_str();
+		return pImpl->m_boneName.c_str();
 	}
 
 	void AnimationBlock::setBoneName(const char* name) const
 	{
-		pImpl->boneName = name;
+		pImpl->m_boneName = name;
 	}
 
 	RotationSequence& AnimationBlock::rotationSequence() const
 	{
-		return pImpl->rotationSequence;
+		return pImpl->m_rotationSequence;
 	}
 
 	bool AnimationBlock::addRotationEntry(const RotationFrame& input, const bool overwrite) const
 	{
 
-		for (uint64_t i = 0; i < pImpl->rotationSequence.size(); i++)
+		for (uint64_t i = 0; i < pImpl->m_rotationSequence.size(); i++)
 		{
-			if (pImpl->rotationSequence.at(i).frame() == input.frame())
+			if (pImpl->m_rotationSequence.at(i).frame() == input.frame())
 			{
 				if (!overwrite) return false;
 
-				pImpl->rotationSequence.at(i) = input;
+				pImpl->m_rotationSequence.at(i) = input;
 				return true;
 			}
 
-			if (pImpl->rotationSequence.at(i).frame() > input.frame())
+			if (pImpl->m_rotationSequence.at(i).frame() > input.frame())
 			{
-				pImpl->rotationSequence.insert_r(i, input);
+				pImpl->m_rotationSequence.insert_r(i, input);
 				return true;
 			}
 		}
 
-		pImpl->rotationSequence.push_back(input);
+		pImpl->m_rotationSequence.push_back(input);
 		return true;
 	}
 
 	bool AnimationBlock::removeRotationEntry(const unsigned int frame) const
 	{
-		for (unsigned int i = 0; i < pImpl->rotationSequence.size(); i++)
+		for (unsigned int i = 0; i < pImpl->m_rotationSequence.size(); i++)
 		{
-			if (frame == pImpl->rotationSequence.at(i).frame())
+			if (frame == pImpl->m_rotationSequence.at(i).frame())
 			{
-				pImpl->rotationSequence.erase(i);
+				pImpl->m_rotationSequence.erase(i);
 				return true;
 			}
 		}
@@ -258,10 +299,10 @@ namespace CALUMI::UNIV
 
 	void AnimationBlock::clearRotationEntries() const
 	{
-		pImpl->rotationSequence.clear();
+		pImpl->m_rotationSequence.clear();
 	}
 
-	uint64_t AnimationBlock::rotationEntryCount() const { return pImpl->rotationSequence.size(); }
+	uint64_t AnimationBlock::rotationEntryCount() const { return pImpl->m_rotationSequence.size(); }
 
 	static RotationSequence s_RDP_Rotation_Recursive(RotationSequence input, const float tolerance)
 	{
@@ -334,45 +375,45 @@ namespace CALUMI::UNIV
 
 	void AnimationBlock::executeRDPReduction_Rotation(const float tolerance) const
 	{
-		pImpl->rotationSequence = s_RDP_Rotation_Recursive(pImpl->rotationSequence, tolerance);
+		pImpl->m_rotationSequence = s_RDP_Rotation_Recursive(pImpl->m_rotationSequence, tolerance);
 	}
 
 	TranslationSequence& AnimationBlock::translationSequence() const
 	{
-		return pImpl->translationSequence;
+		return pImpl->m_translationSequence;
 	}
 
 	bool AnimationBlock::addTranslationEntry(const TranslationFrame& input, const bool overwrite) const
 	{
-		for (uint64_t i = 0; i < pImpl->translationSequence.size(); i++)
+		for (uint64_t i = 0; i < pImpl->m_translationSequence.size(); i++)
 		{
-			if (pImpl->translationSequence.at(i).frame() == input.frame())
+			if (pImpl->m_translationSequence.at(i).frame() == input.frame())
 			{
 				if (!overwrite)
 					return false;
 
-				pImpl->translationSequence.at(i) = input;
+				pImpl->m_translationSequence.at(i) = input;
 				return true;
 			}
 
-			if (pImpl->translationSequence.at(i).frame() > input.frame())
+			if (pImpl->m_translationSequence.at(i).frame() > input.frame())
 			{
-				pImpl->translationSequence.insert_r(i, input);
+				pImpl->m_translationSequence.insert_r(i, input);
 				return true;
 			}
 		}
 
-		pImpl->translationSequence.push_back(input);
+		pImpl->m_translationSequence.push_back(input);
 		return true;
 	}
 
 	bool AnimationBlock::removeTranslationEntry(const unsigned int frame) const
 	{
-		for (unsigned int i = 0; i < pImpl->translationSequence.size(); i++)
+		for (unsigned int i = 0; i < pImpl->m_translationSequence.size(); i++)
 		{
-			if (frame == pImpl->translationSequence.at(i).frame())
+			if (frame == pImpl->m_translationSequence.at(i).frame())
 			{
-				pImpl->translationSequence.erase(i);
+				pImpl->m_translationSequence.erase(i);
 				return true;
 			}
 		}
@@ -382,12 +423,12 @@ namespace CALUMI::UNIV
 
 	void AnimationBlock::clearTranslationEntries() const
 	{
-		pImpl->translationSequence.clear();
+		pImpl->m_translationSequence.clear();
 	}
 
 	uint64_t AnimationBlock::translationEntryCount() const
 	{
-		return pImpl->translationSequence.size();
+		return pImpl->m_translationSequence.size();
 	}
 
 	static TranslationSequence s_RDP_Translation_Recursive(TranslationSequence input, const float tolerance)
@@ -446,46 +487,46 @@ namespace CALUMI::UNIV
 
 	void AnimationBlock::executeRDPReduction_Translation(const float tolerance) const
 	{
-		pImpl->translationSequence = s_RDP_Translation_Recursive(pImpl->translationSequence, tolerance);
+		pImpl->m_translationSequence = s_RDP_Translation_Recursive(pImpl->m_translationSequence, tolerance);
 	}
 
 	ScalarSequence& AnimationBlock::scalarSequence() const
 	{
-		return pImpl->scalarSequence;
+		return pImpl->m_scalarSequence;
 	}
 
 	bool AnimationBlock::addScalarEntry(const ScalarFrame& input, const bool overwrite) const
 	{
-		for (uint64_t i = 0; i < pImpl->scalarSequence.size(); i++)
+		for (uint64_t i = 0; i < pImpl->m_scalarSequence.size(); i++)
 		{
-			if (pImpl->scalarSequence.at(i).frame() == input.frame())
+			if (pImpl->m_scalarSequence.at(i).frame() == input.frame())
 			{
 				if (!overwrite)
 					return false;
 
-				pImpl->scalarSequence.at(i) = input;
+				pImpl->m_scalarSequence.at(i) = input;
 				return true;
 
 			}
 
-			if (pImpl->scalarSequence.at(i).frame() > input.frame())
+			if (pImpl->m_scalarSequence.at(i).frame() > input.frame())
 			{
-				pImpl->scalarSequence.insert_r(i, input);
+				pImpl->m_scalarSequence.insert_r(i, input);
 				return true;
 			}
 		}
 
-		pImpl->scalarSequence.push_back(input);
+		pImpl->m_scalarSequence.push_back(input);
 		return true;
 	}
 
 	bool AnimationBlock::removeScalarEntry(const unsigned int frame) const
 	{
-		for (unsigned int i = 0; i < pImpl->scalarSequence.size(); i++)
+		for (unsigned int i = 0; i < pImpl->m_scalarSequence.size(); i++)
 		{
-			if (frame == pImpl->scalarSequence.at(i).frame())
+			if (frame == pImpl->m_scalarSequence.at(i).frame())
 			{
-				pImpl->scalarSequence.erase(i);
+				pImpl->m_scalarSequence.erase(i);
 				return true;
 			}
 		}
@@ -495,10 +536,10 @@ namespace CALUMI::UNIV
 
 	void AnimationBlock::clearScalarEntries() const
 	{
-		pImpl->scalarSequence.clear();
+		pImpl->m_scalarSequence.clear();
 	}
 
-	uint64_t AnimationBlock::scalarEntryCount() const { return pImpl->scalarSequence.size(); }
+	uint64_t AnimationBlock::scalarEntryCount() const { return pImpl->m_scalarSequence.size(); }
 
 	static ScalarSequence s_RDP_Scalar_Recursive(ScalarSequence input, const float tolerance)
 	{
@@ -560,45 +601,45 @@ namespace CALUMI::UNIV
 
 	void AnimationBlock::executeRDPReduction_Scalar(const float tolerance) const
 	{
-		pImpl->scalarSequence = s_RDP_Scalar_Recursive(pImpl->scalarSequence, tolerance);
+		pImpl->m_scalarSequence = s_RDP_Scalar_Recursive(pImpl->m_scalarSequence, tolerance);
 	}
 
 	PrioritySequence& AnimationBlock::prioritySequence() const
 	{
-		return pImpl->prioritySequence;
+		return pImpl->m_prioritySequence;
 	}
 
 	bool AnimationBlock::addPriorityEntry(const PriorityFrame& input, const bool overwrite) const
 	{
-		for (uint64_t i = 0; i < pImpl->prioritySequence.size(); i++)
+		for (uint64_t i = 0; i < pImpl->m_prioritySequence.size(); i++)
 		{
-			if (pImpl->prioritySequence.at(i).frame() == input.frame())
+			if (pImpl->m_prioritySequence.at(i).frame() == input.frame())
 			{
 				if (!overwrite) return false;
 
-				pImpl->prioritySequence.at(i) = input;
+				pImpl->m_prioritySequence.at(i) = input;
 				return true;
 
 			}
 
-			if (pImpl->prioritySequence.at(i).frame() > input.frame())
+			if (pImpl->m_prioritySequence.at(i).frame() > input.frame())
 			{
-				pImpl->prioritySequence.insert_r(i, input);
+				pImpl->m_prioritySequence.insert_r(i, input);
 				return true;
 			}
 		}
 
-		pImpl->prioritySequence.push_back(input);
+		pImpl->m_prioritySequence.push_back(input);
 		return true;
 	}
 
 	bool AnimationBlock::removePriorityEntry(const unsigned int frame) const
 	{
-		for (unsigned int i = 0; i < pImpl->prioritySequence.size(); i++)
+		for (unsigned int i = 0; i < pImpl->m_prioritySequence.size(); i++)
 		{
-			if (frame == pImpl->prioritySequence.at(i).frame())
+			if (frame == pImpl->m_prioritySequence.at(i).frame())
 			{
-				pImpl->prioritySequence.erase(i);
+				pImpl->m_prioritySequence.erase(i);
 				return true;
 			}
 		}
@@ -608,10 +649,11 @@ namespace CALUMI::UNIV
 
 	void AnimationBlock::clearPriorityEntries() const
 	{
-		pImpl->prioritySequence.clear();
+		pImpl->m_prioritySequence.clear();
 	}
 
-	uint64_t AnimationBlock::priorityEntryCount() const { return pImpl->prioritySequence.size(); }
+	uint64_t AnimationBlock::priorityEntryCount() const { return pImpl->m_prioritySequence.size(); }
+
 
 #pragma endregion
 

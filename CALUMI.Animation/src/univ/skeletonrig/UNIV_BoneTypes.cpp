@@ -9,7 +9,6 @@
 
 namespace CALUMI::UNIV {
 
-
 	BoneTypeProperty::BoneType BoneTypeProperty::BoneTypeFromString(const char* boneTypeStr)
 	{
 		if (SCOMPARE(boneTypeStr, TwistBoneTypeStr) == 0)
@@ -40,8 +39,17 @@ namespace CALUMI::UNIV {
 		return BoneType::Default;
 	}
 
+    Utilities::JsonObject DefaultBoneProperty::toJson() const
+    {
+		Utilities::JsonObject output;
 
-	struct TwistBoneProperty::Impl
+		output["type"] = typeAsString();
+
+		return output;
+    }
+
+
+    struct TwistBoneProperty::Impl
 	{
 		std::string m_twistDriver;
 		float m_twistDriverWeight = 0.0f;
@@ -95,6 +103,17 @@ namespace CALUMI::UNIV {
     		pImpl->m_twistDriverWeight = input.pImpl->m_twistDriverWeight;
     	}
 		return *this;
+	}
+
+	Utilities::JsonObject TwistBoneProperty::toJson() const
+	{
+    	Utilities::JsonObject output;
+
+    	output["type"] = typeAsString();
+    	output["driver"] = pImpl->m_twistDriver.c_str();
+    	output["weight"] = pImpl->m_twistDriverWeight;
+
+    	return output;
 	}
 }
 

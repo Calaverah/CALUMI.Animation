@@ -73,7 +73,7 @@ namespace CALUMI::Utilities
         JsonObject toObject(bool* ok = nullptr) const;
         JsonArray toArray(bool* ok = nullptr) const;
 
-        StringContainer serialize() const;
+        StringContainer serialize(unsigned int indentOffset = 0, bool raw = false) const;
 
         JsonValue& operator=(const JsonValue& input);
         JsonValue& operator=(JsonValue&& input) noexcept;
@@ -83,7 +83,7 @@ namespace CALUMI::Utilities
         Impl* pImpl;
     };
 
-    VECTORDECF(JsonArray, JsonValue, friend class JsonObject; friend class JsonValue; );
+    VECTORDECF(JsonArray, JsonValue, friend class JsonObject; friend class JsonValue;);
 
     class CALUMIANIMATION_API JsonObject
     {

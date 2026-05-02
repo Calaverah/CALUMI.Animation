@@ -125,6 +125,17 @@ namespace CALUMI::Math
 		return output;
 	}
 
+	Utilities::JsonObject Vector3::toJson() const
+	{
+		Utilities::JsonObject output;
+
+		output["x"] = pImpl->x;
+		output["y"] = pImpl->y;
+		output["z"] = pImpl->z;
+
+		return output;
+	}
+
 	bool Vector3::operator==(const Vector3& other) const
 	{
 		return pImpl->x == other.pImpl->x && pImpl->y == other.pImpl->y && pImpl->z == other.pImpl->z;
@@ -298,6 +309,16 @@ namespace CALUMI::Math
 		Impl() = default;
 		Impl(double x, double y, double z) : x(x), y(y), z(z) {}
 	};
+
+	Utilities::JsonObject Vector3D::toJson() const
+	{
+		Utilities::JsonObject output;
+		output["x"] = pImpl->x;
+		output["y"] = pImpl->y;
+		output["z"] = pImpl->z;
+
+		return output;
+	}
 
 	double Vector3D::x() const
 	{
@@ -1244,6 +1265,18 @@ namespace CALUMI::Math
 		return output;
 	}
 
+	Utilities::JsonObject Quaternion::toJson() const
+	{
+		Utilities::JsonObject output;
+
+		output["x"] = pImpl->x;
+		output["y"] = pImpl->y;
+		output["z"] = pImpl->z;
+		output["w"] = pImpl->w;
+
+		return output;
+	}
+
 	Quaternion operator+ (const Quaternion& A, const Quaternion& B) noexcept
 	{
 		return {A.x() + B.x(), A.y() + B.y(), A.z() + B.z(), A.w() + B.w() };
@@ -1437,6 +1470,17 @@ namespace CALUMI::Math
 		output += std::format("x: {}, y: {}", pImpl->x, pImpl->y).c_str();
 		return output;
 	}
+
+	Utilities::JsonObject Vector2::toJson() const
+	{
+		Utilities::JsonObject output;
+
+		output["x"] = pImpl->x;
+		output["y"] = pImpl->y;
+
+		return output;
+	}
+
 	//Non Member Functions
 	Vector2 operator+(const Vector2& A, const Vector2& B) noexcept
 	{
@@ -1645,6 +1689,17 @@ namespace CALUMI::Math
 		output += std::format("x: {}, y: {}", pImpl->x, pImpl->y).c_str();
 		return output;
 	}
+
+	Utilities::JsonObject Vector2D::toJson() const
+	{
+		Utilities::JsonObject output;
+
+		output["x"] = pImpl->x;
+		output["y"] = pImpl->y;
+
+		return output;
+	}
+
 	//Non-member functions
 	Vector2D operator+(const Vector2D& A, const Vector2D& B) noexcept
 	{
@@ -1787,6 +1842,16 @@ namespace CALUMI::Math
 	void Transform::setPosition(Vector3&& position)
 	{
 		pImpl->m_position = position;
+	}
+
+	Utilities::JsonObject Transform::toJson() const
+	{
+		Utilities::JsonObject output;
+
+		output["position"] = pImpl->m_position.toJson();
+		output["rotation"] = pImpl->m_rotation.toJson();
+
+		return output;
 	}
 
 #pragma endregion

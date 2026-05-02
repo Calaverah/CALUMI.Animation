@@ -74,6 +74,11 @@ namespace CALUMI::UNIV
     public:
         RigMirrorPackage& operator=(const RigMirrorPackage& other);
 
+        /// @name Json
+        /// @{
+        Utilities::JsonObject toJson() const override;
+        /// @}
+
     private:
         struct Impl;
         Impl* pImpl;

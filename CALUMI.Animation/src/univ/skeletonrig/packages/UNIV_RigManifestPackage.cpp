@@ -198,7 +198,22 @@ namespace CALUMI::UNIV
         return output;
     }
 
-   const char* RigManifestPackage::packageType() const
+    Utilities::JsonObject RigManifestPackage::toJson() const
+    {
+        Utilities::JsonObject output;
+        Utilities::JsonArray array;
+
+        for (const auto& entry : pImpl->m_list)
+        {
+            array.push_back(entry.c_str());
+        }
+
+        output["list"] = array;
+
+        return output;
+    }
+
+    const char* RigManifestPackage::packageType() const
     {
         return MANIFEST_RIG_PACKAGE;
     }

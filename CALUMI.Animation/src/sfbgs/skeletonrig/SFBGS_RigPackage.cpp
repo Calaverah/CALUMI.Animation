@@ -9,6 +9,7 @@
 
 #include "internalplatform.h"
 #include <ranges>
+#include <string>
 #include <unordered_map>
 
 #include "sfbgs/skeletonrig/SFBGS_SkeletonRig.h"
@@ -85,6 +86,7 @@ namespace CALUMI::SFBGS
 		return output;
 	}
 
+
 	struct SFBGS_RigPackage::Impl
 	{
 		PrecisionSet m_precisionSet = PrecisionSet::DefaultPrecision();
@@ -93,6 +95,31 @@ namespace CALUMI::SFBGS
 		std::unordered_map<std::string, LODSetting> m_boneLODs;
 		Impl() = default;
 	};
+
+	Utilities::JsonObject SFBGS_RigPackage::toJson() const
+	{
+		Utilities::JsonObject output;
+
+		output["mannequin"] = pImpl->m_isMannequin;
+
+		const Utilities::JsonObject boneMap;
+		for (const auto& [keyEnum, boneName] : pImpl->m_boneMap)
+		{
+			boneMap[std::to_string(static_cast<uint8_t>(keyEnum)).c_str()] = boneName.c_str();
+		}
+		output["map"] = boneMap;
+
+		const Utilities::JsonObject boneLODs;
+		for (const auto& [key, lodEnum] : pImpl->m_boneLODs)
+		{
+			boneLODs[key.c_str()] = static_cast<int8_t>(lodEnum);
+		}
+		output["lod"] = boneLODs;
+
+		output["precision"] = pImpl->m_precisionSet.toJson();
+
+		return output;
+	}
 
 	SFBGS_RigPackage* SFBGS_RigPackage::clone() const
 	{
@@ -185,6 +212,16 @@ namespace CALUMI::SFBGS
 	PrecisionSet PrecisionSet::ShipPrecision()
 	{
 		return {0.002f, 0.25f};
+	}
+
+	Utilities::JsonObject PrecisionSet::toJson() const
+	{
+		Utilities::JsonObject output;
+
+		output["high"] = pImpl->m_high;
+		output["low"] = pImpl->m_low;
+
+		return output;
 	}
 
 	const char* PrecisionSet::precisionType() const

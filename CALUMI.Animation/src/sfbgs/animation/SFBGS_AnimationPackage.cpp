@@ -7,7 +7,6 @@
 #include <vector>
 #include <AnimUniv>
 #include <AnimUtil>
-#include <string>
 #include <limits>
 #include <stdexcept>
 
@@ -38,6 +37,28 @@ namespace CALUMI::SFBGS
             pImpl->m_useRigPrecision = other.pImpl->m_useRigPrecision;
         }
         return *this;
+    }
+
+    Utilities::JsonObject SFBGS_AnimationPackage::toJson() const
+    {
+        Utilities::JsonObject output;
+
+        output["rig_precision"] = pImpl->m_useRigPrecision;
+        output["precision"] = pImpl->m_precisionOverride.toJson();
+
+        Utilities::JsonArray aBlocks;
+
+        for (const auto& [key, blockEntry] : pImpl->m_amendedBlocks)
+        {
+            Utilities::JsonObject hashBlock;
+            hashBlock["hash"] = key;
+            hashBlock["block"] = blockEntry.toJson();
+            aBlocks.push_back(hashBlock);
+        }
+
+        output["amended_blocks"] = aBlocks;
+
+        return output;
     }
 
     SFBGS_AnimationPackage::~SFBGS_AnimationPackage()

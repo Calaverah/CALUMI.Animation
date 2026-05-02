@@ -137,6 +137,18 @@ namespace CALUMI::UNIV
         return *this;
     }
 
+    Utilities::JsonObject RigMirrorPackage::toJson() const
+    {
+        Utilities::JsonObject output;
+
+        for (const auto& [first, second] : pImpl->m_mirrors)
+        {
+            output[first.c_str()] = second.c_str();
+        }
+
+        return output;
+    }
+
     bool RigMirrorPackage::AddPackage(const SkeletonRig& rig, const bool overwrite)
     {
         const auto& mgr = rig.packageManager();

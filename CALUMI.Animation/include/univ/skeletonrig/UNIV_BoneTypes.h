@@ -3,6 +3,7 @@
 //Contact: Calaverahmedia@gmail.com
 
 #pragma once
+#include "utilities/CALUMI_Json.h"
 #include "utilities/CALUMI_Utilities.h"
 
 namespace CALUMI::UNIV {
@@ -34,6 +35,8 @@ namespace CALUMI::UNIV {
 		BoneTypeProperty() = default;
 		virtual ~BoneTypeProperty() = default;
 
+    	virtual Utilities::JsonObject toJson() const = 0;
+
     public:
     	/**
 		 * @param boneTypeStr c string of the type, likely #DefaultBoneTypeStr or #TwistBoneTypeStr
@@ -53,12 +56,23 @@ namespace CALUMI::UNIV {
      */
     struct CALUMIANIMATION_API DefaultBoneProperty : BoneTypeProperty
 	{
+    	/// @name Initialization
+    	/// @{
 		DefaultBoneProperty() = default;
 		~DefaultBoneProperty() override = default;
+    	/// @}
+    	/// @name Inherited
+    	/// @{
         [[nodiscard]] const char* typeAsString() const override;
 
 		// Inherited via BoneTypeProperties
         [[nodiscard]] BoneType type() const override;
+
+    	/// @}
+    	/// @name Json
+    	/// @{
+    	Utilities::JsonObject toJson() const override;
+    	/// @}
 	};
 
 	/**
@@ -66,7 +80,7 @@ namespace CALUMI::UNIV {
 	 */
 	struct CALUMIANIMATION_API TwistBoneProperty : BoneTypeProperty
 	{
-		/// @name Constructors
+		/// @name Initialization
 		/// @{
 		TwistBoneProperty();
         explicit TwistBoneProperty(const TwistBoneProperty& input);
@@ -95,6 +109,10 @@ namespace CALUMI::UNIV {
 		/// @name Operators
 		/// @{
 		TwistBoneProperty& operator=(const TwistBoneProperty& input);
+		/// @}
+		/// @name Json
+		/// @{
+		Utilities::JsonObject toJson() const override;
 		/// @}
 
 	private:

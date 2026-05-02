@@ -71,6 +71,10 @@ namespace CALUMI::SFBGS
 			 */
 		static PrecisionSet ShipPrecision();
 		/// @}
+		/// @name Json
+		/// @{
+		Utilities::JsonObject toJson() const;
+		/// @}
 
 	private:
 		struct Impl;
@@ -82,7 +86,7 @@ namespace CALUMI::SFBGS
 	/**
 		 * @brief
 		 */
-	struct CALUMIANIMATION_API SFBGS_RigPackage : UNIV::IRigPackage
+	class CALUMIANIMATION_API SFBGS_RigPackage : public UNIV::IRigPackage
 	{
 	public:
 		/// @name Bone Mapping
@@ -466,7 +470,11 @@ namespace CALUMI::SFBGS
 			 */
 		[[nodiscard]] Utilities::S16Vector convertMap(const Utilities::StringList& boneList) const;
 		/// @}
-		///
+		/// @name Json
+		/// @{
+		Utilities::JsonObject toJson() const override;
+		/// @}
+
 	};
 	/// @}
 }
