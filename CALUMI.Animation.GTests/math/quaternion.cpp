@@ -321,6 +321,4 @@ GTEST(Json)
     q01Array.push_back(100);
 
     qP["-"] = q01Array;
-
-    std::cout << qP.serialize(0, true).c_str() << std::endl;
 }

@@ -508,7 +508,7 @@ namespace CALUMI::Utilities
                 output += toBool() ? "true" : "false";
                 break;
             case VarType::JsonObject:
-                output += toObject().serialize(indentOffset+1,raw).c_str();
+                output += toObject().serialize(indentOffset + 1, raw).c_str();
                 break;
             case VarType::JsonArray:
                 {
@@ -550,9 +550,13 @@ namespace CALUMI::Utilities
         {
             keyCount++;
             output += newline;
+
+            if (!raw && indentOffset == 0)
+                output += indent;
+
             output += std::format(R"("{}": )", key);
 
-            output += value.serialize(indentOffset+1, raw).c_str();
+            output += value.serialize(indentOffset + 1, raw).c_str();
 
             if (keyCount < pImpl->m_values.size())
                 output += ",";

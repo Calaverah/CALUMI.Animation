@@ -897,6 +897,10 @@ int SetGlobalSkeletonBonePositionC(const CALUMI::UNIV::SkeletonBone* bone, float
             bone->setLocalTransform(local);
             return 0;
         }
+        if (bone->isRoot())
+        {
+            return SetLocalSkeletonBonePositionC(bone, x, y, z);
+        }
 
         return 1;
 
@@ -935,7 +939,10 @@ int SetGlobalSkeletonBoneRotationC(const CALUMI::UNIV::SkeletonBone* bone, float
             bone->setLocalTransform(local);
             return 0;
         }
-
+        if (bone->isRoot())
+        {
+            return SetLocalSkeletonBoneRotationC(bone, x, y, z, w);
+        }
         return 1;
 
     }
@@ -974,6 +981,10 @@ int SetGlobalSkeletonBoneRotationWithEulerC(const CALUMI::UNIV::SkeletonBone* bo
             bone->setLocalTransform(local);
             return 0;
         }
+        if (bone->isRoot())
+        {
+            return SetLocalSkeletonBoneRotationWithEulerC(bone, rot1, rot2, rot3, eulerOrder);
+        }
         return 1;
     }
     catch (const std::exception&) {}
@@ -1009,6 +1020,10 @@ int SetGlobalSkeletonBoneTransformC(const CALUMI::UNIV::SkeletonBone* bone, floa
             const auto local = global.local(parent->globalTransform());
             bone->setLocalTransform(local);
             return 0;
+        }
+        if (bone->isRoot())
+        {
+            return SetLocalSkeletonBoneTransformC(bone, posX, posY, posZ, rotX, rotY, rotZ, rotW);
         }
         return 1;
     }
@@ -1046,6 +1061,10 @@ int SetGlobalSkeletonBoneTransformWithEulerC(const CALUMI::UNIV::SkeletonBone* b
             const auto local = global.local(parent->globalTransform());
             bone->setLocalTransform(local);
             return 0;
+        }
+        if (bone->isRoot())
+        {
+            return SetLocalSkeletonBoneTransformWithEulerC(bone, posX, posY, posZ, rot1, rot2, rot3, eulerOrder);
         }
         return 1;
     }

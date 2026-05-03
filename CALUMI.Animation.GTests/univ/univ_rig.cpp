@@ -56,5 +56,37 @@ GTEST(UnivRigCreation)
 
 GTEST(UnivRigCreationC)
 {
+    const auto cRig = CreateSkeletonRigC("MyTestRig");
+    EXPECT_STREQ(GetSkeletonRigNameC(cRig), "MyTestRig");
+
+    const auto cRoot = GetSkeletonRigRootC(cRig);
+    EXPECT_STRCASEEQ(GetSkeletonBoneNameC(cRoot), "root");
+
+    {
+        EXPECT_EQ(SetLocalSkeletonBoneTransformC(cRoot, 1.0f,2.0f,3.0f,1.0f,0.0f,0.0f,0.0f),0);
+        auto& tempQ0 = *GetLocalSkeletonBoneRotationC(cRoot);
+        auto& tempP0 = *GetLocalSkeletonBonePositionC(cRoot);
+        EXPECT_QUATNEAR(tempQ0, Math::Quaternion(1.0f,0.0f,0.0f,0.0f),0.000001f);
+        EXPECT_VEC3NEAR(tempP0, Math::Vector3(1.0f, 2.0f, 3.0f), 0.000001f);
+    }{
+        EXPECT_EQ(SetGlobalSkeletonBoneTransformWithEulerC(cRoot, 0.0f,0.0f,0.0f, 0.0f,0.0f,static_cast<float>(Math::ToRadians(90.0f)),0), 0);
+        auto& tempQ0 = *GetLocalSkeletonBoneRotationC(cRoot);
+        auto& tempP0 = *GetLocalSkeletonBonePositionC(cRoot);
+        EXPECT_QUATNEAR(tempQ0, Math::Quaternion(0.0f,0.0f,0.707107f,0.707107f),0.000001f);
+        EXPECT_VEC3NEAR(tempP0, Math::Vector3(0.0f, 0.0f, 0.0f), 0.000001f);
+    }{
+        EXPECT_EQ(SetGlobalSkeletonBoneTransformC(cRoot, 0.0f, 0.24f, 0.0f, 0.0f,0.0f,0.0f,1.0f), 0);
+        auto& tempQ0 = *GetLocalSkeletonBoneRotationC(cRoot);
+        auto& tempP0 = *GetLocalSkeletonBonePositionC(cRoot);
+        EXPECT_QUATNEAR(tempQ0, Math::Quaternion(), 0.000001f);
+        EXPECT_VEC3NEAR(tempP0, Math::Vector3(0.0f, 0.24f, 0.0f), 0.000001f);
+    }{
+        EXPECT_EQ(SetGlobalSkeletonBoneRotationC(cRoot, 0.0f,1.0f,0.0f, 1.0f), 0);
+        EXPECT_EQ(SetGlobalSkeletonBonePositionC(cRoot, 0.0f, 1.0f, 10.0f), 0);
+        auto& tempQ0 = *GetLocalSkeletonBoneRotationC(cRoot);
+        auto& tempP0 = *GetLocalSkeletonBonePositionC(cRoot);
+        EXPECT_QUATNEAR(tempQ0, Math::Quaternion(0.0f,0.707107f, 0.0f,0.707107f),0.000001f);
+        EXPECT_VEC3NEAR(tempP0, Math::Vector3(0.0f,1.0f,10.0f), 0.000001f);
+    }
 
 }
