@@ -27,6 +27,10 @@ namespace CALUMI::UNIV
 		 * @param input
 		 */
 		AnimationBlock(const AnimationBlock& input);
+		/**
+		 * @param data
+		 */
+		explicit AnimationBlock(const Utilities::JsonObject& data);
 		/// @}
 		/// @name Operators
 		/// @{
@@ -207,6 +211,10 @@ namespace CALUMI::UNIV
 		 * @param input
 		 */
 		Animation(const Animation& input);
+		/**
+		 * @param data
+		 */
+		Animation(const Utilities::JsonObject& data);
 		~Animation();
 		/// @}
 		/// @name Operators
@@ -267,7 +275,11 @@ namespace CALUMI::UNIV
 		/// @{
 		AnimationPackageManager& packageManager() const;
 		/// @}
+		/// @name Json
+		/// @{
 
+		Utilities::JsonObject toJson() const;
+		/// @}
 	private:
 		struct Impl;
 		Impl* pImpl;

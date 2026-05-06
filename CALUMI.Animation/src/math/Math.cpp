@@ -136,6 +136,18 @@ namespace CALUMI::Math
 		return output;
 	}
 
+	void Vector3::fromJson(const Utilities::JsonObject& data)
+	{
+		if (data.contains("x"))
+			pImpl->x = data["x"].toFloat(0.0f);
+
+		if (data.contains("y"))
+			pImpl->y = data["y"].toFloat(0.0f);
+
+		if (data.contains("z"))
+			pImpl->z = data["z"].toFloat(0.0f);
+	}
+
 	bool Vector3::operator==(const Vector3& other) const
 	{
 		return pImpl->x == other.pImpl->x && pImpl->y == other.pImpl->y && pImpl->z == other.pImpl->z;
@@ -320,6 +332,18 @@ namespace CALUMI::Math
 		return output;
 	}
 
+	void Vector3D::fromJson(const Utilities::JsonObject& data)
+	{
+		if (data.contains("x"))
+			pImpl->x = data["x"].toDouble(0.0);
+
+		if (data.contains("y"))
+			pImpl->y = data["y"].toDouble(0.0);
+
+		if (data.contains("z"))
+			pImpl->z = data["z"].toDouble(0.0);
+	}
+
 	double Vector3D::x() const
 	{
 		return pImpl->x;
@@ -456,7 +480,6 @@ namespace CALUMI::Math
 
 	double Vector3D::length() const
 	{
-
 		return sqrt(pImpl->x * pImpl->x + pImpl->y * pImpl->y + pImpl->z * pImpl->z);
 	}
 	double Vector3D::lengthSquared() const
@@ -1277,6 +1300,36 @@ namespace CALUMI::Math
 		return output;
 	}
 
+	void Quaternion::fromJson(const Utilities::JsonObject& data)
+	{
+		float pX = 0.0f,
+			  pY = 0.0f,
+			  pZ = 0.0f,
+			  pW = 1.0f;
+
+		bool ok = true;
+
+		if (data.contains("x") && ok)
+			pX = data["x"].toFloat(0.0f, &ok);
+
+		if (data.contains("y") && ok)
+			pY = data["y"].toFloat(0.0f, &ok);
+
+		if (data.contains("z") && ok)
+			pZ = data["z"].toFloat(0.0f, &ok);
+
+		if (data.contains("w") && ok)
+			pW = data["w"].toFloat(1.0f, &ok);
+
+		if (ok)
+		{
+			pImpl->x = pX;
+			pImpl->y = pY;
+			pImpl->z = pZ;
+			pImpl->w = pW;
+		}
+	}
+
 	Quaternion operator+ (const Quaternion& A, const Quaternion& B) noexcept
 	{
 		return {A.x() + B.x(), A.y() + B.y(), A.z() + B.z(), A.w() + B.w() };
@@ -1479,6 +1532,15 @@ namespace CALUMI::Math
 		output["y"] = pImpl->y;
 
 		return output;
+	}
+
+	void Vector2::fromJson(const Utilities::JsonObject& data)
+	{
+		if (data.contains("x"))
+			pImpl->x = data["x"].toFloat(0.0f);
+
+		if (data.contains("y"))
+			pImpl->y = data["y"].toFloat(0.0f);
 	}
 
 	//Non Member Functions
@@ -1700,6 +1762,15 @@ namespace CALUMI::Math
 		return output;
 	}
 
+	void Vector2D::fromJson(const Utilities::JsonObject& data)
+	{
+		if (data.contains("x"))
+			pImpl->x = data["x"].toDouble(0.0);
+
+		if (data.contains("y"))
+			pImpl->y = data["y"].toDouble(0.0);
+	}
+
 	//Non-member functions
 	Vector2D operator+(const Vector2D& A, const Vector2D& B) noexcept
 	{
@@ -1752,6 +1823,11 @@ namespace CALUMI::Math
 	Transform::Transform(const Transform& other) : pImpl(new Impl())
 	{
 		*this = other;
+	}
+
+	Transform::Transform(const Utilities::JsonObject& data) : Transform()
+	{
+		fromJson(data);
 	}
 
 	Transform::~Transform()
@@ -1852,6 +1928,21 @@ namespace CALUMI::Math
 		output["rotation"] = pImpl->m_rotation.toJson();
 
 		return output;
+	}
+
+	void Transform::fromJson(const Utilities::JsonObject& data)
+	{
+		if (data.contains("position"))
+		{
+			const auto position = data["position"].toObject();
+			pImpl->m_position.fromJson(position);
+		}
+
+		if (data.contains("rotation"))
+		{
+			const auto rotation = data["rotation"].toObject();
+			pImpl->m_rotation.fromJson(rotation);
+		}
 	}
 
 #pragma endregion

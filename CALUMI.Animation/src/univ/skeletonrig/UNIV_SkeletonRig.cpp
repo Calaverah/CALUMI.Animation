@@ -2,6 +2,7 @@
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
 
+// ReSharper disable CppExpressionWithoutSideEffects
 #include "internalvectordef.h"
 #include "internalplatform.h"
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
@@ -11,6 +12,11 @@
 #include <memory>
 #include <limits>
 
+#include "sfbgs/skeletonrig/SFBGS_RigPackage.h"
+#include "sfbgs/skeletonrig/SFBGS_SkeletonRig.h"
+#include "univ/skeletonrig/packages/UNIV_RigManifestPackage.h"
+#include "univ/skeletonrig/packages/UNIV_RigMirrorPackage.h"
+
 
 namespace CALUMI::UNIV
 {
@@ -18,7 +24,7 @@ namespace CALUMI::UNIV
     struct SkeletonBone::Impl
     {
     public:
-        std::shared_ptr<BoneTypeProperty> m_boneTypeProperties = std::make_shared<DefaultBoneProperty>();
+        std::shared_ptr<BoneTypeProperty> m_boneTypeProperty = std::make_shared<DefaultBoneProperty>();
         Math::Transform m_localTransform;
         std::string m_name;
 
@@ -195,7 +201,7 @@ namespace CALUMI::UNIV
             if (!bone)
                 continue;
 
-            if (bone->pImpl->m_boneTypeProperties->type() == type)
+            if (bone->pImpl->m_boneTypeProperty->type() == type)
                 boneCount++;
 
             boneCount += bone->boneTypeCount(type);
@@ -266,19 +272,19 @@ namespace CALUMI::UNIV
 
     bool SkeletonBone::setBoneTypeProperty(const BoneTypeProperty::BoneType boneType, const bool resetExisting) const
     {
-        if (pImpl->m_boneTypeProperties)
+        if (pImpl->m_boneTypeProperty)
         {
-            if (!resetExisting && boneType == pImpl->m_boneTypeProperties->type())
+            if (!resetExisting && boneType == pImpl->m_boneTypeProperty->type())
                 return false;
         }
 
         switch (boneType)
         {
         case BoneTypeProperty::BoneType::Default:
-            pImpl->m_boneTypeProperties = std::make_shared<DefaultBoneProperty>();
+            pImpl->m_boneTypeProperty = std::make_shared<DefaultBoneProperty>();
             break;
         case BoneTypeProperty::BoneType::Twist:
-            pImpl->m_boneTypeProperties = std::make_shared<TwistBoneProperty>();
+            pImpl->m_boneTypeProperty = std::make_shared<TwistBoneProperty>();
             break;
         default:
             return false;
@@ -288,7 +294,7 @@ namespace CALUMI::UNIV
 
     const BoneTypeProperty* SkeletonBone::boneTypeProperty() const
     {
-        return pImpl->m_boneTypeProperties.get();
+        return pImpl->m_boneTypeProperty.get();
     }
 
     bool SkeletonBone::resetBoneTypeProperty(const BoneTypeProperty::BoneType boneType) const
@@ -360,7 +366,7 @@ namespace CALUMI::UNIV
         Utilities::JsonObject output;
 
         output["name"] = pImpl->m_name.c_str();
-        output["property"] = pImpl->m_boneTypeProperties->toJson();
+        output["property"] = pImpl->m_boneTypeProperty->toJson();
         output["transform"] = pImpl->m_localTransform.toJson();
 
         Utilities::JsonArray childBones;
@@ -372,6 +378,33 @@ namespace CALUMI::UNIV
         output["children"] = childBones;
 
         return output;
+    }
+
+    void SkeletonBone::fromJson(const Utilities::JsonObject& data) const
+    {
+        if (data.contains("property"))
+        {
+            if (const auto prop = data["property"].toObject(); prop.contains("type"))
+            {
+                setBoneTypeProperty (BoneTypeProperty::BoneTypeFromString(prop["type"].toString()),true);
+                pImpl->m_boneTypeProperty->fromJson(prop);
+            }
+            else
+                resetBoneTypeProperty();
+        }
+        else
+            resetBoneTypeProperty();
+
+        if (data.contains("children"))
+        {
+            auto children = data["children"].toArray();
+            for (int i = 0; i < children.size(); i++)
+            {
+                const auto& child = children.at(i).toObject();
+                const auto childBone = addChildBone(child["name"].toString(), child["transform"].toObject());
+                childBone->fromJson(child);
+            }
+        }
     }
 
 #pragma endregion
@@ -480,6 +513,49 @@ namespace CALUMI::UNIV
         output["packages"] = pImpl->m_rigPackageManager.toJson();
 
         return output;
+    }
+
+    SkeletonRig::SkeletonRig(const Utilities::JsonObject& data) : SkeletonRig()
+    {
+
+        if (data.contains("name"))
+            pImpl->m_rigName = data["name"].toString();
+
+        if (data.contains("root"))
+        {
+            const Utilities::JsonObject root = data["root"].toObject();
+            if ( root.contains("transform"))
+                pImpl->m_root.pImpl->m_localTransform.fromJson(root["transform"].toObject());
+
+            if (root.contains("name"))
+                pImpl->m_root.pImpl->m_name = root["name"].toString();
+
+            pImpl->m_root.fromJson(root);
+        }
+
+        if (data.contains("packages"))
+        {
+            const auto packages = data["packages"].toObject();
+            const auto keys = packages.keys();
+            for (int i = 0; i < keys.size(); i++)
+            {
+                if (SCOMPARE(keys.c_str(i), MANIFEST_RIG_PACKAGE) == 0)
+                {
+                    auto& manifest = RigManifestPackage::GetPackage(*this);
+                    manifest.fromJson(packages[keys.c_str(i)].toObject());
+                }
+                else if (SCOMPARE(keys.c_str(i), MIRROR_RIG_PACKAGE) == 0)
+                {
+                    auto& mirror = RigMirrorPackage::GetPackage(*this);
+                    mirror.fromJson(packages[keys.c_str(i)].toObject());
+                }
+                else if (SCOMPARE(keys.c_str(i), SFBGS::SFBGS_RIG_PACKAGE) == 0)
+                {
+                    auto& sfbgs = SFBGS::SFBGS_RigPackage::GetPackage(*this);
+                    sfbgs.fromJson(packages[keys.c_str(i)].toObject());
+                }
+            }
+        }
     }
 
 #pragma endregion

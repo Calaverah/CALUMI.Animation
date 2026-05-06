@@ -4,8 +4,8 @@
 
 
 #include "utilities/CALUMI_Hashes.h"
+#include "internalplatform.h"
 
-#include <format>
 #include <ranges>
 #include <unordered_map>
 #include <string>

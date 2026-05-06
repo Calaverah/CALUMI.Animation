@@ -61,6 +61,32 @@ namespace CALUMI::SFBGS
         return output;
     }
 
+    void SFBGS_AnimationPackage::fromJson(const Utilities::JsonObject& data)
+    {
+        if (data.contains("rig_precision"))
+            pImpl->m_useRigPrecision = data["rig_precision"].toBool();
+        else
+            pImpl->m_useRigPrecision = false;
+
+        if (data.contains("precision"))
+            pImpl->m_precisionOverride.fromJson(data["precision"].toObject());
+        else
+            pImpl->m_precisionOverride = PrecisionSet::DefaultPrecision();
+
+        pImpl->m_amendedBlocks.clear();
+        
+        Utilities::JsonArray aBlocks = data["amended_blocks"].toArray();
+
+        for (uint64_t i = 0; i < aBlocks.size(); i++)
+        {
+            if (Utilities::JsonObject hashBlock = aBlocks.at(i).toObject(); hashBlock.contains("hash") && hashBlock.contains("block"))
+            {
+                auto entry = UNIV::AnimationBlock(hashBlock["block"].toObject());
+                addAmendedBlock(hashBlock["hash"].toUInt(), entry);
+            }
+        }
+    }
+
     SFBGS_AnimationPackage::~SFBGS_AnimationPackage()
     {
         if (pImpl)

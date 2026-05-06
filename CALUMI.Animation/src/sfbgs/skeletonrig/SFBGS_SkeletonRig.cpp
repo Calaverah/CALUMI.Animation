@@ -1029,7 +1029,7 @@ namespace CALUMI::SFBGS
 					mirrorPackage.addPair(pImpl->m_stringArray.c_str(i), setter.c_str());
 				}
 
-				const SFBGS_RigPackage::LODSetting lod = SFBGS_RigPackage::IntToLOD(bone.pImpl->m_LOD);
+				const SFBGS_RigPackage::LODSetting lod = SFBGS_RigPackage::GetLODFromInt(bone.pImpl->m_LOD);
 
 				sfbgsPackage.setBoneLod(uAddedBone->name(), lod);
 

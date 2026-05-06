@@ -176,7 +176,7 @@ namespace CALUMI::UNIV
 		 * @param resetExisting If this bone is already set to the given type, will reset to this type's default values
 		 * @return Whether the operation was a success
 		 */
-		[[nodiscard]] bool setBoneTypeProperty(BoneTypeProperty::BoneType boneType, bool resetExisting = false) const;
+		bool setBoneTypeProperty(BoneTypeProperty::BoneType boneType, bool resetExisting = false) const;
 		/**
 		 * @brief Gets the unique bone property
 		 * @return Ptr to the bone property type and its values
@@ -209,6 +209,7 @@ namespace CALUMI::UNIV
 		/// @{
 
 		Utilities::JsonObject toJson() const;
+		void fromJson(const Utilities::JsonObject& data) const;
 
 		/// @}
 
@@ -249,6 +250,11 @@ namespace CALUMI::UNIV
 		 * @param input
 		 */
 		SkeletonRig(const SkeletonRig& input);
+		/**
+		 *
+		 * @param data
+		 */
+		explicit SkeletonRig(const Utilities::JsonObject& data);
 		/**
 		 *
 		 */
@@ -325,6 +331,7 @@ namespace CALUMI::UNIV
 		/// @{
 
 		Utilities::JsonObject toJson() const;
+
 
 		/// @}
 	private:

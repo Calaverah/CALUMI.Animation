@@ -129,6 +129,7 @@ namespace CALUMI::UNIV
         /// @name Json
         /// @{
         Utilities::JsonObject toJson() const override;
+        void fromJson(const Utilities::JsonObject& data) override;
         /// @}
 
     private:

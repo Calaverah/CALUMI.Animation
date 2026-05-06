@@ -123,6 +123,7 @@ namespace CALUMI::Math
 		/// @name Json
 		/// @{
 		Utilities::JsonObject toJson() const;
+		void fromJson(const Utilities::JsonObject& data);
 		/// @}
 
 	private:
@@ -223,6 +224,7 @@ namespace CALUMI::Math
 		/// @name Json
 		/// @{
 		Utilities::JsonObject toJson() const;
+		void fromJson(const Utilities::JsonObject& data);
 		/// @}
 
 	private:
@@ -330,6 +332,7 @@ namespace CALUMI::Math
 		/// @name Json
 		/// @{
 		Utilities::JsonObject toJson() const;
+		void fromJson(const Utilities::JsonObject& data);
 		/// @}
 
 	private:
@@ -436,6 +439,7 @@ namespace CALUMI::Math
 		/// @name Json
 		/// @{
 		Utilities::JsonObject toJson() const;
+		void fromJson(const Utilities::JsonObject& data);
 		/// @}
 
 	private:
@@ -669,6 +673,7 @@ namespace CALUMI::Math
 		/// @name Json
 		/// @{
 		Utilities::JsonObject toJson() const;
+		void fromJson(const Utilities::JsonObject& data);
 		/// @}
 
 	private:
@@ -693,6 +698,7 @@ namespace CALUMI::Math
 	{
 		Transform(Vector3 position = Vector3(), Quaternion rotation = Quaternion());
 		Transform(const Transform& other);
+		Transform(const Utilities::JsonObject& data);
 		~Transform();
 
 		Transform& operator=(const Transform& other);
@@ -740,6 +746,7 @@ namespace CALUMI::Math
 		 * @return
 		 */
 		Utilities::JsonObject toJson() const;
+		void fromJson(const Utilities::JsonObject& data);
 
 	private:
 		struct Impl;

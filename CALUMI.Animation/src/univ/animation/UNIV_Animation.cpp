@@ -3,6 +3,7 @@
 //Contact: Calaverahmedia@gmail.com
 
 
+// ReSharper disable CppExpressionWithoutSideEffects
 #include "internalplatform.h"
 #include "utilities/CALUMI_Common.h"
 #include "utilities/CALUMI_Utilities.h"
@@ -12,6 +13,7 @@
 #include <vector>
 #include "internal/internalvectordef.h"
 #include <algorithm>
+#include "sfbgs/animation/SFBGS_AnimationPackage.h"
 
 namespace CALUMI::UNIV
 {
@@ -51,6 +53,37 @@ namespace CALUMI::UNIV
 	{
 		*pImpl = *input.pImpl;
 	}
+
+	Animation::Animation(const Utilities::JsonObject& data) : Animation()
+	{
+		if (data.contains("name"))
+			pImpl->m_animationTitle = data["name"].toString();
+
+		if (data.contains("packages"))
+		{
+			const auto packages = data["packages"].toObject();
+			const auto keys = packages.keys();
+			for (int i = 0; i < keys.size(); i++)
+			{
+				if (SCOMPARE(keys.c_str(i), SFBGS::SFBGS_ANIM_PACKAGE) == 0)
+				{
+					auto& sfbgs = SFBGS::SFBGS_AnimationPackage::GetPackage(*this);
+					sfbgs.fromJson(packages[keys.c_str(i)].toObject());
+				}
+			}
+		}
+
+		if (data.contains("blocks"))
+		{
+			Utilities::JsonArray blocks = data["blocks"].toArray();
+			for (unsigned int i = 0; i < blocks.size(); i++)
+			{
+				AnimationBlock blockToAdd(blocks.at(i).toObject());
+				pImpl->m_animationBlocks.push_back(blockToAdd);
+			}
+		}
+	}
+
 	Animation::~Animation()
 	{
 		if (pImpl)
@@ -102,6 +135,26 @@ namespace CALUMI::UNIV
 	}
 	AnimationPackageManager& Animation::packageManager() const { return pImpl->m_packageManager; }
 
+	Utilities::JsonObject Animation::toJson() const
+	{
+		const Utilities::JsonObject output;
+
+		output["name"] = pImpl->m_animationTitle.c_str();
+
+		output["packages"] = pImpl->m_packageManager.toJson();
+
+		Utilities::JsonArray animationBlocks;
+
+		for (unsigned int i = 0; i < pImpl->m_animationBlocks.size(); i++)
+		{
+			animationBlocks.push_back(pImpl->m_animationBlocks.at(i).toJson());
+		}
+
+		output["blocks"] = animationBlocks;
+
+		return output;
+	}
+
 	unsigned int Animation::frameCount() const
 	{
 		unsigned int output = 0;
@@ -150,39 +203,78 @@ namespace CALUMI::UNIV
 
 		output["bone"] = pImpl->m_boneName.c_str();
 
-		const Utilities::JsonObject rotations;
+		Utilities::JsonArray rotations;
 		for (uint64_t i = 0; i < pImpl->m_rotationSequence.size(); i++)
 		{
-			const auto& entry = pImpl->m_rotationSequence.at(i);
-			rotations[std::to_string(entry.frame()).c_str()] = entry.rotationQuaternion().toJson();
+			rotations.push_back(pImpl->m_rotationSequence.at(i).toJson());
 		}
 		output["rotations"] = rotations;
 
-		const Utilities::JsonObject translations;
+		Utilities::JsonArray translations;
 		for (uint64_t i = 0; i < pImpl->m_translationSequence.size(); i++)
 		{
-			const auto& entry = pImpl->m_translationSequence.at(i);
-			translations[std::to_string(entry.frame()).c_str()] = entry.translationVector().toJson();
+			translations.push_back(pImpl->m_translationSequence.at(i).toJson());
 		}
 		output["translations"] = translations;
 
-		const Utilities::JsonObject scalars;
+		Utilities::JsonArray scalars;
 		for (uint64_t i = 0; i < pImpl->m_scalarSequence.size(); i++)
 		{
-			const auto& entry = pImpl->m_scalarSequence.at(i);
-			scalars[std::to_string(entry.frame()).c_str()] = entry.scalarValue();
+			scalars.push_back(pImpl->m_scalarSequence.at(i).toJson());
 		}
 		output["scalars"] = scalars;
 
-		const Utilities::JsonObject priorities;
+		Utilities::JsonArray priorities;
 		for (uint64_t i = 0; i < pImpl->m_prioritySequence.size(); i++)
 		{
-			const auto& entry = pImpl->m_prioritySequence.at(i);
-			priorities[std::to_string(entry.frame()).c_str()] = entry.priorityValue();
+			priorities.push_back(pImpl->m_prioritySequence.at(i).toJson());
 		}
 		output["priorities"] = priorities;
 
 		return output;
+	}
+
+	AnimationBlock::AnimationBlock(const Utilities::JsonObject& data) : AnimationBlock()
+	{
+		if (data.contains("bone"))
+			pImpl->m_boneName = data["bone"].toString();
+
+		if (data.contains("rotations"))
+		{
+			const auto rotations = data["rotations"].toArray();
+			for (uint64_t i = 0; i < rotations.size(); i++)
+			{
+				RotationFrame entry(rotations.at(i).toObject());
+				addRotationEntry(entry);
+			}
+		}
+		if (data.contains("translations"))
+		{
+			const auto translations = data["translations"].toArray();
+			for (uint64_t i = 0; i < translations.size(); i++)
+			{
+				TranslationFrame entry(translations.at(i).toObject());
+				addTranslationEntry(entry);
+			}
+		}
+		if (data.contains("scalars"))
+		{
+			const auto scalars = data["scalars"].toArray();
+			for (uint64_t i = 0; i < scalars.size(); i++)
+			{
+				ScalarFrame entry(scalars.at(i).toObject());
+				addScalarEntry(entry);
+			}
+		}
+		if (data.contains("priorities"))
+		{
+			const auto priorities = data["priorities"].toArray();
+			for (uint64_t i = 0; i < priorities.size(); i++)
+			{
+				PriorityFrame entry(priorities.at(i).toObject());
+				addPriorityEntry(entry);
+			}
+		}
 	}
 
 	AnimationBlock::AnimationBlock() : pImpl(new Impl()) {}
@@ -199,6 +291,8 @@ namespace CALUMI::UNIV
 	{
 		*this = input;
 	}
+
+
 	AnimationBlock& AnimationBlock::operator=(const AnimationBlock& other)
 	{
 		if (this != &other)

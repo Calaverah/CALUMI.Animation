@@ -78,6 +78,9 @@ namespace CALUMI::Utilities
         JsonValue& operator=(const JsonValue& input);
         JsonValue& operator=(JsonValue&& input) noexcept;
 
+        static JsonValue Deserialize(const char* input);
+        static JsonArray DeserializeArray(const char* input);
+
     private:
         struct Impl;
         Impl* pImpl;
@@ -100,6 +103,8 @@ namespace CALUMI::Utilities
         StringList keys() const;
 
         StringContainer serialize(unsigned int indentOffset = 0, bool raw = false) const;
+
+        static JsonObject Deserialize(const char* input);
 
     private:
         struct Impl;

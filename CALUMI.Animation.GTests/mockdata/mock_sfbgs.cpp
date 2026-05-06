@@ -265,9 +265,112 @@ GTEST(Rig00)
 
 #pragma endregion
 
-#pragma region UNIV Rig00
+#pragma region UNIV Rig00 JSON
 
 	//TODO: UNIV RIG00 Unit Tests
+	{
+		EXPECT_NO_THROW(auto res = uRig00.toJson().serialize().c_str());
+		//TODO: Convert to json file
+		auto uRig00StringInput = R"({
+	"name": "MySkeletonRig",
+	"root": {
+		"name": "Fountain_Root",
+		"property": {
+				"type": "Default"
+			},
+		"transform": {
+				"position": {
+						"x": 0,
+						"y": 0,
+						"z": 0
+					},
+				"rotation": {
+						"x": 0,
+						"y": 0,
+						"z": -0.7071069,
+						"w": 0.70710665
+					}
+			},
+		"children": [
+				{
+					"name": "PlanetObject",
+					"property": {
+							"type": "Default"
+						},
+					"transform": {
+							"position": {
+									"x": 0,
+									"y": 0,
+									"z": 1.30656
+								},
+							"rotation": {
+									"x": 0,
+									"y": 0,
+									"z": 0,
+									"w": 1
+								}
+						},
+					"children": [
+							{
+								"name": "RingObject",
+								"property": {
+										"type": "Default"
+									},
+								"transform": {
+										"position": {
+												"x": 0,
+												"y": 0,
+												"z": 0
+											},
+										"rotation": {
+												"x": 0,
+												"y": 0,
+												"z": 0,
+												"w": 1
+											}
+									},
+								"children": [
+									]
+							}
+						]
+				}
+			]
+	},
+	"packages": {
+		"MIRROR_RIG_PACKAGE": {
+				"pairs": {
+					}
+			},
+		"SFBGS_RIG_PACKAGE": {
+				"mannequin": false,
+				"map": {
+						"8": "PlanetObject",
+						"0": "Fountain_Root"
+					},
+				"lod": {
+						"Fountain_Root": 4,
+						"RingObject": 4,
+						"PlanetObject": 4
+					},
+				"precision": {
+						"high": 0.00025,
+						"low": 0.03125
+					}
+			},
+		"MANIFEST_RIG_PACKAGE": {
+				"list": [
+						"Fountain_Root",
+						"PlanetObject",
+						"RingObject"
+					]
+			}
+	}
+})";
+		auto json00 = Utilities::JsonObject::Deserialize(uRig00StringInput);
+		UNIV::SkeletonRig uRig00Json(json00);
+
+		EXPECT_STRCASEEQ(uRig00StringInput, json00.serialize().c_str());
+	}
 
 #pragma endregion
 

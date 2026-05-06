@@ -74,6 +74,7 @@ namespace CALUMI::SFBGS
 		/// @name Json
 		/// @{
 		Utilities::JsonObject toJson() const;
+		void fromJson(const Utilities::JsonObject& data) const;
 		/// @}
 
 	private:
@@ -395,7 +396,7 @@ namespace CALUMI::SFBGS
 		 * @param value
 		 * @return
 		 */
-		static LODSetting IntToLOD(int value);
+		static LODSetting GetLODFromInt(int value);
 
 		/**
 		 *
@@ -473,6 +474,7 @@ namespace CALUMI::SFBGS
 		/// @name Json
 		/// @{
 		Utilities::JsonObject toJson() const override;
+		void fromJson(const Utilities::JsonObject& data);
 		/// @}
 
 	};

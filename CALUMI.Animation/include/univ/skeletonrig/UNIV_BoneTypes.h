@@ -36,6 +36,7 @@ namespace CALUMI::UNIV {
 		virtual ~BoneTypeProperty() = default;
 
     	virtual Utilities::JsonObject toJson() const = 0;
+    	virtual void fromJson(const Utilities::JsonObject& data) = 0;
 
     public:
     	/**
@@ -72,6 +73,7 @@ namespace CALUMI::UNIV {
     	/// @name Json
     	/// @{
     	Utilities::JsonObject toJson() const override;
+    	void fromJson(const Utilities::JsonObject& data) override;
     	/// @}
 	};
 
@@ -113,6 +115,7 @@ namespace CALUMI::UNIV {
 		/// @name Json
 		/// @{
 		Utilities::JsonObject toJson() const override;
+		void fromJson(const Utilities::JsonObject& data) override;
 		/// @}
 
 	private:

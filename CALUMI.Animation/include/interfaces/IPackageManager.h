@@ -37,6 +37,7 @@ namespace CALUMI::UNIV
 		/// @name Json
 		/// @{
 		virtual Utilities::JsonObject toJson() const = 0;
+		virtual void fromJson(const Utilities::JsonObject& data) = 0;
 		/// @}
 
 	protected:

@@ -30,6 +30,7 @@ GTEST(RDPRotation)
     ROTATIONENTRY(input1, 4, 1.0f, 0.0f, 0.0f, 0.0); //""
     ROTATIONENTRY(input1, 5, 1.0f, 0.0f, 0.0f, 0.0);
 
+
     auto first1 = input1.rotationSequence().at(0);
     auto last1 = input1.rotationSequence().at(input1.rotationSequence().size() - 1);
 

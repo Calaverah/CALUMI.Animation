@@ -213,6 +213,20 @@ namespace CALUMI::UNIV
         return output;
     }
 
+    void RigManifestPackage::fromJson(const Utilities::JsonObject& data)
+    {
+        pImpl->m_list.clear();
+
+        if (data.contains("list"))
+        {
+            const auto list = data["list"].toArray();
+            for (uint64_t i = 0; i < list.size(); i++)
+            {
+                pImpl->m_list.push_back(list.at(i).toString());
+            }
+        }
+    }
+
     const char* RigManifestPackage::packageType() const
     {
         return MANIFEST_RIG_PACKAGE;
@@ -313,7 +327,7 @@ int64_t UNIVManifestRigPackage_GetCountC(const CALUMI::UNIV::SkeletonRig* rig)
     return -1;
 }
 
-const char* UNIVManifestRigPackage_GetBoneC(const CALUMI::UNIV::SkeletonRig* rig, unsigned int index)
+const char* UNIVManifestRigPackage_GetBoneC(const CALUMI::UNIV::SkeletonRig* rig, const unsigned int index)
 {
     if (rig)
         try

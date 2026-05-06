@@ -14,20 +14,20 @@ namespace CALUMI::UNIV
 #pragma region TRANSLATION
     struct TranslationFrame::Impl
     {
-        uint16_t frame = 0;
-        Math::Vector3D translation;
+        uint16_t m_frame = 0;
+        Math::Vector3D m_translation;
     };
     uint16_t TranslationFrame::frame() const
     {
-        return pImpl->frame;
+        return pImpl->m_frame;
     }
     void TranslationFrame::setFrame(const uint16_t frame) const
     {
-        pImpl->frame = frame;
+        pImpl->m_frame = frame;
     }
     Math::Vector3D& TranslationFrame::translationVector() const
     {
-        return pImpl->translation;
+        return pImpl->m_translation;
     }
     TranslationFrame::~TranslationFrame()
     {
@@ -43,24 +43,45 @@ namespace CALUMI::UNIV
     }
     TranslationFrame::TranslationFrame(const uint16_t& frame, const Math::Vector3D& translation) : TranslationFrame()
     {
-        pImpl->frame = frame;
-        pImpl->translation = translation;
+        pImpl->m_frame = frame;
+        pImpl->m_translation = translation;
     }
+
+    TranslationFrame::TranslationFrame(const Utilities::JsonObject& data) : TranslationFrame()
+    {
+        if (data.contains("frame"))
+            pImpl->m_frame = data["frame"].toUInt16();
+
+        if (data.contains("translation"))
+            pImpl->m_translation.fromJson(data["translation"].toObject());
+    }
+
     TranslationFrame::TranslationFrame(const TranslationFrame& input) : TranslationFrame()
     {
         *this = input;
     }
     bool TranslationFrame::isIdentical(const TranslationFrame& input) const
     {
-        return pImpl->frame == input.pImpl->frame &&
-            pImpl->translation == input.pImpl->translation;
+        return pImpl->m_frame == input.pImpl->m_frame &&
+            pImpl->m_translation == input.pImpl->m_translation;
     }
+
+    Utilities::JsonObject TranslationFrame::toJson() const
+    {
+        Utilities::JsonObject output;
+
+        output["frame"] = pImpl->m_frame;
+        output["translation"] = pImpl->m_translation.toJson();
+
+        return output;
+    }
+
     TranslationFrame& TranslationFrame::operator=(const TranslationFrame& other)
     {
         if (this != &other)
         {
-            pImpl->frame = other.pImpl->frame;
-            pImpl->translation = other.pImpl->translation;
+            pImpl->m_frame = other.pImpl->m_frame;
+            pImpl->m_translation = other.pImpl->m_translation;
         }
         return *this;
     }
@@ -77,22 +98,22 @@ namespace CALUMI::UNIV
 #pragma region ROTATION
     struct RotationFrame::Impl
     {
-        uint16_t frame = 0;
-        Math::Quaternion rotation;
+        uint16_t m_frame = 0;
+        Math::Quaternion m_rotation;
         Impl() = default;
     };
 
     uint16_t RotationFrame::frame() const
     {
-        return pImpl->frame;
+        return pImpl->m_frame;
     }
     void RotationFrame::setFrame(const uint16_t frame) const
     {
-        pImpl->frame = frame;
+        pImpl->m_frame = frame;
     }
     Math::Quaternion& RotationFrame::rotationQuaternion() const
     {
-        return pImpl->rotation;
+        return pImpl->m_rotation;
     }
     RotationFrame::RotationFrame()
     {
@@ -100,9 +121,19 @@ namespace CALUMI::UNIV
     }
     RotationFrame::RotationFrame(const uint16_t& frame, const Math::Quaternion& rotation) : RotationFrame()
     {
-        pImpl->frame = frame;
-        pImpl->rotation = rotation;
+        pImpl->m_frame = frame;
+        pImpl->m_rotation = rotation;
     }
+
+    RotationFrame::RotationFrame(const Utilities::JsonObject& data) : RotationFrame()
+    {
+        if (data.contains("frame"))
+            pImpl->m_frame = data["frame"].toUInt16();
+
+        if (data.contains("rotation"))
+            pImpl->m_rotation.fromJson(data["rotation"].toObject());
+    }
+
     RotationFrame::RotationFrame(const RotationFrame& input) : RotationFrame()
     {
         *this = input;
@@ -118,16 +149,26 @@ namespace CALUMI::UNIV
 
     bool RotationFrame::isIdentical(const RotationFrame& input) const
     {
-        return pImpl->frame == input.pImpl->frame &&
-            pImpl->rotation == input.pImpl->rotation;
+        return pImpl->m_frame == input.pImpl->m_frame &&
+            pImpl->m_rotation == input.pImpl->m_rotation;
+    }
+
+    Utilities::JsonObject RotationFrame::toJson() const
+    {
+        Utilities::JsonObject output;
+
+        output["frame"] = pImpl->m_frame;
+        output["rotation"] = pImpl->m_rotation.toJson();
+
+        return output;
     }
 
     RotationFrame& RotationFrame::operator=(const RotationFrame& other)
     {
         if (this != &other)
         {
-            pImpl->frame = other.pImpl->frame;
-            pImpl->rotation = other.pImpl->rotation;
+            pImpl->m_frame = other.pImpl->m_frame;
+            pImpl->m_rotation = other.pImpl->m_rotation;
         }
         return *this;
     }
@@ -144,14 +185,14 @@ namespace CALUMI::UNIV
 #pragma region SCALAR
     struct ScalarFrame::Impl
     {
-        uint16_t frame = 0;
-        float scalar = 1.0;
+        uint16_t m_frame = 0;
+        float m_scalar = 1.0;
         Impl() = default;
     };
-    uint16_t ScalarFrame::frame() const { return pImpl->frame; }
-    void ScalarFrame::setFrame(const uint16_t frame) const { pImpl->frame = frame; }
-    float ScalarFrame::scalarValue() const { return pImpl->scalar; }
-    void ScalarFrame::setScalarValue(const float value) const { pImpl->scalar = value; }
+    uint16_t ScalarFrame::frame() const { return pImpl->m_frame; }
+    void ScalarFrame::setFrame(const uint16_t frame) const { pImpl->m_frame = frame; }
+    float ScalarFrame::scalarValue() const { return pImpl->m_scalar; }
+    void ScalarFrame::setScalarValue(const float value) const { pImpl->m_scalar = value; }
 
     ScalarFrame::ScalarFrame() { pImpl = new Impl; }
     ScalarFrame::~ScalarFrame()
@@ -165,9 +206,19 @@ namespace CALUMI::UNIV
 
     ScalarFrame::ScalarFrame(const uint16_t& frame, const float scalar) : ScalarFrame()
     {
-        pImpl->frame = frame;
-        pImpl->scalar = scalar;
+        pImpl->m_frame = frame;
+        pImpl->m_scalar = scalar;
     }
+
+    ScalarFrame::ScalarFrame(const Utilities::JsonObject& data) : ScalarFrame()
+    {
+        if (data.contains("frame"))
+            pImpl->m_frame = data["frame"].toUInt16();
+
+        if (data.contains("scalar"))
+            pImpl->m_scalar = data["scalar"].toFloat();
+    }
+
     ScalarFrame::ScalarFrame(const ScalarFrame& input) : ScalarFrame()
     {
         *this = input;
@@ -175,16 +226,26 @@ namespace CALUMI::UNIV
 
     bool ScalarFrame::isIdentical(const ScalarFrame& input) const
     {
-        return pImpl->frame == input.pImpl->frame &&
-            pImpl->scalar == input.pImpl->scalar;
+        return pImpl->m_frame == input.pImpl->m_frame &&
+            pImpl->m_scalar == input.pImpl->m_scalar;
+    }
+
+    Utilities::JsonObject ScalarFrame::toJson() const
+    {
+        const Utilities::JsonObject output;
+
+        output["frame"] = pImpl->m_frame;
+        output["scalar"] = pImpl->m_scalar;
+
+        return output;
     }
 
     ScalarFrame& ScalarFrame::operator=(const ScalarFrame& other)
     {
         if (this != &other)
         {
-            pImpl->frame = other.pImpl->frame;
-            pImpl->scalar = other.pImpl->scalar;
+            pImpl->m_frame = other.pImpl->m_frame;
+            pImpl->m_scalar = other.pImpl->m_scalar;
         }
         return *this;
     }
@@ -201,14 +262,14 @@ namespace CALUMI::UNIV
 #pragma region PRIORITY
     struct PriorityFrame::Impl
     {
-        uint16_t frame = 0;
-        uint8_t priority = 90;
+        uint16_t m_frame = 0;
+        uint8_t m_priority = 90;
         Impl() = default;
     };
-    uint16_t PriorityFrame::frame() const { return pImpl->frame; }
-    void PriorityFrame::setFrame(const uint16_t frame) const { pImpl->frame = frame; }
-    uint8_t PriorityFrame::priorityValue() const { return pImpl->priority; }
-    void PriorityFrame::setPriorityValue(const uint8_t value) const { pImpl->priority = value; }
+    uint16_t PriorityFrame::frame() const { return pImpl->m_frame; }
+    void PriorityFrame::setFrame(const uint16_t frame) const { pImpl->m_frame = frame; }
+    uint8_t PriorityFrame::priorityValue() const { return pImpl->m_priority; }
+    void PriorityFrame::setPriorityValue(const uint8_t value) const { pImpl->m_priority = value; }
 
     PriorityFrame::PriorityFrame() { pImpl = new Impl; }
     PriorityFrame::~PriorityFrame()
@@ -219,7 +280,17 @@ namespace CALUMI::UNIV
             pImpl = nullptr;
         }
     }
-    PriorityFrame::PriorityFrame(const uint16_t& frame, const uint8_t& priority) : PriorityFrame() { pImpl->frame = frame; pImpl->priority = priority; }
+    PriorityFrame::PriorityFrame(const uint16_t& frame, const uint8_t& priority) : PriorityFrame() { pImpl->m_frame = frame; pImpl->m_priority = priority; }
+
+    PriorityFrame::PriorityFrame(const Utilities::JsonObject& data) : PriorityFrame()
+    {
+        if (data.contains("frame"))
+            pImpl->m_frame = data["frame"].toUInt16();
+
+        if (data.contains("priority"))
+            pImpl->m_priority = data["priority"].toUInt8();
+    }
+
     PriorityFrame::PriorityFrame(const PriorityFrame& input) : PriorityFrame()
     {
         *this = input;
@@ -229,11 +300,22 @@ namespace CALUMI::UNIV
     {
         if (this != &other)
         {
-            pImpl->frame = other.pImpl->frame;
-            pImpl->priority = other.pImpl->priority;
+            pImpl->m_frame = other.pImpl->m_frame;
+            pImpl->m_priority = other.pImpl->m_priority;
         }
         return *this;
     }
+
+    Utilities::JsonObject PriorityFrame::toJson() const
+    {
+        const Utilities::JsonObject output;
+
+        output["frame"] = pImpl->m_frame;
+        output["priority"] = pImpl->m_priority;
+
+        return output;
+    }
+
     bool operator<(const PriorityFrame& A, const PriorityFrame& B)    { return A.frame() <  B.frame(); }
     bool operator<=(const PriorityFrame& A, const PriorityFrame& B)   { return A.frame() <= B.frame(); }
     bool operator>(const PriorityFrame& A, const PriorityFrame& B)    { return A.frame() >  B.frame(); }

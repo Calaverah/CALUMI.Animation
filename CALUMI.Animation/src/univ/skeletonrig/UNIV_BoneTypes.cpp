@@ -48,6 +48,7 @@ namespace CALUMI::UNIV {
 		return output;
     }
 
+    void DefaultBoneProperty::fromJson(const Utilities::JsonObject& data) { }
 
     struct TwistBoneProperty::Impl
 	{
@@ -114,6 +115,15 @@ namespace CALUMI::UNIV {
     	output["weight"] = pImpl->m_twistDriverWeight;
 
     	return output;
+	}
+
+	void TwistBoneProperty::fromJson(const Utilities::JsonObject& data)
+	{
+		if (data.contains("driver"))
+			pImpl->m_twistDriver = data["driver"].toString();
+
+    	if (data.contains("weight"))
+    		pImpl->m_twistDriverWeight = data["weight"].toFloat(0.0f);
 	}
 }
 

@@ -4,7 +4,8 @@
 
 #include "utilities/CALUMI_Json.h"
 
-#include <format>
+#include <iostream>
+#include <ostream>
 #include <ranges>
 
 #include "internal/internalvectordef.h"
@@ -15,8 +16,82 @@
 #include <variant>
 #include <vector>
 
+#include "internalplatform.h"
+
 namespace CALUMI::Utilities
 {
+    std::string s_RemoveWhiteSpaces(std::string&& text)
+    {
+        std::string output;
+        bool inString = false;
+
+        for (const char c : text)
+        {
+            if (c == '"')
+                inString = !inString;
+
+            if (std::isspace(c))
+            {
+                if (inString)
+                    output += c;
+            }
+            else
+            {
+                output += c;
+            }
+        }
+
+        return output;
+    }
+
+    std::string s_GetScope(std::string&& text)
+    {
+        std::string output;
+
+        if (text.empty())
+            return output;
+
+        int64_t scopeCount = 1;
+        char scopeStart;
+        char scopeEnd;
+        switch (text.at(0))
+        {
+        case '{':
+            {
+                scopeStart = '{';
+                scopeEnd = '}';
+                break;
+            }
+        case '[':
+            {
+                scopeStart = '[';
+                scopeEnd = ']';
+                break;
+            }
+        default:
+            {
+                return output;
+            }
+        }
+
+
+        for (uint64_t i = 1; i < text.length() && scopeCount > 0; ++i)
+        {
+            if (text.at(i) == scopeStart)
+                scopeCount++;
+            else if (text.at(i) == scopeEnd)
+                scopeCount--;
+
+            if (scopeCount == 0)
+                break;
+
+            output += text.at(i);
+        }
+
+        return output;
+    }
+
+
     VECTORDEF(JsonArray, JsonValue);
 
     struct JsonValue::Impl
@@ -29,6 +104,7 @@ namespace CALUMI::Utilities
                      float, double,
                      bool,
                      JsonObject, JsonArray> m_value;
+        std::string m_stringHolder = "";
     };
 
     JsonValue::JsonValue() : pImpl(new Impl()) {}
@@ -139,9 +215,30 @@ namespace CALUMI::Utilities
 
         try
         {
-            return std::get<bool>(pImpl->m_value);
+            if (varType() == VarType::Bool)
+                return std::get<bool>(pImpl->m_value);
+
+            const bool output = std::visit([]<typename typeT>(typeT&& arg) -> bool {
+                using T = std::decay_t<typeT>;
+                if constexpr (std::is_arithmetic_v<T>) {
+                   return arg;
+                }
+
+                throw std::bad_cast();
+
+               }, pImpl->m_value);
+            return output;
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&)
+        {
+            if (varType() == VarType::String)
+            {
+                if (SCOMPARE(std::get<std::string>(pImpl->m_value).c_str(), "true") == 0)
+                    return true;
+                if (SCOMPARE(std::get<std::string>(pImpl->m_value).c_str(), "false") == 0)
+                    return false;
+            }
+        }
 
         if (ok)
             *ok = false;
@@ -155,9 +252,19 @@ namespace CALUMI::Utilities
 
         try
         {
-            return std::get<float>(pImpl->m_value);
+            const float output = std::visit([]<typename typeT>(typeT&& arg) -> float {
+                using T = std::decay_t<typeT>;
+                if constexpr (std::is_arithmetic_v<T>) {
+                   return arg;
+                }
+
+                throw std::bad_cast();
+
+               }, pImpl->m_value);
+            return output;
+
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&) {}
 
         if (ok)
             *ok = false;
@@ -172,9 +279,18 @@ namespace CALUMI::Utilities
 
         try
         {
-            return std::get<double>(pImpl->m_value);
+            const double output = std::visit([]<typename typeT>(typeT&& arg) -> double {
+                using T = std::decay_t<typeT>;
+                if constexpr (std::is_arithmetic_v<T>) {
+                   return arg;
+                }
+
+                throw std::bad_cast();
+
+               }, pImpl->m_value);
+            return output;
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&) {}
 
         if (ok)
             *ok = false;
@@ -188,9 +304,71 @@ namespace CALUMI::Utilities
 
         try
         {
-            return std::get<std::string>(pImpl->m_value).c_str();
+            switch (varType())
+            {
+            case VarType::Char:
+                {
+                    pImpl->m_stringHolder = std::get<char>(pImpl->m_value);
+                    return pImpl->m_stringHolder.c_str();
+                }
+            case VarType::String:
+                return std::get<std::string>(pImpl->m_value).c_str();
+            case VarType::Int8:
+            case VarType::UInt8:
+            case VarType::Int16:
+            case VarType::UInt16:
+            case VarType::Int32:
+            case VarType::UInt32:
+            case VarType::Int64:
+                {
+                     const long long output = std::visit([]<typename typeT>(typeT&& arg) -> long long {
+                     using T = std::decay_t<typeT>;
+                     if constexpr (std::is_arithmetic_v<T>) {
+                        return arg;
+                     }
+
+                     throw std::bad_cast();
+
+                    }, pImpl->m_value);
+                    pImpl->m_stringHolder = std::to_string(output);
+                    return pImpl->m_stringHolder.c_str();
+                }
+            case VarType::UInt64:
+                {
+                    const auto output = std::get<unsigned long long>(pImpl->m_value);
+                    pImpl->m_stringHolder = std::to_string(output);
+                    return pImpl->m_stringHolder.c_str();
+                }
+            case VarType::Float:
+            case VarType::Double:
+                {
+                    const double output = std::visit([]<typename typeT>(typeT&& arg) -> double {
+                    using T = std::decay_t<typeT>;
+                    if constexpr (std::is_arithmetic_v<T>) {
+                       return arg;
+                    }
+
+                    throw std::bad_cast();
+
+                   }, pImpl->m_value);
+                    pImpl->m_stringHolder = std::to_string(output);
+                    return pImpl->m_stringHolder.c_str();
+                }
+            case VarType::Bool:
+                {
+                    pImpl->m_stringHolder = std::get<bool>(pImpl->m_value) ? "true" : "false";
+                    return pImpl->m_stringHolder.c_str();
+                }
+            case VarType::JsonObject:
+                break;
+            case VarType::JsonArray:
+                break;
+            default:
+                break;
+            }
+
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&) {}
 
         if (ok)
             *ok = false;
@@ -207,7 +385,7 @@ namespace CALUMI::Utilities
         {
             return std::get<char>(pImpl->m_value);
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&) {}
 
         if (ok)
             *ok = false;
@@ -222,9 +400,18 @@ namespace CALUMI::Utilities
 
         try
         {
-            return std::get<unsigned char>(pImpl->m_value);
+            const unsigned char output = std::visit([]<typename typeT>(typeT&& arg) -> unsigned char {
+                using T = std::decay_t<typeT>;
+                if constexpr (std::is_arithmetic_v<T>) {
+                   return arg;
+                }
+
+                throw std::bad_cast();
+
+               }, pImpl->m_value);
+            return output;
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&) {}
 
         if (ok)
             *ok = false;
@@ -239,9 +426,18 @@ namespace CALUMI::Utilities
 
         try
         {
-            return std::get<signed char>(pImpl->m_value);
+            const signed char output = std::visit([]<typename typeT>(typeT&& arg) -> signed char {
+                using T = std::decay_t<typeT>;
+                if constexpr (std::is_arithmetic_v<T>) {
+                   return arg;
+                }
+
+                throw std::bad_cast();
+
+               }, pImpl->m_value);
+            return output;
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&) {}
 
         if (ok)
             *ok = false;
@@ -256,9 +452,18 @@ namespace CALUMI::Utilities
 
         try
         {
-            return std::get<unsigned short>(pImpl->m_value);
+            const signed short output = std::visit([]<typename typeT>(typeT&& arg) -> signed short {
+                using T = std::decay_t<typeT>;
+                if constexpr (std::is_arithmetic_v<T>) {
+                   return arg;
+                }
+
+                throw std::bad_cast();
+
+               }, pImpl->m_value);
+            return output;
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&) {}
 
         if (ok)
             *ok = false;
@@ -273,9 +478,18 @@ namespace CALUMI::Utilities
 
         try
         {
-            return std::get<short>(pImpl->m_value);
+            const short output = std::visit([]<typename typeT>(typeT&& arg) -> short {
+                using T = std::decay_t<typeT>;
+                if constexpr (std::is_arithmetic_v<T>) {
+                   return arg;
+                }
+
+                throw std::bad_cast();
+
+               }, pImpl->m_value);
+            return output;
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&) {}
 
         if (ok)
             *ok = false;
@@ -290,9 +504,18 @@ namespace CALUMI::Utilities
 
         try
         {
-            return std::get<unsigned int>(pImpl->m_value);
+            const unsigned int output = std::visit([]<typename typeT>(typeT&& arg) -> unsigned int {
+                using T = std::decay_t<typeT>;
+                if constexpr (std::is_arithmetic_v<T>) {
+                   return arg;
+                }
+
+                throw std::bad_cast();
+
+               }, pImpl->m_value);
+            return output;
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&) {}
 
         if (ok)
             *ok = false;
@@ -307,9 +530,18 @@ namespace CALUMI::Utilities
 
         try
         {
-            return std::get<int>(pImpl->m_value);
+            const int output = std::visit([]<typename typeT>(typeT&& arg) -> int {
+                using T = std::decay_t<typeT>;
+                if constexpr (std::is_arithmetic_v<T>) {
+                   return arg;
+                }
+
+                throw std::bad_cast();
+
+               }, pImpl->m_value);
+            return output;
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&) {}
 
         if (ok)
             *ok = false;
@@ -324,9 +556,18 @@ namespace CALUMI::Utilities
 
         try
         {
-            return std::get<unsigned long long>(pImpl->m_value);
+            const unsigned long long output = std::visit([]<typename typeT>(typeT&& arg) -> unsigned long long {
+                using T = std::decay_t<typeT>;
+                if constexpr (std::is_arithmetic_v<T>) {
+                   return arg;
+                }
+
+                throw std::bad_cast();
+
+               }, pImpl->m_value);
+            return output;
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&) {}
 
         if (ok)
             *ok = false;
@@ -341,9 +582,18 @@ namespace CALUMI::Utilities
 
         try
         {
-            return std::get<long long>(pImpl->m_value);
+            const long long output = std::visit([]<typename typeT>(typeT&& arg) -> long long {
+                using T = std::decay_t<typeT>;
+                if constexpr (std::is_arithmetic_v<T>) {
+                   return arg;
+                }
+
+                throw std::bad_cast();
+
+               }, pImpl->m_value);
+            return output;
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&) {}
 
         if (ok)
             *ok = false;
@@ -360,7 +610,7 @@ namespace CALUMI::Utilities
         {
             return std::get<JsonObject>(pImpl->m_value);
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&) {}
 
         if (ok)
             *ok = false;
@@ -377,7 +627,7 @@ namespace CALUMI::Utilities
         {
             return std::get<JsonArray>(pImpl->m_value);
         }
-        catch ( const std::bad_cast&) {}
+        catch ( const std::exception&) {}
 
         if (ok)
             *ok = false;
@@ -401,6 +651,125 @@ namespace CALUMI::Utilities
             pImpl->m_value = input.pImpl->m_value;
         }
         return *this;
+    }
+
+    JsonValue JsonValue::Deserialize(const char* input)
+    {
+        const std::string text = s_RemoveWhiteSpaces(input);
+
+        if (SCOMPARE(text.c_str(), "null") == 0 || text.empty())
+            return JsonValue();
+
+        if (SCOMPARE(text.c_str(), "true") == 0)
+            return JsonValue(true);
+
+        if (SCOMPARE(text.c_str(), "false") == 0)
+            return JsonValue(false);
+
+        if (*text.begin() == '{' && text.back() == '}')
+            return JsonObject::Deserialize(s_GetScope(text.c_str()).c_str());
+
+        if (*text.begin() == '[' && text.back() == ']')
+            return DeserializeArray(s_GetScope(text.c_str()).c_str());
+
+        if (*text.begin() == '"' && text.back() == '"' && text.size() > 2)
+        {
+            std::string sVal = text.substr(1, text.size());
+            sVal.pop_back();
+            return sVal.c_str();
+        }
+
+        if (*text.begin() == '\'' && text.back() == '\'')
+        {
+            if (text.size() > 2)
+                return text.at(2);
+
+            return '\0';
+        }
+
+        if (text.contains('.'))
+        {
+            try
+            {
+                const double dVal = std::stod(text.c_str());
+                return dVal;
+            }
+            catch ( const std::exception&) {}
+        }
+
+        if (text.contains('-'))
+        {
+            try
+            {
+                const int64_t iVal = std::stoll(text.c_str());
+                return iVal;
+            }
+            catch ( const std::exception&) {}
+        }
+
+        try
+        {
+            const uint64_t uVal = std::stoull(text.c_str());
+            return uVal;
+        }
+        catch (const std::exception&)
+        {}
+
+
+        return JsonValue();
+    }
+
+    JsonArray JsonValue::DeserializeArray(const char* input)
+    {
+        JsonArray output;
+
+        const std::string text = s_RemoveWhiteSpaces(input);
+
+        uint64_t pos = 0;
+
+        while (pos < text.size())
+        {
+            if (text[pos] == '{')
+            {
+                std::string subScope = s_GetScope(text.c_str());
+                if (!subScope.empty())
+                {
+                    JsonValue subValue = JsonObject::Deserialize(subScope.c_str());
+                    output.push_back(subValue);
+                    pos += subScope.size() + 1;
+                }
+                pos++;
+            }
+            else if (text[pos] == '[')
+            {
+                std::string subScope = s_GetScope(text.c_str());
+                if (!subScope.empty())
+                {
+                    JsonValue subValue = DeserializeArray(subScope.c_str());
+                    output.push_back(subValue);
+                    pos += subScope.size() + 1;
+                }
+                pos++;
+            }
+            else if (text[pos] != ',')
+            {
+                auto size = text.find(',', pos);
+                size = size == std::string::npos ? std::string::npos : size - pos;
+                std::string subScope = text.substr(pos, size);
+                if (subScope.empty())
+                    output.push_back(0);
+                else
+                {
+                    JsonValue subValue = Deserialize(subScope.c_str());
+                    output.push_back(subValue);
+                    pos += subScope.size();
+                    continue;
+                }
+            }
+
+            pos++;
+        }
+        return output;
     }
 
     struct JsonObject::Impl
@@ -521,7 +890,7 @@ namespace CALUMI::Utilities
                         output += newline + indent + entry.serialize(indentOffset + 1, raw).c_str();
 
                         if (count < arrayCopy.pImpl->vector.size())
-                            output += ", ";
+                            output += ",";
                     }
                     output += newline + "]";
                     break;
@@ -569,5 +938,86 @@ namespace CALUMI::Utilities
         output += "}";
 
         return output.c_str();
+    }
+
+    JsonObject JsonObject::Deserialize(const char* input)
+    {
+        JsonObject output;
+
+        std::string text = s_RemoveWhiteSpaces(input);
+
+        if (text.empty())
+            return output;
+
+        if (text.at(0) == '{')
+            text = s_GetScope(text.c_str());
+
+        uint64_t pos = 0;
+
+        while (pos < text.size())
+        {
+            if (text[pos] == '}' || text[pos] == ']' || text[pos] == ',')
+            {
+                pos++;
+                continue;
+            }
+
+            const uint64_t sPos = text[pos] == '"' ? pos + 1 : pos;
+            const uint64_t ePos = text.find('"', sPos +1);
+            const uint64_t splitPos = text.find(':', ePos);
+             std::string key = text.substr(sPos, ePos - sPos);
+
+            pos = splitPos + 1;
+
+            if (text[pos] != ':')
+            {
+                if (text[pos] == '{')
+                {
+                    std::string subScope = s_GetScope(text.substr(pos).c_str());
+
+                    if (!subScope.empty())
+                    {
+                        const JsonValue subValue = Deserialize(subScope.c_str());
+                        output[key.c_str()] = subValue;
+                        pos += subScope.size() + 2;
+                    }
+                    else
+                        output[key.c_str()] = JsonObject();
+                }
+                else if (text[pos] == '[')
+                {
+                    std::string subScope = s_GetScope(text.substr(pos).c_str());
+
+                    if (!subScope.empty())
+                    {
+                        const JsonValue subValue = JsonValue::DeserializeArray(subScope.c_str());
+                        output[key.c_str()] = subValue;
+                        pos += subScope.size() + 2;
+                    }
+                    else
+                        output[key.c_str()] = JsonArray();
+                }
+                else if (text[pos] != ',')
+                {
+                    auto size = text.find(',', pos);
+                    size = size == std::string::npos ? std::string::npos : size - pos;
+                    std::string subScope = text.substr(pos, size);
+
+                    if (!subScope.empty())
+                    {
+                        const JsonValue subValue = JsonValue::Deserialize(subScope.c_str());
+                        output[key.c_str()] = subValue;
+                        pos += subScope.size();
+                    }
+                    else
+                        output[key.c_str()] = 0;
+
+                }
+            }
+
+            pos++;
+        }
+
+        return output;
     }
 }

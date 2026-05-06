@@ -121,6 +121,51 @@ namespace CALUMI::SFBGS
 		return output;
 	}
 
+	void SFBGS_RigPackage::fromJson(const Utilities::JsonObject& data)
+	{
+		const SFBGS_RigPackage defPackage;
+		//lazy reset
+		*this = defPackage;
+
+		if (data.contains("mannequin"))
+			pImpl->m_isMannequin = data["mannequin"].toBool();
+		else
+			pImpl->m_isMannequin = defPackage.pImpl->m_isMannequin;
+
+		if (data.contains("precision"))
+			pImpl->m_precisionSet.fromJson(data["precision"].toObject());
+		else
+			pImpl->m_precisionSet = defPackage.pImpl->m_precisionSet;
+
+		if (data.contains("map"))
+		{
+			const auto map = data["map"].toObject();
+			const auto keys = map.keys();
+			for (uint64_t i = 0; i < keys.size(); i++)
+			{
+				try
+				{
+					if (const auto key = GetBoneTag(std::stoi(keys.c_str(i))); key != BoneMapKey::None)
+					{
+						addBoneToMap(key, map[keys.c_str(i)].toString());
+					}
+				}
+				catch (const std::runtime_error& ){}
+			}
+		}
+
+		if (data.contains("lod"))
+		{
+			const auto lod = data["lod"].toObject();
+			const auto keys = lod.keys();
+			for (uint64_t i = 0; i < keys.size(); i++)
+			{
+				const auto value = GetLODFromInt(lod[keys.c_str(i)].toInt(static_cast<int>(DefaultLOD)));
+				setBoneLod(keys.c_str(i), value);
+			}
+		}
+	}
+
 	SFBGS_RigPackage* SFBGS_RigPackage::clone() const
 	{
 		const auto output = new SFBGS_RigPackage(*this);
@@ -142,7 +187,7 @@ namespace CALUMI::SFBGS
 		float m_low;
 	};
 
-	PrecisionSet::PrecisionSet() : pImpl(new Impl()) {}
+	PrecisionSet::PrecisionSet() : pImpl(new Impl()){}
 
 	PrecisionSet::~PrecisionSet()
 	{
@@ -224,6 +269,27 @@ namespace CALUMI::SFBGS
 		return output;
 	}
 
+	void PrecisionSet::fromJson(const Utilities::JsonObject& data) const
+	{
+		float high = DefaultPrecision().high();
+		bool hOk = false;
+
+		float low = DefaultPrecision().low();
+		bool lOk = false;
+
+		if (data.contains("high"))
+			high = data["high"].toFloat(high, &hOk);
+
+		if (data.contains("low"))
+			low = data["low"].toFloat(low, &lOk);
+
+		if (lOk && hOk)
+		{
+			pImpl->m_high = high;
+			pImpl->m_low = low;
+		}
+	}
+
 	const char* PrecisionSet::precisionType() const
 	{
 		if (*this == DefaultPrecision())
@@ -260,7 +326,7 @@ namespace CALUMI::SFBGS
 		return *this;
 	}
 
-	SFBGS_RigPackage::LODSetting SFBGS_RigPackage::IntToLOD(int value)
+	SFBGS_RigPackage::LODSetting SFBGS_RigPackage::GetLODFromInt(int value)
 	{
 		if (value >= 0 && value <= static_cast<int>(MaxLOD))
 			return static_cast<LODSetting>(value);

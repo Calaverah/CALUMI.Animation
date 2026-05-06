@@ -43,6 +43,10 @@ namespace CALUMI::UNIV
 		 */
 		TranslationFrame(const uint16_t& frame, const Math::Vector3D& translation);
 		/**
+		 * @param data
+		 */
+		TranslationFrame(const Utilities::JsonObject& data);
+		/**
 		 * @param input
 		 */
 		TranslationFrame(const TranslationFrame& input);
@@ -67,7 +71,10 @@ namespace CALUMI::UNIV
 		bool isIdentical(const TranslationFrame& input) const;
 
 		/// @}
-
+		/// @name Json
+		/// @{
+		Utilities::JsonObject toJson() const;
+		/// @}
 	private:
 		struct Impl;
 		Impl* pImpl;
@@ -148,6 +155,10 @@ namespace CALUMI::UNIV
 		 */
 		RotationFrame(const uint16_t& frame, const Math::Quaternion& rotation);
 		/**
+		 * @param data
+		 */
+		RotationFrame(const Utilities::JsonObject& data);
+		/**
 		 * @param input
 		 */
 		RotationFrame(const RotationFrame& input);
@@ -172,6 +183,10 @@ namespace CALUMI::UNIV
 		 */
 		bool isIdentical(const RotationFrame& input) const;
 
+		/// @}
+		/// @name Json
+		/// @{
+		Utilities::JsonObject toJson() const;
 		/// @}
 
 	private:
@@ -261,6 +276,10 @@ namespace CALUMI::UNIV
 		 */
 		ScalarFrame(const uint16_t& frame, float scalar);
 		/**
+		 * @param data
+		 */
+		ScalarFrame(const Utilities::JsonObject& data);
+		/**
 		 * @param input
 		 */
 		ScalarFrame(const ScalarFrame& input);
@@ -284,6 +303,10 @@ namespace CALUMI::UNIV
 		 */
 		bool isIdentical(const ScalarFrame& input) const;
 
+		/// @}
+		/// @name Json
+		/// @{
+		Utilities::JsonObject toJson() const;
 		/// @}
 	private:
 		struct Impl;
@@ -371,6 +394,10 @@ namespace CALUMI::UNIV
 		 */
 		PriorityFrame(const uint16_t& frame, const uint8_t& priority);
 		/**
+		 * @param data
+		 */
+		PriorityFrame(const Utilities::JsonObject& data);
+		/**
 		 * @param input
 		 */
 		PriorityFrame(const PriorityFrame& input);
@@ -384,6 +411,10 @@ namespace CALUMI::UNIV
 		 * @return
 		 */
 		PriorityFrame& operator=(const PriorityFrame& other);
+		///@}
+		///@name
+		///@{
+		Utilities::JsonObject toJson() const;
 		///@}
 
 	private:

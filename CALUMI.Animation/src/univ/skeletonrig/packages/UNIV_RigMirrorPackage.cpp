@@ -140,13 +140,31 @@ namespace CALUMI::UNIV
     Utilities::JsonObject RigMirrorPackage::toJson() const
     {
         Utilities::JsonObject output;
+        const Utilities::JsonObject pairs;
 
         for (const auto& [first, second] : pImpl->m_mirrors)
         {
-            output[first.c_str()] = second.c_str();
+            pairs[first.c_str()] = second.c_str();
         }
 
+        output["pairs"] = pairs;
+
         return output;
+    }
+
+    void RigMirrorPackage::fromJson(const Utilities::JsonObject& data)
+    {
+        pImpl->m_mirrors.clear();
+
+        if (data.contains("pairs"))
+        {
+            const auto pairs = data["pairs"].toObject();
+            const auto keys = pairs.keys();
+            for (uint64_t i = 0; i < keys.size(); i++)
+            {
+                addPair(keys.c_str(i), pairs[keys.c_str(i)].toString());
+            }
+        }
     }
 
     bool RigMirrorPackage::AddPackage(const SkeletonRig& rig, const bool overwrite)

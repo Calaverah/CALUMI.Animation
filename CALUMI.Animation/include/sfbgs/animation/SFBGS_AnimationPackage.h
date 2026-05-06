@@ -148,7 +148,14 @@ namespace CALUMI::SFBGS
 		/// @}
 		/// @name Json
 		/// @{
+		/**
+		 * @return
+		 */
 		Utilities::JsonObject toJson() const override;
+		/**
+		 * @param data
+		 */
+		void fromJson(const Utilities::JsonObject& data) override;
 		/// @}
 	public:
 		/**
