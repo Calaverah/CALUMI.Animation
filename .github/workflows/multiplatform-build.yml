@@ -33,32 +33,19 @@ jobs:
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Setup GCC 14
-        if: runner.os == 'Linux'
-        uses: egor-tensin/setup-gcc@v1
-        with:
-          version: 14
-          platform: x64
+      #- name: Setup GCC 14
+      #  if: runner.os == 'Linux'
+      #  uses: egor-tensin/setup-gcc@v1
+      #  with:
+      #    version: 14
+      #    platform: x64
 
       - name: Configure Library
-        working-directory: ./CALUMI.Animation
         run: cmake --preset ${{ matrix.preset-prefix }}-${{ matrix.config }} -DCMAKE_BUILD_TYPE=${{ matrix.config }} 
 
       - name: Build Library
-        working-directory: ./CALUMI.Animation
         run: cmake --build --preset ${{ matrix.preset-prefix }}-${{ matrix.config }} --config ${{ matrix.config }}
 
-      - name: Configure GTests
-        working-directory: ./CALUMI.Animation.GTests
-        run: cmake --preset ${{ matrix.preset-prefix }}-${{ matrix.config }}-gtests -DCMAKE_BUILD_TYPE=${{ matrix.config }} 
-
-      - name: Print Dir
-        run: ls -R
-
-      - name: Build GTests
-        working-directory: ./CALUMI.Animation.GTests
-        run: cmake --build --preset ${{ matrix.preset-prefix }}-${{ matrix.config }}-gtests --config ${{ matrix.config }}
-
       - name: Run GTests
-        working-directory: ./CALUMI.Animation.GTests
-        run: ${{ matrix.preset-prefix }}-${{ matrix.config }}-gtests/run_tests
+        run: ./run_tests
+        working-directory: ./build/${{ matrix.preset-prefix }}-${{ matrix.config }}
