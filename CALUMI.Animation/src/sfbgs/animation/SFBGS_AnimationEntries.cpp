@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <cmath>
 #include "internal/internalvectordef.h"
+// ReSharper disable once CppUnusedIncludeDirective
+#include <cstring>
 
 
 namespace CALUMI::SFBGS

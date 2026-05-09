@@ -5,6 +5,9 @@ jobs:
   build:
     name: ${{ matrix.os }} - ${{ matrix.config }}
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: ./CALUMI.Animation
     strategy:
       fail-fast: false
       matrix:
@@ -13,10 +16,13 @@ jobs:
         include:
           - os: ubuntu-latest
             preset-prefix: "linux"
+            arch: x64
           - os: windows-latest
             preset-prefix: "win"
+            arch: x64
           - os: macos-latest
             preset-prefix: "mac"
+            arch: arm64
 
     steps:
       - name: Checkout Code
@@ -26,10 +32,23 @@ jobs:
         if: runner.os != 'Windows'
         run: sudo apt-get install ninja-build || brew install ninja
 
+      - name: Setup MSVC (Windows Only)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Setup GCC 14
+        if: runner.os == 'Linux'
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: 14
+          platform: x64
+
+      - name: Verify GCC Compiler
+        if: runner.os == 'Linux'
+        run: gcc --version
+
       - name: Configure CMake
-        run: >
-          cmake -S CALUMI.Animation/ 
-          --preset ${{ matrix.preset-prefix }}-${{ matrix.config }}
+        run: cmake --preset ${{ matrix.preset-prefix }}-${{ matrix.config }} -DCMAKE_BUILD_TYPE=${{ matrix.config }} 
 
       - name: Build
-        run: cmake -S CALUMI.Animation/ --build --preset ${{ matrix.preset-prefix }}-${{ matrix.config }}
+        run: cmake --build --preset ${{ matrix.preset-prefix }}-${{ matrix.config }} --config ${{ matrix.config }}

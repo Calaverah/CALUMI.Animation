@@ -38,7 +38,8 @@ namespace CALUMI::UNIV
             for (const auto& bone : m_childBones)
             {
                 output.emplace_back(bone->name());
-                output.append_range(bone->pImpl->lineageList());
+                const auto appending = bone->pImpl->lineageList();
+                output.insert(output.end(), appending.begin(), appending.end());
             }
             return output;
         }

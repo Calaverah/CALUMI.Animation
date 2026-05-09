@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 #include <string>
+#include <limits>
 #include "internal/internalvectordef.h"
 
 namespace CALUMI::UNIV

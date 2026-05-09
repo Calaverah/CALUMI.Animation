@@ -5,7 +5,6 @@
 #include "utilities/CALUMI_Json.h"
 
 #include <iostream>
-#include <ostream>
 #include <ranges>
 
 #include "internal/internalvectordef.h"
@@ -702,7 +701,8 @@ namespace CALUMI::Utilities
             try
             {
                 const int64_t iVal = std::stoll(text.c_str());
-                return iVal;
+                // ReSharper disable once CppRedundantCastExpression
+                return static_cast<signed long long>(iVal);
             }
             catch ( const std::exception&) {}
         }
@@ -710,7 +710,8 @@ namespace CALUMI::Utilities
         try
         {
             const uint64_t uVal = std::stoull(text.c_str());
-            return uVal;
+            // ReSharper disable once CppRedundantCastExpression
+            return static_cast<unsigned long long>(uVal);
         }
         catch (const std::exception&)
         {}
