@@ -35,27 +35,42 @@ add_executable(run_tests test_main.cpp
         json/json.cpp
 )
 
-target_compile_definitions(run_tests PRIVATE DEBUG_BUILD)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(run_tests PRIVATE DEBUG_BUILD)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_definitions(run_tests PRIVATE RELEASE_BUILD)
+endif()
 
 if(LINUX)
-
-  set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/linux-debug/libCALUMI.Animation.so)
-
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/linux-debug/libCALUMI.Animation.so)
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/linux-release/libCALUMI.Animation.so)
+    endif()
 elseif(APPLE)
-
-  set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/mac-debug/libCALUMI.Animation.dylib)
-
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/mac-debug/libCALUMI.Animation.dylib)
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/mac-release/libCALUMI.Animation.dylib)
+    endif()
 elseif(WIN32)
-
-    #lib path
-  set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/win-debug/CALUMI.Animation.lib)
-    #copy dll
-  add_custom_command(TARGET run_tests POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-        "${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/win-debug/CALUMI.Animation.dll"
-        $<TARGET_FILE_DIR:run_tests>
-      )
-
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        #lib path
+        set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/win-debug/CALUMI.Animation.lib)
+        #copy dll
+        add_custom_command(TARGET run_tests POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy
+                "${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/win-debug/CALUMI.Animation.dll"
+                $<TARGET_FILE_DIR:run_tests>)
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+        #lib path
+        set(LIB_PATH ${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/win-release/CALUMI.Animation.lib)
+        #copy dll
+        add_custom_command(TARGET run_tests POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy
+                "${PROJECT_SOURCE_DIR}/../CALUMI.Animation/build/win-release/CALUMI.Animation.dll"
+                $<TARGET_FILE_DIR:run_tests>)
+    endif()
 endif()
 
 add_custom_command(TARGET run_tests POST_BUILD

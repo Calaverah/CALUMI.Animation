@@ -537,17 +537,17 @@ namespace CALUMI::UNIV
 	CALUMIANIMATION_API bool ComparePrioritySequence(const PrioritySequence& sq1, const PrioritySequence& sq2);
 
 	VECTORDECF(TranslationSequence, TranslationFrame,
-		friend void SortTranslationSequence(const TranslationSequence& sq, bool highToLow);
-		friend bool CompareTranslationSequence(const TranslationSequence& sq1, const TranslationSequence& sq2);)
+		friend void CALUMIANIMATION_API SortTranslationSequence(const TranslationSequence& sq, bool highToLow);
+		friend bool CALUMIANIMATION_API CompareTranslationSequence(const TranslationSequence& sq1, const TranslationSequence& sq2);)
 	VECTORDECF(RotationSequence, RotationFrame,
-		friend void SortRotationSequence(const RotationSequence& sq, bool highToLow);
-		friend bool CompareRotationSequence(const RotationSequence& sq1, const RotationSequence& sq2);)
+		friend void CALUMIANIMATION_API SortRotationSequence(const RotationSequence& sq, bool highToLow);
+		friend bool CALUMIANIMATION_API CompareRotationSequence(const RotationSequence& sq1, const RotationSequence& sq2);)
 	VECTORDECF(ScalarSequence, ScalarFrame,
-		friend void SortScalarSequence(const ScalarSequence& sq, bool highToLow);
-		friend bool CompareScalarSequence(const ScalarSequence& sq1, const ScalarSequence& sq2);)
+		friend void CALUMIANIMATION_API SortScalarSequence(const ScalarSequence& sq, bool highToLow);
+		friend bool CALUMIANIMATION_API CompareScalarSequence(const ScalarSequence& sq1, const ScalarSequence& sq2);)
 	VECTORDECF(PrioritySequence, PriorityFrame,
-		friend void SortPrioritySequence(const PrioritySequence& sq, bool highToLow);
-		friend bool ComparePrioritySequence(const PrioritySequence& sq1, const PrioritySequence& sq2);)
+		friend void CALUMIANIMATION_API SortPrioritySequence(const PrioritySequence& sq, bool highToLow);
+		friend bool CALUMIANIMATION_API ComparePrioritySequence(const PrioritySequence& sq1, const PrioritySequence& sq2);)
 
 }
 

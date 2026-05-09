@@ -5,9 +5,6 @@ jobs:
   build:
     name: ${{ matrix.os }} - ${{ matrix.config }}
     runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        working-directory: ./CALUMI.Animation
     strategy:
       fail-fast: false
       matrix:
@@ -43,12 +40,25 @@ jobs:
           version: 14
           platform: x64
 
-      - name: Verify GCC Compiler
-        if: runner.os == 'Linux'
-        run: gcc --version
-
-      - name: Configure CMake
+      - name: Configure Library
+        working-directory: ./CALUMI.Animation
         run: cmake --preset ${{ matrix.preset-prefix }}-${{ matrix.config }} -DCMAKE_BUILD_TYPE=${{ matrix.config }} 
 
-      - name: Build
+      - name: Build Library
+        working-directory: ./CALUMI.Animation
         run: cmake --build --preset ${{ matrix.preset-prefix }}-${{ matrix.config }} --config ${{ matrix.config }}
+
+      - name: Configure GTests
+        working-directory: ./CALUMI.Animation.GTests
+        run: cmake --preset ${{ matrix.preset-prefix }}-${{ matrix.config }}-gtests -DCMAKE_BUILD_TYPE=${{ matrix.config }} 
+
+      - name: Print Dir
+        run: ls -R
+
+      - name: Build GTests
+        working-directory: ./CALUMI.Animation.GTests
+        run: cmake --build --preset ${{ matrix.preset-prefix }}-${{ matrix.config }}-gtests --config ${{ matrix.config }}
+
+      - name: Run GTests
+        working-directory: ./CALUMI.Animation.GTests
+        run: ${{ matrix.preset-prefix }}-${{ matrix.config }}-gtests/run_tests

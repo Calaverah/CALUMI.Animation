@@ -87,9 +87,9 @@ GTEST(Rig00Input)
 	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.boneCountAnimated(), 3);
 	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.boneEntries().size(), SampleSFBGSData::get().sfbgsRig00.boneCount());
 
+#ifdef DEBUG_BUILD
 	EXPECT_TRUE(SampleSFBGSData::get().sfbgsRig00.checkAssumedHeaderEntries() == 0);
 
-#ifdef DEBUG_BUILD
 	{
 		//End Of Header
 		auto rig00EOH = SampleSFBGSData::get().sfbgsRig00.endOfHeader();
@@ -143,8 +143,10 @@ GTEST(Rig00Input)
 		EXPECT_TRUE(rig00Bones.at(i).localRotation().areEqual(q00Locals[i], 0.000001f)) << "Tested " << rig00Bones.at(i).localRotation().toString().c_str() << " \nExpected " << q00Locals[i].toString().c_str();
 		EXPECT_TRUE(rig00Bones.at(i).globalRotation().areEqual(q00Locals[0], 0.000001f)) << "Tested " << rig00Bones.at(i).localRotation().toString().c_str() << " \nExpected " << q00Locals[i].toString().c_str();
 
+#ifdef DEBUG_BUILD
 		//Unknown
 		EXPECT_EQ(rig00Bones.at(i).unknownScalar(), unk00Floats[i]);
+#endif
 
 		//Bone Info
 		EXPECT_EQ(rig00Bones.at(i).boneType(), SFBGS::SkeletonBone::BoneType::Default);
@@ -155,8 +157,8 @@ GTEST(Rig00Input)
 		EXPECT_EQ(rig00Bones.at(i).mirrorBoneIndex(), i);
 		EXPECT_EQ(rig00Bones.at(i).levelOfDetail(), 4);
 
-		//Padding
 #ifdef DEBUG_BUILD
+		//Padding
 		EXPECT_EQ(rig00Bones.at(i).pad01(), -1);
 		EXPECT_EQ(rig00Bones.at(i).pad02(), 0);
 #endif

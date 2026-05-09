@@ -117,14 +117,15 @@ GTEST(RigScan)
 
 		status.flags.wrongHeaderSize = rig.headerSize() != 0x50;
 
+#ifdef DEBUG_BUILD
 		auto headerAssert = rig.checkAssumedHeaderEntries();
-
 		status.flags.nonEmptyPadding01 = (headerAssert & 0b1) > 0;
 		status.flags.nonEmptyPadding02 = (headerAssert & 0b10) > 0;
 		status.flags.nonEmptyPadding03 = (headerAssert & 0b100) > 0;
 
 		status.flags.wrongMatchingThree = (headerAssert & 0b1000) > 0;
 		status.flags.wrongBoneCountAnimated = (headerAssert & 0b1000000) > 0;
+#endif
 		status.flags.boneCountLessThanAnimated = rig.boneCount() < rig.boneCountAnimated();
 
 		status.flags.unknownPrecisionSet = true;

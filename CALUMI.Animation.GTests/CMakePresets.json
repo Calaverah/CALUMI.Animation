@@ -44,16 +44,34 @@
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
     },
     {
+      "name": "win-release-gtests",
+      "displayName": "Windows Release GTests",
+      "inherits": "win-base-gtests",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
       "name": "linux-debug-gtests",
       "displayName": "Linux Debug GTests",
       "inherits": "linux-base-gtests",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
     },
     {
+      "name": "linux-release-gtests",
+      "displayName": "Linux Release GTests",
+      "inherits": "linux-base-gtests",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
       "name": "mac-debug-gtests",
       "displayName": "macOS Debug GTests",
       "inherits": "mac-base-gtests",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "mac-release-gtests",
+      "displayName": "macOS Release GTests",
+      "inherits": "mac-base-gtests",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
     }
   ],
   "buildPresets": [
@@ -62,12 +80,24 @@
       "configurePreset": "win-debug-gtests"
     },
     {
+      "name": "win-release-gtests",
+      "configurePreset": "win-release-gtests"
+    },
+    {
       "name": "linux-debug-gtests",
       "configurePreset": "linux-debug-gtests"
     },
     {
+      "name": "linux-release-gtests",
+      "configurePreset": "linux-release-gtests"
+    },
+    {
       "name": "mac-debug-gtests",
       "configurePreset": "mac-debug-gtests"
+    },
+    {
+      "name": "mac-release-gtests",
+      "configurePreset": "mac-release-gtests"
     }
   ]
 }

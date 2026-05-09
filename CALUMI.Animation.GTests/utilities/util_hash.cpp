@@ -10,7 +10,9 @@ GTEST(KnownHashScan)
 {
     Utilities::StringList errorList;
 
+#ifdef DEBUG_BUILD
     EXPECT_NO_THROW(errorList = Utilities::HashRegistry::Get().testKnownHashes());
+#endif
 
     EXPECT_EQ(errorList.size(), 0);
     if (!errorList.empty())
