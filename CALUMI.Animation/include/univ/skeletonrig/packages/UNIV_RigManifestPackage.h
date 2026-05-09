@@ -37,6 +37,7 @@ namespace CALUMI::UNIV
          * @return
          */
         RigManifestPackage& operator=(const RigManifestPackage& other);
+        bool operator==(const IPackage& other) const override;
         /// @}
 
         /// @name Bone Order

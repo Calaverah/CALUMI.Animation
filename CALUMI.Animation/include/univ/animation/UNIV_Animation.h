@@ -39,6 +39,7 @@ namespace CALUMI::UNIV
 		 * @return
 		 */
 		AnimationBlock& operator=(const AnimationBlock& other);
+		bool operator==(const AnimationBlock& other) const;
 		/// @}
 
 		/// @name Data
@@ -214,7 +215,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @param data
 		 */
-		Animation(const Utilities::JsonObject& data);
+		explicit Animation(const Utilities::JsonObject& data);
 		~Animation();
 		/// @}
 		/// @name Operators
@@ -223,6 +224,11 @@ namespace CALUMI::UNIV
 		 * @return
 		 */
 		Animation& operator=(const Animation& input);
+		/**
+		 * @param other
+		 * @return
+		 */
+		bool operator==(const Animation& other) const;
 		/// @}
 		/// @name Title
 		/// @{

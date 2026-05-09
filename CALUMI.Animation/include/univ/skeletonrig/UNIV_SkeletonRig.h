@@ -47,8 +47,15 @@ namespace CALUMI::UNIV
 		/** @name Operators*/
 		/// @{
 	public:
-		// SkeletonBone& operator=(const SkeletonBone& other);
-
+		/**
+		 * @return
+		 */
+		bool operator==(const SkeletonBone& other) const;
+		/**
+		 * @param other
+		 * @return
+		 */
+		SkeletonBone& operator=(const SkeletonBone& other);
 		/// @}
 		/// @name ILineage
 		/// @{
@@ -208,7 +215,13 @@ namespace CALUMI::UNIV
 		/// @name Json
 		/// @{
 
+		/**
+		 * @return
+		 */
 		Utilities::JsonObject toJson() const;
+		/**
+		 * @param data
+		 */
 		void fromJson(const Utilities::JsonObject& data) const;
 
 		/// @}
@@ -237,14 +250,14 @@ namespace CALUMI::UNIV
 		SkeletonRig();
 		/**
 		 *
-		 * @param _rigName
+		 * @param rigName
 		 */
-		explicit SkeletonRig(const char* _rigName);
+		explicit SkeletonRig(const char* rigName);
 		/**
 		 *
-		 * @param _rigName
+		 * @param rigName
 		 */
-		explicit SkeletonRig(const Utilities::StringContainer& _rigName);
+		explicit SkeletonRig(const Utilities::StringContainer& rigName);
 		/**
 		 *
 		 * @param input
@@ -333,6 +346,19 @@ namespace CALUMI::UNIV
 		Utilities::JsonObject toJson() const;
 
 
+		/// @}
+		/// @name Operators
+		/// @{
+		/**
+		 * @param input
+		 * @return
+		 */
+		SkeletonRig& operator=(const SkeletonRig& input);
+		/**
+		 * @param input
+		 * @return
+		 */
+		bool operator==(const SkeletonRig& input) const;
 		/// @}
 	private:
 		struct Impl;

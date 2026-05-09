@@ -363,6 +363,7 @@ namespace CALUMI::SFBGS
 		/// @name Operators
 		/// @{
 		SFBGS_RigPackage& operator=(const SFBGS_RigPackage& other);
+		bool operator==(const IPackage& other) const override;
 		/// @}
 		/// @name Level Of Detail (LOD)
 		/// @{
@@ -474,7 +475,7 @@ namespace CALUMI::SFBGS
 		/// @name Json
 		/// @{
 		Utilities::JsonObject toJson() const override;
-		void fromJson(const Utilities::JsonObject& data);
+		void fromJson(const Utilities::JsonObject& data) override;
 		/// @}
 
 	};

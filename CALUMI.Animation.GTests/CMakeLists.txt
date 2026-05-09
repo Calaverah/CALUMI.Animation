@@ -32,6 +32,7 @@ add_executable(run_tests test_main.cpp
         utilities/util_hash.cpp
         math/transform.cpp
         univ/univ_rig.cpp
+        json/json.cpp
 )
 
 target_compile_definitions(run_tests PRIVATE DEBUG_BUILD)

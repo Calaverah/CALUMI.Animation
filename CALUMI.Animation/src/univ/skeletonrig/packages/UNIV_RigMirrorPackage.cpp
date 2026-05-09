@@ -137,6 +137,15 @@ namespace CALUMI::UNIV
         return *this;
     }
 
+    bool RigMirrorPackage::operator==(const IPackage& other) const
+    {
+        if (const auto pOther = dynamic_cast<const RigMirrorPackage*>(&other))
+        {
+            return pImpl->m_mirrors == pOther->pImpl->m_mirrors;
+        }
+        return false;
+    }
+
     Utilities::JsonObject RigMirrorPackage::toJson() const
     {
         Utilities::JsonObject output;
@@ -171,7 +180,7 @@ namespace CALUMI::UNIV
     {
         const auto& mgr = rig.packageManager();
 
-        auto* pkg = new RigMirrorPackage();
+        auto pkg = new RigMirrorPackage();
 
         if (mgr.addPackage(pkg, overwrite))
         {
@@ -190,7 +199,7 @@ namespace CALUMI::UNIV
 
     RigMirrorPackage& RigMirrorPackage::GetPackage(const SkeletonRig& rig)
     {
-        auto& mgr = rig.packageManager();
+        const auto& mgr = rig.packageManager();
         if (const auto pkg = dynamic_cast<RigMirrorPackage*>(mgr.package(MIRROR_RIG_PACKAGE)))
         {
             return *pkg;

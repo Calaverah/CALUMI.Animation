@@ -34,7 +34,7 @@ union ErrorStatus {
 
 	} flags;
 
-	uint32_t raw;
+	uint32_t raw{};
 };
 
 

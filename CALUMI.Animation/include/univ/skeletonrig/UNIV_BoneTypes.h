@@ -38,6 +38,8 @@ namespace CALUMI::UNIV {
     	virtual Utilities::JsonObject toJson() const = 0;
     	virtual void fromJson(const Utilities::JsonObject& data) = 0;
 
+    	virtual bool operator==(const BoneTypeProperty& other) const = 0;
+
     public:
     	/**
 		 * @param boneTypeStr c string of the type, likely #DefaultBoneTypeStr or #TwistBoneTypeStr
@@ -74,6 +76,10 @@ namespace CALUMI::UNIV {
     	/// @{
     	Utilities::JsonObject toJson() const override;
     	void fromJson(const Utilities::JsonObject& data) override;
+    	/// @}
+    	/// @name Operators
+    	/// @{
+    	bool operator==(const BoneTypeProperty& other) const override;
     	/// @}
 	};
 
@@ -116,6 +122,10 @@ namespace CALUMI::UNIV {
 		/// @{
 		Utilities::JsonObject toJson() const override;
 		void fromJson(const Utilities::JsonObject& data) override;
+		/// @}
+		/// @name Operators
+		/// @{
+		bool operator==(const BoneTypeProperty& other) const override;
 		/// @}
 
 	private:

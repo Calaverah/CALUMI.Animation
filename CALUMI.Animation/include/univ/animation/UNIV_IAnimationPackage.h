@@ -22,7 +22,6 @@ namespace CALUMI::UNIV
 
 	private:
 		friend class AnimationPackageManager;
-
 	};
 
 	/**
@@ -34,7 +33,7 @@ namespace CALUMI::UNIV
 		/** @name Initialization*/
 		/// @{
 
-		AnimationPackageManager();
+		AnimationPackageManager() = default;
 		~AnimationPackageManager() override = default;
 		///@}
 

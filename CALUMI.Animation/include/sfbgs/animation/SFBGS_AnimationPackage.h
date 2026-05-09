@@ -26,7 +26,7 @@ namespace CALUMI::SFBGS
 	/**
 	 * @brief A game specific package of data that can be applied directly to an animation
 	 */
-	class CALUMIANIMATION_API SFBGS_AnimationPackage : UNIV::IAnimationPackage
+	class CALUMIANIMATION_API SFBGS_AnimationPackage : public UNIV::IAnimationPackage
 	{
 	public:
 		/// @name Initialization
@@ -145,6 +145,7 @@ namespace CALUMI::SFBGS
 		/// @name Operators
 		/// @{
 		SFBGS_AnimationPackage& operator=(const SFBGS_AnimationPackage& other);
+		bool operator==(const IPackage& other) const override;
 		/// @}
 		/// @name Json
 		/// @{
@@ -189,10 +190,10 @@ namespace CALUMI::SFBGS
 
 	/**
 	 *
-	 * @param rig
+	 * @param animation
 	 * @return The SFBGS Animation Package on this Animation. If none exists, one will be created.
 	 */
-	[[nodiscard]] static SFBGS_AnimationPackage& GetPackage(const UNIV::Animation& rig);
+	[[nodiscard]] static SFBGS_AnimationPackage& GetPackage(const UNIV::Animation& animation);
 
 	};
 	/// @}

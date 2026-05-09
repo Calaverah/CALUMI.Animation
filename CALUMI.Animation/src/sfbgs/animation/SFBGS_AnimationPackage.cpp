@@ -10,6 +10,9 @@
 #include <limits>
 #include <stdexcept>
 
+// ReSharper disable once CppUnusedIncludeDirective
+#include "internalplatform.h"
+
 namespace CALUMI::SFBGS
 {
     struct SFBGS_AnimationPackage::Impl {
@@ -33,10 +36,20 @@ namespace CALUMI::SFBGS
         {
             pImpl->m_amendedBlocks = other.pImpl->m_amendedBlocks;
             pImpl->m_precisionOverride = other.pImpl->m_precisionOverride;
-
             pImpl->m_useRigPrecision = other.pImpl->m_useRigPrecision;
         }
         return *this;
+    }
+
+    bool SFBGS_AnimationPackage::operator==(const IPackage& other) const
+    {
+        if (const auto pOther = dynamic_cast<const SFBGS_AnimationPackage*>(&other))
+        {
+            return  pImpl->m_amendedBlocks == pOther->pImpl->m_amendedBlocks &&
+                    pImpl->m_precisionOverride == pOther->pImpl->m_precisionOverride &&
+                    pImpl->m_useRigPrecision == pOther->pImpl->m_useRigPrecision;
+        }
+        return false;
     }
 
     Utilities::JsonObject SFBGS_AnimationPackage::toJson() const
@@ -252,22 +265,22 @@ namespace CALUMI::SFBGS
         return animation.packageManager().removePackage(SFBGS_ANIM_PACKAGE);
     }
 
-    SFBGS_AnimationPackage& SFBGS_AnimationPackage::GetPackage(const UNIV::Animation& rig)
+    SFBGS_AnimationPackage& SFBGS_AnimationPackage::GetPackage(const UNIV::Animation& animation)
     {
-        auto& mgr = rig.packageManager();
-        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(mgr.package(SFBGS_RIG_PACKAGE)))
+        const auto& mgr = animation.packageManager();
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(mgr.package(SFBGS_ANIM_PACKAGE)))
         {
             return *pkg;
         }
 
-        AddPackage(rig, false);
+        AddPackage(animation, false);
 
-        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(mgr.package(SFBGS_RIG_PACKAGE)))
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(mgr.package(SFBGS_ANIM_PACKAGE)))
         {
             return *pkg;
         }
 
-        throw std::runtime_error("RigMirrorPackage::GetPackage() could not find nor add rig package.");
+        throw std::runtime_error("SFBGS_AnimationPackage::GetPackage() could not find nor add animation package.");
     }
 }
 

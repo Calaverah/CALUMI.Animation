@@ -39,6 +39,10 @@ namespace CALUMI::UNIV
 		virtual Utilities::JsonObject toJson() const = 0;
 		virtual void fromJson(const Utilities::JsonObject& data) = 0;
 		/// @}
+		/// @name Operators
+		/// @{
+		virtual bool operator==(const IPackage& other) const = 0;
+		/// @}
 
 	protected:
 
@@ -72,6 +76,7 @@ namespace CALUMI::UNIV
 		/// @{
 	public:
 		IPackageManager& operator=(const IPackageManager& other);
+		bool operator==(const IPackageManager& other) const;
 
 		/// @}
 		/// @name Data
@@ -83,7 +88,7 @@ namespace CALUMI::UNIV
 			 * @param packageName Name/Type
 			 * @return The first package ptr that matches, if it exists
 			 */
-		[[nodiscard]] IPackage* package(const char* packageName);
+		[[nodiscard]] IPackage* package(const char* packageName) const;
 
 		/**
 		 * @return

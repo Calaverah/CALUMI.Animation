@@ -746,7 +746,11 @@ namespace CALUMI::Math
 		 * @return
 		 */
 		Utilities::JsonObject toJson() const;
+		/**
+		 * @param data
+		 */
 		void fromJson(const Utilities::JsonObject& data);
+		bool operator==(const Transform& input) const;
 
 	private:
 		struct Impl;

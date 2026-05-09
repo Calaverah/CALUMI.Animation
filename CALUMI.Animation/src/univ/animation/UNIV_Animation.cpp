@@ -13,6 +13,9 @@
 #include <vector>
 #include "internal/internalvectordef.h"
 #include <algorithm>
+#include <iostream>
+#include <ostream>
+
 #include "sfbgs/animation/SFBGS_AnimationPackage.h"
 
 namespace CALUMI::UNIV
@@ -22,7 +25,6 @@ namespace CALUMI::UNIV
 	{
 		Utilities::StringContainer m_animationTitle = "NO TITLE";
 		AnimationBlockVector m_animationBlocks;
-
 		AnimationPackageManager m_packageManager;
 
 		Impl() = default;
@@ -94,10 +96,32 @@ namespace CALUMI::UNIV
 	}
 	Animation& Animation::operator=(const Animation& input)
 	{
-		if (this != &input)
-			*pImpl = *input.pImpl;
+		if (this == &input)
+			return *this;
+
+		pImpl->m_animationTitle = input.pImpl->m_animationTitle;
+		pImpl->m_packageManager = input.pImpl->m_packageManager;
+		pImpl->m_animationBlocks = input.pImpl->m_animationBlocks;
 
 		return *this;
+	}
+
+	bool Animation::operator==(const Animation& other) const
+	{
+		if (this == &other)
+			return true;
+
+		if (pImpl->m_animationBlocks.size() != other.pImpl->m_animationBlocks.size())
+			return false;
+
+		for (unsigned int i = 0; i < pImpl->m_animationBlocks.size(); i++)
+		{
+			if (pImpl->m_animationBlocks.at(i) != other.pImpl->m_animationBlocks.at(i))
+				return false;
+		}
+
+		return pImpl->m_animationTitle == other.pImpl->m_animationTitle &&
+			pImpl->m_packageManager == other.pImpl->m_packageManager;
 	}
 
 	bool Animation::addAnimationBlock(const AnimationBlock& blockToAdd, const bool overwrite) const
@@ -305,6 +329,15 @@ namespace CALUMI::UNIV
 		}
 
 		return *this;
+	}
+
+	bool AnimationBlock::operator==(const AnimationBlock& other) const
+	{
+		return	pImpl->m_boneName == other.pImpl->m_boneName &&
+				CompareRotationSequence(pImpl->m_rotationSequence, other.pImpl->m_rotationSequence) &&
+				CompareTranslationSequence(pImpl->m_translationSequence, other.pImpl->m_translationSequence) &&
+				CompareScalarSequence(pImpl->m_scalarSequence, other.pImpl->m_scalarSequence) &&
+				ComparePrioritySequence(pImpl->m_prioritySequence, other.pImpl->m_prioritySequence);
 	}
 
 	unsigned int AnimationBlock::lastFrameInBlock() const

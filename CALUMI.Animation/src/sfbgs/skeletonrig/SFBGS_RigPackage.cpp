@@ -48,7 +48,7 @@ namespace CALUMI::SFBGS
 
 	SFBGS_RigPackage& SFBGS_RigPackage::GetPackage(const UNIV::SkeletonRig& rig)
 	{
-		auto& mgr = rig.packageManager();
+		const auto& mgr = rig.packageManager();
 		if (const auto pkg = dynamic_cast<SFBGS_RigPackage*>(mgr.package(SFBGS_RIG_PACKAGE)))
 		{
 			return *pkg;
@@ -324,6 +324,19 @@ namespace CALUMI::SFBGS
 			pImpl->m_boneLODs = other.pImpl->m_boneLODs;
 		}
 		return *this;
+	}
+
+	bool SFBGS_RigPackage::operator==(const IPackage& other) const
+	{
+		if (const auto pOther = dynamic_cast<const SFBGS_RigPackage*>(&other))
+		{
+			return	pImpl->m_precisionSet == pOther->pImpl->m_precisionSet &&
+					pImpl->m_boneMap == pOther->pImpl->m_boneMap &&
+					pImpl->m_boneLODs == pOther->pImpl->m_boneLODs &&
+					pImpl->m_isMannequin == pOther->pImpl->m_isMannequin;
+
+		}
+		return false;
 	}
 
 	SFBGS_RigPackage::LODSetting SFBGS_RigPackage::GetLODFromInt(int value)

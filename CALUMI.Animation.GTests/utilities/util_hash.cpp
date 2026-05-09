@@ -29,6 +29,8 @@ GTEST(KnownHashScan)
 
 GTEST(RegisterHash)
 {
+    uint8_t size = Utilities::HashRegistry::Get().registeredStrings().size();
+
     const auto hash1 = Utilities::HashRegistry::Get().registerHash("TestxyzHash1");
     const auto hash2 = Utilities::HashRegistry::Get().registerHash("TestxyzHash2");
     const auto hash3 = Utilities::HashRegistry::Get().registerHash("TestxyzHash3");
@@ -37,7 +39,7 @@ GTEST(RegisterHash)
 
     const auto outputList = Utilities::HashRegistry::Get().registeredStrings();
 
-    EXPECT_EQ(outputList.size(), 5);
+    EXPECT_EQ(outputList.size(), size + 5);
     std::set<std::string> registeredStrings;
     for (uint32_t i = 0; i < outputList.size(); i++)
         registeredStrings.insert(outputList.c_str(i));

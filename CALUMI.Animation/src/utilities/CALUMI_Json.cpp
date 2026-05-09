@@ -731,7 +731,7 @@ namespace CALUMI::Utilities
         {
             if (text[pos] == '{')
             {
-                std::string subScope = s_GetScope(text.c_str());
+                std::string subScope = s_GetScope(text.substr(pos).c_str());
                 if (!subScope.empty())
                 {
                     JsonValue subValue = JsonObject::Deserialize(subScope.c_str());
@@ -742,7 +742,7 @@ namespace CALUMI::Utilities
             }
             else if (text[pos] == '[')
             {
-                std::string subScope = s_GetScope(text.c_str());
+                std::string subScope = s_GetScope(text.substr(pos).c_str());
                 if (!subScope.empty())
                 {
                     JsonValue subValue = DeserializeArray(subScope.c_str());

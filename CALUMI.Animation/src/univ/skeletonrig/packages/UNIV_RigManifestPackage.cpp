@@ -43,6 +43,16 @@ namespace CALUMI::UNIV
         return *this;
     }
 
+    bool RigManifestPackage::operator==(const IPackage& other) const
+    {
+        if (const auto pOther = dynamic_cast<const RigManifestPackage*>(&other))
+        {
+            return pImpl->m_list == pOther->pImpl->m_list;
+        }
+
+        return false;
+    }
+
     bool RigManifestPackage::addBone(const char* boneName) const
     {
         if (SCOMPARE(boneName, "") == 0)
@@ -113,7 +123,7 @@ namespace CALUMI::UNIV
 
     RigManifestPackage& RigManifestPackage::GetPackage(const SkeletonRig& rig)
     {
-        auto& mgr = rig.packageManager();
+        const auto& mgr = rig.packageManager();
         if (const auto pkg = dynamic_cast<RigManifestPackage*>(mgr.package(MANIFEST_RIG_PACKAGE)))
         {
             return *pkg;

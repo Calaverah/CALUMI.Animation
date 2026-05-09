@@ -6,13 +6,13 @@
 #include "univ/animation/UNIV_IAnimationPackage.h"
 
 
-namespace CALUMI {
-	namespace UNIV {
+namespace CALUMI::UNIV
+{
 
 #pragma region Animation Package Manager
 
-	AnimationPackageManager::AnimationPackageManager() : IPackageManager() { }
+	//AnimationPackageManager::AnimationPackageManager() : IPackageManager() { }
 
 #pragma endregion
 
-} }
+}

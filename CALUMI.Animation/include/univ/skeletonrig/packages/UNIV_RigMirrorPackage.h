@@ -72,11 +72,26 @@ namespace CALUMI::UNIV
         bool handleBoneRename(const char* oldBone, const char* newName) override;
 
     public:
+        /**
+         * @param other
+         * @return
+         */
         RigMirrorPackage& operator=(const RigMirrorPackage& other);
+        /**
+         * @param other
+         * @return
+         */
+        bool operator==(const IPackage& other) const override;
 
         /// @name Json
         /// @{
+        /**
+         * @return
+         */
         Utilities::JsonObject toJson() const override;
+        /**
+         * @param data
+         */
         void fromJson(const Utilities::JsonObject& data) override;
         /// @}
 

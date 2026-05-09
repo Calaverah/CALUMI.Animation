@@ -2,63 +2,104 @@
 // ReSharper disable CppTooWideScope
 // ReSharper disable CppDFATimeOver
 // ReSharper disable CppTemplateArgumentsCanBeDeduced
+// ReSharper disable CppExpressionWithoutSideEffects
 #include <gtest/gtest.h>
 #include <iostream>
 #include <AnimMath>
 #include <AnimUniv>
 #include <AnimStarfield>
+#include <filesystem>
+#include <fstream>
 
 #include "../Common.h"
 
 using namespace CALUMI;
 
-#define GTEST(x) TEST(MockStarfield, x)
 
-GTEST(Rig00)
+class SampleSFBGSData
 {
-	std::vector<char> stdEOH = { '\0','\0','C','A','L','U','M','I','D','V','R','S','J','O','J','O' };
-	SFBGS::SkeletonRig rig00;
-
-    auto result00 = rig00.readFromFile("assets/00/skeleton.rig");
-
-	//Read Check
-	EXPECT_TRUE(!result00.hasError());
-
-	if (result00.hasError())
-	{
-		ADD_FAILURE() << "Error Found In File Read -> " << result00.toString().c_str();
+public:
+	static SampleSFBGSData& get() {
+		static SampleSFBGSData instance;
+		return instance;
 	}
 
+	SampleSFBGSData(const SampleSFBGSData&) = delete;
+	SampleSFBGSData(SampleSFBGSData&&) = delete;
+	SampleSFBGSData& operator=(const SampleSFBGSData&) = delete;
+	SampleSFBGSData& operator=(SampleSFBGSData&&) = delete;
+
+public:
+	UNIV::SkeletonRig univRig00;
+	UNIV::SkeletonRig uJsonRig00;
+	SFBGS::SkeletonRig sfbgsRig00;
+	std::vector<char> stdEOH;
+
+	UNIV::Animation uJsonAnim00;
+
+private:
+	SampleSFBGSData() = default;
+	~SampleSFBGSData() = default;
+};
+
+
+class SampleSFBGSTestSuite : public testing::Test
+{
+public:
+
+
+protected:
+	static void SetUpTestSuite()
+	{
+		SampleSFBGSData::get().stdEOH = { '\0','\0','C','A','L','U','M','I','D','V','R','S','J','O','J','O' };
+
+		const auto result00 = SampleSFBGSData::get().sfbgsRig00.readFromFile("assets/00/skeleton.rig");
+		ASSERT_FALSE(result00.hasError()) << "00: Error Found In File Read -> " << result00.toString().c_str();
+
+		SampleSFBGSData::get().univRig00 = SampleSFBGSData::get().sfbgsRig00.convertToUniversalRig();
+
+	}
+
+	static void TearDownTestSuite()
+	{
+
+	}
+};
+
+#define GTEST(x) TEST_F(SampleSFBGSTestSuite, x)
+
+GTEST(Rig00Input)
+{
 	//File version
-    EXPECT_EQ(rig00.versionNumber(), 5);
+	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.versionNumber(), 5);
 
 	//File Size
-    EXPECT_EQ(rig00.fileSize(), 720);
+	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.fileSize(), 720);
 
 	//Header Size
-    EXPECT_EQ(rig00.headerSize(), 0x50);
+	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.headerSize(), 0x50);
 
 	//Map Offset
-    EXPECT_EQ(rig00.boneMapOffset(), 368);
+	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.boneMapOffset(), 368);
 
 	//Bone Counts
-    EXPECT_EQ(rig00.boneCount(), 3);
-    EXPECT_EQ(rig00.boneCountAnimated(), 3);
-    EXPECT_EQ(rig00.boneEntries().size(), rig00.boneCount());
+	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.boneCount(), 3);
+	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.boneCountAnimated(), 3);
+	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.boneEntries().size(), SampleSFBGSData::get().sfbgsRig00.boneCount());
 
-    EXPECT_TRUE(rig00.checkAssumedHeaderEntries() == 0);
+	EXPECT_TRUE(SampleSFBGSData::get().sfbgsRig00.checkAssumedHeaderEntries() == 0);
 
 #ifdef DEBUG_BUILD
 	{
 		//End Of Header
-        auto rig00EOH = rig00.endOfHeader();
+		auto rig00EOH = SampleSFBGSData::get().sfbgsRig00.endOfHeader();
 
-		EXPECT_EQ(rig00EOH.size(), stdEOH.size());
-		if (rig00EOH.size() == stdEOH.size())
+		EXPECT_EQ(rig00EOH.size(), SampleSFBGSData::get().stdEOH.size());
+		if (rig00EOH.size() == SampleSFBGSData::get().stdEOH.size())
 		{
 			for (size_t i = 0; i < rig00EOH.size(); i++)
 			{
-				EXPECT_EQ(rig00EOH.at(i), stdEOH.at(i));
+				EXPECT_EQ(rig00EOH.at(i), SampleSFBGSData::get().stdEOH.at(i));
 			}
 		}
 	}
@@ -66,11 +107,11 @@ GTEST(Rig00)
 
 
 	//Precision
-    EXPECT_EQ(rig00.highPrecision(), 1.0f / 4000.0f);
-    EXPECT_EQ(rig00.lowPrecision(), 1.0f / 32.000f);
+	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.highPrecision(), 1.0f / 4000.0f);
+	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.lowPrecision(), 1.0f / 32.000f);
 
 	//Matching 3
-	auto match00 = rig00.matchingThree();
+	auto match00 = SampleSFBGSData::get().sfbgsRig00.matchingThree();
 	EXPECT_EQ(match00.size(), 3);
 	for (uint8_t i = 0; i < match00.size() && i < 3; i++)
 	{
@@ -82,10 +123,10 @@ GTEST(Rig00)
 	float unk00Floats[3] = { 0.1f, 0.2f, 60.0f };
 	Math::Quaternion q00Locals[3] = { Math::Quaternion(-0.0f,-0.0f,-0.707107f,0.707107f), Math::Quaternion(), Math::Quaternion() };
 
-    auto& rig00Bones = rig00.boneEntries();
-    EXPECT_EQ(rig00Bones.size(), rig00.boneCount());
+	auto& rig00Bones = SampleSFBGSData::get().sfbgsRig00.boneEntries();
+	EXPECT_EQ(rig00Bones.size(), SampleSFBGSData::get().sfbgsRig00.boneCount());
 
-    auto& str00 = rig00.stringArray();
+	auto& str00 = SampleSFBGSData::get().sfbgsRig00.stringArray();
 	EXPECT_EQ(rig00Bones.size(), str00.size());
 
 	uint64_t offsetSum00 = 0;
@@ -99,8 +140,8 @@ GTEST(Rig00)
 	for (uint8_t i = 0; i < rig00Bones.size() && i < str00.size(); i++)
 	{
 		//Rotations
-        EXPECT_TRUE(rig00Bones.at(i).localRotation().areEqual(q00Locals[i], 0.000001f)) << "Tested " << rig00Bones.at(i).localRotation().toString().c_str() << " \nExpected " << q00Locals[i].toString().c_str();
-        EXPECT_TRUE(rig00Bones.at(i).globalRotation().areEqual(q00Locals[0], 0.000001f)) << "Tested " << rig00Bones.at(i).localRotation().toString().c_str() << " \nExpected " << q00Locals[i].toString().c_str();
+		EXPECT_TRUE(rig00Bones.at(i).localRotation().areEqual(q00Locals[i], 0.000001f)) << "Tested " << rig00Bones.at(i).localRotation().toString().c_str() << " \nExpected " << q00Locals[i].toString().c_str();
+		EXPECT_TRUE(rig00Bones.at(i).globalRotation().areEqual(q00Locals[0], 0.000001f)) << "Tested " << rig00Bones.at(i).localRotation().toString().c_str() << " \nExpected " << q00Locals[i].toString().c_str();
 
 		//Unknown
 		EXPECT_EQ(rig00Bones.at(i).unknownScalar(), unk00Floats[i]);
@@ -116,7 +157,7 @@ GTEST(Rig00)
 
 		//Padding
 #ifdef DEBUG_BUILD
-        EXPECT_EQ(rig00Bones.at(i).pad01(), -1);
+		EXPECT_EQ(rig00Bones.at(i).pad01(), -1);
 		EXPECT_EQ(rig00Bones.at(i).pad02(), 0);
 #endif
 		//Strings
@@ -127,20 +168,20 @@ GTEST(Rig00)
 	//Bone Names
 	if (str00.size() == 3)
 	{
-        EXPECT_EQ(std::string(str00.c_str(0)), "Fountain_Root");
-        EXPECT_EQ(std::string(str00.c_str(1)), "PlanetObject");
-        EXPECT_EQ(std::string(str00.c_str(2)), "RingObject");
+		EXPECT_EQ(std::string(str00.c_str(0)), "Fountain_Root");
+		EXPECT_EQ(std::string(str00.c_str(1)), "PlanetObject");
+		EXPECT_EQ(std::string(str00.c_str(2)), "RingObject");
 	} else
-    {
-        ADD_FAILURE() << "Bone Name Array Size Does Not Match";
-    }
+	{
+		ADD_FAILURE() << "Bone Name Array Size Does Not Match";
+	}
 
 	//Bone Map
 	uint8_t boneMapSize = 157;
-    EXPECT_EQ(rig00.boneMapArray().size(), boneMapSize);
-    if (rig00.boneMapArray().size() == boneMapSize)
+	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.boneMapArray().size(), boneMapSize);
+	if (SampleSFBGSData::get().sfbgsRig00.boneMapArray().size() == boneMapSize)
 	{
-        for (size_t i = 0; i < rig00.boneMapArray().size(); i++)
+		for (size_t i = 0; i < SampleSFBGSData::get().sfbgsRig00.boneMapArray().size(); i++)
 		{
 			short mapVal = -1;
 
@@ -148,105 +189,112 @@ GTEST(Rig00)
 				mapVal = 0;
 			else if (i == 8)
 				mapVal = 1;
-			else
-				mapVal = -1;
 
-            EXPECT_EQ(rig00.boneMapArray().at(i), mapVal);
+			EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.boneMapArray().at(i), mapVal);
 		}
 	}
+}
 
-	UNIV::SkeletonRig uRig00 = rig00.convertToUniversalRig();
-	SFBGS::SkeletonRig rig00COPY(uRig00);
+GTEST(Rig00Conversion)
+{
+	EXPECT_EQ(SampleSFBGSData::get().univRig00, SampleSFBGSData::get().sfbgsRig00.convertToUniversalRig());
 
-    EXPECT_EQ(uRig00.boneCount(), rig00.boneEntries().size());
+	const UNIV::SkeletonRig rig;
+	auto& a = UNIV::RigMirrorPackage::GetPackage(rig);
+	auto& b = UNIV::RigManifestPackage::GetPackage(rig);
+	auto& c = SFBGS::SFBGS_RigPackage::GetPackage(rig);
+}
 
-    EXPECT_EQ(uRig00.boneCount(), rig00.boneCount());
-
-#pragma region COPIED RIG00
+GTEST(Rig00Reconversion)
+{
+	SFBGS::SkeletonRig sfbgsRig00Copy(SampleSFBGSData::get().univRig00);
 
 	//File version
-    EXPECT_EQ(rig00COPY.versionNumber(), rig00.versionNumber());
+	EXPECT_EQ(sfbgsRig00Copy.versionNumber(), SampleSFBGSData::get().sfbgsRig00.versionNumber());
 
 	//File Size
-    EXPECT_EQ(rig00COPY.fileSize(), rig00.fileSize());
+	EXPECT_EQ(sfbgsRig00Copy.fileSize(), SampleSFBGSData::get().sfbgsRig00.fileSize());
 
 	//Header Size
-    EXPECT_EQ(rig00COPY.headerSize(), rig00.headerSize());
+	EXPECT_EQ(sfbgsRig00Copy.headerSize(), SampleSFBGSData::get().sfbgsRig00.headerSize());
 
 	//Map Offset
-    EXPECT_EQ(rig00COPY.boneMapOffset(), rig00.boneMapOffset());
+	EXPECT_EQ(sfbgsRig00Copy.boneMapOffset(), SampleSFBGSData::get().sfbgsRig00.boneMapOffset());
 
 	//Bone Counts
-    EXPECT_EQ(rig00COPY.boneCount(), rig00.boneCount());
-    EXPECT_EQ(rig00COPY.boneEntries().size(), rig00.boneEntries().size());
-    EXPECT_EQ(rig00COPY.boneCountAnimated(), rig00.boneCountAnimated());
+	EXPECT_EQ(sfbgsRig00Copy.boneCount(), SampleSFBGSData::get().sfbgsRig00.boneCount());
+	EXPECT_EQ(sfbgsRig00Copy.boneEntries().size(), SampleSFBGSData::get().sfbgsRig00.boneEntries().size());
+	EXPECT_EQ(sfbgsRig00Copy.boneCountAnimated(), SampleSFBGSData::get().sfbgsRig00.boneCountAnimated());
 
 #ifdef DEBUG_BUILD
 	{
 		//End Of Header
-        auto rig00EOH = rig00COPY.endOfHeader();
+		auto rig00EOH = sfbgsRig00Copy.endOfHeader();
 
-		EXPECT_EQ(rig00EOH.size(), stdEOH.size());
-		if (rig00EOH.size() == stdEOH.size())
+		EXPECT_EQ(rig00EOH.size(), SampleSFBGSData::get().stdEOH.size());
+		if (rig00EOH.size() == SampleSFBGSData::get().stdEOH.size())
 		{
 			for (size_t i = 0; i < rig00EOH.size(); i++)
 			{
-				EXPECT_EQ(rig00EOH.at(i), stdEOH.at(i));
+				EXPECT_EQ(rig00EOH.at(i), SampleSFBGSData::get().stdEOH.at(i));
 			}
 		}
 	}
 #endif
 
 	//Precision
-    EXPECT_EQ(rig00.highPrecision(), rig00COPY.highPrecision());
-    EXPECT_EQ(rig00.lowPrecision(), rig00COPY.lowPrecision());
+	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.highPrecision(), sfbgsRig00Copy.highPrecision());
+	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.lowPrecision(), sfbgsRig00Copy.lowPrecision());
 
-    auto& rig00COPYBones = rig00COPY.boneEntries();
-    EXPECT_EQ(rig00COPYBones.size(), rig00COPY.boneCount());
+	auto& rig00COPYBones = sfbgsRig00Copy.boneEntries();
+	EXPECT_EQ(rig00COPYBones.size(), sfbgsRig00Copy.boneCount());
 
-    auto& str00COPY = rig00COPY.stringArray();
+	auto& str00COPY = sfbgsRig00Copy.stringArray();
 	EXPECT_EQ(rig00COPYBones.size(), str00COPY.size());
 
+	auto& sfbgsRig00Bones = SampleSFBGSData::get().sfbgsRig00.boneEntries();
 	uint64_t offsetSum00COPY = 0;
 
 	if (!rig00COPYBones.empty())
 		//We use the source offset to begin, as we do not have that until export/serialization
-		offsetSum00COPY = rig00Bones.at(0).nameOffset();
+			offsetSum00COPY = sfbgsRig00Bones.at(0).nameOffset();
 
 	for (uint8_t i = 0; i < rig00COPYBones.size() && i < str00COPY.size(); i++)
 	{
 		//Rotations
-		EXPECT_QUATNEAR(rig00COPYBones.at(i).localRotation(), rig00Bones.at(i).localRotation(), 0.000001f);
-		EXPECT_QUATNEAR(rig00COPYBones.at(i).globalRotation(), rig00Bones.at(i).globalRotation(), 0.000001f);
+		EXPECT_QUATNEAR(rig00COPYBones.at(i).localRotation(), sfbgsRig00Bones.at(i).localRotation(), 0.000001f);
+		EXPECT_QUATNEAR(rig00COPYBones.at(i).globalRotation(), sfbgsRig00Bones.at(i).globalRotation(), 0.000001f);
 		//Unknowns
 		//EXPECT_EQ(rig00COPYBones.at(i).getUnknownScalar(), unk00Floats[i]);
 		//EXPECT_EQ(rig00COPYBones.at(i).getTerm05(), 4);
 
 		//Bone Info
-		EXPECT_EQ(rig00COPYBones.at(i).boneType(), rig00Bones.at(i).boneType());
-		EXPECT_EQ(rig00COPYBones.at(i).parentBoneIndex(), rig00Bones.at(i).parentBoneIndex());
-		EXPECT_EQ(rig00COPYBones.at(i).twistDriverMqnIndex(), rig00Bones.at(i).twistDriverMqnIndex());
+		EXPECT_EQ(rig00COPYBones.at(i).boneType(), sfbgsRig00Bones.at(i).boneType());
+		EXPECT_EQ(rig00COPYBones.at(i).parentBoneIndex(), sfbgsRig00Bones.at(i).parentBoneIndex());
+		EXPECT_EQ(rig00COPYBones.at(i).twistDriverMqnIndex(), sfbgsRig00Bones.at(i).twistDriverMqnIndex());
 		EXPECT_EQ(rig00COPYBones.at(i).twistDriverIndex(), -1); //These bones were set to default and should be different from the source on output as the values are corrected
 		EXPECT_EQ(rig00COPYBones.at(i).twistDriverWeight(), 0.0f); //These bones were set to default and should be different from the source on output as the values are corrected
-		EXPECT_EQ(rig00COPYBones.at(i).mirrorBoneIndex(), rig00Bones.at(i).mirrorBoneIndex());
+		EXPECT_EQ(rig00COPYBones.at(i).mirrorBoneIndex(), sfbgsRig00Bones.at(i).mirrorBoneIndex());
 
-		//Padding 
+		//Padding
 #ifdef DEBUG_BUILD
-		EXPECT_EQ(rig00COPYBones.at(i).pad01(), rig00Bones.at(i).pad01());
-		EXPECT_EQ(rig00COPYBones.at(i).pad02(), rig00Bones.at(i).pad02());
+		EXPECT_EQ(rig00COPYBones.at(i).pad01(), sfbgsRig00Bones.at(i).pad01());
+		EXPECT_EQ(rig00COPYBones.at(i).pad02(), sfbgsRig00Bones.at(i).pad02());
 #endif
 		//Strings
 		//We use the source offset as the copy version isn't produced until export/serialization
-		EXPECT_EQ(offsetSum00COPY, rig00Bones.at(i).nameOffset());
+		EXPECT_EQ(offsetSum00COPY, sfbgsRig00Bones.at(i).nameOffset());
 		offsetSum00COPY += str00COPY.stringLength(i, true);
 	}
+
+	auto& sfbgsRig00Strings = SampleSFBGSData::get().sfbgsRig00.stringArray();
 
 	//Bone Names
 	if (str00COPY.size() == 3)
 	{
-		EXPECT_EQ(std::string(str00COPY.c_str(0)), str00.c_str(0));
-		EXPECT_EQ(std::string(str00COPY.c_str(1)), str00.c_str(1));
-		EXPECT_EQ(std::string(str00COPY.c_str(2)), str00.c_str(2));
+		EXPECT_EQ(std::string(str00COPY.c_str(0)), sfbgsRig00Strings.c_str(0));
+		EXPECT_EQ(std::string(str00COPY.c_str(1)), sfbgsRig00Strings.c_str(1));
+		EXPECT_EQ(std::string(str00COPY.c_str(2)), sfbgsRig00Strings.c_str(2));
 	}
 	else
 	{
@@ -254,127 +302,43 @@ GTEST(Rig00)
 	}
 
 	//Bone Map
-    EXPECT_EQ(rig00.boneMapArray().size(), rig00COPY.boneMapArray().size());
-    if (rig00.boneMapArray().size() == rig00COPY.boneMapArray().size())
+	EXPECT_EQ(SampleSFBGSData::get().sfbgsRig00.boneMapArray().size(), sfbgsRig00Copy.boneMapArray().size());
+	if (SampleSFBGSData::get().sfbgsRig00.boneMapArray().size() == sfbgsRig00Copy.boneMapArray().size())
 	{
-        for (size_t i = 0; i < rig00COPY.boneMapArray().size(); i++)
+		for (size_t i = 0; i < sfbgsRig00Copy.boneMapArray().size(); i++)
 		{
-            EXPECT_EQ(rig00COPY.boneMapArray().at(i), rig00.boneMapArray().at(i));
+			EXPECT_EQ(sfbgsRig00Copy.boneMapArray().at(i), SampleSFBGSData::get().sfbgsRig00.boneMapArray().at(i));
 		}
 	}
+}
 
-#pragma endregion
+GTEST(Rig00Json)
+{
+	const std::filesystem::path json00Path = "assets/00/skeleton.json";
+	if (!std::filesystem::exists(json00Path))
+		GTEST_SKIP() << "Json file for Rig00 not found\n";
 
-#pragma region UNIV Rig00 JSON
+	std::string uRig00StringInput;
+	std::ifstream iStream(json00Path, std::ios::binary | std::ios::ate);
 
-	//TODO: UNIV RIG00 Unit Tests
+	if (!iStream.is_open())
+		GTEST_SKIP() << "Json file for Rig00 not able to be read\n";
+
+	const std::streamsize size = iStream.tellg();
+	iStream.seekg(0, std::ios::beg);
+
+	uRig00StringInput.resize(size, '\0');
+
+	if (!iStream.read(uRig00StringInput.data(), size))
 	{
-		EXPECT_NO_THROW(auto res = uRig00.toJson().serialize().c_str());
-		//TODO: Convert to json file
-		auto uRig00StringInput = R"({
-	"name": "MySkeletonRig",
-	"root": {
-		"name": "Fountain_Root",
-		"property": {
-				"type": "Default"
-			},
-		"transform": {
-				"position": {
-						"x": 0,
-						"y": 0,
-						"z": 0
-					},
-				"rotation": {
-						"x": 0,
-						"y": 0,
-						"z": -0.7071069,
-						"w": 0.70710665
-					}
-			},
-		"children": [
-				{
-					"name": "PlanetObject",
-					"property": {
-							"type": "Default"
-						},
-					"transform": {
-							"position": {
-									"x": 0,
-									"y": 0,
-									"z": 1.30656
-								},
-							"rotation": {
-									"x": 0,
-									"y": 0,
-									"z": 0,
-									"w": 1
-								}
-						},
-					"children": [
-							{
-								"name": "RingObject",
-								"property": {
-										"type": "Default"
-									},
-								"transform": {
-										"position": {
-												"x": 0,
-												"y": 0,
-												"z": 0
-											},
-										"rotation": {
-												"x": 0,
-												"y": 0,
-												"z": 0,
-												"w": 1
-											}
-									},
-								"children": [
-									]
-							}
-						]
-				}
-			]
-	},
-	"packages": {
-		"MIRROR_RIG_PACKAGE": {
-				"pairs": {
-					}
-			},
-		"SFBGS_RIG_PACKAGE": {
-				"mannequin": false,
-				"map": {
-						"8": "PlanetObject",
-						"0": "Fountain_Root"
-					},
-				"lod": {
-						"Fountain_Root": 4,
-						"RingObject": 4,
-						"PlanetObject": 4
-					},
-				"precision": {
-						"high": 0.00025,
-						"low": 0.03125
-					}
-			},
-		"MANIFEST_RIG_PACKAGE": {
-				"list": [
-						"Fountain_Root",
-						"PlanetObject",
-						"RingObject"
-					]
-			}
-	}
-})";
-		auto json00 = Utilities::JsonObject::Deserialize(uRig00StringInput);
-		UNIV::SkeletonRig uRig00Json(json00);
-
-		EXPECT_STRCASEEQ(uRig00StringInput, json00.serialize().c_str());
+		GTEST_SKIP() << "Json file for Rig00 not able to be read into buffer\n";
 	}
 
-#pragma endregion
+	ASSERT_NO_THROW(
+		SampleSFBGSData::get().uJsonRig00 = UNIV::SkeletonRig(Utilities::JsonObject::Deserialize(uRig00StringInput.c_str())
+		));
 
-	
+	EXPECT_EQ(SampleSFBGSData::get().uJsonRig00, SampleSFBGSData::get().univRig00);
 }
 
 GTEST(ScratchAnimation)
@@ -446,9 +410,53 @@ GTEST(ScratchAnimation)
 		EXPECT_TRUE(block.addRotationEntry(r2));
 
 		EXPECT_TRUE(uAnim.addAnimationBlock(block));
+
+		auto& amendPackage = SFBGS::SFBGS_AnimationPackage::GetPackage(uAnim);
+		auto aBlock = UNIV::AnimationBlock();
+
+		aBlock.setBoneName("Nif");
+
+		aBlock.addScalarEntry({0,0.9});
+
+		aBlock.addRotationEntry({9,{0.0,1.0,1.0,0.0}});
+		aBlock.addRotationEntry({0,{0.0,0.5,1.0,0.0}});
+
+		aBlock.addTranslationEntry({0,{0.0,0.0,0.0}});
+		aBlock.addTranslationEntry({1,{0.0,0.0,100.0}});
+
+		amendPackage.addAmendedBlock(aBlock);
 	}
 
 	EXPECT_EQ(uAnim.animationBlockCount(), 2);
 	EXPECT_EQ(uAnim.frameCount(), 31);
+
+	{
+		const std::filesystem::path json00Path = "assets/00/animation.json";
+		if (!std::filesystem::exists(json00Path))
+			GTEST_SKIP() << "Json file for Anim00 not found\n";
+
+		std::string uAnim00StringInput;
+		std::ifstream iStream(json00Path, std::ios::binary | std::ios::ate);
+
+		if (!iStream.is_open())
+			GTEST_SKIP() << "Json file for Anim00 not able to be read\n";
+
+		const std::streamsize size = iStream.tellg();
+		iStream.seekg(0, std::ios::beg);
+
+		uAnim00StringInput.resize(size, '\0');
+
+		if (!iStream.read(uAnim00StringInput.data(), size))
+		{
+			GTEST_SKIP() << "Json file for Anim00 not able to be read into buffer\n";
+		}
+
+		UNIV::Animation jAnim;
+
+		jAnim = UNIV::Animation(Utilities::JsonObject::Deserialize(uAnim00StringInput.c_str()));
+
+		EXPECT_EQ(uAnim, jAnim);
+	}
+
 }
 

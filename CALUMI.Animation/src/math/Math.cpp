@@ -1945,6 +1945,15 @@ namespace CALUMI::Math
 		}
 	}
 
+	bool Transform::operator==(const Transform& input) const
+	{
+		if (this == &input)
+			return true;
+
+		return pImpl->m_position == input.pImpl->m_position &&
+			pImpl->m_rotation == input.pImpl->m_rotation;
+	}
+
 #pragma endregion
 
 }

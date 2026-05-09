@@ -316,6 +316,11 @@ namespace CALUMI::UNIV
         return output;
     }
 
+    bool PriorityFrame::isIdentical(const PriorityFrame& input) const
+    {
+        return pImpl->m_frame == input.pImpl->m_frame && pImpl->m_priority == input.pImpl->m_priority;
+    }
+
     bool operator<(const PriorityFrame& A, const PriorityFrame& B)    { return A.frame() <  B.frame(); }
     bool operator<=(const PriorityFrame& A, const PriorityFrame& B)   { return A.frame() <= B.frame(); }
     bool operator>(const PriorityFrame& A, const PriorityFrame& B)    { return A.frame() >  B.frame(); }
@@ -345,6 +350,20 @@ namespace CALUMI::UNIV
         }
     }
 
+    bool CompareTranslationSequence(const TranslationSequence& sq1, const TranslationSequence& sq2)
+    {
+        if (sq1.pImpl->vector.size() != sq2.pImpl->vector.size())
+            return false;
+
+        for (size_t i = 0; i < sq1.pImpl->vector.size(); i++)
+        {
+            if (!sq1.pImpl->vector.at(i).isIdentical(sq2.pImpl->vector.at(i)))
+                return false;
+        }
+
+        return true;
+    }
+
     void SortRotationSequence(const RotationSequence& sq, const bool highToLow)
     {
         if(sq.pImpl->vector.size() < 2)
@@ -358,6 +377,20 @@ namespace CALUMI::UNIV
         {
             std::ranges::sort(sq.pImpl->vector);
         }
+    }
+
+    bool CompareRotationSequence(const RotationSequence& sq1, const RotationSequence& sq2)
+    {
+        if (sq1.pImpl->vector.size() != sq2.pImpl->vector.size())
+            return false;
+
+        for (size_t i = 0; i < sq1.pImpl->vector.size(); i++)
+        {
+            if (!sq1.pImpl->vector.at(i).isIdentical(sq2.pImpl->vector.at(i)))
+                return false;
+        }
+
+        return true;
     }
 
     void SortScalarSequence(const ScalarSequence& sq, const bool highToLow)
@@ -375,6 +408,20 @@ namespace CALUMI::UNIV
         }
     }
 
+    bool CompareScalarSequence(const ScalarSequence& sq1, const ScalarSequence& sq2)
+    {
+        if (sq1.pImpl->vector.size() != sq2.pImpl->vector.size())
+            return false;
+
+        for (size_t i = 0; i < sq1.pImpl->vector.size(); i++)
+        {
+            if (!sq1.pImpl->vector.at(i).isIdentical(sq2.pImpl->vector.at(i)))
+                return false;
+        }
+
+        return true;
+    }
+
     void SortPrioritySequence(const PrioritySequence& sq, const bool highToLow)
     {
         if(sq.pImpl->vector.size() < 2)
@@ -390,6 +437,19 @@ namespace CALUMI::UNIV
         }
     }
 
+    bool ComparePrioritySequence(const PrioritySequence& sq1, const PrioritySequence& sq2)
+    {
+        if (sq1.pImpl->vector.size() != sq2.pImpl->vector.size())
+            return false;
+
+        for (size_t i = 0; i < sq1.pImpl->vector.size(); i++)
+        {
+            if (!sq1.pImpl->vector.at(i).isIdentical(sq2.pImpl->vector.at(i)))
+                return false;
+        }
+
+        return true;
+    }
 }
 
 #pragma region EXTERN"C"

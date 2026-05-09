@@ -3,6 +3,7 @@
 //Contact: Calaverahmedia@gmail.com
 
 // ReSharper disable CppExpressionWithoutSideEffects
+// ReSharper disable once CppUnusedIncludeDirective
 #include "internalvectordef.h"
 #include "internalplatform.h"
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
@@ -13,7 +14,6 @@
 #include <limits>
 
 #include "sfbgs/skeletonrig/SFBGS_RigPackage.h"
-#include "sfbgs/skeletonrig/SFBGS_SkeletonRig.h"
 #include "univ/skeletonrig/packages/UNIV_RigManifestPackage.h"
 #include "univ/skeletonrig/packages/UNIV_RigMirrorPackage.h"
 
@@ -80,6 +80,45 @@ namespace CALUMI::UNIV
                 return;
             }
         }
+    }
+
+    bool SkeletonBone::operator==(const SkeletonBone& other) const
+    {
+        if (this == &other)
+            return true;
+
+        if (pImpl->m_childBones.size() == other.pImpl->m_childBones.size())
+        {
+            for (int i = 0; i < pImpl->m_childBones.size(); i++)
+            {
+                if (*pImpl->m_childBones.at(i) != *other.pImpl->m_childBones.at(i))
+                    return false;
+            }
+        }
+
+        return  pImpl->m_name == other.pImpl->m_name &&
+                pImpl->m_localTransform == other.pImpl->m_localTransform &&
+                *pImpl->m_boneTypeProperty == *other.pImpl->m_boneTypeProperty;
+    }
+
+    SkeletonBone& SkeletonBone::operator=(const SkeletonBone& other)
+    {
+        if (this == &other)
+            return *this;
+
+        pImpl->m_localTransform = other.pImpl->m_localTransform;
+        pImpl->m_boneTypeProperty = other.pImpl->m_boneTypeProperty;
+        pImpl->m_name = other.pImpl->m_name;
+
+        pImpl->m_childBones.clear();
+
+        for (const auto& sourceBone : other.pImpl->m_childBones)
+        {
+            if (const auto addedBone = addChildBone(sourceBone->pImpl->m_name.c_str(), sourceBone->pImpl->m_localTransform))
+                *addedBone = *sourceBone;
+        }
+
+        return *this;
     }
 
     const ILineage* SkeletonBone::parent() const
@@ -460,13 +499,13 @@ namespace CALUMI::UNIV
             pImpl = nullptr;
         }
     }
-    SkeletonRig::SkeletonRig(const Utilities::StringContainer& _rigName) : SkeletonRig()
+    SkeletonRig::SkeletonRig(const Utilities::StringContainer& rigName) : SkeletonRig()
     {
-        pImpl->m_rigName = _rigName.c_str();
+        pImpl->m_rigName = rigName.c_str();
     }
-    SkeletonRig::SkeletonRig(const char* _rigName) : SkeletonRig()
+    SkeletonRig::SkeletonRig(const char* rigName) : SkeletonRig()
     {
-        pImpl->m_rigName = _rigName;
+        pImpl->m_rigName = rigName;
     }
 
     unsigned int SkeletonRig::boneTypeCount(const BoneTypeProperty::BoneType type) const
@@ -483,6 +522,7 @@ namespace CALUMI::UNIV
 
     unsigned int SkeletonRig::boneCount() const
     {
+        // +1 to include root
         return pImpl->m_root.boneCount() + 1;
     }
 
@@ -513,6 +553,24 @@ namespace CALUMI::UNIV
         output["packages"] = pImpl->m_rigPackageManager.toJson();
 
         return output;
+    }
+
+    bool SkeletonRig::operator==(const SkeletonRig& input) const
+    {
+        return  pImpl->m_rigName == input.pImpl->m_rigName &&
+                pImpl->m_root == input.pImpl->m_root &&
+                pImpl->m_rigPackageManager == input.pImpl->m_rigPackageManager;
+    }
+
+    SkeletonRig& SkeletonRig::operator=(const SkeletonRig& input)
+    {
+        if (this == &input)
+            return *this;
+
+        pImpl->m_rigName = input.pImpl->m_rigName;
+        pImpl->m_root = input.pImpl->m_root;
+        pImpl->m_rigPackageManager = input.pImpl->m_rigPackageManager;
+        return *this;
     }
 
     SkeletonRig::SkeletonRig(const Utilities::JsonObject& data) : SkeletonRig()

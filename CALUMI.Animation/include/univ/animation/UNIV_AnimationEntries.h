@@ -45,7 +45,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @param data
 		 */
-		TranslationFrame(const Utilities::JsonObject& data);
+		explicit TranslationFrame(const Utilities::JsonObject& data);
 		/**
 		 * @param input
 		 */
@@ -157,7 +157,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @param data
 		 */
-		RotationFrame(const Utilities::JsonObject& data);
+		explicit RotationFrame(const Utilities::JsonObject& data);
 		/**
 		 * @param input
 		 */
@@ -278,7 +278,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @param data
 		 */
-		ScalarFrame(const Utilities::JsonObject& data);
+		explicit ScalarFrame(const Utilities::JsonObject& data);
 		/**
 		 * @param input
 		 */
@@ -396,7 +396,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @param data
 		 */
-		PriorityFrame(const Utilities::JsonObject& data);
+		explicit PriorityFrame(const Utilities::JsonObject& data);
 		/**
 		 * @param input
 		 */
@@ -416,6 +416,15 @@ namespace CALUMI::UNIV
 		///@{
 		Utilities::JsonObject toJson() const;
 		///@}
+		/// @name True Comparison
+		/// @{
+
+		/**
+		 * @return Whether the two entries are equal for all struct members
+		 */
+		bool isIdentical(const PriorityFrame& input) const;
+
+		/// @}
 
 	private:
 		struct Impl;
@@ -478,12 +487,26 @@ namespace CALUMI::UNIV
 	 */
 	CALUMIANIMATION_API void SortTranslationSequence(const TranslationSequence& sq, bool highToLow = false);
 	/**
+	 * @relates TranslationFrame
+	 * @param sq1
+	 * @param sq2
+	 * @return
+	 */
+	CALUMIANIMATION_API bool CompareTranslationSequence(const TranslationSequence& sq1, const TranslationSequence& sq2);
+	/**
 	 * @relates RotationFrame
 	 * @brief Sorts the sequence by frame
 	 * @param sq
 	 * @param highToLow
 	 */
 	CALUMIANIMATION_API void SortRotationSequence(const RotationSequence& sq, bool highToLow = false);
+	/**
+	 * @relates RotationFrame
+	 * @param sq1
+	 * @param sq2
+	 * @return
+	 */
+	CALUMIANIMATION_API bool CompareRotationSequence(const RotationSequence& sq1, const RotationSequence& sq2);
 	/**
 	 * @relates ScalarFrame
 	 * @brief Sorts the sequence by frame
@@ -492,17 +515,39 @@ namespace CALUMI::UNIV
 	 */
 	CALUMIANIMATION_API void SortScalarSequence(const ScalarSequence& sq, bool highToLow = false);
 	/**
+	 * @relates ScalarFrame
+	 * @param sq1
+	 * @param sq2
+	 * @return
+	 */
+	CALUMIANIMATION_API bool CompareScalarSequence(const ScalarSequence& sq1, const ScalarSequence& sq2);
+	/**
 	 * @relates PriorityFrame
 	 * @brief Sorts the sequence by frame
 	 * @param sq
 	 * @param highToLow
 	 */
 	CALUMIANIMATION_API void SortPrioritySequence(const PrioritySequence& sq, bool highToLow = false);
+	/**
+	 * @relates PriorityFrame
+	 * @param sq1
+	 * @param sq2
+	 * @return
+	 */
+	CALUMIANIMATION_API bool ComparePrioritySequence(const PrioritySequence& sq1, const PrioritySequence& sq2);
 
-	VECTORDECF(TranslationSequence, TranslationFrame, friend void SortTranslationSequence(const TranslationSequence& sq, bool highToLow);)
-	VECTORDECF(RotationSequence, RotationFrame, friend void SortRotationSequence(const RotationSequence& sq, bool highToLow);)
-	VECTORDECF(ScalarSequence, ScalarFrame, friend void SortScalarSequence(const ScalarSequence& sq, bool highToLow);)
-	VECTORDECF(PrioritySequence, PriorityFrame, friend void SortPrioritySequence(const PrioritySequence& sq, bool highToLow);)
+	VECTORDECF(TranslationSequence, TranslationFrame,
+		friend void SortTranslationSequence(const TranslationSequence& sq, bool highToLow);
+		friend bool CompareTranslationSequence(const TranslationSequence& sq1, const TranslationSequence& sq2);)
+	VECTORDECF(RotationSequence, RotationFrame,
+		friend void SortRotationSequence(const RotationSequence& sq, bool highToLow);
+		friend bool CompareRotationSequence(const RotationSequence& sq1, const RotationSequence& sq2);)
+	VECTORDECF(ScalarSequence, ScalarFrame,
+		friend void SortScalarSequence(const ScalarSequence& sq, bool highToLow);
+		friend bool CompareScalarSequence(const ScalarSequence& sq1, const ScalarSequence& sq2);)
+	VECTORDECF(PrioritySequence, PriorityFrame,
+		friend void SortPrioritySequence(const PrioritySequence& sq, bool highToLow);
+		friend bool ComparePrioritySequence(const PrioritySequence& sq1, const PrioritySequence& sq2);)
 
 }
 

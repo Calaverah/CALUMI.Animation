@@ -35,6 +35,24 @@ namespace CALUMI::UNIV
         }
         return *this;
     }
+
+    bool IPackageManager::operator==(const IPackageManager& other) const
+    {
+        if (pImpl->m_packages.size() != other.pImpl->m_packages.size())
+            return false;
+
+        for (const auto& [key, value] : pImpl->m_packages)
+        {
+            if (!other.pImpl->m_packages.contains(key))
+                return false;
+
+            if (*value != *other.pImpl->m_packages.at(key))
+                return false;
+        }
+
+        return true;
+    }
+
     IPackageManager::~IPackageManager()
     {
         if (pImpl)
@@ -44,7 +62,7 @@ namespace CALUMI::UNIV
         }
     }
 
-    IPackage* IPackageManager::package(const char* packageName)
+    IPackage* IPackageManager::package(const char* packageName) const
     {
         if (!pImpl->m_packages.contains(packageName))
             return nullptr;

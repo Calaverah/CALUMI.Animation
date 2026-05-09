@@ -50,6 +50,11 @@ namespace CALUMI::UNIV {
 
     void DefaultBoneProperty::fromJson(const Utilities::JsonObject& data) { }
 
+    bool DefaultBoneProperty::operator==(const BoneTypeProperty& other) const
+    {
+		return SCOMPARE(typeAsString(), other.typeAsString()) == 0;
+    }
+
     struct TwistBoneProperty::Impl
 	{
 		std::string m_twistDriver;
@@ -124,6 +129,16 @@ namespace CALUMI::UNIV {
 
     	if (data.contains("weight"))
     		pImpl->m_twistDriverWeight = data["weight"].toFloat(0.0f);
+	}
+
+	bool TwistBoneProperty::operator==(const BoneTypeProperty& other) const
+	{
+    	if (const auto pOther = dynamic_cast<const TwistBoneProperty*>(&other))
+    	{
+    		return pImpl->m_twistDriver == pOther->pImpl->m_twistDriver &&
+    			pImpl->m_twistDriverWeight == pOther->pImpl->m_twistDriverWeight;
+    	}
+    	return false;
 	}
 }
 

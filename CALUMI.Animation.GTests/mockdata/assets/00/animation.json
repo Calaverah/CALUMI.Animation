@@ -1,0 +1,144 @@
+{
+  "blocks": [
+    {
+      "translations": [
+      ],
+      "bone": "Base",
+      "scalars": [
+      ],
+      "priorities": [
+      ],
+      "rotations": [
+        {
+          "rotation": {
+            "w": 0,
+            "y": 0,
+            "z": 0,
+            "x": 1
+          },
+          "frame": 0
+        },
+        {
+          "rotation": {
+            "w": 0.70710677,
+            "y": 0,
+            "z": 0,
+            "x": 0.70710677
+          },
+          "frame": 2
+        },
+        {
+          "rotation": {
+            "w": 0.70710677,
+            "y": 0,
+            "z": 0.70710677,
+            "x": 0
+          },
+          "frame": 5
+        }
+      ]
+    },
+    {
+      "priorities": [
+      ],
+      "scalars": [
+      ],
+      "rotations": [
+        {
+          "rotation": {
+            "w": 1,
+            "y": 0,
+            "z": 0,
+            "x": 0
+          },
+          "frame": 0
+        },
+        {
+          "rotation": {
+            "w": 0.8944272,
+            "y": 0,
+            "z": 0.4472136,
+            "x": 0
+          },
+          "frame": 15
+        },
+        {
+          "rotation": {
+            "w": 0.70710677,
+            "y": 0,
+            "z": 0.70710677,
+            "x": 0
+          },
+          "frame": 30
+        }
+      ],
+      "translations": [
+      ],
+      "bone": "Table"
+    }
+  ],
+  "packages": {
+    "SFBGS_ANIM_PACKAGE": {
+      "precision": {
+        "high": 0.00025,
+        "low": 0.03125
+      },
+      "amended_blocks": [
+        {
+          "block": {
+            "bone": "Nif",
+            "translations": [
+              {
+                "frame": 0,
+                "translation": {
+                  "z": 0,
+                  "y": 0,
+                  "x": 0
+                }
+              },
+              {
+                "translation": {
+                  "y": 0,
+                  "z": 100,
+                  "x": 0
+                },
+                "frame": 1
+              }
+            ],
+            "priorities": [
+            ],
+            "scalars": [
+              {
+                "scalar": 0.9,
+                "frame": 0
+              }
+            ],
+            "rotations": [
+              {
+                "rotation": {
+                  "w": 0,
+                  "y": 0.4472136,
+                  "z": 0.8944272,
+                  "x": 0
+                },
+                "frame": 0
+              },
+              {
+                "rotation": {
+                  "w": 0,
+                  "y": 0.70710677,
+                  "z": 0.70710677,
+                  "x": 0
+                },
+                "frame": 9
+              }
+            ]
+          },
+          "hash": 1793766473
+        }
+      ],
+      "rig_precision": true
+    }
+  },
+  "name": "NewTitle"
+}
