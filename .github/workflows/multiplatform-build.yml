@@ -3,34 +3,33 @@ on: [push, pull_request]
 
 jobs:
   build:
+    name: ${{ matrix.os }} - ${{ matrix.config }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        config: [debug, release]
         include:
           - os: ubuntu-latest
-            preset: linux-release
-          - os: ubuntu-latest
-            preset: linux-debug
-          - os: macos-latest
-            preset: mac-release
-          - os: macos-latest
-            preset: mac-debug
+            preset-prefix: "linux"
           - os: windows-latest
-            preset: win-release
-          - os: windows-latest
-            preset: win-debug
-
-    defaults:
-      run:
-        working-directory: ./CALUMI.Animation
+            preset-prefix: "win"
+          - os: macos-latest
+            preset-prefix: "mac"
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: [actions/checkout@v4](https://github.com/actions/checkout)
+
+      - name: Install Ninja (Optional)
+        if: runner.os != 'Windows'
+        run: sudo apt-get install ninja-build || brew install ninja
 
       - name: Configure CMake
-        run: cmake --preset ${{ matrix.preset }}
+        run: >
+          cmake -S CALUMI.Animation/ 
+          --preset ${{ matrix.preset-prefix }}-${{ matrix.config }}
 
       - name: Build
-        run: cmake --build --preset ${{ matrix.preset }}
+        run: cmake -S CALUMI.Animation/ --build --preset ${{ matrix.preset-prefix }}-${{ matrix.config }}
