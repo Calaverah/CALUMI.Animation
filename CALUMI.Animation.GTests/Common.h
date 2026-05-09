@@ -33,3 +33,13 @@
         std::cout << _BMAGENTA("V2: ") << v2.toString().c_str() << std::endl;\
     }\
     }
+
+#ifdef _WIN32
+    #include <cstring>
+    #define SCOMPARE _stricmp
+#else
+    #include <strings.h>
+    #define SCOMPARE strcasecmp
+#endif
+
+inline bool ShouldRunScans = false;

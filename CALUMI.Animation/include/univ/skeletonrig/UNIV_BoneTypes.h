@@ -29,16 +29,37 @@ namespace CALUMI::UNIV {
 
     	static constexpr auto BoneTypeMax = static_cast<uint32_t>(BoneType::Twist);
 
-        [[nodiscard]] virtual BoneType type() const = 0;
+		/**
+		 * @return
+		 */
+		[[nodiscard]] virtual BoneType type() const = 0;
 
-        [[nodiscard]] virtual const char* typeAsString() const = 0;
+		/**
+		 * @return
+		 */
+		[[nodiscard]] virtual const char* typeAsString() const = 0;
 		BoneTypeProperty() = default;
-		virtual ~BoneTypeProperty() = default;
+    	virtual ~BoneTypeProperty() = default;
 
-    	virtual Utilities::JsonObject toJson() const = 0;
-    	virtual void fromJson(const Utilities::JsonObject& data) = 0;
+		/**
+		 * @return
+		 */
+		virtual Utilities::JsonObject toJson() const = 0;
+		/**
+		 * @param data
+		 */
+		virtual void fromJson(const Utilities::JsonObject& data) = 0;
 
-    	virtual bool operator==(const BoneTypeProperty& other) const = 0;
+		/**
+		 * @param other
+		 * @return
+		 */
+		virtual bool operator==(const BoneTypeProperty& other) const = 0;
+		/**
+		 * @param other
+		 * @return
+		 */
+		virtual bool operator!=(const BoneTypeProperty& other) const;
 
     public:
     	/**

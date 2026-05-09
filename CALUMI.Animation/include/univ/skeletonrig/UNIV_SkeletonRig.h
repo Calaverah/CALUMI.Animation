@@ -55,6 +55,11 @@ namespace CALUMI::UNIV
 		 * @param other
 		 * @return
 		 */
+		bool operator!=(const SkeletonBone& other) const;
+		/**
+		 * @param other
+		 * @return
+		 */
 		SkeletonBone& operator=(const SkeletonBone& other);
 		/// @}
 		/// @name ILineage
@@ -359,6 +364,11 @@ namespace CALUMI::UNIV
 		 * @return
 		 */
 		bool operator==(const SkeletonRig& input) const;
+		/**
+		 * @param input
+		 * @return
+		 */
+		bool operator!=(const SkeletonRig& input) const;
 		/// @}
 	private:
 		struct Impl;

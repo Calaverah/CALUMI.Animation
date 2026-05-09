@@ -12,7 +12,6 @@
 #include "univ/animation/UNIV_IAnimationPackage.h"
 #include <vector>
 #include "internal/internalvectordef.h"
-#include <algorithm>
 #include <iostream>
 #include <ostream>
 
@@ -122,6 +121,11 @@ namespace CALUMI::UNIV
 
 		return pImpl->m_animationTitle == other.pImpl->m_animationTitle &&
 			pImpl->m_packageManager == other.pImpl->m_packageManager;
+	}
+
+	bool Animation::operator!=(const Animation& other) const
+	{
+		return !(*this == other);
 	}
 
 	bool Animation::addAnimationBlock(const AnimationBlock& blockToAdd, const bool overwrite) const
@@ -338,6 +342,11 @@ namespace CALUMI::UNIV
 				CompareTranslationSequence(pImpl->m_translationSequence, other.pImpl->m_translationSequence) &&
 				CompareScalarSequence(pImpl->m_scalarSequence, other.pImpl->m_scalarSequence) &&
 				ComparePrioritySequence(pImpl->m_prioritySequence, other.pImpl->m_prioritySequence);
+	}
+
+	bool AnimationBlock::operator!=(const AnimationBlock& other) const
+	{
+		return !(*this == other);
 	}
 
 	unsigned int AnimationBlock::lastFrameInBlock() const

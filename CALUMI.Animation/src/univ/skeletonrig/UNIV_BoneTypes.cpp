@@ -8,6 +8,10 @@
 
 
 namespace CALUMI::UNIV {
+	bool BoneTypeProperty::operator!=(const BoneTypeProperty& other) const
+	{
+		return !(*this == other);
+	}
 
 	BoneTypeProperty::BoneType BoneTypeProperty::BoneTypeFromString(const char* boneTypeStr)
 	{

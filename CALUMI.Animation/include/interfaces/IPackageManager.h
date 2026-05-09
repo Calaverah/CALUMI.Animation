@@ -42,6 +42,7 @@ namespace CALUMI::UNIV
 		/// @name Operators
 		/// @{
 		virtual bool operator==(const IPackage& other) const = 0;
+		virtual bool operator!=(const IPackage& other) const;
 		/// @}
 
 	protected:

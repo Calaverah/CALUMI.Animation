@@ -101,6 +101,11 @@ namespace CALUMI::UNIV
                 *pImpl->m_boneTypeProperty == *other.pImpl->m_boneTypeProperty;
     }
 
+    bool SkeletonBone::operator!=(const SkeletonBone& other) const
+    {
+        return !(*this == other);
+    }
+
     SkeletonBone& SkeletonBone::operator=(const SkeletonBone& other)
     {
         if (this == &other)
@@ -560,6 +565,11 @@ namespace CALUMI::UNIV
         return  pImpl->m_rigName == input.pImpl->m_rigName &&
                 pImpl->m_root == input.pImpl->m_root &&
                 pImpl->m_rigPackageManager == input.pImpl->m_rigPackageManager;
+    }
+
+    bool SkeletonRig::operator!=(const SkeletonRig& input) const
+    {
+        return !(*this == input);
     }
 
     SkeletonRig& SkeletonRig::operator=(const SkeletonRig& input)

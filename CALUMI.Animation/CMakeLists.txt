@@ -24,7 +24,7 @@ if(WIN32 AND MSVC)
 elseif(APPLE)
 
 elseif(LINUX)
-    target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
+#    target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

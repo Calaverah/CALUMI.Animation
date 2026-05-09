@@ -16,6 +16,12 @@ namespace CALUMI::UNIV
     {
         std::unordered_map<std::string, std::shared_ptr<IPackage>> m_packages;
     };
+
+    bool IPackage::operator!=(const IPackage& other) const
+    {
+        return !(*this == other);
+    }
+
     IPackageManager::IPackageManager() : pImpl(new Impl()) {}
 
     IPackageManager::IPackageManager(const IPackageManager& input) : IPackageManager()
