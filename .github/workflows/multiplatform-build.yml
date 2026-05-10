@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest, macos-15-intel]
         config: [debug, release]
         include:
           - os: ubuntu-latest
@@ -20,6 +20,9 @@ jobs:
           - os: macos-latest
             preset-prefix: "mac"
             arch: arm64
+          - os: macos-15-intel
+            preset-prefix: "mac"
+            arch: x64
 
     steps:
       - name: Checkout Code
