@@ -26,6 +26,11 @@ set(PROJECT_SOURCES
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCES})
 
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION_MAJOR}
+)
+
 add_subdirectory(include)
 add_subdirectory(src)
 

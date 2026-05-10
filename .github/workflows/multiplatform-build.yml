@@ -49,3 +49,16 @@ jobs:
       - name: Run GTests
         run: ./run_tests
         working-directory: ./build/${{ matrix.preset-prefix }}-${{ matrix.config }}
+
+      - name: Upload Artifacts
+        if: matrix.config == 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CALUMI-Animation-${{ github.run_number }}-${{matrix.preset-prefix}}-${{matrix.arch}}
+          path: |
+            ./build/${{ matrix.preset-prefix }}-${{ matrix.config }}/CALUMI.Animation.dll
+            ./build/${{ matrix.preset-prefix }}-${{ matrix.config }}/CALUMI.Animation.lib
+            ./build/${{ matrix.preset-prefix }}-${{ matrix.config }}/libCALUMI.Animation.so*
+            ./build/${{ matrix.preset-prefix }}-${{ matrix.config }}/libCALUMI.Animation*.dylib
+            ./include/Anim*
+            ./include/*.h
