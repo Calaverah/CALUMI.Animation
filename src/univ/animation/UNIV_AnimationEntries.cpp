@@ -453,7 +453,7 @@ namespace CALUMI::UNIV
     }
 }
 
-#pragma region EXTERN"C"
+#pragma region EXTERN "C"
 
 CALUMI::UNIV::RotationFrame* CreateRotationFrameC(const uint16_t frame, float x, float y, float z, float w)
 {

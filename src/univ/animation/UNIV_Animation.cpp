@@ -8,7 +8,7 @@
 #include "utilities/CALUMI_Common.h"
 #include "utilities/CALUMI_Utilities.h"
 #include "univ/animation/UNIV_Animation.h"
-#include <string>
+
 #include "univ/animation/UNIV_IAnimationPackage.h"
 #include <vector>
 #include "internal/internalvectordef.h"
@@ -455,7 +455,7 @@ namespace CALUMI::UNIV
 
 		//std::println("size {}, dist {}, start/finish {}/{}", input.size(),distance,input.at(0).Frame(),input.at(input.size()-1).Frame());
 
-		//We force the split in this range of entries as Slerp for 0-180 degrees will have an undefined direction
+		//We force the split in this range of entries as sLerp for 0-180 degrees will have an undefined direction
 		// and almost always will give an sLerp/key angle of some value above 180 degrees...
 		// By setting the index to half (or at least 1) and skipping any index assignment we force at least one key in between the 0-180 degree
 		// interpolation allowing the user to keep their intended direction.
@@ -582,7 +582,7 @@ namespace CALUMI::UNIV
 		{
 			const double t = static_cast<float>(input.at(i).frame() - f0) / static_cast<float>(fn - f0);
 
-			//lerp isn't quite the "perpendicular" distance needed for this algorithm, but it makes for a practical compromise
+			//Lerp isn't quite the "perpendicular" distance needed for this algorithm, but it makes for a practical compromise
 			Math::Vector3D interp = input.at(0).translationVector().lerp(input.at(input.size() - 1).translationVector(), t);
 
 			if (const double distance = (interp - input.at(i).translationVector()).length(); distance > dMax)
@@ -695,7 +695,7 @@ namespace CALUMI::UNIV
 		{
 			const double t = static_cast<float>(input.at(i).frame() - f0) / static_cast<float>(fN - f0);
 
-			//lerp isn't quite the "perpendicular" distance needed for this algorithm, but it makes for a practical compromise
+			//Lerp isn't quite the "perpendicular" distance needed for this algorithm, but it makes for a practical compromise
 			Math::Vector2D interp = vec0.lerp(vecN, t);
 			Math::Vector2D current(input.at(i).frame(), input.at(i).scalarValue());
 
@@ -797,7 +797,7 @@ namespace CALUMI::UNIV
 	VECTORDEF(AnimationVector, Animation)
 }
 
-#pragma region EXTERN"C"
+#pragma region EXTERN "C"
 
 CALUMI::UNIV::Animation* CreateAnimationC(const char* animationTitle, const unsigned int rigBoneCount)
 {
@@ -867,8 +867,8 @@ int DeleteAnimationC(const CALUMI::UNIV::Animation** ptr)
 {
 	if (ptr && *ptr)
 	{
-		delete ptr;
-		ptr = nullptr;
+		delete *ptr;
+		*ptr = nullptr;
 		return 0;
 	}
 

@@ -22,8 +22,6 @@ namespace CALUMI::UNIV
 	 */
 	class CALUMIANIMATION_API SkeletonBone : public ILineage
 	{
-	private:
-
 		/** @name Initialization*/
 		/// @{
 
@@ -46,7 +44,7 @@ namespace CALUMI::UNIV
 		/// @}
 		/** @name Operators*/
 		/// @{
-	public:
+		
 		/**
 		 * @return
 		 */
@@ -122,8 +120,6 @@ namespace CALUMI::UNIV
 		[[nodiscard]] unsigned int boneTypeCount(BoneTypeProperty::BoneType type) const;
 		/// @}
 
-	public:
-
 		/** @name Transform*/
 		/// @{
 
@@ -149,8 +145,6 @@ namespace CALUMI::UNIV
 		void setLocalTransform(const Math::Transform& transform) const;
 
 		/// @}
-
-	public:
 
 		/** @name Identification*/
 		/// @{
@@ -188,7 +182,7 @@ namespace CALUMI::UNIV
 		 * @param resetExisting If this bone is already set to the given type, will reset to this type's default values
 		 * @return Whether the operation was a success
 		 */
-		bool setBoneTypeProperty(BoneTypeProperty::BoneType boneType, bool resetExisting = false) const;
+		bool setBoneTypeProperty(BoneTypeProperty::BoneType boneType, bool resetExisting = false) const;  // NOLINT(*-use-nodiscard)
 		/**
 		 * @brief Gets the unique bone property
 		 * @return Ptr to the bone property type and its values
@@ -201,7 +195,6 @@ namespace CALUMI::UNIV
 		 */
 		bool resetBoneTypeProperty(BoneTypeProperty::BoneType boneType = BoneTypeProperty::BoneType::Default) const; // NOLINT(*-use-nodiscard)
 
-	public:
 		/**
 		 * @warning Root bones belong directly to a rig and cannot be set to a new parent
 		 * @param newParent
@@ -223,7 +216,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 		/**
 		 * @param data
 		 */
@@ -235,7 +228,6 @@ namespace CALUMI::UNIV
 		struct Impl;
 		Impl* pImpl;
 
-	private:
 		friend class SkeletonRig;
 	};
 
@@ -280,7 +272,6 @@ namespace CALUMI::UNIV
 
 		/// @}
 
-	public:
 		/** @name Properties*/
 		/// @{
 
@@ -302,7 +293,6 @@ namespace CALUMI::UNIV
 
 		/// @}
 
-	public:
 		/** @name Bone Entries */
 		/// @{
 
@@ -333,8 +323,6 @@ namespace CALUMI::UNIV
 
 		/// @}
 
-	public:
-
 		/** @name Static Members
 		*/
 		/// @{
@@ -348,7 +336,7 @@ namespace CALUMI::UNIV
 		/// @name Json
 		/// @{
 
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 
 
 		/// @}
@@ -385,7 +373,7 @@ namespace CALUMI::UNIV
 
 /// @defgroup c_univ_rig Universal
 /// @{
-extern  "C"
+extern "C"
 {
 	/**
 	 * @brief Creates a brand new Skeleton Rig

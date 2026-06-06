@@ -1,3 +1,4 @@
+// ReSharper disable CppUnusedIncludeDirective
 //Copyright © 2025-2026 Calaverah. All rights reserved.
 //License: https://www.gnu.org/licenses/lgpl-3.0.html
 //Contact: Calaverahmedia@gmail.com
@@ -286,8 +287,7 @@ namespace CALUMI::SFBGS
     }
 }
 
-//EXTERN C =============================================================================================================
-
+#pragma region Extern "C"
 
 int SaveAnimationSceneToSFBGSFormatPathOverrideC(CALUMI::UNIV::AnimationScene* scene,
                                                  const wchar_t**               directoryPathArray,
@@ -742,3 +742,5 @@ int SaveSkeletonRigToSFBGSFormatDirectC(const CALUMI::UNIV::SkeletonRig* rig, co
     }
     return -1;
 }
+
+#pragma endregion

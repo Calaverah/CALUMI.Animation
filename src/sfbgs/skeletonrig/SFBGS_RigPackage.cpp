@@ -37,6 +37,7 @@ namespace CALUMI::SFBGS
 		}
 
 		delete pkg;
+		// ReSharper disable once CppDFAUnusedValue
 		pkg = nullptr;
 		return false;
 	}
@@ -473,7 +474,7 @@ namespace CALUMI::SFBGS
 }
 
 
-#pragma region Extern"C"
+#pragma region Extern "C"
 	int SFBGSRigPackage_AddPackageToSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig, const bool overwrite)
 	{
 		if (rig)

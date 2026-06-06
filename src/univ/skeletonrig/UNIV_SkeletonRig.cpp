@@ -4,6 +4,7 @@
 
 // ReSharper disable CppExpressionWithoutSideEffects
 // ReSharper disable once CppUnusedIncludeDirective
+// ReSharper disable CppTooWideScope
 #include "internalvectordef.h"
 #include "internalplatform.h"
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
@@ -23,7 +24,6 @@ namespace CALUMI::UNIV
 #pragma region SKELETONBONE
     struct SkeletonBone::Impl
     {
-    public:
         std::shared_ptr<BoneTypeProperty> m_boneTypeProperty = std::make_shared<DefaultBoneProperty>();
         Math::Transform m_localTransform;
         std::string m_name;
@@ -454,7 +454,6 @@ namespace CALUMI::UNIV
 
 #pragma endregion
 
-
 #pragma region SKELETONRIG
 
     struct SkeletonRig::Impl
@@ -629,7 +628,7 @@ namespace CALUMI::UNIV
 
 #pragma endregion
 }
-#pragma region EXTERN"C"
+#pragma region EXTERN "C"
 
 CALUMI::UNIV::SkeletonRig* CreateSkeletonRigC(const char* name)
 {
@@ -681,7 +680,7 @@ int SetBoneTypeFromStringC(const CALUMI::UNIV::SkeletonBone* bone, const char* b
         return bone->setBoneTypeProperty(CALUMI::UNIV::BoneTypeProperty::BoneTypeFromString(boneType)) ? 0 : 1;
     }
     catch (std::bad_alloc&) {}
-    return -1;
+return -1;
 }
 uint32_t GetBoneTypeC(const CALUMI::UNIV::SkeletonBone* bone)
 {
@@ -719,7 +718,7 @@ int SetTwistBonePropertiesC(const CALUMI::UNIV::SkeletonBone* bone, const bool r
         return 3;
     }
     catch (std::bad_alloc&) {}
-    return -1;
+return -1;
 }
 const char* GetTwistBoneDriverC(const CALUMI::UNIV::SkeletonBone* bone)
 {
@@ -747,7 +746,7 @@ float GetTwistBoneDriverWeightC(const CALUMI::UNIV::SkeletonBone* bone)
             return tProp->twistDriverWeight();
     }
     catch(const std::exception&){}
-    return std::numeric_limits<float>::quiet_NaN();
+return std::numeric_limits<float>::quiet_NaN();
 }
 unsigned int GetSkeletonRigBoneCountC(const CALUMI::UNIV::SkeletonRig* source)
 {

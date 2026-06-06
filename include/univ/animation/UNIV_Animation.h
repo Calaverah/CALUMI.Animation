@@ -316,7 +316,7 @@ namespace CALUMI::UNIV
  * @defgroup c_univ_anim Universal
  * @{
  */
-extern  "C" {
+extern "C" {
 /**
  *
  * @param animationTitle

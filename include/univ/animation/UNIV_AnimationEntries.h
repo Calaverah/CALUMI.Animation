@@ -556,7 +556,7 @@ namespace CALUMI::UNIV
 	/// @addtogroup c_univ_anim
 	/// @{
 
-	extern  "C" {
+	extern "C" {
 		/**
 		 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteRotationFrameC
 		 * @param frame

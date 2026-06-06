@@ -254,6 +254,7 @@ namespace CALUMI::SFBGS
         if (pkg)
         {
             delete pkg;
+            // ReSharper disable once CppDFAUnusedValue
             pkg = nullptr;
         }
 
@@ -284,7 +285,7 @@ namespace CALUMI::SFBGS
     }
 }
 
-#pragma region Extern C
+#pragma region Extern "C"
 
 int SFBGSAnimationPackage_AddPackageToAnimationC(const CALUMI::UNIV::Animation* animation, const bool overwrite)
 {

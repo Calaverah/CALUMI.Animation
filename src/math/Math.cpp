@@ -19,6 +19,7 @@ namespace CALUMI::Math
 
 #pragma region VECTOR3
 
+	// ReSharper disable once CppDFATimeOver
 	const Vector3 Vector3::Zero = Vector3(0.0f);
 	const Vector3 Vector3::One = Vector3(1.0f);
 	const Vector3 Vector3::UnitX = { 1.0, 0.0, 0.0 };
@@ -216,7 +217,7 @@ namespace CALUMI::Math
 	float Vector3::length() const
 	{
 
-		return sqrt(pImpl->x * pImpl->x + pImpl->y * pImpl->y + pImpl->z * pImpl->z);
+		return std::sqrt(pImpl->x * pImpl->x + pImpl->y * pImpl->y + pImpl->z * pImpl->z);
 	}
 	float Vector3::lengthSquared() const
 	{
@@ -398,7 +399,7 @@ namespace CALUMI::Math
 		pImpl = new Impl(input, input, input);
 	}
 
-	Vector3D::Vector3D(Vector3 input)
+	Vector3D::Vector3D(Vector3 input) // NOLINT(*-unnecessary-value-param)
 	{
 		pImpl = new Impl(input.x(), input.y(), input.z());
 	}
@@ -762,7 +763,7 @@ namespace CALUMI::Math
 			normalize();
 	}
 
-	Quaternion::Quaternion(EulerDefinition eulerInput) : Quaternion(eulerInput.first(),
+	Quaternion::Quaternion(EulerDefinition eulerInput) : Quaternion(eulerInput.first(),  // NOLINT(*-unnecessary-value-param)
 																	eulerInput.second(),
 																	eulerInput.third(true),
 																	eulerInput.order())	{}
@@ -1061,7 +1062,7 @@ namespace CALUMI::Math
 
 	float Quaternion::length() const noexcept
 	{
-		return sqrt(lengthSquared());
+		return std::sqrt(lengthSquared());
 	}
 
 	void Quaternion::normalize() noexcept
@@ -1127,7 +1128,7 @@ namespace CALUMI::Math
 	{
 		const auto diffQ = rotationOffset(input, *this);
 
-		return 2 * acos(diffQ.w());
+		return 2 * std::acos(diffQ.w());
 	}
 
 	Quaternion Quaternion::rotationOffset(const Quaternion& start, const Quaternion& end)
@@ -1148,11 +1149,11 @@ namespace CALUMI::Math
 
 		if (std::abs(pDot) >= 1.0f) return input;
 
-		const float hTheta = acos(pDot);
+		const float hTheta = std::acos(pDot);
 		const float sinhTheta = sqrtf(1.0f - pDot * pDot);
 
-		const float ratio1 = sin((1 - t) * hTheta) / sinhTheta;
-		const float ratio2 = sin(t * hTheta) / sinhTheta;
+		const float ratio1 = std::sin((1 - t) * hTheta) / sinhTheta;
+		const float ratio2 = std::sin(t * hTheta) / sinhTheta;
 
 		Quaternion output(
 			x() * ratio1 + input.x() * ratio2,
@@ -1192,86 +1193,86 @@ namespace CALUMI::Math
 		{
 		case EulerDefinition::EulerOrder::XYZ:
 			{
-				output.setFirst(atan2(-matrix[1][2], matrix[2][2]));
-				output.setSecond(asin(matrix[0][2]));
-				output.setThird(atan2(-matrix[0][1], matrix[0][0]));
+				output.setFirst(std::atan2(-matrix[1][2], matrix[2][2]));
+				output.setSecond(std::asin(matrix[0][2]));
+				output.setThird(std::atan2(-matrix[0][1], matrix[0][0]));
 				break;
 			}
 		case EulerDefinition::EulerOrder::XZY:
 			{
-				output.setFirst(atan2(matrix[2][1], matrix[1][1]));
-				output.setSecond(asin(-matrix[0][1]));
-				output.setThird(atan2(matrix[0][2],matrix[0][0]));
+				output.setFirst(std::atan2(matrix[2][1], matrix[1][1]));
+				output.setSecond(std::asin(-matrix[0][1]));
+				output.setThird(std::atan2(matrix[0][2],matrix[0][0]));
 				break;
 			}
 		case EulerDefinition::EulerOrder::YXZ:
 			{
-				output.setFirst(atan2(matrix[0][2], matrix[2][2]));
-				output.setSecond(asin(-matrix[1][2]));
-				output.setThird(atan2(matrix[1][0], matrix[1][1]));
+				output.setFirst(std::atan2(matrix[0][2], matrix[2][2]));
+				output.setSecond(std::asin(-matrix[1][2]));
+				output.setThird(std::atan2(matrix[1][0], matrix[1][1]));
 				break;
 			}
 		case EulerDefinition::EulerOrder::YZX:
 			{
-				output.setFirst(atan2(-matrix[2][0], matrix[0][0]));
-				output.setSecond(asin(matrix[1][0]));
-				output.setThird(atan2(-matrix[1][2], matrix[1][1]));
+				output.setFirst(std::atan2(-matrix[2][0], matrix[0][0]));
+				output.setSecond(std::asin(matrix[1][0]));
+				output.setThird(std::atan2(-matrix[1][2], matrix[1][1]));
 				break;
 			}
 		case EulerDefinition::EulerOrder::ZXY:
 			{
-				output.setFirst(atan2(-matrix[0][1], matrix[1][1]));
-				output.setSecond(asin(matrix[2][1]));
-				output.setThird(atan2(-matrix[2][0], matrix[2][2]));
+				output.setFirst(std::atan2(-matrix[0][1], matrix[1][1]));
+				output.setSecond(std::asin(matrix[2][1]));
+				output.setThird(std::atan2(-matrix[2][0], matrix[2][2]));
 				break;
 			}
 		case EulerDefinition::EulerOrder::ZYX:
 			{
-				output.setFirst(atan2(matrix[1][0], matrix[0][0]));
-				output.setSecond(asin(-matrix[2][0]));
-				output.setThird(atan2(matrix[2][1], matrix[2][2]));
+				output.setFirst(std::atan2(matrix[1][0], matrix[0][0]));
+				output.setSecond(std::asin(-matrix[2][0]));
+				output.setThird(std::atan2(matrix[2][1], matrix[2][2]));
 				break;
 			}
 		case EulerDefinition::EulerOrder::XYX:
 			{
-				output.setFirst(atan2(matrix[1][0], -matrix[2][0]));
-				output.setSecond(acos(matrix[0][0]));
-				output.setThird(atan2(matrix[0][1], matrix[0][2]));
+				output.setFirst(std::atan2(matrix[1][0], -matrix[2][0]));
+				output.setSecond(std::acos(matrix[0][0]));
+				output.setThird(std::atan2(matrix[0][1], matrix[0][2]));
 				break;
 			}
 		case EulerDefinition::EulerOrder::XZX:
 			{
-				output.setFirst(atan2(matrix[2][0], matrix[1][0]));
-				output.setSecond(acos(matrix[0][0]));
-				output.setThird(atan2(matrix[0][2], -matrix[0][1]));
+				output.setFirst(std::atan2(matrix[2][0], matrix[1][0]));
+				output.setSecond(std::acos(matrix[0][0]));
+				output.setThird(std::atan2(matrix[0][2], -matrix[0][1]));
 				break;
 			}
 		case EulerDefinition::EulerOrder::YXY:
 			{
-				output.setFirst(atan2(matrix[0][1], matrix[2][1]));
-				output.setSecond(acos(matrix[1][1]));
-				output.setThird(atan2(matrix[1][0], -matrix[1][2]));
+				output.setFirst(std::atan2(matrix[0][1], matrix[2][1]));
+				output.setSecond(std::acos(matrix[1][1]));
+				output.setThird(std::atan2(matrix[1][0], -matrix[1][2]));
 				break;
 			}
 		case EulerDefinition::EulerOrder::YZY:
 			{
-				output.setFirst(atan2(matrix[2][1], -matrix[0][1]));
-				output.setSecond(acos(matrix[1][1]));
-				output.setThird(atan2(matrix[1][2], matrix[1][0]));
+				output.setFirst(std::atan2(matrix[2][1], -matrix[0][1]));
+				output.setSecond(std::acos(matrix[1][1]));
+				output.setThird(std::atan2(matrix[1][2], matrix[1][0]));
 				break;
 			}
 		case EulerDefinition::EulerOrder::ZXZ:
 			{
-				output.setFirst(atan2(matrix[0][2], -matrix[1][2]));
-				output.setSecond(acos(matrix[2][2]));
-				output.setThird(atan2(matrix[2][0], matrix[2][1]));
+				output.setFirst(std::atan2(matrix[0][2], -matrix[1][2]));
+				output.setSecond(std::acos(matrix[2][2]));
+				output.setThird(std::atan2(matrix[2][0], matrix[2][1]));
 				break;
 			}
 		case EulerDefinition::EulerOrder::ZYZ:
 			{
-				output.setFirst(atan2(matrix[1][2], matrix[0][2]));
-				output.setSecond(acos(matrix[2][2]));
-				output.setThird(atan2(matrix[2][1], -matrix[2][0]));
+				output.setFirst(std::atan2(matrix[1][2], matrix[0][2]));
+				output.setSecond(std::acos(matrix[2][2]));
+				output.setThird(std::atan2(matrix[2][1], -matrix[2][0]));
 				break;
 			}
 		}
@@ -1487,7 +1488,7 @@ namespace CALUMI::Math
 
 	float Vector2::length() const
 	{
-		return sqrt(pImpl->x * pImpl->x + pImpl->y * pImpl->y);
+		return std::sqrt(pImpl->x * pImpl->x + pImpl->y * pImpl->y);
 	}
 	float Vector2::lengthSquared() const
 	{
@@ -1620,7 +1621,7 @@ namespace CALUMI::Math
 	{
 		pImpl = new Impl(input);
 	}
-	Vector2D::Vector2D(Vector2 input)
+	Vector2D::Vector2D(Vector2 input) // NOLINT(*-unnecessary-value-param)
 	{
 		pImpl = new Impl(static_cast<double>(input.x()), static_cast<double>(input.y()));
 	}
@@ -1814,7 +1815,7 @@ namespace CALUMI::Math
 		Quaternion m_rotation;
 	};
 
-	Transform::Transform(Vector3 position, Quaternion rotation) : pImpl(new Impl())
+	Transform::Transform(Vector3 position, Quaternion rotation) : pImpl(new Impl()) // NOLINT(*-unnecessary-value-param)
 	{
 		pImpl->m_position = position;
 		pImpl->m_rotation = rotation;
@@ -1976,14 +1977,15 @@ float GetVector3ZC(CALUMI::Math::Vector3* source)
 {
 	return source->z();
 }
-int DeleteVector3C(CALUMI::Math::Vector3* ptr)
+int DeleteVector3C(CALUMI::Math::Vector3** ptr)
 {
-	if (!ptr)
+	if (!ptr || !*ptr)
 		return -1;
 
 	try
 	{
-		delete ptr;
+		delete *ptr;
+		*ptr = nullptr;
 		return 0;
 	}
 	catch (std::bad_alloc&){}
@@ -2009,14 +2011,15 @@ double GetVector3DZC(CALUMI::Math::Vector3D* source)
 {
 	return source->z();
 }
-int DeleteVector3DC(CALUMI::Math::Vector3D* ptr)
+int DeleteVector3DC(CALUMI::Math::Vector3D** ptr)
 {
-	if (!ptr)
+	if (!ptr || !*ptr)
 		return -1;
 
 	try
 	{
-		delete ptr;
+		delete *ptr;
+		*ptr = nullptr;
 		return 0;
 	}
 	catch (std::bad_alloc&){}
@@ -2035,14 +2038,15 @@ double GetVector2DYC(CALUMI::Math::Vector2D* source)
 {
 	return source->y();
 }
-int DeleteVector2DC(CALUMI::Math::Vector2D* ptr)
+int DeleteVector2DC(CALUMI::Math::Vector2D** ptr)
 {
-	if (!ptr)
+	if (!ptr || !*ptr)
 		return -1;
 
 	try
 	{
-		delete ptr;
+		delete *ptr;
+		*ptr = nullptr;
 		return 0;
 	}
 	catch (std::bad_alloc&){}
@@ -2057,14 +2061,15 @@ float GetVector2YC(CALUMI::Math::Vector2* source)
 {
 	return source->y();
 }
-int DeleteVector2C(CALUMI::Math::Vector2* ptr)
+int DeleteVector2C(CALUMI::Math::Vector2** ptr)
 {
-	if (!ptr)
+	if (!ptr || !*ptr)
 		return -1;
 
 	try
 	{
-		delete ptr;
+		delete *ptr;
+		*ptr = nullptr;
 		return 0;
 	}
 	catch (std::bad_alloc&){}
@@ -2160,14 +2165,15 @@ int GetQuaternionOffsetC(CALUMI::Math::Quaternion* input, CALUMI::Math::Quaterni
 	catch (std::bad_alloc&){}
 	return -1;
 }
-int DeleteQuaternionC(CALUMI::Math::Quaternion* ptr)
+int DeleteQuaternionC(CALUMI::Math::Quaternion** ptr)
 {
-	if (!ptr)
+	if (!ptr || !*ptr)
 		return -1;
 
 	try
 	{
-		delete ptr;
+		delete *ptr;
+		*ptr = nullptr;
 		return 0;
 	}
 	catch ( std::bad_alloc&) { }
@@ -2348,14 +2354,15 @@ CALUMI::Math::Transform* CreateTransformC()
 {
 	return new CALUMI::Math::Transform;
 }
-int DeleteTransformC(CALUMI::Math::Transform* ptr)
+int DeleteTransformC(CALUMI::Math::Transform** ptr)
 {
-	if (!ptr)
+	if (!ptr || !*ptr)
 		return -1;
 
 	try
 	{
-		delete ptr;
+		delete *ptr;
+		*ptr = nullptr;
 		return 0;
 	}
 	catch (std::bad_alloc&){}

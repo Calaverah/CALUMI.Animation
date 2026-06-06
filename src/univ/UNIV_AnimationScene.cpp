@@ -23,7 +23,14 @@ namespace CALUMI::UNIV
     };
 
     AnimationScene::AnimationScene() { pImpl = new Impl; }
-    AnimationScene::~AnimationScene() { if (pImpl) delete pImpl; }
+    AnimationScene::~AnimationScene()
+    {
+        if (pImpl)
+        {
+            delete pImpl;
+            pImpl = nullptr;
+        }
+    }
     AnimationScene::AnimationScene(const AnimationScene& input) : AnimationScene() { *pImpl = *input.pImpl; }
     AnimationScene::AnimationScene(const Utilities::StringContainer& sceneName) : AnimationScene() { pImpl->sceneName = sceneName; }
     AnimationScene::AnimationScene(const char* sceneName) : AnimationScene() { pImpl->sceneName = sceneName; }
@@ -111,8 +118,8 @@ namespace CALUMI::UNIV
 }
 #pragma endregion
 
-#pragma region EXTERN"C"
-//Extern C Functions
+#pragma region EXTERN "C"
+
 CALUMI::UNIV::AnimationScene* CreateAnimationSceneC(const char* sceneName)
 {
     const auto univAnimationScene = new CALUMI::UNIV::AnimationScene;

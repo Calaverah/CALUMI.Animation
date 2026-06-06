@@ -6,7 +6,6 @@
 #include "internalplatform.h"
 #include "utilities/CALUMI_Utilities.h"
 #include <cstring>
-#include <expected>
 #include <string>
 #include <vector>
 #include <filesystem>
@@ -607,7 +606,7 @@ namespace CALUMI::Utilities
 
 }
 
-#pragma region EXTERN"C"
+#pragma region EXTERN "C"
 
 CALUMI::Utilities::StringContainer* CreateStringContainerC()
 {
