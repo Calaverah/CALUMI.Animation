@@ -123,7 +123,7 @@ namespace CALUMI::Math
 		/// @}
 		/// @name Json
 		/// @{
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 		void fromJson(const Utilities::JsonObject& data);
 		/// @}
 
@@ -224,7 +224,7 @@ namespace CALUMI::Math
 		/// @}
 		/// @name Json
 		/// @{
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 		void fromJson(const Utilities::JsonObject& data);
 		/// @}
 
@@ -332,7 +332,7 @@ namespace CALUMI::Math
 		/// @}
 		/// @name Json
 		/// @{
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 		void fromJson(const Utilities::JsonObject& data);
 		/// @}
 
@@ -439,7 +439,7 @@ namespace CALUMI::Math
 		/// @}
 		/// @name Json
 		/// @{
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 		void fromJson(const Utilities::JsonObject& data);
 		/// @}
 
@@ -673,7 +673,7 @@ namespace CALUMI::Math
 		/// @}
 		/// @name Json
 		/// @{
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 		void fromJson(const Utilities::JsonObject& data);
 		/// @}
 
@@ -746,7 +746,7 @@ namespace CALUMI::Math
 		/**
 		 * @return
 		 */
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 		/**
 		 * @param data
 		 */

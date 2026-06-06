@@ -20,7 +20,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return The frame of this entry
 		 */
-		uint16_t frame() const;
+		[[nodiscard]] uint16_t frame() const;
 		/**
 		 * @param frame 0 based frame
 		 */
@@ -29,7 +29,7 @@ namespace CALUMI::UNIV
 		 *
 		 * @return
 		 */
-		Math::Vector3D& translationVector() const;
+		[[nodiscard]] Math::Vector3D& translationVector() const;
 
 		/// @}
 		/// @name Initialization
@@ -68,12 +68,12 @@ namespace CALUMI::UNIV
 		/**
 		 * @return Whether the two entries are equal for all struct members
 		 */
-		bool isIdentical(const TranslationFrame& input) const;
+		[[nodiscard]] bool isIdentical(const TranslationFrame& input) const;
 
 		/// @}
 		/// @name Json
 		/// @{
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 		/// @}
 	private:
 		struct Impl;
@@ -134,7 +134,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return The frame of this entry
 		 */
-		uint16_t frame() const;
+		[[nodiscard]] uint16_t frame() const;
 		/**
 		 * @param frame 0 based frame
 		 */
@@ -142,7 +142,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		Math::Quaternion& rotationQuaternion() const;
+		[[nodiscard]] Math::Quaternion& rotationQuaternion() const;
 
 		/// @}
 		/// @name Initialization
@@ -181,12 +181,12 @@ namespace CALUMI::UNIV
 		/**
 		 * @return Whether the two entries are equal for all struct members
 		 */
-		bool isIdentical(const RotationFrame& input) const;
+		[[nodiscard]] bool isIdentical(const RotationFrame& input) const;
 
 		/// @}
 		/// @name Json
 		/// @{
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 		/// @}
 
 	private:
@@ -249,7 +249,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return The frame of this entry
 		 */
-		uint16_t frame() const;
+		[[nodiscard]] uint16_t frame() const;
 		/**
 		 *
 		 * @param frame 0 based frame
@@ -258,7 +258,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		float scalarValue() const;
+		[[nodiscard]] float scalarValue() const;
 		/**
 		 * @param value
 		 */
@@ -301,12 +301,12 @@ namespace CALUMI::UNIV
 		/**
 		 * @return Whether the two entries are equal for all struct members
 		 */
-		bool isIdentical(const ScalarFrame& input) const;
+		[[nodiscard]] bool isIdentical(const ScalarFrame& input) const;
 
 		/// @}
 		/// @name Json
 		/// @{
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 		/// @}
 	private:
 		struct Impl;
@@ -368,7 +368,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return The frame of this entry
 		 */
-		uint16_t frame() const;
+		[[nodiscard]] uint16_t frame() const;
 		/**
 		 * @param frame 0 based frame
 		 */
@@ -376,7 +376,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		uint8_t priorityValue() const;
+		[[nodiscard]] uint8_t priorityValue() const;
 		/**
 		 * @param value
 		 */
@@ -414,7 +414,7 @@ namespace CALUMI::UNIV
 		///@}
 		///@name
 		///@{
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 		///@}
 		/// @name True Comparison
 		/// @{
@@ -422,7 +422,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return Whether the two entries are equal for all struct members
 		 */
-		bool isIdentical(const PriorityFrame& input) const;
+		[[nodiscard]] bool isIdentical(const PriorityFrame& input) const;
 
 		/// @}
 

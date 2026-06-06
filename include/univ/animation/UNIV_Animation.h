@@ -58,11 +58,11 @@ namespace CALUMI::UNIV
 		 *
 		 * @return final frame entry by value
 		 */
-		unsigned int lastFrameInBlock() const;
+		[[nodiscard]] unsigned int lastFrameInBlock() const;
 		/**
 		 * @return
 		 */
-		const char* boneName() const;
+		[[nodiscard]] const char* boneName() const;
 		/**
 		 * @param name
 		 */
@@ -74,18 +74,18 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		RotationSequence& rotationSequence() const;
+		[[nodiscard]] RotationSequence& rotationSequence() const;
 		/**
 		 * @param input
 		 * @param overwrite
 		 * @return
 		 */
-		bool addRotationEntry(const RotationFrame& input, bool overwrite = true) const;
+		bool addRotationEntry(const RotationFrame& input, bool overwrite = true) const; // NOLINT(*-use-nodiscard)
 		/**
 		 * @param frame
 		 * @return
 		 */
-		bool removeRotationEntry(unsigned int frame) const;
+		bool removeRotationEntry(unsigned int frame) const; // NOLINT(*-use-nodiscard)
 		/**
 		 * @brief
 		 */
@@ -93,7 +93,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		uint64_t rotationEntryCount() const;
+		[[nodiscard]] uint64_t rotationEntryCount() const;
 
 		/**
 		 * @param tolerance
@@ -107,18 +107,18 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		TranslationSequence& translationSequence() const;
+		[[nodiscard]] TranslationSequence& translationSequence() const;
 		/**
 		 * @param input
 		 * @param overwrite
 		 * @return
 		 */
-		bool addTranslationEntry(const TranslationFrame& input, bool overwrite = true) const;
+		bool addTranslationEntry(const TranslationFrame& input, bool overwrite = true) const; // NOLINT(*-use-nodiscard)
 		/**
 		 * @param frame
 		 * @return
 		 */
-		bool removeTranslationEntry(unsigned int frame) const;
+		bool removeTranslationEntry(unsigned int frame) const; // NOLINT(*-use-nodiscard)
 		/**
 		 * @brief
 		 */
@@ -126,7 +126,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		uint64_t translationEntryCount() const;
+		[[nodiscard]] uint64_t translationEntryCount() const;
 		/**
 		 * @param tolerance
 		 */
@@ -139,18 +139,18 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		ScalarSequence& scalarSequence() const;
+		[[nodiscard]] ScalarSequence& scalarSequence() const;
 		/**
 		 * @param input
 		 * @param overwrite
 		 * @return
 		 */
-		bool addScalarEntry(const ScalarFrame& input, bool overwrite = true) const;
+		bool addScalarEntry(const ScalarFrame& input, bool overwrite = true) const; // NOLINT(*-use-nodiscard)
 		/**
 		 * @param frame
 		 * @return
 		 */
-		bool removeScalarEntry(unsigned int frame) const;
+		bool removeScalarEntry(unsigned int frame) const; // NOLINT(*-use-nodiscard)
 		/**
 		 * @brief
 		 */
@@ -158,7 +158,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		uint64_t scalarEntryCount() const;
+		[[nodiscard]] uint64_t scalarEntryCount() const;
 
 		/**
 		 * @param tolerance
@@ -172,18 +172,18 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		PrioritySequence& prioritySequence() const;
+		[[nodiscard]] PrioritySequence& prioritySequence() const;
 		/**
 		 * @param input
 		 * @param overwrite
 		 * @return
 		 */
-		bool addPriorityEntry(const PriorityFrame& input, bool overwrite = true) const;
+		bool addPriorityEntry(const PriorityFrame& input, bool overwrite = true) const; // NOLINT(*-use-nodiscard)
 		/**
 		 * @param frame
 		 * @return
 		 */
-		bool removePriorityEntry(unsigned int frame) const;
+		bool removePriorityEntry(unsigned int frame) const; // NOLINT(*-use-nodiscard)
 		/**
 		 * @brief
 		 */
@@ -191,12 +191,12 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		uint64_t priorityEntryCount() const;
+		[[nodiscard]] uint64_t priorityEntryCount() const;
 
 		/// @}
 		/// @name Json
 		/// @{
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 		/// @}
 
 	private:
@@ -249,7 +249,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		const char* animationTitle() const;
+		[[nodiscard]] const char* animationTitle() const;
 		/**
 		 * @param title
 		 */
@@ -264,13 +264,13 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		AnimationBlockVector& animationBlocks() const;
+		[[nodiscard]] AnimationBlockVector& animationBlocks() const;
 		/**
 		 * @param blockToAdd
 		 * @param overwrite
 		 * @return
 		 */
-		bool addAnimationBlock(const AnimationBlock& blockToAdd, bool overwrite = true) const;
+		bool addAnimationBlock(const AnimationBlock& blockToAdd, bool overwrite = true) const; // NOLINT(*-use-nodiscard)
 		/**
 		 * @brief
 		 */
@@ -278,7 +278,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		uint64_t animationBlockCount() const;
+		[[nodiscard]] uint64_t animationBlockCount() const;
 		/**
 		 * @param boneName
 		 * @return
@@ -289,16 +289,16 @@ namespace CALUMI::UNIV
 		 * @return Total frame count of all sequences. IE if the final frame of the entire block is 50 then the count
 		 * will be 51
 		 */
-		unsigned int frameCount() const;
+		[[nodiscard]] unsigned int frameCount() const;
 		/// @}
 		/// @name Packages
 		/// @{
-		AnimationPackageManager& packageManager() const;
+		[[nodiscard]] AnimationPackageManager& packageManager() const;
 		/// @}
 		/// @name Json
 		/// @{
 
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 		/// @}
 	private:
 		struct Impl;

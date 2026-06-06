@@ -154,7 +154,7 @@ namespace CALUMI::Utilities
 
 		[[nodiscard]] int compare(const StringContainer& other, bool caseSensitive = true) const noexcept;
 		[[nodiscard]] int compare(uint64_t pos, uint64_t len, const StringContainer& other) const;
-		[[nodiscard]] int compare(uint64_t pos, uint64_t len, const StringContainer& other, uint64_t subPos, uint64_t subLngth) const;
+		[[nodiscard]] int compare(uint64_t pos, uint64_t len, const StringContainer& other, uint64_t subPos, uint64_t subLength) const;
 		/// @}
 		/// @name Operators
 		/// @{

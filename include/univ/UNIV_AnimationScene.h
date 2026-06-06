@@ -23,7 +23,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		const SkeletonRig& rig() const;
+		[[nodiscard]] const SkeletonRig& rig() const;
 		/**
 		 * @param skeletonRig
 		 */
@@ -37,7 +37,7 @@ namespace CALUMI::UNIV
 		 * @param idx
 		 * @return
 		 */
-		Animation* animation(uint64_t idx) const;
+		[[nodiscard]] Animation* animation(uint64_t idx) const;
 		/**
 		 * @param name
 		 * @return
@@ -46,24 +46,24 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		uint64_t animationCount() const;
+		[[nodiscard]] uint64_t animationCount() const;
 
 		/**
 		 * @param animation
 		 * @param overwrite
 		 * @return
 		 */
-		bool addAnimationToScene(const Animation& animation, bool overwrite = true) const;
+		bool addAnimationToScene(const Animation& animation, bool overwrite = true) const; // NOLINT(*-use-nodiscard)
 		/**
 		 * @param sceneToRemove
 		 * @return
 		 */
-		bool removeAnimationFromScene(const Utilities::StringContainer& sceneToRemove) const;
+		bool removeAnimationFromScene(const Utilities::StringContainer& sceneToRemove) const; // NOLINT(*-use-nodiscard)
 		/**
 		 * @param idx
 		 * @return
 		 */
-		bool removeAnimationFromScene(unsigned int idx) const;
+		bool removeAnimationFromScene(unsigned int idx) const; // NOLINT(*-use-nodiscard)
 
 		/// @}
 		/// @name Scene Data
@@ -72,7 +72,7 @@ namespace CALUMI::UNIV
 		/**
 		 * @return
 		 */
-		const char* sceneName() const;
+		[[nodiscard]] const char* sceneName() const;
 		/**
 		 * @param name
 		 */
@@ -82,7 +82,7 @@ namespace CALUMI::UNIV
 		 */
 		void setSceneName(const Utilities::StringContainer& input) const;
 		/// @}
-		/// @name Intializer
+		/// @name Initialization
 		/// @{
 
 		AnimationScene();
@@ -172,17 +172,17 @@ CALUMIANIMATION_API CALUMI::UNIV::Animation* GetAnimationWithNameC(const CALUMI:
  * @param source
  * @return Number of animations or simply 0 if there are errors
  */
-CALUMIANIMATION_API uint64_t GetAnimationCountC(CALUMI::UNIV::AnimationScene* source);
+CALUMIANIMATION_API uint64_t GetAnimationCountC(const CALUMI::UNIV::AnimationScene* source);
 /**
  * @param source
  * @return
  */
-CALUMIANIMATION_API const char* GetAnimationSceneNameC(CALUMI::UNIV::AnimationScene* source);
+CALUMIANIMATION_API const char* GetAnimationSceneNameC(const CALUMI::UNIV::AnimationScene* source);
 /**
  * @param source
  * @return
  */
-CALUMIANIMATION_API const CALUMI::UNIV::SkeletonRig* GetSkeletonRigC(CALUMI::UNIV::AnimationScene* source);
+CALUMIANIMATION_API const CALUMI::UNIV::SkeletonRig* GetSkeletonRigC(const CALUMI::UNIV::AnimationScene* source);
 }
 
 /// @}

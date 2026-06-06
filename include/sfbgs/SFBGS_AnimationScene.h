@@ -27,14 +27,14 @@ namespace CALUMI::SFBGS
         explicit AnimationScene(const Utilities::StringContainer& sceneName);
         AnimationScene(const AnimationScene& input);
 
-        bool addAnimationToScene(const Animation& animation, bool overwrite = true) const;
-        bool removeAnimationFromScene(const Utilities::StringContainer& sceneToRemove) const;
-        bool removeAnimationFromScene(const char* sceneToRemove) const;
-        bool removeAnimationFromScene(unsigned int idx) const;
+        bool addAnimationToScene(const Animation& animation, bool overwrite = true) const; // NOLINT(*-use-nodiscard)
+        bool removeAnimationFromScene(const Utilities::StringContainer& sceneToRemove) const; // NOLINT(*-use-nodiscard)
+        bool removeAnimationFromScene(const char* sceneToRemove) const; // NOLINT(*-use-nodiscard)
+        bool removeAnimationFromScene(unsigned int idx) const; // NOLINT(*-use-nodiscard)
 
         // Inherited via IConvertibleScene
-        bool convertFromUniversalScene(UNIV::AnimationScene& input) override;
-        bool convertFromUniversalScene(const UNIV::AnimationScene& input, const SkeletonRig& rigReference) const;
+        bool convertFromUniversalScene(UNIV::AnimationScene& input) override; // NOLINT(*-use-nodiscard)
+        bool convertFromUniversalScene(const UNIV::AnimationScene& input, const SkeletonRig& rigReference) const; // NOLINT(*-use-nodiscard)
         UNIV::AnimationScene convertToUniversalScene() override;
 
         AnimationScene& operator=(const AnimationScene& input);

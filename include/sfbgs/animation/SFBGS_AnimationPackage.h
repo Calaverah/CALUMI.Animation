@@ -36,7 +36,6 @@ namespace CALUMI::SFBGS
 		~SFBGS_AnimationPackage() override;
 		/// @}
 
-	public:
 		/// @name Amended Animation Blocks
 		/// @{
 
@@ -152,13 +151,13 @@ namespace CALUMI::SFBGS
 		/**
 		 * @return
 		 */
-		Utilities::JsonObject toJson() const override;
+		[[nodiscard]] Utilities::JsonObject toJson() const override;
 		/**
 		 * @param data
 		 */
 		void fromJson(const Utilities::JsonObject& data) override;
 		/// @}
-	public:
+
 		/**
 			 * @brief A way to get a string describing the package.
 			 * @return A string of the package type, SFBGS_ANIM_PACKAGE

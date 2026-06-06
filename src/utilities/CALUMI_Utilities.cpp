@@ -301,9 +301,9 @@ namespace CALUMI::Utilities
 	{
 		return pImpl->string.compare(pos,len,other.pImpl->string);
 	}
-	int StringContainer::compare(const uint64_t pos, const uint64_t len, const StringContainer& other, const uint64_t subPos, const uint64_t subLngth) const
+	int StringContainer::compare(const uint64_t pos, const uint64_t len, const StringContainer& other, const uint64_t subPos, const uint64_t subLength) const
 	{
-		return pImpl->string.compare(pos,len,other.pImpl->string,subPos,subLngth);
+		return pImpl->string.compare(pos,len,other.pImpl->string,subPos,subLength);
 	}
 	void StringContainer::assign(const char* str) const
 	{
