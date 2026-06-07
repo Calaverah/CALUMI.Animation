@@ -214,6 +214,11 @@ GTEST(Rig00Conversion)
 	EXPECT_STRCASEEQ(b.bone(1), "PlanetObject");
 	EXPECT_STRCASEEQ(b.bone(2), "RingObject");
 
+	EXPECT_FALSE(b.hasBone("NotARealBone"));
+	EXPECT_TRUE(b.hasBone("Fountain_Root"));
+	EXPECT_TRUE(b.hasBone("PlanetObject"));
+	EXPECT_TRUE(b.hasBone("RingObject"));
+
 	{
 		SFBGS::SkeletonRig rSFRig;
 		rSFRig.readFromFile("assets/00/reverse_skeleton.rig");

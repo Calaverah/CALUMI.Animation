@@ -4,6 +4,7 @@
 
 #include "univ/skeletonrig/packages/UNIV_RigManifestPackage.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <vector>
@@ -107,7 +108,7 @@ namespace CALUMI::UNIV
 
     bool RigManifestPackage::hasBone(const char* boneName) const
     {
-        return std::any_of(pImpl->m_list.begin(), pImpl->m_list.end(), [boneName](const auto& entry)
+        return std::ranges::any_of(pImpl->m_list.begin(), pImpl->m_list.end(), [boneName](const auto& entry)
         {
             return SCOMPARE(entry.c_str(), boneName) == 0;
         });
