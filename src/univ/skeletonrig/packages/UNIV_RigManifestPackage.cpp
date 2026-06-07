@@ -105,6 +105,14 @@ namespace CALUMI::UNIV
         return pImpl->m_list[index].c_str();
     }
 
+    bool RigManifestPackage::hasBone(const char* boneName) const
+    {
+        return std::any_of(pImpl->m_list.begin(), pImpl->m_list.end(), [boneName](const auto& entry)
+        {
+            return SCOMPARE(entry.c_str(), boneName) == 0;
+        });
+    }
+
     bool RigManifestPackage::AddPackage(const SkeletonRig& rig, const bool overwrite)
     {
         const auto& mgr = rig.packageManager();

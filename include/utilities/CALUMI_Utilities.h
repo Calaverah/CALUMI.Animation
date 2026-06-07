@@ -251,6 +251,7 @@ namespace CALUMI::Utilities
 		[[nodiscard]] uint64_t stringLength(unsigned int idx, bool includeNull = false) const;
 		[[nodiscard]] unsigned int size() const;
 		[[nodiscard]] int64_t find(const char* string, int64_t defValue = -1) const;
+		[[nodiscard]] const char* stringAt(uint64_t offset) const;
 
 		StringList& operator=(const StringList& other);
 

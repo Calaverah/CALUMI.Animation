@@ -29,13 +29,13 @@ public:
 	SampleSFBGSData& operator=(const SampleSFBGSData&) = delete;
 	SampleSFBGSData& operator=(SampleSFBGSData&&) = delete;
 
-public:
 	UNIV::SkeletonRig univRig00;
 	UNIV::SkeletonRig uJsonRig00;
 	SFBGS::SkeletonRig sfbgsRig00;
 	std::vector<char> stdEOH;
 
-	UNIV::Animation uJsonAnim00;
+	// ReSharper disable once CppDFANotInitializedField
+	[[maybe_unused]] UNIV::Animation uJsonAnim00;
 
 private:
 	SampleSFBGSData() = default;
@@ -45,9 +45,6 @@ private:
 
 class SampleSFBGSTestSuite : public testing::Test
 {
-public:
-
-
 protected:
 	static void SetUpTestSuite()
 	{
@@ -127,7 +124,6 @@ GTEST(Rig00Input)
 
 
 	//Bone Entries
-	float unk00Floats[3] = { 0.1f, 0.2f, 60.0f };
 	Math::Quaternion q00Locals[3] = { Math::Quaternion(-0.0f,-0.0f,-0.707107f,0.707107f), Math::Quaternion(), Math::Quaternion() };
 
 	auto& rig00Bones = SampleSFBGSData::get().sfbgsRig00.boneEntries();
@@ -151,6 +147,7 @@ GTEST(Rig00Input)
 		EXPECT_TRUE(rig00Bones.at(i).globalRotation().areEqual(q00Locals[0], 0.000001f)) << "Tested " << rig00Bones.at(i).localRotation().toString().c_str() << " \nExpected " << q00Locals[i].toString().c_str();
 
 #ifdef DEBUG_BUILD
+		float unk00Floats[3] = { 0.1f, 0.2f, 60.0f };
 		//Unknown
 		EXPECT_EQ(rig00Bones.at(i).unknownScalar(), unk00Floats[i]);
 #endif
@@ -208,10 +205,32 @@ GTEST(Rig00Conversion)
 {
 	EXPECT_EQ(SampleSFBGSData::get().univRig00, SampleSFBGSData::get().sfbgsRig00.convertToUniversalRig());
 
-	const UNIV::SkeletonRig rig;
-	auto& a = UNIV::RigMirrorPackage::GetPackage(rig);
-	auto& b = UNIV::RigManifestPackage::GetPackage(rig);
-	auto& c = SFBGS::SFBGS_RigPackage::GetPackage(rig);
+	const UNIV::SkeletonRig rig = SampleSFBGSData::get().sfbgsRig00.convertToUniversalRig();
+	[[maybe_unused]] const auto& a = UNIV::RigMirrorPackage::GetPackage(rig);
+	[[maybe_unused]] const auto& b = UNIV::RigManifestPackage::GetPackage(rig);
+	[[maybe_unused]] const auto& c = SFBGS::SFBGS_RigPackage::GetPackage(rig);
+
+	EXPECT_STRCASEEQ(b.bone(0), "Fountain_Root");
+	EXPECT_STRCASEEQ(b.bone(1), "PlanetObject");
+	EXPECT_STRCASEEQ(b.bone(2), "RingObject");
+
+	{
+		SFBGS::SkeletonRig rSFRig;
+		rSFRig.readFromFile("assets/00/reverse_skeleton.rig");
+		const UNIV::SkeletonRig revRig = rSFRig.convertToUniversalRig();
+
+		const auto& manifest = UNIV::RigManifestPackage::GetPackage(revRig);
+		EXPECT_STRCASEEQ(manifest.bone(0), "Fountain_Root");
+		EXPECT_STRCASEEQ(manifest.bone(1), "PlanetObject");
+		EXPECT_STRCASEEQ(manifest.bone(2), "RingObject");
+
+		const auto revRing = revRig.root()->childBone("RingObject", false);
+		EXPECT_FALSE(revRig.root()->childBone("PlanetObject", false));
+		ASSERT_TRUE(revRing);
+		EXPECT_TRUE(revRig.root()->childBoneCount() == 1);
+		ASSERT_TRUE(revRing->childBone("PlanetObject", false));
+		EXPECT_TRUE(revRing->childBone("PlanetObject")->boneCount() == 0);
+	}
 }
 
 GTEST(Rig00Reconversion)
@@ -359,7 +378,6 @@ GTEST(ScratchAnimation)
 	EXPECT_STREQ(uAnim.animationTitle(), "TestAnim");
 	EXPECT_EQ(uAnim.animationBlockCount(), 0);
 	EXPECT_EQ(uAnim.animationBlockCount(), uAnim.animationBlocks().size());
-	EXPECT_NO_THROW(uAnim.packageManager());
 	EXPECT_EQ(uAnim.packageManager().packageCount(), 0);
 	EXPECT_EQ(uAnim.frameCount(), 0);
 	EXPECT_NO_THROW(uAnim.clearAnimationBlocks());
@@ -469,3 +487,13 @@ GTEST(ScratchAnimation)
 
 }
 
+GTEST(RigInputExternC)
+{
+	UNIV::SkeletonRig* rig = LoadSFBGSSkeletonRigFromFileC(L"assets/00/skeleton.rig");
+
+	ASSERT_TRUE(rig);
+
+	EXPECT_EQ(rig->boneCount(), 3);
+
+	DeleteSkeletonRigC(&rig);
+}

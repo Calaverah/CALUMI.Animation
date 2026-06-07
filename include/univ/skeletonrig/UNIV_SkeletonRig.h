@@ -388,7 +388,7 @@ extern "C"
 	 * finished.
 	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Operation
 	 */
-	CALUMIANIMATION_API int DeleteSkeletonRigC(const CALUMI::UNIV::SkeletonRig** ptrRef);
+	CALUMIANIMATION_API int DeleteSkeletonRigC(CALUMI::UNIV::SkeletonRig** ptrRef);
 	/**
 	 * @brief Proper method to reach the root bone of a rig
 	 * @param rig

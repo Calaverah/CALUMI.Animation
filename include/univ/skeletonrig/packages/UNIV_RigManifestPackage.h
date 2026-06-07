@@ -73,6 +73,11 @@ namespace CALUMI::UNIV
          * @return
          */
         [[nodiscard]] const char* bone(unsigned int index) const;
+        /**
+         * @param boneName
+         * @return
+         */
+        bool hasBone(const char* boneName) const;
         /// @}
         /// @name Inherited
         /// @{
@@ -129,7 +134,7 @@ namespace CALUMI::UNIV
         /// @}
         /// @name Json
         /// @{
-        Utilities::JsonObject toJson() const override;
+        [[nodiscard]] Utilities::JsonObject toJson() const override;
         void fromJson(const Utilities::JsonObject& data) override;
         /// @}
 

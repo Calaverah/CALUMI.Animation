@@ -721,11 +721,20 @@ namespace CALUMI::SFBGS
 
 		//READ STRINGS
 		pImpl->m_stringArray.reserve(pImpl->m_boneCount);
-		for (uint16_t i = 0; i < pImpl->m_boneCount; i++)
+		// for (uint16_t i = 0; i < pImpl->m_boneCount; i++)
+		// {
+		// 	pImpl->m_stringArray.push_back(&buffer.at(pImpl->m_boneEntries.at(i).nameOffset()),pImpl->m_boneEntries.at(i).nameOffset());
+		// 	addressIndex += pImpl->m_stringArray.stringLength(i, true);
+		// }
+		unsigned int strCount = 0;
+		while (addressIndex < pImpl->m_fileSize)
 		{
-			pImpl->m_stringArray.push_back(&buffer.at(pImpl->m_boneEntries.at(i).nameOffset()));
-			addressIndex += pImpl->m_stringArray.stringLength(i, true);
+			const char* str = &buffer.at(addressIndex);
+			pImpl->m_stringArray.push_back(str, addressIndex);
+			addressIndex += pImpl->m_stringArray.stringLength(strCount, true);
+			strCount++;
 		}
+
 
 #ifdef DEBUG_BUILD
 		if (buffer.size() != addressIndex)
@@ -995,6 +1004,12 @@ namespace CALUMI::SFBGS
 				uParentPtr = uPtrs[pImpl->m_stringArray.c_str(pIdx)];
 			}
 
+			if (const auto boneName = pImpl->m_stringArray.stringAt(bone.nameOffset());
+				!manifestPackage.hasBone(boneName))
+			{
+				manifestPackage.addBone(boneName);
+			}
+
 			//If the parent hasn't been added then we move on and will return to this bone later
 			if (!uParentPtr && pIdx != -1)
 				continue;
@@ -1035,11 +1050,6 @@ namespace CALUMI::SFBGS
 				//resets the loop
 				i = -1;
 			}
-		}
-
-		for (unsigned int i = 0; i < pImpl->m_stringArray.size(); i++)
-		{
-			manifestPackage.addBone(pImpl->m_stringArray.c_str(i));
 		}
 
 		auto pBoneMapArray = boneMapArray();

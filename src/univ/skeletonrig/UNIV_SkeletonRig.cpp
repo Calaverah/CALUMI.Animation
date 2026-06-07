@@ -635,7 +635,7 @@ CALUMI::UNIV::SkeletonRig* CreateSkeletonRigC(const char* name)
     const auto outputSkeletonRig = new CALUMI::UNIV::SkeletonRig(name);
     return outputSkeletonRig;
 }
-int DeleteSkeletonRigC(const CALUMI::UNIV::SkeletonRig** ptrRef)
+int DeleteSkeletonRigC(CALUMI::UNIV::SkeletonRig** ptrRef)
 {
     if (!ptrRef || !*ptrRef)
         return -1;

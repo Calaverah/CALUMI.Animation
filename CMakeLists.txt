@@ -78,6 +78,12 @@ add_executable(run_tests tests/test_main.cpp
     tests/json/json.cpp
 )
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(run_tests PRIVATE DEBUG_BUILD)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_definitions(run_tests PRIVATE RELEASE_BUILD)
+endif()
+
 add_custom_command(TARGET run_tests POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
     "${PROJECT_SOURCE_DIR}/tests/mockdata/assets"

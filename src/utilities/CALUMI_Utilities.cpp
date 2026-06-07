@@ -528,6 +528,16 @@ namespace CALUMI::Utilities
 		return defValue;
 	}
 
+	const char* StringList::stringAt(const uint64_t offset) const
+	{
+		for (const auto& string : pImpl->strings)
+		{
+			if (offset == string.offset && string.hasOffset)
+				return string.string.c_str();
+		}
+		return nullptr;
+	}
+
 	bool StringList::empty() const
 	{
 		return pImpl->strings.empty();
