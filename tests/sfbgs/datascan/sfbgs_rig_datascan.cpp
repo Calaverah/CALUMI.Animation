@@ -191,8 +191,12 @@ GTEST(RigScan)
 				if(rig.boneEntries().at(bIdx).nameOffset() < current)
 					status.flags.stringArrayOutOfOrder = true;
 				
-				if (rig.boneEntries().at(bIdx).nameOffset() == rig.stringArray().offset(bIdx))
+				if (rig.boneEntries().at(bIdx).nameOffset() != rig.stringArray().offset(bIdx))
+				{
+					std::cout << "Rig Bone Offset: " << rig.boneEntries().at(bIdx).nameOffset() << std::endl;
+					std::cout << "String Offset: " << rig.stringArray().offset(bIdx) << std::endl;
 					status.flags.stringArrayMisalignedToBones = true;
+				}
 
 				current = rig.boneEntries().at(bIdx).nameOffset();
 			}
