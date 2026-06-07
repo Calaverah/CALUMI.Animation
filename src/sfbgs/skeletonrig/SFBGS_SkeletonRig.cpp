@@ -1019,7 +1019,6 @@ namespace CALUMI::SFBGS
 			if (uAddedBone)
 			{
 				uPtrs[uAddedBone->name()] = uAddedBone;
-				manifestPackage.addBone(uAddedBone->name());
 
 				setBoneTypeToUNIV(bone, *uAddedBone);
 
@@ -1033,8 +1032,14 @@ namespace CALUMI::SFBGS
 
 				sfbgsPackage.setBoneLod(uAddedBone->name(), lod);
 
+				//resets the loop
 				i = -1;
 			}
+		}
+
+		for (unsigned int i = 0; i < pImpl->m_stringArray.size(); i++)
+		{
+			manifestPackage.addBone(pImpl->m_stringArray.c_str(i));
 		}
 
 		auto pBoneMapArray = boneMapArray();

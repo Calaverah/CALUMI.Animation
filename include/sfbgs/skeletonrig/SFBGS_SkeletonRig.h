@@ -204,11 +204,9 @@ namespace CALUMI::SFBGS
 		 */
 		void serializeIntoBuffer(Utilities::BufferObject& buffer, unsigned long long& addressIndex) const;
 
-	private:
 		struct Impl;
 		Impl* pImpl;
 
-	private:
 		friend class SkeletonRig;
 	};
 
@@ -216,7 +214,6 @@ namespace CALUMI::SFBGS
 
 	class CALUMIANIMATION_API SkeletonRig : public IReadWritable
 	{
-	private:
 		void setVersionNumber(int v) const;
 		void setFileSize(uint32_t size) const;
 		void setHeaderSize(uint64_t size) const;
@@ -329,13 +326,13 @@ namespace CALUMI::SFBGS
 		/// @{
 		int findBoneIndex(const char* boneName) const;
 
-		SkeletonBone* boneEntry(int index) const;
+		[[nodiscard]] SkeletonBone* boneEntry(int index) const;
 		/// @}
 
 #ifdef DEBUG_BUILD
 		/// @name Debug only
 		/// @{
-	public:
+	
 		[[nodiscard]] Utilities::CharVector endOfHeader() const;
 		[[nodiscard]] uint8_t checkAssumedHeaderEntries() const;
 		/// @}
