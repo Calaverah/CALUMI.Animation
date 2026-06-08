@@ -999,7 +999,7 @@ CALUMIANIMATION_API CALUMI::Math::Quaternion* CreateQuaternionC(float x, float y
  * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteQuaternionC
  * @return
  */
-CALUMI::Math::Quaternion* CreateQuaternionFromEulerC(float x, float y, float z, int eulerOrder);
+CALUMIANIMATION_API CALUMI::Math::Quaternion* CreateQuaternionFromEulerC(float x, float y, float z, int eulerOrder);
 /** @relates Quaternion
  *  @name Extern "C"
  */

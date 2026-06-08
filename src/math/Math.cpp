@@ -2053,6 +2053,10 @@ int DeleteVector2DC(CALUMI::Math::Vector2D** ptr)
 
 	return -1;
 }
+CALUMI::Math::Vector2* CreateVector2C(float x, float y)
+{
+	return new CALUMI::Math::Vector2(x,y);
+}
 float GetVector2XC(CALUMI::Math::Vector2* source)
 {
 	return source->x();
