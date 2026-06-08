@@ -3,6 +3,7 @@
 //Contact: Calaverahmedia@gmail.com
 
 // ReSharper disable CppExpressionWithoutSideEffects
+// ReSharper disable CppTooWideScope
 #include "internalplatform.h"
 #include "internalvectordef.h"
 #include <io/FileValidation.h>
@@ -923,6 +924,7 @@ namespace CALUMI::SFBGS
 
 				const auto tProp = dynamic_cast<UNIV::TwistBoneProperty*>(const_cast<UNIV::BoneTypeProperty*>(univBone.boneTypeProperty()));
 
+				// ReSharper disable once CppDFAUnusedValue
 				int driverIndex = -1;
 
 				if (boneList)
@@ -999,15 +1001,19 @@ namespace CALUMI::SFBGS
 			const int pIdx = bone.parentBoneIndex();
 			const UNIV::SkeletonBone* uParentPtr = nullptr;
 
+			auto arrayName = pImpl->m_stringArray.stringAt(bone.nameOffset());
+			const auto backupName = std::format("unkBoneNameError{}",i);
+			if (!arrayName)
+				arrayName = backupName.c_str();
+
 			if (pIdx != -1 && uPtrs.contains(pImpl->m_stringArray.c_str(pIdx)))
 			{
 				uParentPtr = uPtrs[pImpl->m_stringArray.c_str(pIdx)];
 			}
 
-			if (const auto boneName = pImpl->m_stringArray.stringAt(bone.nameOffset());
-				!manifestPackage.hasBone(boneName))
+			if (!manifestPackage.hasBone(arrayName))
 			{
-				manifestPackage.addBone(boneName);
+				manifestPackage.addBone(arrayName);
 			}
 
 			//If the parent hasn't been added then we move on and will return to this bone later
@@ -1015,8 +1021,10 @@ namespace CALUMI::SFBGS
 				continue;
 
 			//If this bone has already been added, we skip
-			if (uPtrs.contains(pImpl->m_stringArray.c_str(i)))
+			if (uPtrs.contains(arrayName))
+			{
 				continue;
+			}
 
 			const UNIV::SkeletonBone* uAddedBone = nullptr;
 
@@ -1024,11 +1032,11 @@ namespace CALUMI::SFBGS
 			{
 				uAddedBone = output.root();
 				uAddedBone->setLocalTransform(bone.pImpl->m_position,bone.pImpl->m_localRotation);
-				uAddedBone->setName(pImpl->m_stringArray.c_str(i));
+				uAddedBone->setName(arrayName);
 			}
 			else
 			{
-				uAddedBone = uParentPtr->addChildBone(pImpl->m_stringArray.c_str(i), bone.pImpl->m_position, bone.pImpl->m_localRotation);
+				uAddedBone = uParentPtr->addChildBone(arrayName, bone.pImpl->m_position, bone.pImpl->m_localRotation);
 			}
 
 			if (uAddedBone)
@@ -1040,7 +1048,7 @@ namespace CALUMI::SFBGS
 				std::string setter = bone.pImpl->m_mirrorBoneIndex == i && bone.pImpl->m_mirrorBoneIndex >= 0 ? "" : pImpl->m_stringArray.c_str(bone.pImpl->m_mirrorBoneIndex);
 				if (!setter.empty())
 				{
-					mirrorPackage.addPair(pImpl->m_stringArray.c_str(i), setter.c_str());
+					mirrorPackage.addPair(arrayName, setter.c_str());
 				}
 
 				const SFBGS_RigPackage::LODSetting lod = SFBGS_RigPackage::GetLODFromInt(bone.pImpl->m_LOD);

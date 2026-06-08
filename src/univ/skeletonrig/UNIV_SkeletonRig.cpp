@@ -463,7 +463,7 @@ namespace CALUMI::UNIV
 
         SkeletonBone m_root;
 
-        explicit Impl(const SkeletonRig& owner) : m_root(&owner, "root") {}
+        explicit Impl(const SkeletonRig& owner) : m_root(&owner, "___") {}
     };
 
     const char* SkeletonRig::name() const { return pImpl->m_rigName.c_str(); }
