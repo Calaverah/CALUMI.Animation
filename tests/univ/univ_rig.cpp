@@ -14,7 +14,11 @@ GTEST(UnivRigCreation)
 
     const auto root  = rig.root();
 
+    EXPECT_STRCASEEQ(root->name(), "___");
+    EXPECT_TRUE(root->setName("Root"));
     EXPECT_STRCASEEQ(root->name(), "root");
+    EXPECT_STRCASEEQ(root->name(), "ROOT");
+
     root->setLocalTransform(
         Math::Vector3(0.0f,0.0f,0.0f),
         {0.0f,0.0f,static_cast<float>(Math::ToRadians(90.0f)), Math::EulerDefinition::EulerOrder::XYZ}
@@ -60,7 +64,10 @@ GTEST(UnivRigCreationC)
     EXPECT_STREQ(GetSkeletonRigNameC(cRig), "MyTestRig");
 
     const auto cRoot = GetSkeletonRigRootC(cRig);
+    EXPECT_STRCASEEQ(GetSkeletonBoneNameC(cRoot), "___");
+    EXPECT_EQ(RenameBoneC(cRig, "___", "Root"),0);
     EXPECT_STRCASEEQ(GetSkeletonBoneNameC(cRoot), "root");
+    EXPECT_STRCASEEQ(GetSkeletonBoneNameC(cRoot), "ROOT");
 
     {
         EXPECT_EQ(SetLocalSkeletonBoneTransformC(cRoot, 1.0f,2.0f,3.0f,1.0f,0.0f,0.0f,0.0f),0);
