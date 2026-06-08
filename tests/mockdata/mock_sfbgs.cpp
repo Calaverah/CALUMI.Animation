@@ -495,10 +495,25 @@ GTEST(ScratchAnimation)
 GTEST(RigInputExternC)
 {
 	UNIV::SkeletonRig* rig = LoadSFBGSSkeletonRigFromFileC(L"assets/00/skeleton.rig");
-
 	ASSERT_TRUE(rig);
 
-	EXPECT_EQ(rig->boneCount(), 3);
+	const auto root = GetSkeletonRigRootC(rig);
+	ASSERT_TRUE(root);
+
+	const auto rootChildCount = GetSkeletonBoneChildCountC(root);
+	ASSERT_EQ(rootChildCount, 1);
+
+	const auto child1 = GetSkeletonBoneChildC(root, 0);
+	ASSERT_TRUE(child1);
+
+	const auto child1ChildCount = GetSkeletonBoneChildCountC(child1);
+	ASSERT_EQ(child1ChildCount, 1);
+
+	const auto child2 = GetSkeletonBoneChildC(child1, 0);
+	ASSERT_TRUE(child2);
+
+	const auto child2ChildCount = GetSkeletonBoneChildCountC(child2);
+	EXPECT_EQ(child2ChildCount, 0);
 
 	DeleteSkeletonRigC(&rig);
 }

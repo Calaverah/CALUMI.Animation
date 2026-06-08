@@ -395,7 +395,17 @@ extern "C"
 	 * @note The root bone is a permanent child to the rig and cannot be deleted, however its data can be affected the same as any other bone
 	 * @return Root bone that is tied to a rig
 	 */
-	CALUMIANIMATION_API CALUMI::UNIV::SkeletonBone* GetSkeletonRigRootC(const CALUMI::UNIV::SkeletonRig* rig);
+	CALUMIANIMATION_API const CALUMI::UNIV::SkeletonBone* GetSkeletonRigRootC(const CALUMI::UNIV::SkeletonRig* rig);
+	/**
+	 * @param bone
+	 * @return`
+	 */
+	CALUMIANIMATION_API const CALUMI::UNIV::SkeletonBone* GetSkeletonRigRootFromBoneC(const CALUMI::UNIV::SkeletonBone* bone);
+	/**
+	 * @param bone
+	 * @return
+	 */
+	CALUMIANIMATION_API const CALUMI::UNIV::SkeletonRig* GetSkeletonRigFromBoneC(const CALUMI::UNIV::SkeletonBone* bone);
 	/**
 	 * @brief Add a child bone to a given parent bone, using simple component input
 	 * @param parentBone Parent of the created bone
@@ -540,6 +550,11 @@ extern "C"
 	 */
 	CALUMIANIMATION_API unsigned int GetSkeletonRigBoneTypeCountC(const CALUMI::UNIV::SkeletonRig* source,
 	                                                              uint32_t typeAsInteger);
+	/**
+	 * @param source Bone with direct children to get count of
+	 * @return Number of direct children, or 0 if there is an error
+	 */
+	CALUMIANIMATION_API unsigned int GetSkeletonBoneChildCountC(const CALUMI::UNIV::SkeletonBone* source);
 	/**
 	 * @brief
 	 * @param source Ptr to the skeleton to check

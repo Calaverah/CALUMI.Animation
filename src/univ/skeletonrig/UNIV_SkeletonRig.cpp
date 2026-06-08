@@ -648,7 +648,7 @@ int DeleteSkeletonRigC(CALUMI::UNIV::SkeletonRig** ptrRef)
     } catch (std::bad_alloc&) {}
     return -1;
 }
-CALUMI::UNIV::SkeletonBone* GetSkeletonRigRootC(const CALUMI::UNIV::SkeletonRig* rig)
+const CALUMI::UNIV::SkeletonBone* GetSkeletonRigRootC(const CALUMI::UNIV::SkeletonRig* rig)
 {
     if(!rig)
         return nullptr;
@@ -823,6 +823,30 @@ const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneParentC(const CALUMI::UNIV::Ske
         return dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(source->parent());
     }
     catch(const std::exception&){}
+    return nullptr;
+}
+const CALUMI::UNIV::SkeletonBone* GetSkeletonRigRootFromBoneC(const CALUMI::UNIV::SkeletonBone* bone)
+{
+    if (bone)
+    {
+        try
+        {
+            return bone->parentRig().root();
+        }
+        catch(const std::exception&){}
+    }
+    return nullptr;
+}
+const CALUMI::UNIV::SkeletonRig* GetSkeletonRigFromBoneC(const CALUMI::UNIV::SkeletonBone* bone)
+{
+    if (bone)
+    {
+        try
+        {
+            return &bone->parentRig();
+        }
+        catch(const std::exception&){}
+    }
     return nullptr;
 }
 const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneChildC(const CALUMI::UNIV::SkeletonBone* parent, const unsigned int index)
@@ -1023,6 +1047,18 @@ unsigned int GetSkeletonRigBoneTypeCountC(const CALUMI::UNIV::SkeletonRig* sourc
         return source->boneTypeCount(CALUMI::UNIV::BoneTypeProperty::GetBoneType(typeAsInteger));
     }
     catch (const std::exception&) {}
+    return 0;
+}
+unsigned int GetSkeletonBoneChildCountC(const CALUMI::UNIV::SkeletonBone* source)
+{
+    if (source)
+    {
+        try
+        {
+            return source->childBoneCount();
+        }
+        catch (const std::exception&) {}
+    }
     return 0;
 }
 int SetGlobalSkeletonBonePositionC(const CALUMI::UNIV::SkeletonBone* bone, float x, float y, float z)
