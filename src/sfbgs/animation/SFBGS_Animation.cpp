@@ -1218,9 +1218,6 @@ namespace CALUMI::SFBGS {
 			std::cout << std::format("BUFFER START: {}", static_cast<void*>(buffer.data())).c_str() << std::endl;
 			std::cout << std::format("Size+Start: {}", static_cast<void*>(buffer.size() + buffer.data())).c_str() << std::endl;
 			std::cout << std::format("===========================================================").c_str() << std::endl;
-			std::cout << "Press ENTER to continue running the program." << std::endl;
-			std::cin.get();
-			std::cout << std::format("===========================================================").c_str() << std::endl;
 		}
 #endif
 		return {Utilities::FileResult::FileErrorCode::Success, inputFilePath, ""};
@@ -1313,9 +1310,6 @@ namespace CALUMI::SFBGS {
 			std::cout << std::format("==WARNING CURRENT BUFFER ADDRESS IS NOT AT FINAL POSITION==").c_str() << std::endl;
 			std::cout << std::format("BUFFER  SIZE: {}", buffer.size()).c_str() << std::endl;
 			std::cout << std::format("FILE  SIZE: {}", pImpl->fileSize).c_str() << std::endl;
-			std::cout << std::format("===========================================================").c_str() << std::endl;
-			std::cout << "Press ENTER to continue running the program." << std::endl;
-			std::cin.get();
 			std::cout << std::format("===========================================================").c_str() << std::endl;
 		}
 #endif
