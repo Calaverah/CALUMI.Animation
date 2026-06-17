@@ -783,7 +783,7 @@ CALUMIANIMATION_API float GetVector2YC(CALUMI::Math::Vector2* source);
 /**
  * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Deletion
  */
-CALUMIANIMATION_API int DeleteVector2C(CALUMI::Math::Vector2** ptr);
+CALUMIANIMATION_API int DeleteVector2C(const CALUMI::Math::Vector2** ptr);
 
 /**
  * @param x
@@ -803,7 +803,7 @@ CALUMIANIMATION_API double GetVector2DYC(CALUMI::Math::Vector2D* source);
 /**
  * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Deletion
  */
-CALUMIANIMATION_API int DeleteVector2DC(CALUMI::Math::Vector2D** ptr);
+CALUMIANIMATION_API int DeleteVector2DC(const CALUMI::Math::Vector2D** ptr);
 
 /**
  * @param x
@@ -828,7 +828,7 @@ CALUMIANIMATION_API float GetVector3ZC(CALUMI::Math::Vector3* source);
 /**
  * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Deletion
  */
-CALUMIANIMATION_API int DeleteVector3C(CALUMI::Math::Vector3** ptr);
+CALUMIANIMATION_API int DeleteVector3C(const CALUMI::Math::Vector3** ptr);
 
 /**
  * @param x
@@ -853,7 +853,7 @@ CALUMIANIMATION_API double GetVector3DZC(CALUMI::Math::Vector3D* source);
 /**
  * @return Error Code:\n -1 = Invalid Ptr\n 0 = Successful Deletion
  */
-CALUMIANIMATION_API int DeleteVector3DC(CALUMI::Math::Vector3D** ptr);
+CALUMIANIMATION_API int DeleteVector3DC(const CALUMI::Math::Vector3D** ptr);
 
 /**
  * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteTransformC
@@ -984,7 +984,7 @@ CALUMIANIMATION_API float GetTransformRotationWC(CALUMI::Math::Transform* transf
  * @param ptr Dynamically allocated quaternion to delete
  * @return Error code: \n -1 = Invalid pointer \n 0 = Successful Deletion
  */
-CALUMIANIMATION_API int DeleteTransformC(CALUMI::Math::Transform** ptr);
+CALUMIANIMATION_API int DeleteTransformC(const CALUMI::Math::Transform** ptr);
 /**
  * @warning Heap allocated return value, if not nullptr, must be deleted using #DeleteQuaternionC
  * @note To get a basic quaternion with rotation, insert (0.0, 0.0, 0.0, 1.0)
@@ -1061,7 +1061,7 @@ CALUMIANIMATION_API int GetQuaternionOffsetC(CALUMI::Math::Quaternion* input,
  * @param ptr Dynamically allocated quaternion to delete
  * @return Error code: \n -1 = Invalid pointer \n 0 = Successful Deletion
  */
-CALUMIANIMATION_API int DeleteQuaternionC(CALUMI::Math::Quaternion** ptr);
+CALUMIANIMATION_API int DeleteQuaternionC(const CALUMI::Math::Quaternion** ptr);
 }
 
 /// @}

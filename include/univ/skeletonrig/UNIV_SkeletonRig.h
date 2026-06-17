@@ -628,6 +628,20 @@ extern "C"
 	 */
 	CALUMIANIMATION_API const CALUMI::Math::Vector3* GetLocalSkeletonBonePositionC(const CALUMI::UNIV::SkeletonBone* source);
 	/**
+	 * @brief Returns a heap allocated transform of this bone relative to its parent, if one exists
+	 * @param source
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteTransformC
+	 * @return Nullptr if no bone is found or error, global transform if no parent is found
+	 */
+	CALUMIANIMATION_API const CALUMI::Math::Transform* GetLocalSkeletonBoneTransformC(const CALUMI::UNIV::SkeletonBone* source);
+	/**
+	 * @brief Returns a heap allocated transform of this bone
+	 * @param source
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteTransformC
+	 * @return Nullptr if no bone is found or error
+	 */
+	CALUMIANIMATION_API const CALUMI::Math::Transform* GetGlobalSkeletonBoneTransformC(const CALUMI::UNIV::SkeletonBone* source);
+	/**
 	 * @brief Simplified method for setting a bone's global position.
 	 * @details Works by defining a local position based on the global input relative to the bone's current parent
 	 * @param bone

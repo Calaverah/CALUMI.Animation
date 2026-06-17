@@ -945,6 +945,44 @@ const CALUMI::Math::Vector3* GetLocalSkeletonBonePositionC(const CALUMI::UNIV::S
 
     return output;
 }
+const CALUMI::Math::Transform* GetLocalSkeletonBoneTransformC(const CALUMI::UNIV::SkeletonBone* source)
+{
+    if (!source)
+        return nullptr;
+
+    auto output = new CALUMI::Math::Transform();
+
+    try
+    {
+        *output = source->localTransform();
+    }
+    catch (const std::exception&)
+    {
+        delete output;
+        output = nullptr;
+    }
+
+    return output;
+}
+const CALUMI::Math::Transform* GetGlobalSkeletonBoneTransformC(const CALUMI::UNIV::SkeletonBone* source)
+{
+    if (!source)
+        return nullptr;
+
+    auto output = new CALUMI::Math::Transform();
+
+    try
+    {
+        *output = source->globalTransform();
+    }
+    catch (const std::exception&)
+    {
+        delete output;
+        output = nullptr;
+    }
+
+    return output;
+}
 int RenameBoneC(const CALUMI::UNIV::SkeletonRig* rig, const char* oldName, const char* newName)
 {
     if (!rig)

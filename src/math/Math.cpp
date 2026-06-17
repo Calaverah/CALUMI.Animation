@@ -1977,7 +1977,7 @@ float GetVector3ZC(CALUMI::Math::Vector3* source)
 {
 	return source->z();
 }
-int DeleteVector3C(CALUMI::Math::Vector3** ptr)
+int DeleteVector3C(const CALUMI::Math::Vector3** ptr)
 {
 	if (!ptr || !*ptr)
 		return -1;
@@ -2011,7 +2011,7 @@ double GetVector3DZC(CALUMI::Math::Vector3D* source)
 {
 	return source->z();
 }
-int DeleteVector3DC(CALUMI::Math::Vector3D** ptr)
+int DeleteVector3DC(const CALUMI::Math::Vector3D** ptr)
 {
 	if (!ptr || !*ptr)
 		return -1;
@@ -2038,7 +2038,7 @@ double GetVector2DYC(CALUMI::Math::Vector2D* source)
 {
 	return source->y();
 }
-int DeleteVector2DC(CALUMI::Math::Vector2D** ptr)
+int DeleteVector2DC(const CALUMI::Math::Vector2D** ptr)
 {
 	if (!ptr || !*ptr)
 		return -1;
@@ -2065,7 +2065,7 @@ float GetVector2YC(CALUMI::Math::Vector2* source)
 {
 	return source->y();
 }
-int DeleteVector2C(CALUMI::Math::Vector2** ptr)
+int DeleteVector2C(const CALUMI::Math::Vector2** ptr)
 {
 	if (!ptr || !*ptr)
 		return -1;
@@ -2169,7 +2169,7 @@ int GetQuaternionOffsetC(CALUMI::Math::Quaternion* input, CALUMI::Math::Quaterni
 	catch (std::bad_alloc&){}
 	return -1;
 }
-int DeleteQuaternionC(CALUMI::Math::Quaternion** ptr)
+int DeleteQuaternionC(const CALUMI::Math::Quaternion** ptr)
 {
 	if (!ptr || !*ptr)
 		return -1;
@@ -2358,7 +2358,7 @@ CALUMI::Math::Transform* CreateTransformC()
 {
 	return new CALUMI::Math::Transform;
 }
-int DeleteTransformC(CALUMI::Math::Transform** ptr)
+int DeleteTransformC(const CALUMI::Math::Transform** ptr)
 {
 	if (!ptr || !*ptr)
 		return -1;

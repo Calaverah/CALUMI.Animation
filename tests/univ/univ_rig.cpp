@@ -71,29 +71,69 @@ GTEST(UnivRigCreationC)
 
     {
         EXPECT_EQ(SetLocalSkeletonBoneTransformC(cRoot, 1.0f,2.0f,3.0f,1.0f,0.0f,0.0f,0.0f),0);
-        auto& tempQ0 = *GetLocalSkeletonBoneRotationC(cRoot);
-        auto& tempP0 = *GetLocalSkeletonBonePositionC(cRoot);
-        EXPECT_QUATNEAR(tempQ0, Math::Quaternion(1.0f,0.0f,0.0f,0.0f),0.000001f);
-        EXPECT_VEC3NEAR(tempP0, Math::Vector3(1.0f, 2.0f, 3.0f), 0.000001f);
+        const Math::Quaternion* tempQ0 = GetLocalSkeletonBoneRotationC(cRoot);
+        const Math::Vector3* tempP0 = GetLocalSkeletonBonePositionC(cRoot);
+        auto& tempQ0R = *tempQ0;
+        auto& tempP0R = *tempP0;
+        EXPECT_QUATNEAR(tempQ0R, Math::Quaternion(1.0f,0.0f,0.0f,0.0f),0.000001f);
+        EXPECT_VEC3NEAR(tempP0R, Math::Vector3(1.0f, 2.0f, 3.0f), 0.000001f);
+
+        const Math::Transform* tempT0 = GetLocalSkeletonBoneTransformC(cRoot);
+        EXPECT_QUATNEAR(tempT0->rotation(), Math::Quaternion(1.0f,0.0f,0.0f,0.0f),0.000001f);
+        EXPECT_VEC3NEAR(tempT0->position(), Math::Vector3(1.0f, 2.0f, 3.0f), 0.000001f);
+
+        DeleteVector3C(&tempP0);
+        DeleteQuaternionC(&tempQ0);
+        DeleteTransformC(&tempT0);
     }{
         EXPECT_EQ(SetGlobalSkeletonBoneTransformWithEulerC(cRoot, 0.0f,0.0f,0.0f, 0.0f,0.0f,static_cast<float>(Math::ToRadians(90.0f)),0), 0);
-        auto& tempQ0 = *GetLocalSkeletonBoneRotationC(cRoot);
-        auto& tempP0 = *GetLocalSkeletonBonePositionC(cRoot);
-        EXPECT_QUATNEAR(tempQ0, Math::Quaternion(0.0f,0.0f,0.707107f,0.707107f),0.000001f);
-        EXPECT_VEC3NEAR(tempP0, Math::Vector3(0.0f, 0.0f, 0.0f), 0.000001f);
+        const Math::Quaternion* tempQ0 = GetLocalSkeletonBoneRotationC(cRoot);
+        auto& tempQ0R = *tempQ0;
+        const Math::Vector3* tempP0 = GetLocalSkeletonBonePositionC(cRoot);
+        auto& tempP0R = *tempP0;
+        EXPECT_QUATNEAR(tempQ0R, Math::Quaternion(0.0f,0.0f,0.707107f,0.707107f),0.000001f);
+        EXPECT_VEC3NEAR(tempP0R, Math::Vector3(0.0f, 0.0f, 0.0f), 0.000001f);
+
+        const Math::Transform* tempT0 = GetLocalSkeletonBoneTransformC(cRoot);
+        EXPECT_QUATNEAR(tempT0->rotation(), Math::Quaternion(0.0f,0.0f,0.707107f,0.707107f),0.000001f);
+        EXPECT_VEC3NEAR(tempT0->position(), Math::Vector3(0.0f, 0.0f, 0.0f), 0.000001f);
+
+        DeleteVector3C(&tempP0);
+        DeleteQuaternionC(&tempQ0);
+        DeleteTransformC(&tempT0);
     }{
         EXPECT_EQ(SetGlobalSkeletonBoneTransformC(cRoot, 0.0f, 0.24f, 0.0f, 0.0f,0.0f,0.0f,1.0f), 0);
-        auto& tempQ0 = *GetLocalSkeletonBoneRotationC(cRoot);
-        auto& tempP0 = *GetLocalSkeletonBonePositionC(cRoot);
-        EXPECT_QUATNEAR(tempQ0, Math::Quaternion(), 0.000001f);
-        EXPECT_VEC3NEAR(tempP0, Math::Vector3(0.0f, 0.24f, 0.0f), 0.000001f);
+        const Math::Quaternion* tempQ0 = GetLocalSkeletonBoneRotationC(cRoot);
+        const Math::Vector3* tempP0 = GetLocalSkeletonBonePositionC(cRoot);
+        auto& tempQ0R = *tempQ0;
+        auto& tempP0R = *tempP0;
+        EXPECT_QUATNEAR(tempQ0R, Math::Quaternion(), 0.000001f);
+        EXPECT_VEC3NEAR(tempP0R, Math::Vector3(0.0f, 0.24f, 0.0f), 0.000001f);
+
+        const Math::Transform* tempT0 = GetLocalSkeletonBoneTransformC(cRoot);
+        EXPECT_QUATNEAR(tempT0->rotation(), Math::Quaternion(), 0.000001f);
+        EXPECT_VEC3NEAR(tempT0->position(), Math::Vector3(0.0f, 0.24f, 0.0f), 0.000001f);
+
+        DeleteVector3C(&tempP0);
+        DeleteQuaternionC(&tempQ0);
+        DeleteTransformC(&tempT0);
     }{
         EXPECT_EQ(SetGlobalSkeletonBoneRotationC(cRoot, 0.0f,1.0f,0.0f, 1.0f), 0);
         EXPECT_EQ(SetGlobalSkeletonBonePositionC(cRoot, 0.0f, 1.0f, 10.0f), 0);
-        auto& tempQ0 = *GetLocalSkeletonBoneRotationC(cRoot);
-        auto& tempP0 = *GetLocalSkeletonBonePositionC(cRoot);
-        EXPECT_QUATNEAR(tempQ0, Math::Quaternion(0.0f,0.707107f, 0.0f,0.707107f),0.000001f);
-        EXPECT_VEC3NEAR(tempP0, Math::Vector3(0.0f,1.0f,10.0f), 0.000001f);
+        const Math::Quaternion* tempQ0 = GetLocalSkeletonBoneRotationC(cRoot);
+        const Math::Vector3* tempP0 = GetLocalSkeletonBonePositionC(cRoot);
+        auto& tempQ0R = *tempQ0;
+        auto& tempP0R = *tempP0;
+        EXPECT_QUATNEAR(tempQ0R, Math::Quaternion(0.0f,0.707107f, 0.0f,0.707107f),0.000001f);
+        EXPECT_VEC3NEAR(tempP0R, Math::Vector3(0.0f,1.0f,10.0f), 0.000001f);
+
+        const Math::Transform* tempT0 = GetLocalSkeletonBoneTransformC(cRoot);
+        EXPECT_QUATNEAR(tempT0->rotation(), Math::Quaternion(0.0f,0.707107f, 0.0f,0.707107f),0.000001f);
+        EXPECT_VEC3NEAR(tempT0->position(), Math::Vector3(0.0f,1.0f,10.0f), 0.000001f);
+
+        DeleteVector3C(&tempP0);
+        DeleteQuaternionC(&tempQ0);
+        DeleteTransformC(&tempT0);
     }
 
 }
