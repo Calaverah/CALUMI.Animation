@@ -1,0 +1,47 @@
+name: Doxygen Deployment
+
+on:
+  push:
+    branches: ["dev"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Install Doxygen and Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+
+      - name: Run Doxygen Compiler
+        run: doxygen Doxyfile
+
+      - name: Prevent Jekyll Parsing
+        run: touch docs/html/.nojekyll
+
+      - name: Setup GitHub Pages Env
+        uses: actions/configure-pages@v5
+
+      - name: Upload HTML Site Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'docs/html'
+
+      - name: Deploy Site to Live Pages Url
+        id: deployment
+        uses: actions/deploy-pages@v4
