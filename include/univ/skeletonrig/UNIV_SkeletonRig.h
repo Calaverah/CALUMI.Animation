@@ -600,7 +600,7 @@ extern "C"
 	 */
 	CALUMIANIMATION_API const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneChildWithNameC(const CALUMI::UNIV::SkeletonBone* parent, const char* name, bool recursive);
 	/**
-	 * @brief Returns the rotation of this bone, in global coordinates
+	 * @brief Returns a heap allocated quaternion for the rotation of this bone, in global coordinates
 	 * @param source Ptr to the bone in question
 	 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteQuaternionC
 	 * @return Quaternion representation of the bone's global rotation
@@ -614,7 +614,7 @@ extern "C"
 	 */
 	CALUMIANIMATION_API const CALUMI::Math::Quaternion* GetLocalSkeletonBoneRotationC(const CALUMI::UNIV::SkeletonBone* source);
 	/**
-	 * @brief Returns the position of this bone, in global coordinates
+	 * @brief Returns a heap allocated vector for the position of this bone, in global coordinates
 	 * @param source Ptr to the bone in question
 	 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteVector3C
 	 * @return Vector3 (float) representation of the bone's global position
