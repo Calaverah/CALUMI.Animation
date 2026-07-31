@@ -94,6 +94,7 @@ namespace CALUMI::SFBGS
 		bool m_isMannequin = false;
 		std::unordered_map<BoneMapKey, std::string> m_boneMap;
 		std::unordered_map<std::string, LODSetting> m_boneLODs;
+		std::unordered_map<std::string, Math::Quaternion> m_sourceGlobalRotations;
 		Impl() = default;
 	};
 
@@ -116,6 +117,16 @@ namespace CALUMI::SFBGS
 			boneLODs[key.c_str()] = static_cast<int8_t>(lodEnum);
 		}
 		output["lod"] = boneLODs;
+
+		if (!pImpl->m_sourceGlobalRotations.empty())
+		{
+			const Utilities::JsonObject globalRotations;
+			for (const auto& [boneName, rotation] : pImpl->m_sourceGlobalRotations)
+			{
+				globalRotations[boneName.c_str()] = rotation.toJson();
+			}
+			output["globalRotations"] = globalRotations;
+		}
 
 		output["precision"] = pImpl->m_precisionSet.toJson();
 
@@ -163,6 +174,18 @@ namespace CALUMI::SFBGS
 			{
 				const auto value = GetLODFromInt(lod[keys.c_str(i)].toInt(static_cast<int>(DefaultLOD)));
 				setBoneLod(keys.c_str(i), value);
+			}
+		}
+
+		if (data.contains("globalRotations"))
+		{
+			const auto globalRotations = data["globalRotations"].toObject();
+			const auto keys = globalRotations.keys();
+			for (uint64_t i = 0; i < keys.size(); i++)
+			{
+				Math::Quaternion rotation;
+				rotation.fromJson(globalRotations[keys.c_str(i)].toObject());
+				setSourceGlobalRotation(keys.c_str(i), rotation);
 			}
 		}
 	}
@@ -323,6 +346,7 @@ namespace CALUMI::SFBGS
 			pImpl->m_isMannequin = other.pImpl->m_isMannequin;
 			pImpl->m_boneMap = other.pImpl->m_boneMap;
 			pImpl->m_boneLODs = other.pImpl->m_boneLODs;
+			pImpl->m_sourceGlobalRotations = other.pImpl->m_sourceGlobalRotations;
 		}
 		return *this;
 	}
@@ -450,6 +474,23 @@ namespace CALUMI::SFBGS
 	// Inherited via IRigPackage
 	const char* SFBGS_RigPackage::packageType() const { return SFBGS_RIG_PACKAGE; }
 
+	void SFBGS_RigPackage::setSourceGlobalRotation(const char* boneName, const Math::Quaternion& rotation) const
+	{
+		if (SCOMPARE(boneName, "") == 0)
+			return;
+
+		pImpl->m_sourceGlobalRotations[boneName] = rotation;
+	}
+
+	bool SFBGS_RigPackage::sourceGlobalRotation(const char* boneName, Math::Quaternion& rotation) const
+	{
+		if (SCOMPARE(boneName, "") == 0 || !pImpl->m_sourceGlobalRotations.contains(boneName))
+			return false;
+
+		rotation = pImpl->m_sourceGlobalRotations.at(boneName);
+		return true;
+	}
+
 	bool SFBGS_RigPackage::handleBoneRename(const char* oldBone, const char* newName)
 	{
 		for (auto& bone : pImpl->m_boneMap | std::views::values)
@@ -469,12 +510,23 @@ namespace CALUMI::SFBGS
 
 		}
 
+		for (auto& [key, rotation] : pImpl->m_sourceGlobalRotations)
+		{
+			if (SCOMPARE(key.c_str(), oldBone) == 0)
+			{
+				pImpl->m_sourceGlobalRotations[newName] = rotation;
+				pImpl->m_sourceGlobalRotations.erase(key);
+				break;
+			}
+		}
+
 		return true;
 	}
 }
 
 
 #pragma region Extern "C"
+
 	int SFBGSRigPackage_AddPackageToSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig, const bool overwrite)
 	{
 		if (rig)
