@@ -443,7 +443,14 @@ namespace CALUMI::SFBGS
 				const auto& localTransform = refBone->localTransform();
 				const auto globalTransform = refBone->globalTransform();
 				toAdd.pImpl->m_localRotation = localTransform.rotation();
-				toAdd.pImpl->m_globalRotation = globalTransform.rotation();
+				auto globalRotation = globalTransform.rotation();
+				Math::Quaternion sourceGlobalRotation;
+				if (sfbgsPackage.sourceGlobalRotation(refBone->name(), sourceGlobalRotation) &&
+					sourceGlobalRotation.areSameRotation(globalRotation, 0.00001f))
+				{
+					globalRotation = sourceGlobalRotation;
+				}
+				toAdd.pImpl->m_globalRotation = globalRotation;
 				toAdd.pImpl->m_position = localTransform.position();
 				toAdd.pImpl->m_nameOffset = pImpl->m_stringArray.offset(i) + boneMapOffset() + SFBGSMAPSIZE * 2;
 
@@ -1048,6 +1055,7 @@ namespace CALUMI::SFBGS
 				const SFBGS_RigPackage::LODSetting lod = SFBGS_RigPackage::GetLODFromInt(bone.pImpl->m_LOD);
 
 				sfbgsPackage.setBoneLod(uAddedBone->name(), lod);
+				sfbgsPackage.setSourceGlobalRotation(uAddedBone->name(), bone.pImpl->m_globalRotation);
 
 				//resets the loop
 				i = -1;

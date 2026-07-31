@@ -439,6 +439,11 @@ namespace CALUMI::SFBGS
 		/// @}
 
 	private:
+		void setSourceGlobalRotation(const char* boneName, const Math::Quaternion& rotation) const;
+		[[nodiscard]] bool sourceGlobalRotation(const char* boneName, Math::Quaternion& rotation) const;
+
+		friend class SkeletonRig;
+
 		struct Impl;
 		Impl* pImpl;
 
