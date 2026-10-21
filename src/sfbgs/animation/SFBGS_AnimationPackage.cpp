@@ -335,6 +335,44 @@ int SFBGSAnimationPackage_HasAmendedBlockHashC(const CALUMI::UNIV::Animation* an
     return -1;
 }
 
+CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockC(const CALUMI::UNIV::Animation* animation, const int index)
+{
+    if (animation)
+        try
+        {
+            return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).amendedBlock(index);
+        }
+    catch (std::exception&){}
+
+    return nullptr;
+}
+
+CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockHashC(const CALUMI::UNIV::Animation* animation, uint32_t hash)
+{
+    if (animation)
+        try
+        {
+            const auto& pkg = CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation);
+            return pkg.amendedBlock(pkg.findAmendedBlock(hash));
+        }
+    catch (std::exception&){}
+
+    return nullptr;
+}
+
+CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockNameC(const CALUMI::UNIV::Animation* animation, const char* name)
+{
+    if (animation)
+        try
+        {
+            const auto& pkg = CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation);
+            return pkg.amendedBlock(pkg.findAmendedBlock(name));
+        }
+    catch (std::exception&){}
+
+    return nullptr;
+}
+
 int SFBGSAnimationPackage_GetAmendedBlockCountC(const CALUMI::UNIV::Animation* animation)
 {
     if (animation)

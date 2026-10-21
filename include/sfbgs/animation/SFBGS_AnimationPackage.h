@@ -230,16 +230,38 @@ namespace CALUMI::SFBGS
 	 * @param name Used to generate hash, empty strings are allowed
 	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = False\n 1 = True
 	 */
-	CALUMIANIMATION_API int SFBGSAnimationPackage_HasAmendedBlockC(const CALUMI::UNIV::Animation* animation, const
-		char* name);
+	CALUMIANIMATION_API int SFBGSAnimationPackage_HasAmendedBlockC(const CALUMI::UNIV::Animation* animation, const char* name);
 	/**
 	 * @brief Searches for an amended block with a given hash
 	 * @param animation
 	 * @param hash Generated hash
 	 * @return Error Code:\n -1 = Invalid Ptr\n 0 = False\n 1 = True
 	 */
-	CALUMIANIMATION_API int SFBGSAnimationPackage_HasAmendedBlockHashC(const CALUMI::UNIV::Animation* animation,
-		uint32_t hash);
+	CALUMIANIMATION_API int SFBGSAnimationPackage_HasAmendedBlockHashC(const CALUMI::UNIV::Animation* animation, uint32_t hash);
+
+	/**
+	 * @brief Looks up the given index within the animation block vector for amended animation entries
+	 * @param animation
+	 * @param index Index of amended animation block, if it exists
+	 * @return Animation Block pointer, or nullptr if none exists
+	 */
+	CALUMIANIMATION_API CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockC(const CALUMI::UNIV::Animation* animation, int index);
+
+	/**
+	 * @brief Looks up the given hash within the animation block vector for amended animation entries
+	 * @param animation
+	 * @param hash Hash associated with animation block
+	 * @return Animation Block pointer, or nullptr if none exists
+	 */
+	CALUMIANIMATION_API CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockHashC(const CALUMI::UNIV::Animation* animation, uint32_t hash);
+
+	/**
+	 * @brief Looks up the given hash within the animation block vector for amended animation entries
+	 * @param animation
+	 * @param name Name associated with animation block
+	 * @return Animation Block pointer, or nullptr if none exists
+	 */
+	CALUMIANIMATION_API CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockNameC(const CALUMI::UNIV::Animation* animation, const char* name);
 
 	/**
 	 * @brief

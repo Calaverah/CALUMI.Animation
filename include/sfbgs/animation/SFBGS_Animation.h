@@ -558,12 +558,12 @@ namespace CALUMI::SFBGS
          *
          * @return
          */
-        [[nodiscard]] uint16_t preambleOffset() const;
+        [[nodiscard]] uint16_t preambleSize() const;
         /**
          *
          * @param input
          */
-        void setPreambleOffset(uint16_t input) const;
+        void setPreambleSize(uint16_t input) const;
 
         /**
          *

@@ -9,6 +9,7 @@
 #include <iostream>
 #include "internalvectordef.h"
 #include <cstring>
+#include <filesystem>
 #include <io/FileResult.h>
 #include <vector>
 
@@ -798,7 +799,7 @@ namespace CALUMI::SFBGS {
 
 		uint16_t _indexAtlasCounter = 0x02; //At least 2, unless bones are zero (special case where addition bones are filled in at the bottom, but they may not be from the main rig)
 
-		uint16_t _preambleOffset = 0; //NOTE: this tells us how long the unknown "Preamble" section is and when the regular animation data begins
+		uint16_t _preambleSize = 0; //NOTE: this tells us how long the unknown "Preamble" section is and when the regular animation data begins
 
 		float _nZeroFloats[3] = { 0.0,-0.0,0.0 }; //UNKNOWN:
 
@@ -945,14 +946,14 @@ namespace CALUMI::SFBGS {
 		pImpl->_amendedBlockCount = input;
 	}
 
-	uint16_t Animation::preambleOffset() const
+	uint16_t Animation::preambleSize() const
 	{
-		return pImpl->_preambleOffset;
+		return pImpl->_preambleSize;
 	}
 
-	void Animation::setPreambleOffset(const uint16_t input) const
+	void Animation::setPreambleSize(const uint16_t input) const
 	{
-		pImpl->_preambleOffset = input;
+		pImpl->_preambleSize = input;
 	}
 
 	Utilities::FloatVector Animation::nZeroFloats() const
@@ -1125,8 +1126,8 @@ namespace CALUMI::SFBGS {
 			std::memcpy(&pImpl->_amendedBlockCount, &buffer.at(addressIndex), sizeof(pImpl->_amendedBlockCount));
 			addressIndex += sizeof(pImpl->_amendedBlockCount);
 
-			std::memcpy(&pImpl->_preambleOffset, &buffer.at(addressIndex), sizeof(pImpl->_preambleOffset));
-			addressIndex += sizeof(pImpl->_preambleOffset);
+			std::memcpy(&pImpl->_preambleSize, &buffer.at(addressIndex), sizeof(pImpl->_preambleSize));
+			addressIndex += sizeof(pImpl->_preambleSize);
 
 			std::memcpy(&pImpl->_nZeroFloats, &buffer.at(addressIndex), sizeof(pImpl->_nZeroFloats));
 			addressIndex += sizeof(pImpl->_nZeroFloats);
@@ -1137,7 +1138,7 @@ namespace CALUMI::SFBGS {
 
 		//Evaluate Preamble
 		// uint64_t newOffset = addressIndex + pImpl->_preambleOffset;
-		if (pImpl->_preambleOffset > 0)
+		if (pImpl->_preambleSize > 0)
 		{
 			Utilities::AlignBufferAndRead(buffer, addressIndex, 4, 4, &pImpl->_preambleCount);
 			pImpl->_preamble.reserve(pImpl->_preambleCount);
@@ -1166,11 +1167,11 @@ namespace CALUMI::SFBGS {
 			pImpl->_indexAtlas.resize(pImpl->_indexAtlasCounter);
 
 			// ReSharper disable once CppLocalVariableMayBeConst
-			int8_t atlasEntrySize = 1;
 
 			//possible need to be able to switch between byte and short sizing here
 			for (int i = 0; i < pImpl->_indexAtlasCounter; i++)
 			{
+				int8_t atlasEntrySize = 1;
 				std::memcpy(&pImpl->_indexAtlas.at(i), &buffer.at(addressIndex), atlasEntrySize);
 				addressIndex += atlasEntrySize;
 			}
@@ -1269,15 +1270,39 @@ namespace CALUMI::SFBGS {
 			std::memcpy( &buffer.at(addressIndex), &pImpl->_amendedBlockCount, sizeof(pImpl->_amendedBlockCount));
 			addressIndex += sizeof(pImpl->_amendedBlockCount);
 
-			std::memcpy( &buffer.at(addressIndex), &pImpl->_preambleOffset, sizeof(pImpl->_preambleOffset));
-			addressIndex += sizeof(pImpl->_preambleOffset);
+			std::memcpy( &buffer.at(addressIndex), &pImpl->_preambleSize, sizeof(pImpl->_preambleSize));
+			addressIndex += sizeof(pImpl->_preambleSize);
 
 			std::memcpy( &buffer.at(addressIndex), &pImpl->_nZeroFloats, sizeof(pImpl->_nZeroFloats));
 			addressIndex += sizeof(pImpl->_nZeroFloats);
 
 		}
 
-		//PREAMBLE AND FILLER FLOATS WOULD GO HERE. IGNORED FOR NOW
+		//PREAMBLE - SKIPPED FOR NOW TODO: Finish encoding preamble/sync data
+		{
+			buffer.insert(buffer.endPos(), pImpl->_preambleSize, 0);
+			std::memcpy( &buffer.at(addressIndex), &pImpl->_preambleCount, sizeof(pImpl->_preambleCount));
+			// addressIndex += sizeof(pImpl->_preambleCount);
+			addressIndex += pImpl->_preambleSize;
+		}
+
+		//AMENDMENT HASHES
+		{
+			//align to dword (4 bytes)
+			if (const auto hashCount = pImpl->_amendedHashSet.size(); hashCount > 0)
+				while (addressIndex % 4 != 0)
+				{
+					buffer.insert(buffer.endPos(), 1, 0);
+					addressIndex++;
+
+					buffer.insert(buffer.endPos(), hashCount * sizeof(pImpl->_amendedHashSet.at(0)), 0);
+					for (int i = 0; i < pImpl->_amendedHashSet.size(); i++)
+					{
+						std::memcpy(&buffer.at(addressIndex), &pImpl->_amendedHashSet.at(i), sizeof(pImpl->_amendedHashSet.at(i)));
+						addressIndex += sizeof(pImpl->_amendedHashSet.at(i));
+					}
+				}
+		}
 
 		//Index Atlas
 
@@ -1294,12 +1319,16 @@ namespace CALUMI::SFBGS {
 
 		//Animation Blocks
 		const unsigned short animationBlockCount = s_SumIndices(pImpl->_indexAtlas, IndexCountingSolution::odd);
-		for (unsigned short i = 0; i < animationBlockCount; i++)
+		for (int i = 0; i < animationBlockCount; i++)
 		{
 			pImpl->_animationBlocks.at(i).serializeIntoBuffer(buffer,addressIndex, pImpl->_headerFlags);
 		}
 
-		//Skipping additional block entries until we know more
+		//AMENDMENT BLOCKS
+		for (int i = 0; i < pImpl->_amendedAnimationBlocks.size(); i++)
+		{
+			pImpl->_amendedAnimationBlocks.at(i).serializeIntoBuffer(buffer, addressIndex, pImpl->_headerFlags);
+		}
 
 
 #ifdef DEBUG_BUILD

@@ -146,9 +146,11 @@ namespace CALUMI::SFBGS
                 output.animationBlocks().at(boneIdx) = toAdd; //Fill block for the correct index
         }
 
-        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(anim.packageManager().package(
-         SFBGS_ANIM_PACKAGE)))
+        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(anim.packageManager().package(SFBGS_ANIM_PACKAGE)))
         {
+            output.amendedAnimationBlocks().reserve(pkg->amendedBlockCount());
+            output.amendedHashSet().reserve(pkg->amendedBlockCount());
+
             for (int i = 0; i < pkg->amendedBlockCount() && i < std::numeric_limits<int>::max(); i++)
             {
                 AnimationBlock toAdd;
@@ -161,7 +163,12 @@ namespace CALUMI::SFBGS
 
                 toAdd.setScalarSequenceFromUNIV(pkg->amendedBlock(i)->scalarSequence());
                 toAdd.setPrioritySequenceFromUNIV(pkg->amendedBlock(i)->prioritySequence());
+
+                output.amendedAnimationBlocks().push_back(toAdd);
+                output.amendedHashSet().push_back(pkg->amendedBlockHash(i));
             }
+
+            output.setAmendedBlockCount(pkg->amendedBlockCount());
         }
 
         output.evaluateHeaderFlags();

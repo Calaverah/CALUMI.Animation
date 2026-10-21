@@ -73,7 +73,7 @@ namespace CALUMI::SFBGS
 		/// @}
 		/// @name Json
 		/// @{
-		Utilities::JsonObject toJson() const;
+		[[nodiscard]] Utilities::JsonObject toJson() const;
 		void fromJson(const Utilities::JsonObject& data) const;
 		/// @}
 
@@ -474,7 +474,7 @@ namespace CALUMI::SFBGS
 		/// @}
 		/// @name Json
 		/// @{
-		Utilities::JsonObject toJson() const override;
+		[[nodiscard]] Utilities::JsonObject toJson() const override;
 		void fromJson(const Utilities::JsonObject& data) override;
 		/// @}
 
