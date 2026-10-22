@@ -134,7 +134,7 @@ namespace CALUMI::SFBGS
         }
     }
 
-    unsigned int SFBGS_AnimationPackage::setSkippedBone(const char* name, const bool skip) const
+    int SFBGS_AnimationPackage::setSkippedBone(const char* name, const bool skip) const
     {
         if(name)
         {
@@ -144,12 +144,12 @@ namespace CALUMI::SFBGS
                 pImpl->m_skippedBones.insert(name);
         }
 
-        return static_cast<unsigned int>(pImpl->m_skippedBones.size());
+        return static_cast<int>(pImpl->m_skippedBones.size());
     }
 
-    unsigned int SFBGS_AnimationPackage::skippedBoneCount() const
+    int SFBGS_AnimationPackage::skippedBoneCount() const
     {
-        return static_cast<unsigned int>(pImpl->m_skippedBones.size());
+        return static_cast<int>(pImpl->m_skippedBones.size());
     }
 
     const char* SFBGS_AnimationPackage::skippedBone(const int index) const
@@ -158,6 +158,14 @@ namespace CALUMI::SFBGS
             return nullptr;
 
         return std::next(pImpl->m_skippedBones.cbegin(), index)->c_str();
+    }
+
+    bool SFBGS_AnimationPackage::hasSkippedBone(const char* name) const
+    {
+        if (!name)
+            return false;
+
+        return pImpl->m_skippedBones.contains(name);
     }
 
     uint16_t SFBGS_AnimationPackage::amendedBlockCount() const
@@ -683,6 +691,53 @@ int SFBGSAnimationPackage_FindAmendedBlockWithHashC(const CALUMI::UNIV::Animatio
     catch (std::exception&){}
 
     return -1;
+}
+
+int SFBGSAnimationPackage_SetSkippedBoneC(const CALUMI::UNIV::Animation* animation, const char* name, const bool skip)
+{
+    if (animation)
+        try
+        {
+            return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).setSkippedBone(name, skip);
+        }
+    catch (std::exception&){}
+
+    return -1;
+}
+
+int SFBGSAnimationPackage_SkippedBoneCountC(const CALUMI::UNIV::Animation* animation)
+{
+    if (animation)
+        try
+        {
+            return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).skippedBoneCount();
+        }
+    catch (std::exception&){}
+    return -1;
+}
+
+int SFBGSAnimationPackage_HasSkippedBoneC(const CALUMI::UNIV::Animation* animation, const char* name)
+{
+    if (animation)
+        try
+        {
+            return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).hasSkippedBone(name);
+        }
+    catch (std::exception&){}
+
+    return -1;
+}
+
+const char* SFBGSAnimationPackage_SkippedBoneNameC(const CALUMI::UNIV::Animation* animation, const int index)
+{
+    if (animation)
+        try
+        {
+            return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).skippedBone(index);
+        }
+    catch (std::exception&){}
+
+    return nullptr;
 }
 
 

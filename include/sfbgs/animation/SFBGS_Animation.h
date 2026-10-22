@@ -681,4 +681,6 @@ namespace CALUMI::SFBGS
     private:
         friend class AnimationScene;
     };
+
+    unsigned short SumAtlasIndices(Utilities::U16Vector inputVector, Animation::IndexCountingSolution type);
 }

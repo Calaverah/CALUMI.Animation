@@ -40,25 +40,29 @@ namespace CALUMI::SFBGS
 		/// @{
 
 		/**
-		 * @brief
+		 * @brief Signals that a bone with the given name should be skipped when converted to SFBGS animations
 		 * @param name
 		 * @param skip
 		 * @return Total count of entries in the skipped bone set
 		 */
-		[[nodiscard]] unsigned int setSkippedBone(const char* name, bool skip = true) const;
+		int setSkippedBone(const char* name, bool skip = true) const;
 
 		/**
-		 *
-		* @return Total count of entries in the skipped bone set
+		 * @return Total count of entries in the skipped bone set
 		 */
-		[[nodiscard]] unsigned int skippedBoneCount() const;
+		[[nodiscard]] int skippedBoneCount() const;
 
 		/**
-		 *
 		 * @param index Index of the bone within the skipped bone set
 		 * @return Name of the bone, if one exists
 		 */
 		[[nodiscard]] const char* skippedBone(int index) const;
+
+		/**
+		 * @param name Bone to check for
+		 * @return If bone is in the skipped bone set
+		 */
+		[[nodiscard]] bool hasSkippedBone(const char* name) const;
 
 		/// @}
 
@@ -446,6 +450,19 @@ namespace CALUMI::SFBGS
 	 * @return Error Code:\n -1 = Invalid Ptr\n n = Index
 	 */
 	CALUMIANIMATION_API int SFBGSAnimationPackage_FindAmendedBlockWithHashC(const CALUMI::UNIV::Animation* animation, uint32_t hash);
+
+	/**
+	 *
+	 * @param animation
+	 * @param name Name of bone to mark as skipped
+	 * @param skip Whether to add or remove bone from list
+	 * @return Error Code:\n -1 = Invalid Ptr\n n = number of bones in the skipped bone set
+	 */
+	CALUMIANIMATION_API int SFBGSAnimationPackage_SetSkippedBoneC(const CALUMI::UNIV::Animation* animation, const char* name, bool skip);
+
+	CALUMIANIMATION_API int SFBGSAnimationPackage_SkippedBoneCountC(const CALUMI::UNIV::Animation* animation);
+	CALUMIANIMATION_API int SFBGSAnimationPackage_HasSkippedBoneC(const CALUMI::UNIV::Animation* animation, const char* name);
+	CALUMIANIMATION_API const char* SFBGSAnimationPackage_SkippedBoneNameC(const CALUMI::UNIV::Animation* animation, int index);
 	}
 
 /// @}

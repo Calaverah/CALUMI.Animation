@@ -1034,7 +1034,7 @@ namespace CALUMI::SFBGS {
 		pImpl->_amendedAnimationBlocks = input;
 	}
 
-	static unsigned short s_SumIndices(Utilities::U16Vector inputVector, Animation::IndexCountingSolution type)
+	unsigned short SumAtlasIndices(Utilities::U16Vector inputVector, Animation::IndexCountingSolution type)
 	{
 		unsigned short sum = 0;
 		for (int i = 0; i < inputVector.size(); i++)
@@ -1179,7 +1179,7 @@ namespace CALUMI::SFBGS {
 
 		//Animation Blocks
 		unsigned short j = 0; unsigned short k = 0;
-		for (unsigned short i = 0; i < s_SumIndices(pImpl->_indexAtlas, IndexCountingSolution::all); i++)
+		for (unsigned short i = 0; i < SumAtlasIndices(pImpl->_indexAtlas, IndexCountingSolution::all); i++)
 		{
 			if (k >= pImpl->_indexAtlas.at(j))
 			{
@@ -1325,7 +1325,7 @@ namespace CALUMI::SFBGS {
 		}
 
 		//Animation Blocks
-		const unsigned short animationBlockCount = s_SumIndices(pImpl->_indexAtlas, IndexCountingSolution::odd);
+		const unsigned short animationBlockCount = SumAtlasIndices(pImpl->_indexAtlas, IndexCountingSolution::odd);
 		for (int i = 0; i < animationBlockCount; i++)
 		{
 			pImpl->_animationBlocks.at(i).serializeIntoBuffer(buffer,addressIndex, pImpl->_headerFlags);

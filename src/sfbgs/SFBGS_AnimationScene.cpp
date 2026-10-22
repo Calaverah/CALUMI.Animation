@@ -14,6 +14,7 @@
 #include <iostream>
 #include <filesystem>
 #include <source_location>
+#include <unordered_map>
 #include <vector>
 
 
@@ -122,11 +123,16 @@ namespace CALUMI::SFBGS
     {
         Animation output;
         output.setAnimationFileName(anim.animationTitle());
+        // ReSharper disable once CppLocalVariableMayBeConst
+        auto& pkg = SFBGS_AnimationPackage::GetPackage(anim);
 
         int64_t maxBoneIndex = -1;
         for (unsigned int i = 0; i < anim.animationBlocks().size(); i++)
         {
-            if (const int boneIdx = rig.findBoneIndex(anim.animationBlocks().at(i).boneName()); boneIdx > maxBoneIndex && boneIdx < rig.boneCount())
+            // ReSharper disable once CppTooWideScopeInitStatement
+            const int boneIdx = rig.findBoneIndex(anim.animationBlocks().at(i).boneName());
+
+            if (boneIdx > maxBoneIndex && boneIdx < rig.boneCount())
                 maxBoneIndex = boneIdx;
         }
 
@@ -135,51 +141,88 @@ namespace CALUMI::SFBGS
             throw std::runtime_error("Maximum number of bones exceeded for sfbgs animation conversion");
         }
 
+        if (maxBoneIndex < -1)
+            maxBoneIndex = -1;
+
+        Utilities::U16Vector aAtlas;
+        std::unordered_map<uint16_t, uint16_t> aAtlasMap;
+        uint16_t currentACount = 0;
+        uint16_t mappedIndex = 0;
+        bool currentAFlag = true;
+
+        for (int i = 0; i < maxBoneIndex; i++)
+        {
+            if (!currentAFlag)
+            {
+                aAtlasMap.insert({i, mappedIndex});
+                mappedIndex++;
+            }
+
+            if (pkg.hasSkippedBone(rig.stringArray().c_str(i)) == currentAFlag)
+            {
+                currentACount++;
+            }
+            else
+            {
+                currentAFlag = !currentAFlag;
+                aAtlas.push_back(currentACount);
+                currentACount = 0;
+            }
+        }
+
+
+        output.setIndexAtlasCount(aAtlas.size());
+        output.setIndexAtlast(aAtlas);
+
+        const auto actualBoneCount = SumAtlasIndices(aAtlas, Animation::IndexCountingSolution::odd);
         output.setBoneCount(static_cast<uint16_t>(maxBoneIndex) + 1);
+
         output.setFrameCount(anim.frameCount());
 
-        output.indexAtlas().reserve(output.indexAtlasCount());
-        output.indexAtlas().push_back(0);
-        output.indexAtlas().push_back(output.boneCount());
-
-
-        output.animationBlocks().resize(output.boneCount()); //Create empty blocks for all bones
+        output.animationBlocks().resize(actualBoneCount); //Create empty blocks for all bones
         for (unsigned int i = 0; i < anim.animationBlocks().size(); i++)
         {
             AnimationBlock toAdd;
             toAdd.setRotationSequenceFromUNIV(anim.animationBlocks().at(i).rotationSequence());
-            toAdd.setTranslationSequenceFromUNIV(anim.animationBlocks().at(i).translationSequence(),
-                                                 rig.highPrecision(), rig.lowPrecision());
+            toAdd.setTranslationSequenceFromUNIV(anim.animationBlocks().at(i).translationSequence(), rig.highPrecision(), rig.lowPrecision());
             toAdd.setScalarSequenceFromUNIV(anim.animationBlocks().at(i).scalarSequence());
             toAdd.setPrioritySequenceFromUNIV(anim.animationBlocks().at(i).prioritySequence());
 
-            if (const int boneIdx = rig.findBoneIndex(anim.animationBlocks().at(i).boneName()); boneIdx >= 0 && boneIdx < output.animationBlocks().size())
-                output.animationBlocks().at(boneIdx) = toAdd; //Fill block for the correct index
+            const int boneIdx = rig.findBoneIndex(anim.animationBlocks().at(i).boneName());
+
+            if (boneIdx >= 0 && !aAtlasMap.contains(boneIdx))
+                continue;
+
+            // ReSharper disable once CppTooWideScopeInitStatement
+            const auto convertedIdx = aAtlasMap.at(boneIdx);
+
+            if (convertedIdx < output.animationBlocks().size())
+                output.animationBlocks().at(convertedIdx) = toAdd; //Fill block for the correct index
         }
 
-        if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(anim.packageManager().package(SFBGS_ANIM_PACKAGE)))
+        //SFBGS Package Data
         {
-            output.amendedAnimationBlocks().reserve(pkg->amendedBlockCount());
-            output.amendedHashSet().reserve(pkg->amendedBlockCount());
+            output.amendedAnimationBlocks().reserve(pkg.amendedBlockCount());
+            output.amendedHashSet().reserve(pkg.amendedBlockCount());
 
-            for (int i = 0; i < pkg->amendedBlockCount() && i < std::numeric_limits<int>::max(); i++)
+            for (int i = 0; i < pkg.amendedBlockCount() && i < std::numeric_limits<int>::max(); i++)
             {
                 AnimationBlock toAdd;
-                toAdd.setRotationSequenceFromUNIV(pkg->amendedBlock(i)->rotationSequence());
+                toAdd.setRotationSequenceFromUNIV(pkg.amendedBlock(i)->rotationSequence());
 
-                float hiVal = pkg->usesRigForPrecision() ? rig.highPrecision() : pkg->overridePrecisionSet().high();
-                float loVal = pkg->usesRigForPrecision() ? rig.lowPrecision() : pkg->overridePrecisionSet().low();
+                float hiVal = pkg.usesRigForPrecision() ? rig.highPrecision() : pkg.overridePrecisionSet().high();
+                float loVal = pkg.usesRigForPrecision() ? rig.lowPrecision() : pkg.overridePrecisionSet().low();
 
-                toAdd.setTranslationSequenceFromUNIV(pkg->amendedBlock(i)->translationSequence(), hiVal, loVal);
+                toAdd.setTranslationSequenceFromUNIV(pkg.amendedBlock(i)->translationSequence(), hiVal, loVal);
 
-                toAdd.setScalarSequenceFromUNIV(pkg->amendedBlock(i)->scalarSequence());
-                toAdd.setPrioritySequenceFromUNIV(pkg->amendedBlock(i)->prioritySequence());
+                toAdd.setScalarSequenceFromUNIV(pkg.amendedBlock(i)->scalarSequence());
+                toAdd.setPrioritySequenceFromUNIV(pkg.amendedBlock(i)->prioritySequence());
 
                 output.amendedAnimationBlocks().push_back(toAdd);
-                output.amendedHashSet().push_back(pkg->amendedBlockHash(i));
+                output.amendedHashSet().push_back(pkg.amendedBlockHash(i));
             }
 
-            output.setAmendedBlockCount(pkg->amendedBlockCount());
+            output.setAmendedBlockCount(pkg.amendedBlockCount());
         }
 
         output.evaluateHeaderFlags();
@@ -190,7 +233,9 @@ namespace CALUMI::SFBGS
     {
         UNIV::Animation output;
         output.setAnimationTitle(anim.animationFileName());
-        //output.boneCount = anim._boneCount;
+
+        // ReSharper disable once CppLocalVariableMayBeConst
+        auto& pkg = SFBGS_AnimationPackage::GetPackage(output);
 
         output.animationBlocks().reserve(anim.animationBlocks().size());
         for (unsigned int i = 0; i < anim.animationBlocks().size(); i++)
@@ -214,37 +259,46 @@ namespace CALUMI::SFBGS
         }
         output.animationBlocks().shrink_to_fit();
 
-        //Amended animation blocks (NiNode bones)
-        SFBGS_AnimationPackage::AddPackage(output, true);
+        //Tracking skipped bones
+        int64_t aOffset = 0;
+        for (int a = 0; a < anim.indexAtlas().size(); a++)
+        {
+            if (a % 2 == 0)
+            {
+                for (int i = 0; i < anim.indexAtlas().at(a); i++)
+                {
+                    pkg.setSkippedBone(rig.stringArray().c_str(i+aOffset), true);
+                }
+            }
+            aOffset += anim.indexAtlas().at(a);
+        }
 
+        //Amended animation blocks (NiNode bones)
         if (anim.verifyAmendedBlocks())
         {
             const auto& amendedBlocks = anim.amendedAnimationBlocks();
             auto&       hashSet       = anim.amendedHashSet();
 
-            if (const auto pkg = dynamic_cast<SFBGS_AnimationPackage*>(output.packageManager().package(
-             SFBGS_ANIM_PACKAGE)))
+            for (uint64_t i = 0; i < amendedBlocks.size(); i++)
             {
-                for (uint64_t i = 0; i < amendedBlocks.size(); i++)
-                {
-                    const uint32_t       hash = hashSet.at(i);
-                    UNIV::AnimationBlock toAdd;
-                    AnimationBlock       refBlock = amendedBlocks.at(i);
+                const uint32_t       hash = hashSet.at(i);
+                UNIV::AnimationBlock toAdd;
+                AnimationBlock       refBlock = amendedBlocks.at(i);
 
-                    std::string tempName = Utilities::HashRegistry::Get().isKnownHash(hash) ?
-                                               Utilities::HashRegistry::Get().knownHashString(hash) :
-                                               "Unknown_Hash_" + std::to_string(i);
-                    toAdd.setBoneName(tempName.c_str());
+                std::string tempName = Utilities::HashRegistry::Get().isKnownHash(hash) ?
+                                           Utilities::HashRegistry::Get().knownHashString(hash) :
+                                           "Unknown_Hash_" + std::to_string(i);
+                toAdd.setBoneName(tempName.c_str());
 
-                    toAdd.scalarSequence()      = refBlock.scalarSequenceAsUNIV();
-                    toAdd.prioritySequence()    = refBlock.prioritySequenceAsUNIV();
-                    toAdd.translationSequence() = refBlock.translationSequenceAsUNIV(
-                     rig.highPrecision(), rig.lowPrecision());
-                    toAdd.rotationSequence() = refBlock.rotationSequenceAsUNIV();
+                toAdd.scalarSequence()      = refBlock.scalarSequenceAsUNIV();
+                toAdd.prioritySequence()    = refBlock.prioritySequenceAsUNIV();
+                toAdd.translationSequence() = refBlock.translationSequenceAsUNIV(
+                 rig.highPrecision(), rig.lowPrecision());
+                toAdd.rotationSequence() = refBlock.rotationSequenceAsUNIV();
 
-                    pkg->addAmendedBlock(hash, toAdd);
-                }
+                pkg.addAmendedBlock(hash, toAdd);
             }
+
         }
 
         return output;
