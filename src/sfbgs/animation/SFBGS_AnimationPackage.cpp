@@ -373,6 +373,31 @@ CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockNameC(const C
     return nullptr;
 }
 
+uint32_t SFBGSAnimationPackage_GetAmendedBlockHashFromIndexC(const CALUMI::UNIV::Animation* animation, const int index)
+{
+    if (animation)
+        try
+        {
+            return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).amendedBlockHash(index);
+        }
+    catch (std::exception&){}
+
+    return 0xFFFFFFFF;
+}
+
+const char* SFBGSAnimationPackage_GetAmendedBlockNameFromIndexC(const CALUMI::UNIV::Animation* animation, int index)
+{
+    if (animation)
+        try
+        {
+            const auto hash = CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).amendedBlockHash(index);
+            return CALUMI::Utilities::HashRegistry::Get().knownHashString(hash);
+        }
+    catch (std::exception&){}
+
+    return nullptr;
+}
+
 int SFBGSAnimationPackage_GetAmendedBlockCountC(const CALUMI::UNIV::Animation* animation)
 {
     if (animation)

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "../../../build/win-release/_deps/googletest-src/googletest/src/gtest-internal-inl.h"
 #include "univ/animation/UNIV_Animation.h"
 #include "univ/animation/UNIV_IAnimationPackage.h"
 #include "sfbgs/skeletonrig/SFBGS_RigPackage.h"
@@ -262,6 +263,22 @@ namespace CALUMI::SFBGS
 	 * @return Animation Block pointer, or nullptr if none exists
 	 */
 	CALUMIANIMATION_API CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockNameC(const CALUMI::UNIV::Animation* animation, const char* name);
+
+	/**
+	 *
+	 * @param animation
+	 * @param index
+	 * @return Hash value (unsigned) or 0xFFFFFFFF (unsigned, max value of uint32_t) if index doesn't exist
+	 */
+	CALUMIANIMATION_API uint32_t SFBGSAnimationPackage_GetAmendedBlockHashFromIndexC(const CALUMI::UNIV::Animation* animation, int index);
+
+	/**
+	 *
+	 * @param animation
+	 * @param index
+	 * @return Registered name or nullptr if hash could not be determined
+	 */
+	CALUMIANIMATION_API const char* SFBGSAnimationPackage_GetAmendedBlockNameFromIndexC(const CALUMI::UNIV::Animation* animation, int index);
 
 	/**
 	 * @brief
