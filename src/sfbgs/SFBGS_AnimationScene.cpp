@@ -123,8 +123,19 @@ namespace CALUMI::SFBGS
         Animation output;
         output.setAnimationFileName(anim.animationTitle());
 
-        output.setBoneCount(rig.boneCount());
-        //Just listing all bones for now. Will need compression algorithm eventually
+        int64_t maxBoneIndex = -1;
+        for (unsigned int i = 0; i < anim.animationBlocks().size(); i++)
+        {
+            if (const int boneIdx = rig.findBoneIndex(anim.animationBlocks().at(i).boneName()); boneIdx > maxBoneIndex && boneIdx < rig.boneCount())
+                maxBoneIndex = boneIdx;
+        }
+
+        if (maxBoneIndex > std::numeric_limits<uint16_t>::max())
+        {
+            throw std::runtime_error("Maximum number of bones exceeded for sfbgs animation conversion");
+        }
+
+        output.setBoneCount(static_cast<uint16_t>(maxBoneIndex) + 1);
         output.setFrameCount(anim.frameCount());
 
         output.indexAtlas().reserve(output.indexAtlasCount());
@@ -142,8 +153,7 @@ namespace CALUMI::SFBGS
             toAdd.setScalarSequenceFromUNIV(anim.animationBlocks().at(i).scalarSequence());
             toAdd.setPrioritySequenceFromUNIV(anim.animationBlocks().at(i).prioritySequence());
 
-            if (const int boneIdx = rig.findBoneIndex(anim.animationBlocks().at(i).boneName()); boneIdx >= 0 && boneIdx
-                < output.animationBlocks().size())
+            if (const int boneIdx = rig.findBoneIndex(anim.animationBlocks().at(i).boneName()); boneIdx >= 0 && boneIdx < output.animationBlocks().size())
                 output.animationBlocks().at(boneIdx) = toAdd; //Fill block for the correct index
         }
 

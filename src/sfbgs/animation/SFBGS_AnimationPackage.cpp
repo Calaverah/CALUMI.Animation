@@ -11,6 +11,8 @@
 #include <stdexcept>
 
 // ReSharper disable once CppUnusedIncludeDirective
+#include <set>
+
 #include "internalplatform.h"
 
 namespace CALUMI::SFBGS
@@ -18,6 +20,7 @@ namespace CALUMI::SFBGS
     struct SFBGS_AnimationPackage::Impl {
         // leaving as vector until we know without doubt that order is not important...
         std::vector<std::pair<uint32_t, UNIV::AnimationBlock>> m_amendedBlocks;
+        std::set<std::string> m_skippedBones;
 
         PrecisionSet m_precisionOverride = PrecisionSet::DefaultPrecision();
         bool m_useRigPrecision = true;
@@ -37,6 +40,7 @@ namespace CALUMI::SFBGS
             pImpl->m_amendedBlocks = other.pImpl->m_amendedBlocks;
             pImpl->m_precisionOverride = other.pImpl->m_precisionOverride;
             pImpl->m_useRigPrecision = other.pImpl->m_useRigPrecision;
+            pImpl->m_skippedBones = other.pImpl->m_skippedBones;
         }
         return *this;
     }
@@ -47,7 +51,8 @@ namespace CALUMI::SFBGS
         {
             return  pImpl->m_amendedBlocks == pOther->pImpl->m_amendedBlocks &&
                     pImpl->m_precisionOverride == pOther->pImpl->m_precisionOverride &&
-                    pImpl->m_useRigPrecision == pOther->pImpl->m_useRigPrecision;
+                    pImpl->m_useRigPrecision == pOther->pImpl->m_useRigPrecision &&
+                    pImpl->m_skippedBones == pOther->pImpl->m_skippedBones;
         }
         return false;
     }
@@ -70,6 +75,15 @@ namespace CALUMI::SFBGS
         }
 
         output["amended_blocks"] = aBlocks;
+
+        Utilities::JsonArray skippedBones;
+
+        for (const auto& bone : pImpl->m_skippedBones)
+        {
+            skippedBones.push_back(bone.c_str());
+        }
+
+        output["skipped_bones"] = skippedBones;
 
         return output;
     }
@@ -98,6 +112,17 @@ namespace CALUMI::SFBGS
                 addAmendedBlock(hashBlock["hash"].toUInt(), entry);
             }
         }
+
+        Utilities::JsonArray skippedBones = data["skipped_bones"].toArray();
+
+        std::set<std::string> newSkippedBones;
+
+        for (uint64_t i = 0; i < skippedBones.size(); i++)
+        {
+            newSkippedBones.insert(skippedBones.at(i).toString());
+        }
+
+        pImpl->m_skippedBones = newSkippedBones;
     }
 
     SFBGS_AnimationPackage::~SFBGS_AnimationPackage()
@@ -107,6 +132,32 @@ namespace CALUMI::SFBGS
             delete pImpl;
             pImpl = nullptr;
         }
+    }
+
+    unsigned int SFBGS_AnimationPackage::setSkippedBone(const char* name, const bool skip) const
+    {
+        if(name)
+        {
+            if (!skip)
+                pImpl->m_skippedBones.erase(name);
+            else
+                pImpl->m_skippedBones.insert(name);
+        }
+
+        return static_cast<unsigned int>(pImpl->m_skippedBones.size());
+    }
+
+    unsigned int SFBGS_AnimationPackage::skippedBoneCount() const
+    {
+        return static_cast<unsigned int>(pImpl->m_skippedBones.size());
+    }
+
+    const char* SFBGS_AnimationPackage::skippedBone(const int index) const
+    {
+        if (index < 0 || index >= pImpl->m_skippedBones.size())
+            return nullptr;
+
+        return std::next(pImpl->m_skippedBones.cbegin(), index)->c_str();
     }
 
     uint16_t SFBGS_AnimationPackage::amendedBlockCount() const

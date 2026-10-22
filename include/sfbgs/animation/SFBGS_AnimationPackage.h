@@ -36,6 +36,32 @@ namespace CALUMI::SFBGS
 		~SFBGS_AnimationPackage() override;
 		/// @}
 
+		/// @name Skipped Bones
+		/// @{
+
+		/**
+		 * @brief
+		 * @param name
+		 * @param skip
+		 * @return Total count of entries in the skipped bone set
+		 */
+		[[nodiscard]] unsigned int setSkippedBone(const char* name, bool skip = true) const;
+
+		/**
+		 *
+		* @return Total count of entries in the skipped bone set
+		 */
+		[[nodiscard]] unsigned int skippedBoneCount() const;
+
+		/**
+		 *
+		 * @param index Index of the bone within the skipped bone set
+		 * @return Name of the bone, if one exists
+		 */
+		[[nodiscard]] const char* skippedBone(int index) const;
+
+		/// @}
+
 		/// @name Amended Animation Blocks
 		/// @{
 
