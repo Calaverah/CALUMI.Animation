@@ -347,7 +347,7 @@ CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockC(const CALUM
     return nullptr;
 }
 
-CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockHashC(const CALUMI::UNIV::Animation* animation, uint32_t hash)
+CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockHashC(const CALUMI::UNIV::Animation* animation, const uint32_t hash)
 {
     if (animation)
         try
@@ -373,7 +373,7 @@ CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockNameC(const C
     return nullptr;
 }
 
-uint32_t SFBGSAnimationPackage_GetAmendedBlockHashFromIndexC(const CALUMI::UNIV::Animation* animation, const int index)
+unsigned int SFBGSAnimationPackage_GetAmendedBlockHashFromIndexC(const CALUMI::UNIV::Animation* animation, const int index)
 {
     if (animation)
         try
@@ -385,7 +385,7 @@ uint32_t SFBGSAnimationPackage_GetAmendedBlockHashFromIndexC(const CALUMI::UNIV:
     return 0xFFFFFFFF;
 }
 
-const char* SFBGSAnimationPackage_GetAmendedBlockNameFromIndexC(const CALUMI::UNIV::Animation* animation, int index)
+const char* SFBGSAnimationPackage_GetAmendedBlockNameFromIndexC(const CALUMI::UNIV::Animation* animation, const int index)
 {
     if (animation)
         try
