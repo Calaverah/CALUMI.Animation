@@ -1279,12 +1279,12 @@ namespace CALUMI::SFBGS {
 		}
 
 		//PREAMBLE - SKIPPED FOR NOW TODO: Finish encoding preamble/sync data
-		{
-			buffer.insert(buffer.endPos(), pImpl->_preambleSize, 0);
-			std::memcpy( &buffer.at(addressIndex), &pImpl->_preambleCount, sizeof(pImpl->_preambleCount));
-			// addressIndex += sizeof(pImpl->_preambleCount);
-			addressIndex += pImpl->_preambleSize;
-		}
+		// {
+		// 	buffer.insert(buffer.endPos(), pImpl->_preambleSize, 0);
+		// 	std::memcpy( &buffer.at(addressIndex), &pImpl->_preambleCount, sizeof(pImpl->_preambleCount));
+		// 	// addressIndex += sizeof(pImpl->_preambleCount);
+		// 	addressIndex += pImpl->_preambleSize;
+		// }
 
 		//AMENDMENT HASHES
 		try
