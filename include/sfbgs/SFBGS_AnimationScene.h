@@ -58,7 +58,7 @@ extern "C" {
      * @param scene
      * @param directoryPathArray
      * @param arraySize
-     * @return Error Code:\n -1 = Invalid Data\n 0 = Successful Operation\n 1 = No Rig Filepath Found\n 2 = Scene Could
+     * @return Error Code:\n -2 = Exception\n -1 = Invalid Data\n 0 = Successful Operation\n 1 = No Rig Filepath Found\n 2 = Scene Could
      * Not Be Converted\n-----\n 1X = Rig File Error\n 2X = Animation File Error\n-----\n X0 = FileNotFound\n X1 =
      * PermissionDenied\n
      * X2 = NotAFile\n X3 = ReadFailure\n X4 = IncorrectFileType\n X5 = FileTooLarge\n X6 = FileTooSmall\n X7 =
@@ -73,7 +73,7 @@ extern "C" {
      * @param directoryPathArray
      * @param arraySize
      * @param sfbgsRigPath
-     * @return Error Code:\n -1 = Invalid Data\n 0 = Successful Operation\n 1 = No Rig Filepath Found\n 2 = Scene Could
+     * @return Error Code:\n -2 = Exception\n -1 = Invalid Data\n 0 = Successful Operation\n 1 = No Rig Filepath Found\n 2 = Scene Could
      * Not Be Converted\n-----\n 1X = Rig File Error\n 2X = Animation File Error\n-----\n X0 = FileNotFound\n X1 =
      * PermissionDenied\n
      * X2 = NotAFile\n X3 = ReadFailure\n X4 = IncorrectFileType\n X5 = FileTooLarge\n X6 = FileTooSmall\n X7 =
@@ -105,7 +105,7 @@ extern "C" {
      * @param animation
      * @param filePath
      * @param rig
-     * @return Error Code:\n -1 = Invalid Data\n 0 = Successful Operation\n 1 = No Rig Filepath Found\n 2 = Scene Could
+     * @return Error Code:\n -2 = Exception\n -1 = Invalid Data\n 0 = Successful Operation\n 1 = No Rig Filepath Found\n 2 = Scene Could
      * Not Be Converted\n-----\n 1X = Rig File Error\n 2X = Animation File Error\n-----\n X0 = FileNotFound\n X1 =
      * PermissionDenied\n
      * X2 = NotAFile\n X3 = ReadFailure\n X4 = IncorrectFileType\n X5 = FileTooLarge\n X6 = FileTooSmall, X7 =
@@ -119,7 +119,7 @@ extern "C" {
      * @param animation
      * @param filePath
      * @param sfbgsRigPath
-     * @return Error Code:\n -1 = Invalid Data\n 0 = Successful Operation\n 1 = No Rig Filepath Found\n 2 = Scene Could
+     * @return Error Code:\n -2 = Exception\n -1 = Invalid Data\n 0 = Successful Operation\n 1 = No Rig Filepath Found\n 2 = Scene Could
      * Not Be Converted\n-----\n 1X = Rig File Error\n 2X = Animation File Error\n-----\n X0 = FileNotFound\n X1 =
      * PermissionDenied\n
      * X2 = NotAFile\n X3 = ReadFailure\n X4 = IncorrectFileType\n X5 = FileTooLarge\n X6 = FileTooSmall\n X7 =
@@ -132,7 +132,7 @@ extern "C" {
      *
      * @param rig
      * @param filePath
-     * @return Error Code:\n -1 = Invalid Data\n 0 = Successful Operation\n 1 = No Rig Filepath Found\n 2 = Scene Could
+     * @return Error Code:\n -2 = Exception\n -1 = Invalid Data\n 0 = Successful Operation\n 1 = No Rig Filepath Found\n 2 = Scene Could
      * Not Be Converted\n-----\n 1X = Rig File Error\n 2X = Animation File Error\n-----\n X0 = FileNotFound\n X1 =
      * PermissionDenied\n
      * X2 = NotAFile\n X3 = ReadFailure\n X4 = IncorrectFileType\n X5 = FileTooLarge\n X6 = FileTooSmall\n X7 =

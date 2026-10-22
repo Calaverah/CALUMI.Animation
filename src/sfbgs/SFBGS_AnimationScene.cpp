@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <iostream>
 #include <filesystem>
+#include <source_location>
 #include <vector>
 
 
@@ -397,7 +398,7 @@ int SaveAnimationSceneToSFBGSFormatPathOverrideC(CALUMI::UNIV::AnimationScene* s
         {
         }
 
-    return -1;
+    return -2;
 }
 
 //Warning, desired directory _path array must be in the same order as the animations in the scene.
@@ -501,7 +502,7 @@ int SaveAnimationSceneToSFBGSFormatUsingRigReferencePathOverrideC(const CALUMI::
         catch (std::exception&)
         {
         }
-    return -1;
+    return -2;
 }
 
 CALUMI::UNIV::AnimationScene* LoadAnimationSceneFromSFBGSFormatC(const wchar_t** filePathsArray,
@@ -593,7 +594,7 @@ int SaveAnimationToSFBGSFormatDirectC(const CALUMI::UNIV::Animation* animation,
         const CALUMI::SFBGS::SkeletonRig sfbgsRig(*rig);
         CALUMI::SFBGS::Animation         sfbgsAnimation = ConvertToSFBGSAnimation(*animation, sfbgsRig);
 
-        if (const auto result = sfbgsAnimation.writeToFile(filePath); !result.hasError())
+        if (const auto result = sfbgsAnimation.writeToFile(filePath); result.hasError())
         {
             switch (result.fileErrorCode())
             {
@@ -625,7 +626,7 @@ int SaveAnimationToSFBGSFormatDirectC(const CALUMI::UNIV::Animation* animation,
     catch (std::exception&)
     {
     }
-    return -1;
+    return -2;
 }
 
 int SaveAnimationToSFBGSFormatWithExistingRigDirectC(const CALUMI::UNIV::Animation* animation,
@@ -671,7 +672,7 @@ int SaveAnimationToSFBGSFormatWithExistingRigDirectC(const CALUMI::UNIV::Animati
 
         CALUMI::SFBGS::Animation sfbgsAnimation = CALUMI::SFBGS::ConvertToSFBGSAnimation(*animation, sfbgsRig);
 
-        if (const auto result = sfbgsAnimation.writeToFile(filePath); !result.hasError())
+        if (const auto result = sfbgsAnimation.writeToFile(filePath); result.hasError())
         {
             switch (result.fileErrorCode())
             {
@@ -700,10 +701,11 @@ int SaveAnimationToSFBGSFormatWithExistingRigDirectC(const CALUMI::UNIV::Animati
 
         return 0;
     }
-    catch (std::exception&)
+    catch (std::exception& e)
     {
+        std::cerr << std::source_location::current().function_name() << " - " << e.what() << "\n";
     }
-    return -1;
+    return -2;
 }
 
 int SaveSkeletonRigToSFBGSFormatDirectC(const CALUMI::UNIV::SkeletonRig* rig, const wchar_t* filePath)
@@ -717,7 +719,7 @@ int SaveSkeletonRigToSFBGSFormatDirectC(const CALUMI::UNIV::SkeletonRig* rig, co
     {
         CALUMI::SFBGS::SkeletonRig sfbgsRig(*rig);
 
-        if (const auto result = sfbgsRig.writeToFile(filePath); !result.hasError())
+        if (const auto result = sfbgsRig.writeToFile(filePath); result.hasError())
         {
             switch (result.fileErrorCode())
             {
@@ -747,7 +749,7 @@ int SaveSkeletonRigToSFBGSFormatDirectC(const CALUMI::UNIV::SkeletonRig* rig, co
     catch (std::exception&)
     {
     }
-    return -1;
+    return -2;
 }
 
 #pragma endregion
