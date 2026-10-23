@@ -146,27 +146,29 @@ namespace CALUMI::SFBGS
 
         Utilities::U16Vector aAtlas;
         std::unordered_map<uint16_t, uint16_t> aAtlasMap;
-        uint16_t currentACount = 0;
-        uint16_t mappedIndex = 0;
-        bool currentAFlag = true;
-
-        for (int i = 0; i < maxBoneIndex; i++)
         {
-            if (!currentAFlag)
-            {
-                aAtlasMap.insert({i, mappedIndex});
-                mappedIndex++;
-            }
+            uint16_t atlasEntryCount = 0;
+            uint16_t atlasIndexConversion = 0;
+            bool skipFlag = true;
 
-            if (pkg.hasSkippedBone(rig.stringArray().c_str(i)) == currentAFlag)
+            for (int i = 0; i <= maxBoneIndex && i < anim.animationBlocks().size(); i++)
             {
-                currentACount++;
-            }
-            else
-            {
-                currentAFlag = !currentAFlag;
-                aAtlas.push_back(currentACount);
-                currentACount = 0;
+                if (pkg.hasSkippedBone(rig.stringArray().c_str(i)) == skipFlag)
+                {
+                    atlasEntryCount++;
+                }
+                else
+                {
+                    skipFlag = !skipFlag;
+                    aAtlas.push_back(atlasEntryCount);
+                    atlasEntryCount = 1;
+                }
+
+                if (!skipFlag)
+                {
+                    aAtlasMap.insert({i, atlasIndexConversion});
+                    atlasIndexConversion++;
+                }
             }
         }
 
@@ -179,7 +181,7 @@ namespace CALUMI::SFBGS
 
         output.setFrameCount(anim.frameCount());
 
-        output.animationBlocks().resize(actualBoneCount); //Create empty blocks for all bones
+        output.animationBlocks().resize(actualBoneCount); //Create empty blocks for all bones that aren't skipped up until the final one in the set
         for (unsigned int i = 0; i < anim.animationBlocks().size(); i++)
         {
             AnimationBlock toAdd;
@@ -190,7 +192,7 @@ namespace CALUMI::SFBGS
 
             const int boneIdx = rig.findBoneIndex(anim.animationBlocks().at(i).boneName());
 
-            if (boneIdx >= 0 && !aAtlasMap.contains(boneIdx))
+            if (!aAtlasMap.contains(boneIdx))
                 continue;
 
             // ReSharper disable once CppTooWideScopeInitStatement
