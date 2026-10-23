@@ -11,7 +11,10 @@
 #include <stdexcept>
 
 // ReSharper disable once CppUnusedIncludeDirective
+#include <iostream>
+#include <ostream>
 #include <set>
+#include <string>
 
 #include "internalplatform.h"
 
@@ -283,7 +286,9 @@ namespace CALUMI::SFBGS
     uint32_t SFBGS_AnimationPackage::amendedBlockHash(const int index) const
     {
         if (index < 0 || index >= pImpl->m_amendedBlocks.size())
-            return 0xFFFFFFFF;
+        {
+            throw std::out_of_range("SFBGS_AnimationPackage::amendedBlockHash was given an index of: " + std::to_string(index) + " while the container indices are 0 to " + std::to_string(pImpl->m_amendedBlocks.size()));
+        }
 
         return pImpl->m_amendedBlocks.at(index).first;
     }
@@ -432,16 +437,19 @@ CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockNameC(const C
     return nullptr;
 }
 
-unsigned int SFBGSAnimationPackage_GetAmendedBlockHashFromIndexC(const CALUMI::UNIV::Animation* animation, const int index)
+int64_t SFBGSAnimationPackage_GetAmendedBlockHashFromIndexC(const CALUMI::UNIV::Animation* animation, const int index)
 {
     if (animation)
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).amendedBlockHash(index);
         }
-    catch (std::exception&){}
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught exception: " << e.what() << "\nReturning hash key may not be valid.\n";
+    }
 
-    return 0xFFFFFFFF;
+    return -1;
 }
 
 const char* SFBGSAnimationPackage_GetAmendedBlockNameFromIndexC(const CALUMI::UNIV::Animation* animation, const int index)

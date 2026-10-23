@@ -1287,29 +1287,24 @@ namespace CALUMI::SFBGS {
 		// }
 
 		//AMENDMENT HASHES
-		try
-		{
-			//align to dword (4 bytes)
-			if (const auto hashCount = pImpl->_amendedHashSet.size(); hashCount > 0)
-			{
-				while (addressIndex % 4 != 0)
-				{
-					buffer.insert(buffer.endPos(), 1, 0);
-					addressIndex++;
-				}
 
-				buffer.insert(buffer.endPos(), hashCount * sizeof(pImpl->_amendedHashSet.at(0)), 0);
-				for (int i = 0; i < hashCount; i++)
-				{
-					std::memcpy(&buffer.at(addressIndex), &pImpl->_amendedHashSet.at(i), sizeof(pImpl->_amendedHashSet.at(i)));
-					addressIndex += sizeof(pImpl->_amendedHashSet.at(i));
-				}
+		//align to dword (4 bytes)
+		if (const auto hashCount = pImpl->_amendedHashSet.size(); hashCount > 0)
+		{
+			while (addressIndex % 4 != 0)
+			{
+				buffer.insert(buffer.endPos(), 1, 0);
+				addressIndex++;
+			}
+
+			buffer.insert(buffer.endPos(), hashCount * sizeof(pImpl->_amendedHashSet.at(0)), 0);
+			for (int i = 0; i < hashCount; i++)
+			{
+				std::memcpy(&buffer.at(addressIndex), &pImpl->_amendedHashSet.at(i), sizeof(pImpl->_amendedHashSet.at(i)));
+				addressIndex += sizeof(pImpl->_amendedHashSet.at(i));
 			}
 		}
-		catch (std::exception& e)
-		{
-			throw std::runtime_error(e.what());
-		}
+
 
 		//Index Atlas
 

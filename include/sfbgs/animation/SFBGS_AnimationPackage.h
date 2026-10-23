@@ -299,7 +299,7 @@ namespace CALUMI::SFBGS
 	 * @param index
 	 * @return Hash value (unsigned) or 0xFFFFFFFF (unsigned, max value of uint32_t) if index doesn't exist
 	 */
-	CALUMIANIMATION_API unsigned int SFBGSAnimationPackage_GetAmendedBlockHashFromIndexC(const CALUMI::UNIV::Animation* animation, int index);
+	CALUMIANIMATION_API int64_t SFBGSAnimationPackage_GetAmendedBlockHashFromIndexC(const CALUMI::UNIV::Animation* animation, int index);
 
 	/**
 	 *

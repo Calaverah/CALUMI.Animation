@@ -786,7 +786,7 @@ int SaveAnimationToSFBGSFormatWithExistingRigDirectC(const CALUMI::UNIV::Animati
     }
     catch (std::exception& e)
     {
-        std::cerr << std::source_location::current().function_name() << " - " << e.what() << "\n";
+        std::cerr << "Caught exception: " << e.what() << "\n";
     }
     return -2;
 }
