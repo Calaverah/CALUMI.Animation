@@ -141,17 +141,29 @@ namespace CALUMI::SFBGS
             throw std::runtime_error("Maximum number of bones exceeded for sfbgs animation conversion");
         }
 
-        if (maxBoneIndex < -1)
-            maxBoneIndex = -1;
-
         Utilities::U16Vector aAtlas;
         std::unordered_map<uint16_t, uint16_t> aAtlasMap;
+
+        if (maxBoneIndex < -1)
+        {
+            aAtlas.push_back(0);
+            maxBoneIndex = 0;
+
+            if (rig.boneCount() > 0)
+            {
+                aAtlas.push_back(1);
+                aAtlasMap.insert({0,0});
+            }
+            else
+                aAtlas.push_back(0);
+        }
+        else
         {
             uint16_t atlasEntryCount = 0;
             uint16_t atlasIndexConversion = 0;
             bool skipFlag = true;
 
-            for (int i = 0; i <= maxBoneIndex && i < anim.animationBlocks().size(); i++)
+            for (int i = 0; i <= maxBoneIndex && i < rig.boneEntries().size(); i++)
             {
                 if (pkg.hasSkippedBone(rig.stringArray().c_str(i)) == skipFlag)
                 {
@@ -169,6 +181,11 @@ namespace CALUMI::SFBGS
                     aAtlasMap.insert({i, atlasIndexConversion});
                     atlasIndexConversion++;
                 }
+            }
+            if (aAtlas.size() % 2 != 0)
+            {
+                const auto included = SumAtlasIndices(aAtlas, Animation::IndexCountingSolution::all);
+                aAtlas.push_back(maxBoneIndex + 1 - included);
             }
         }
 

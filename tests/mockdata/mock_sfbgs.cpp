@@ -517,3 +517,57 @@ GTEST(RigInputExternC)
 
 	DeleteSkeletonRigC(&rig);
 }
+
+GTEST(SkippedBones)
+{
+	UNIV::SkeletonRig rig("MySkipRig");
+	UNIV::Animation anim;
+
+	auto head = rig.root()->addChildBone("head",{});
+	auto chest = head->addChildBone("chest",{});
+	auto hips = chest->addChildBone("hips",{});
+	auto armL = chest->addChildBone("armL",{});
+	auto armR = chest->addChildBone("armR",{});
+	auto legL = hips->addChildBone("legL",{});
+	auto legR = hips->addChildBone("legR",{});
+
+	UNIV::AnimationBlock headBlock = {};
+	headBlock.setBoneName("head");
+	UNIV::AnimationBlock chestBlock = {};
+	chestBlock.setBoneName("chest");
+	UNIV::AnimationBlock legLBlock = {};
+	legLBlock.setBoneName("legL");
+	UNIV::AnimationBlock legRBlock = {};
+	legRBlock.setBoneName("legR");
+	UNIV::AnimationBlock hipsBlock = {};
+	hipsBlock.setBoneName("hips");
+	UNIV::AnimationBlock armLBlock = {};
+	armLBlock.setBoneName("armL");
+	UNIV::AnimationBlock armRBlock = {};
+	armRBlock.setBoneName("armR");
+
+	anim.addAnimationBlock(headBlock);
+	anim.addAnimationBlock(chestBlock);
+	anim.addAnimationBlock(legLBlock);
+	anim.addAnimationBlock(legRBlock);
+	anim.addAnimationBlock(hipsBlock);
+	anim.addAnimationBlock(armLBlock);
+	anim.addAnimationBlock(armRBlock);
+
+	anim.setAnimationTitle("MySkipAnimation");
+	auto& pkg = SFBGS::SFBGS_AnimationPackage::GetPackage(anim);
+	pkg.setSkippedBone("hips");
+
+	UNIV::AnimationScene scene("MyUnivScene");
+	scene.setRig(rig);
+	scene.addAnimationToScene(anim);
+
+	SFBGS::AnimationScene sfbgsScene;
+	EXPECT_TRUE(sfbgsScene.convertFromUniversalScene(scene));
+
+	const auto& sfbgsAnim = sfbgsScene.animation(0);
+	EXPECT_EQ(sfbgsAnim.indexAtlas().size(), 4);
+
+	EXPECT_EQ(sfbgsAnim.indexAtlas().at(2), 1);
+	EXPECT_EQ(sfbgsAnim.indexAtlas().at(3) + sfbgsAnim.indexAtlas().at(1), 7);
+}
