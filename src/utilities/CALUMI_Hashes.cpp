@@ -396,3 +396,8 @@ const char* BGS_HashRegisteredStringC(const unsigned int hash)
 {
 	return CALUMI::Utilities::HashRegistry::Get().knownHashString(hash);
 }
+
+bool BGS_IsKnownHashC(const unsigned int hash)
+{
+	return CALUMI::Utilities::HashRegistry::Get().isKnownHash(hash);
+}

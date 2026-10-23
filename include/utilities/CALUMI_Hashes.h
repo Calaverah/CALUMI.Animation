@@ -113,6 +113,11 @@ extern "C" {
 	 */
 	CALUMIANIMATION_API const char* BGS_HashRegisteredStringC(unsigned int hash);
 
+	/**
+	 * @param hash Hash key to test for
+	 * @return Whether this hash key is registered with a string
+	 */
+	CALUMIANIMATION_API bool BGS_IsKnownHashC(unsigned int hash);
 }
 /// @}
 /// @}
