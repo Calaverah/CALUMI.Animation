@@ -324,7 +324,7 @@ namespace CALUMI::Utilities
 	}
 	uint32_t HashRegistry::registerHash(const char* string) const
 	{
-		const uint32_t hash = BGS_Str_CRC32C(string);
+		const uint32_t hash = CalculateHash(string);
 
 		if (pImpl->m_known_string_hash_list.contains(hash))
 			return hash;
@@ -336,6 +336,12 @@ namespace CALUMI::Utilities
 
 		return hash;
 	}
+
+	uint32_t HashRegistry::CalculateHash(const char* string)
+	{
+		return BGS_Str_CRC32C(string);
+	}
+
 	StringList HashRegistry::registeredStrings() const
 	{
 		StringList output;
@@ -379,4 +385,14 @@ uint32_t BGS_Str_CRC32C(const char* string)
 	}
 
 	return output;
+}
+
+CALUMI::Utilities::StringList* BGS_HashRegisteredStringListC()
+{
+	return new CALUMI::Utilities::StringList(CALUMI::Utilities::HashRegistry::Get().registeredStrings());
+}
+
+const char* BGS_HashRegisteredStringC(const unsigned int hash)
+{
+	return CALUMI::Utilities::HashRegistry::Get().knownHashString(hash);
 }

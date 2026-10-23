@@ -30,33 +30,40 @@ namespace CALUMI::Utilities
 
 	public:
 		/**
-			 * @brief Returns the singleton for the Hashing Registry
-			 * @return
-			 */
+		 * @brief Returns the singleton for the Hashing Registry
+		 * @return
+		 */
 		[[nodiscard]] CALUMIANIMATION_API static HashRegistry& Get();
 
 		/**
-			 * @brief Returns the string that generates the given hash key, if known currently.
-			 * @param hash Hash Key to check known values for
-			 * @return Nullptr if there is no known input value, however if the key is 0x0, then the entry may just be an empty string. With that in mind, it is important to also check if the known input exists.
-			 */
+		 * @brief Returns the string that generates the given hash key, if known currently.
+		 * @param hash Hash Key to check known values for
+		 * @return Nullptr if there is no known input value, however if the key is 0x0, then the entry may just be an empty string. With that in mind, it is important to also check if the known input exists.
+		 */
 		[[nodiscard]] CALUMIANIMATION_API const char* knownHashString(uint32_t hash) const;
 		/**
-			 * @brief A simple way to see if a known input is paired to this hash key
-			 * @param hash
-			 * @return
-			 */
+		 * @brief A simple way to see if a known input is paired to this hash key
+		 * @param hash
+		 * @return
+		 */
 		[[nodiscard]] CALUMIANIMATION_API bool isKnownHash(uint32_t hash) const;
 		/**
-			 * @brief Will add this string to the registry
-			 * @param string String to add
-			 * @return Hash key generated from string input
-			 */
+		 * @brief Will add this string to the registry
+		 * @param string String to add
+		 * @return Hash key generated from string input
+		 */
 		CALUMIANIMATION_API uint32_t registerHash(const char* string) const;
+
 		/**
-			 * @brief A simple way to get a list of the user's registered strings for storage/cache outside the application
-			 * @return
-			 */
+		 * @brief Will calculate a hash key without adding it to the registry
+		 * @param string String to create hash from
+		 * @return Hash key generated from string input
+		 */
+		static CALUMIANIMATION_API uint32_t CalculateHash(const char* string) ;
+		/**
+		 * @brief A simple way to get a list of the user's registered strings for storage/cache outside the application
+		 * @return
+		 */
 		[[nodiscard]] CALUMIANIMATION_API StringList registeredStrings() const;
 
 #ifdef DEBUG_BUILD
@@ -78,20 +85,34 @@ namespace CALUMI::Utilities
 }
 
 
+/**
+ * @addtogroup extern_c
+ * @{
+ * @defgroup c_hash Hashes
+ * @brief Provides C Style API for the known hashing algorithms
+ * @{
+ */
+extern "C" {
 	/**
-		 * @addtogroup extern_c
-		 * @{
-		 * @defgroup c_hash Hashes
-		 * @brief Provides C Style API for the known hashing algorithms
-		 * @{
-		 */
-	extern "C" {
-	/**
-			 * @brief Generates a hash for the given string using the current BGS Hashing algorithm
-			 * @param string Null terminated c string
-			 * @return Generated hash
-			 */
+	 * @brief Generates a hash for the given string using the current BGS Hashing algorithm
+	 * @param string Null terminated c string
+	 * @return Generated hash
+	 */
 	CALUMIANIMATION_API uint32_t BGS_Str_CRC32C(const char* string);
-	}
-	/// @}
-	/// @}
+
+	/**
+	 * @brief Creates heap allocated string container, containing known strings in the hash registry
+	 * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteStringContainerC
+	 * @return Ptr to a heap allocated string container
+	 */
+	CALUMIANIMATION_API CALUMI::Utilities::StringList* BGS_HashRegisteredStringListC();
+
+	/**
+	 * @param hash Hash key to test for
+	 * @return String or nullptr if no string is registered
+	 */
+	CALUMIANIMATION_API const char* BGS_HashRegisteredStringC(unsigned int hash);
+
+}
+/// @}
+/// @}
