@@ -42,13 +42,13 @@ protected:
 		if (!std::filesystem::is_directory(SFBGS_Data::get().dataPath))
 			GTEST_SKIP() << "Data Path Is Not Directory";
 
-		std::cout << "--- STARFIELD ANIM SCAN STARTING ---" << std::endl;
+		std::cout << "--- STARFIELD ANIM SCAN STARTING ---\n";
 	}
 
 	static void TearDownTestSuite()
 	{
 		if (ShouldRunScans)
-			std::cout << "--- STARFIELD ANIM SCAN COMPLETE ---" << std::endl;
+			std::cout << "--- STARFIELD ANIM SCAN COMPLETE ---\n";
 	}
 };
 
@@ -57,30 +57,30 @@ protected:
 GTEST(AkilaDoor01Animation)
 {
 	const std::filesystem::path animPath = SFBGS_Data::get().dataPath.string() + "/meshes/architecture/city/akila/animated/doors/ak_ext_bld_walla_doora_01/animations/open.af";
-	ASSERT_TRUE(std::filesystem::exists(animPath)) << "\tFILE DOES NOT EXIST" << std::endl;
-	ASSERT_TRUE(std::filesystem::is_regular_file(animPath)) << "\tFILE IS NOT REGULAR FILE" << std::endl;
+	ASSERT_TRUE(std::filesystem::exists(animPath)) << "\tFILE DOES NOT EXIST\n";
+	ASSERT_TRUE(std::filesystem::is_regular_file(animPath)) << "\tFILE IS NOT REGULAR FILE\n";
 
 	SFBGS::Animation anim;
 
-	ASSERT_FALSE(anim.readFromFile(animPath.string().c_str()).hasError()) << "\tERROR ON FILE READ" << std::endl;
+	ASSERT_FALSE(anim.readFromFile(animPath.string().c_str()).hasError()) << "\tERROR ON FILE READ\n";
 
 	const SFBGS::AnimationBlock animBlock = anim.animationBlocks().at(1);
 
 	const Math::Quaternion rotation = SFBGS::CompressedRotation(animBlock.rotationPrefixEntries().at(animBlock.rotationPrefixCount() - 1), animBlock.rotationEntries().at(animBlock.rotationCount() - 1)).toQuaternion();
 	const Math::Quaternion expected(Math::Vector3(0.0, 0.0, 1.0), Math::ToRadians(-89.99301));
 
-	ASSERT_TRUE(rotation.areEqual(expected, 0.000000000000000000000000000000000000000000001f)) << "Rotation: " << rotation.toString().c_str() << " Expected: " << expected.toString().c_str() << std::endl;
+	ASSERT_TRUE(rotation.areEqual(expected, 0.000000000000000000000000000000000000000000001f)) << "Rotation: " << rotation.toString().c_str() << " Expected: " << expected.toString().c_str() << "\n";
 }
 
 GTEST(LodgeDoor01Animation)
 {
 	const std::filesystem::path animPath = SFBGS_Data::get().dataPath.string() + "/meshes/architecture/city/newatlantis/lodge/na_lodgedoor02/animations/open.af";
-	ASSERT_TRUE(std::filesystem::exists(animPath)) << "\tFILE DOES NOT EXIST" << std::endl;
-	ASSERT_TRUE(std::filesystem::is_regular_file(animPath)) << "\tFILE IS NOT REGULAR FILE" << std::endl;
+	ASSERT_TRUE(std::filesystem::exists(animPath)) << "\tFILE DOES NOT EXIST\n";
+	ASSERT_TRUE(std::filesystem::is_regular_file(animPath)) << "\tFILE IS NOT REGULAR FILE\n";
 
 	SFBGS::Animation anim;
 
-	ASSERT_FALSE(anim.readFromFile(animPath.string().c_str()).hasError()) << "\tERROR ON FILE READ" << std::endl;
+	ASSERT_FALSE(anim.readFromFile(animPath.string().c_str()).hasError()) << "\tERROR ON FILE READ\n";
 
 	const SFBGS::AnimationBlock animBlockLeft = anim.animationBlocks().at(1);
 	const SFBGS::AnimationBlock animBlockRight = anim.animationBlocks().at(4);
@@ -90,8 +90,8 @@ GTEST(LodgeDoor01Animation)
 	const Math::Quaternion rotationRight = SFBGS::CompressedRotation(animBlockRight.rotationPrefixEntries().at(animBlockRight.rotationPrefixCount() - 1), animBlockRight.rotationEntries().at(animBlockRight.rotationCount() - 1)).toQuaternion();
 	const Math::Quaternion expectedRight(Math::Vector3(0.0, 0.0, 1.0), Math::ToRadians(-89.99301f));
 
-	EXPECT_TRUE(rotationLeft.areEqual(expectedLeft, 0.000001f)) << "\tRotation Left: " << rotationLeft.toString().c_str() << " Expected Left: " << expectedLeft.toString().c_str() << std::endl;
-	EXPECT_TRUE(rotationRight.areEqual(expectedRight, 0.000001f)) << "\tRotation Right: " << rotationRight.toString().c_str() << " Expected Right: " << expectedRight.toString().c_str() << std::endl;
+	EXPECT_TRUE(rotationLeft.areEqual(expectedLeft, 0.000001f)) << "\tRotation Left: " << rotationLeft.toString().c_str() << " Expected Left: " << expectedLeft.toString().c_str() << "\n";
+	EXPECT_TRUE(rotationRight.areEqual(expectedRight, 0.000001f)) << "\tRotation Right: " << rotationRight.toString().c_str() << " Expected Right: " << expectedRight.toString().c_str() << "\n";
 }
 
 union ErrorStatus {
@@ -118,7 +118,7 @@ GTEST(AnimScan)
 
 	const std::filesystem::path meshesPath = SFBGS_Data::get().dataPath.string() + "/meshes";
 
-	std::cout << "\tScanning " << _YELLOW(meshesPath.string()) << " for .af files" << std::endl;
+	std::cout << "\tScanning " << _YELLOW(meshesPath.string()) << " for .af files\n";
 
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(meshesPath))
 	{
@@ -169,32 +169,32 @@ GTEST(AnimScan)
 
 		filesUnexpected++;
 
-		ADD_FAILURE() << _YELLOW(entry.path().string()) << std::endl;
+		ADD_FAILURE() << _YELLOW(entry.path().string()) << "\n";
 
 		if (status.flags.magicNumber)
-			std::cout << "\tMAGIC NUMBER IS NOT ZERO: " << _BRED(anim.magicNumber()) << std::endl;
+			std::cout << "\tMAGIC NUMBER IS NOT ZERO: " << _BRED(anim.magicNumber()) << "\n";
 
 		if (status.flags.wrongVersion)
-			std::cout << "\tUNKNOWN VERSION: " << _BRED(anim.versionNumber()) << std::endl;
+			std::cout << "\tUNKNOWN VERSION: " << _BRED(anim.versionNumber()) << "\n";
 
 		if (status.flags.wrongFileSize)
-			std::cout << "\tINCORRECT FILE SIZE: " << _BRED(anim.sourceFileSize()) << " EXPECTED: " << _YELLOW(std::filesystem::file_size(entry)) << std::endl;
+			std::cout << "\tINCORRECT FILE SIZE: " << _BRED(anim.sourceFileSize()) << " EXPECTED: " << _YELLOW(std::filesystem::file_size(entry)) << "\n";
 
 		if (status.flags.moreThanOnePriority)
-			std::cout << "\tMORE THAN ONE PRIORITY: " << _YELLOW(entry.path().string()) << std::endl;
+			std::cout << "\tMORE THAN ONE PRIORITY: " << _YELLOW(entry.path().string()) << "\n";
 
 		if (status.flags.amendedPriorityCountOverOne)
-			std::cout << "\tMORE THAN ONE PRIORITY IN AMENDED: " << _YELLOW(entry.path().string()) << std::endl;
+			std::cout << "\tMORE THAN ONE PRIORITY IN AMENDED: " << _YELLOW(entry.path().string()) << "\n";
 
 
 	}
 
 	//====================================== End File Loop ===================================================
 
-	std::cout << "\tFILES FOUND: " << _BMAGENTA(filesFound) << std::endl;
-	std::cout << "\tFILES SCANNED: " << _GREEN(filesScanned) << std::endl;
+	std::cout << "\tFILES FOUND: " << _BMAGENTA(filesFound) << "\n";
+	std::cout << "\tFILES SCANNED: " << _GREEN(filesScanned) << "\n";
 	const std::string incAssumption = filesUnexpected == 0 ? _GREEN(filesUnexpected).c_str() : _BRED(filesUnexpected).c_str();
-	std::cout << "\tFILES WITH INCORRECT ASSUMPTIONS: " << incAssumption << std::endl;
+	std::cout << "\tFILES WITH INCORRECT ASSUMPTIONS: " << incAssumption << "\n";
 }
 
 

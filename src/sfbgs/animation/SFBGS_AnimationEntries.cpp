@@ -94,6 +94,9 @@ namespace CALUMI::SFBGS
 	}
 	RotationPrefix& RotationPrefix::operator=(const RotationPrefix& input)
 	{
+		if (this == &input)
+			return *this;
+
 		pImpl->m_first = input.pImpl->m_first;
 		pImpl->m_firstFlag = input.pImpl->m_firstFlag;
 		pImpl->m_second = input.pImpl->m_second;
@@ -218,6 +221,9 @@ namespace CALUMI::SFBGS
 	}
 	RotationEntry& RotationEntry::operator=(const RotationEntry& input)
 	{
+		if (this == &input)
+			return *this;
+
 		pImpl->m_first = input.pImpl->m_first;
 		pImpl->m_second = input.pImpl->m_second;
 		pImpl->m_third = input.pImpl->m_third;
@@ -313,7 +319,14 @@ namespace CALUMI::SFBGS
 	}
 	TranslationPrefix& TranslationPrefix::operator=(const TranslationPrefix& input)
 	{
-		pImpl->m_x = input.pImpl->m_x; pImpl->m_y = input.pImpl->m_y; pImpl->m_z = input.pImpl->m_z; pImpl->m_count = input.pImpl->m_count; return *this;
+		if (this == &input)
+			return *this;
+
+		pImpl->m_x = input.pImpl->m_x;
+		pImpl->m_y = input.pImpl->m_y;
+		pImpl->m_z = input.pImpl->m_z;
+		pImpl->m_count = input.pImpl->m_count;
+		return *this;
 	}
 	bool TranslationPrefix::operator==(const TranslationPrefix& other) const
 	{
@@ -406,7 +419,12 @@ namespace CALUMI::SFBGS
 	}
 	TranslationEntry& TranslationEntry::operator=(const TranslationEntry& input)
 	{
-		pImpl->m_x = input.pImpl->m_x; pImpl->m_y = input.pImpl->m_y; pImpl->m_z = input.pImpl->m_z;
+		if (this == &input)
+			return *this;
+
+		pImpl->m_x = input.pImpl->m_x;
+		pImpl->m_y = input.pImpl->m_y;
+		pImpl->m_z = input.pImpl->m_z;
 		return *this;
 	}
 	int8_t TranslationEntry::x() const { return pImpl->m_x; }

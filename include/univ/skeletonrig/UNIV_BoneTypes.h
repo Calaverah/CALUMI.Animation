@@ -44,7 +44,7 @@ namespace CALUMI::UNIV {
 		/**
 		 * @return
 		 */
-		virtual Utilities::JsonObject toJson() const = 0;
+		[[nodiscard]] virtual Utilities::JsonObject toJson() const = 0;
 		/**
 		 * @param data
 		 */
@@ -61,7 +61,6 @@ namespace CALUMI::UNIV {
 		 */
 		virtual bool operator!=(const BoneTypeProperty& other) const;
 
-    public:
     	/**
 		 * @param boneTypeStr c string of the type, likely #DefaultBoneTypeStr or #TwistBoneTypeStr
 		 * @return Will return BoneType::UNDEFINED if the bonetypeStr is not found
@@ -95,7 +94,7 @@ namespace CALUMI::UNIV {
     	/// @}
     	/// @name Json
     	/// @{
-    	Utilities::JsonObject toJson() const override;
+    	[[nodiscard]] Utilities::JsonObject toJson() const override;
     	void fromJson(const Utilities::JsonObject& data) override;
     	/// @}
     	/// @name Operators
@@ -141,7 +140,7 @@ namespace CALUMI::UNIV {
 		/// @}
 		/// @name Json
 		/// @{
-		Utilities::JsonObject toJson() const override;
+		[[nodiscard]] Utilities::JsonObject toJson() const override;
 		void fromJson(const Utilities::JsonObject& data) override;
 		/// @}
 		/// @name Operators

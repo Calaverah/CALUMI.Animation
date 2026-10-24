@@ -7,6 +7,10 @@
 #include "utilities/CALUMI_Utilities.h"
 #include "univ/animation/UNIV_Animation.h"
 #include "univ/UNIV_AnimationScene.h"
+
+#include <iostream>
+#include <source_location>
+
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
 
 #include <vector>
@@ -122,72 +126,140 @@ namespace CALUMI::UNIV
 
 CALUMI::UNIV::AnimationScene* CreateAnimationSceneC(const char* sceneName)
 {
-    const auto univAnimationScene = new CALUMI::UNIV::AnimationScene;
-    univAnimationScene->setSceneName(sceneName);
+    try
+    {
+        const auto univAnimationScene = new CALUMI::UNIV::AnimationScene;
 
-    return univAnimationScene;
+        if (sceneName)
+        {
+            univAnimationScene->setSceneName(sceneName);
+        }
+
+        std::cout << "UNIV Animation: " << univAnimationScene->sceneName() << ", has been created\n";
+
+        return univAnimationScene;
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught exception: " << e.what() << "\n";
+    }
+
+    return nullptr;
 }
 
 int AddRigToAnimationSceneC(const CALUMI::UNIV::AnimationScene* scene, const CALUMI::UNIV::SkeletonRig* rig)
 {
-    if (scene && rig)
+    if (!scene)
+    {
+        std::cerr << std::source_location::current().function_name() << " scene argument is nullptr\n";
+    }
+    else if (!rig)
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+    }
+    else
+    {
         try
         {
             scene->setRig(*rig);
             return 0;
         }
-    catch (std::exception&)
-    {
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
     return -1;
 }
 
 int AddAnimationToAnimationSceneC(const CALUMI::UNIV::AnimationScene* scene, const CALUMI::UNIV::Animation* animation, const bool overwrite)
 {
-    if (scene && animation)
+    if (!scene)
+    {
+        std::cerr << std::source_location::current().function_name() << " scene argument is nullptr\n";
+    }
+    else if (!animation)
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
+    else
+    {
         try
         {
             return scene->addAnimationToScene(*animation, overwrite) ? 0 : 1;
         }
-    catch (std::exception&)
-    {
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
     return -1;
 }
 
 int DeleteAnimationSceneC(const CALUMI::UNIV::AnimationScene** ptr)
 {
-    if (ptr && *ptr)
+    if (!ptr)
     {
-        delete *ptr;
-        *ptr = nullptr;
-        return 0;
+        std::cerr << std::source_location::current().function_name() << " ptr argument is nullptr\n";
     }
+    else if (!*ptr)
+    {
+        std::cerr << std::source_location::current().function_name() << " *ptr argument is nullptr\n";
+    }
+    else
+    {
+        try
+        {
+            delete *ptr;
+            *ptr = nullptr;
+            return 0;
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+
     return -1;
 }
 
 CALUMI::UNIV::Animation* GetAnimationWithIndexC(const CALUMI::UNIV::AnimationScene* source, const int index)
 {
     if (source)
+    {
         try
         {
             return source->animation(index);
         }
-    catch (std::exception&)
-    {
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
+
     return nullptr;
 }
 
 CALUMI::UNIV::Animation* GetAnimationWithNameC(const CALUMI::UNIV::AnimationScene* source, const char* name)
 {
     if (source)
+    {
         try
         {
             return source->animation(name);
         }
-    catch (std::exception&)
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
     {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
     }
     return nullptr;
 }
@@ -195,7 +267,20 @@ CALUMI::UNIV::Animation* GetAnimationWithNameC(const CALUMI::UNIV::AnimationScen
 uint64_t GetAnimationCountC(const CALUMI::UNIV::AnimationScene* source)
 {
     if (source)
-        return source->animationCount();
+    {
+        try
+        {
+            return source->animationCount();
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
 
     return 0;
 }
@@ -203,7 +288,20 @@ uint64_t GetAnimationCountC(const CALUMI::UNIV::AnimationScene* source)
 const char* GetAnimationSceneNameC(const CALUMI::UNIV::AnimationScene* source)
 {
     if (source)
-        return source->sceneName();
+    {
+        try
+        {
+            return source->sceneName();
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
 
     return nullptr;
 }
@@ -211,7 +309,20 @@ const char* GetAnimationSceneNameC(const CALUMI::UNIV::AnimationScene* source)
 const CALUMI::UNIV::SkeletonRig* GetSkeletonRigC(const CALUMI::UNIV::AnimationScene* source)
 {
     if (source)
-        return &source->rig();
+    {
+        try
+        {
+            return &source->rig();
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
 
     return nullptr;
 }

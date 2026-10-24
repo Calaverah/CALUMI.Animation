@@ -17,15 +17,15 @@ GTEST(KnownHashScan)
     EXPECT_EQ(errorList.size(), 0);
     if (!errorList.empty())
     {
-        std::cout << _BRED("Hash Errors:") << std::endl;
+        std::cout << _BRED("Hash Errors:") << "\n";
         for (uint32_t i = 0; i < errorList.size(); i++)
         {
-            std::cout << errorList.c_str(i) << std::endl;
+            std::cout << errorList.c_str(i) << "\n";
         }
     }
     else
     {
-        std::cout << _GREEN("No Hash Errors") << std::endl;
+        std::cout << _GREEN("No Hash Errors") << "\n";
     }
 }
 

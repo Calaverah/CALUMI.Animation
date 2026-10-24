@@ -1212,13 +1212,13 @@ namespace CALUMI::SFBGS {
 #ifdef DEBUG_BUILD
 		if (buffer.size() != addressIndex)
 		{
-			std::cout << "===========================================================" << std::endl;
-			std::cout << std::format("===========================================================").c_str() << std::endl;
-			std::cout << std::format("==WARNING CURRENT BUFFER ADDRESS IS NOT AT FINAL POSITION==").c_str() << std::endl;
-			std::cout << std::format("BUFFER  SIZE: {}", buffer.size()).c_str() << std::endl;
-			std::cout << std::format("BUFFER START: {}", static_cast<void*>(buffer.data())).c_str() << std::endl;
-			std::cout << std::format("Size+Start: {}", static_cast<void*>(buffer.size() + buffer.data())).c_str() << std::endl;
-			std::cout << std::format("===========================================================").c_str() << std::endl;
+			std::cout << "===========================================================\n";
+			std::cout << "===========================================================\n";
+			std::cout << "==WARNING CURRENT BUFFER ADDRESS IS NOT AT FINAL POSITION==\n";
+			std::cout << std::format("BUFFER  SIZE: {}\n", buffer.size()).c_str();
+			std::cout << std::format("BUFFER START: {}\n", static_cast<void*>(buffer.data())).c_str();
+			std::cout << std::format("Size+Start: {}\n", static_cast<void*>(buffer.size() + buffer.data())).c_str();
+			std::cout << "===========================================================\n";
 		}
 #endif
 		return {Utilities::FileResult::FileErrorCode::Success, inputFilePath, ""};
@@ -1336,12 +1336,12 @@ namespace CALUMI::SFBGS {
 #ifdef DEBUG_BUILD
 		if (pImpl->fileSize != addressIndex && pImpl->fileSize > 0)
 		{
-			std::cout << std::format("===========================================================").c_str() << std::endl;
-			std::cout << std::format("===========================================================").c_str() << std::endl;
-			std::cout << std::format("==WARNING CURRENT BUFFER ADDRESS IS NOT AT FINAL POSITION==").c_str() << std::endl;
-			std::cout << std::format("BUFFER  SIZE: {}", buffer.size()).c_str() << std::endl;
-			std::cout << std::format("FILE  SIZE: {}", pImpl->fileSize).c_str() << std::endl;
-			std::cout << std::format("===========================================================").c_str() << std::endl;
+			std::cout << "===========================================================\n";
+			std::cout << "===========================================================\n";
+			std::cout << "==WARNING CURRENT BUFFER ADDRESS IS NOT AT FINAL POSITION==\n";
+			std::cout << std::format("BUFFER  SIZE: {}\n", buffer.size()).c_str();
+			std::cout << std::format("FILE  SIZE: {}\n", pImpl->fileSize).c_str();
+			std::cout << "===========================================================\n";
 		}
 #endif
 		//Writing to file

@@ -59,7 +59,7 @@ namespace CALUMI::Utilities
 		 * @param string String to create hash from
 		 * @return Hash key generated from string input
 		 */
-		static CALUMIANIMATION_API uint32_t CalculateHash(const char* string) ;
+		static CALUMIANIMATION_API uint32_t CalculateHash(const char* string);
 		/**
 		 * @brief A simple way to get a list of the user's registered strings for storage/cache outside the application
 		 * @return
@@ -96,9 +96,10 @@ extern "C" {
 	/**
 	 * @brief Generates a hash for the given string using the current BGS Hashing algorithm
 	 * @param string Null terminated c string
-	 * @return Generated hash
+	 * @note Hash will always be from 0 to the max value of an unsigned 32bit integer
+	 * @return Generated 32 bit hash or -1 if error has occurred
 	 */
-	CALUMIANIMATION_API uint32_t BGS_Str_CRC32C(const char* string);
+	CALUMIANIMATION_API int64_t BGS_Str_CRC32C(const char* string);
 
 	/**
 	 * @brief Creates heap allocated string container, containing known strings in the hash registry

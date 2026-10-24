@@ -13,6 +13,8 @@
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
 #include "univ/skeletonrig/UNIV_IRigPackage.h"
 
+//TODO: ERROR HANDLING IN EXTERN C
+
 namespace CALUMI::UNIV
 {
     struct RigMirrorPackage::Impl

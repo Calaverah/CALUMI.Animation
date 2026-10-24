@@ -133,7 +133,7 @@ extern "C" {
 /**
  * @warning Heap allocated return value, if not nullptr, must be deleted using DeleteAnimationSceneC
  * @param sceneName
- * @return
+ * @return Newly create animation scene, or nullptr if error
  */
 CALUMIANIMATION_API CALUMI::UNIV::AnimationScene* CreateAnimationSceneC(const char* sceneName);
 /**

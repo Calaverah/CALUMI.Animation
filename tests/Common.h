@@ -27,8 +27,8 @@ namespace fmt_lib = fmt;
     EXPECT_TRUE(result);\
     if(!result) \
     { \
-        std::cout << _BMAGENTA("Q1: ") << q1.toString().c_str() << std::endl; \
-        std::cout << _BMAGENTA("Q2: ") << q2.toString().c_str() << std::endl; \
+        std::cout << _BMAGENTA("Q1: ") << q1.toString().c_str() << "\n"; \
+        std::cout << _BMAGENTA("Q2: ") << q2.toString().c_str() << "\n"; \
     }\
     }\
 
@@ -38,8 +38,8 @@ namespace fmt_lib = fmt;
     EXPECT_TRUE(result);\
     if(!result) \
     {\
-        std::cout << _BMAGENTA("V1: ") << v1.toString().c_str() << std::endl;\
-        std::cout << _BMAGENTA("V2: ") << v2.toString().c_str() << std::endl;\
+        std::cout << _BMAGENTA("V1: ") << v1.toString().c_str() << "\n";\
+        std::cout << _BMAGENTA("V2: ") << v2.toString().c_str() << "\n";\
     }\
     }
 

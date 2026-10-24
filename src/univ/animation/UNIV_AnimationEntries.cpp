@@ -5,9 +5,13 @@
 // ReSharper disable CppDFALocalValueEscapesFunction
 #include "univ/animation/UNIV_AnimationEntries.h"
 #include <algorithm>
+#include <iostream>
 #include <vector>
 #include <string>
 #include <limits>
+#include <ostream>
+#include <source_location>
+
 #include "internal/internalvectordef.h"
 
 namespace CALUMI::UNIV
@@ -457,147 +461,300 @@ namespace CALUMI::UNIV
 
 CALUMI::UNIV::RotationFrame* CreateRotationFrameC(const uint16_t frame, float x, float y, float z, float w)
 {
-    const auto outputRotation = new CALUMI::UNIV::RotationFrame(frame, {x, y, z, w});
-    outputRotation->rotationQuaternion().normalize();
+    try
+    {
+        const auto outputRotation = new CALUMI::UNIV::RotationFrame(frame, {x, y, z, w});
+        outputRotation->rotationQuaternion().normalize();
 
-    return outputRotation;
+        return outputRotation;
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught exception: " << e.what() << "\n";
+        std::cout << "RotationFrame could not be created\n";
+    }
+
+    return nullptr;
 }
 
-CALUMI::UNIV::RotationFrame* CreateRotationFrameFromEulerC(const uint16_t frame,
-                                                           float x,
-                                                           float y,
-                                                           float z,
-                                                           const
-                                                           uint8_t
-                                                           order)
+CALUMI::UNIV::RotationFrame* CreateRotationFrameFromEulerC(const uint16_t frame, float x, float y, float z, const uint8_t order)
 {
-    auto eOrder = CALUMI::Math::EulerDefinition::GetEulerOrder(order);
+    try
+    {
+        auto eOrder = CALUMI::Math::EulerDefinition::GetEulerOrder(order);
 
-    const auto outputRotation = new CALUMI::UNIV::RotationFrame(frame, {x, y, z, eOrder});
-    outputRotation->rotationQuaternion().normalize();
+        const auto outputRotation = new CALUMI::UNIV::RotationFrame(frame, {x, y, z, eOrder});
+        outputRotation->rotationQuaternion().normalize();
 
-    return outputRotation;
+        return outputRotation;
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught exception: " << e.what() << "\n";
+        std::cout << "RotationFrame could not be created\n";
+    }
+
+    return nullptr;
 }
 
 int DeleteRotationFrameC(const CALUMI::UNIV::RotationFrame** ptr)
 {
-    if (ptr && *ptr)
+    if (!ptr)
     {
-        delete *ptr;
-        *ptr = nullptr;
-        return 0;
+        std::cerr << std::source_location::current().function_name() << " ptr argument is nullptr\n";
     }
+    else if (!*ptr)
+    {
+        std::cerr << std::source_location::current().function_name() << " *ptr argument is nullptr\n";
+    }
+    else
+    {
+        try
+        {
+            delete *ptr;
+            *ptr = nullptr;
+            return 0;
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+
     return -1;
 }
 
 CALUMI::UNIV::TranslationFrame* CreateTranslationFrameC(const uint16_t frame, double x, double y, double z)
 {
-    const auto outputTranslation = new CALUMI::UNIV::TranslationFrame(frame, {x, y, z});
+    try
+    {
+        const auto outputTranslation = new CALUMI::UNIV::TranslationFrame(frame, {x, y, z});
+        return outputTranslation;
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught exception: " << e.what() << "\n";
+        std::cout << "TranslationFrame could not be created\n";
+    }
 
-    return outputTranslation;
+    return nullptr;
 }
 
 int DeleteTranslationFrameC(const CALUMI::UNIV::TranslationFrame** ptr)
 {
-    if (ptr && *ptr)
+    if (!ptr)
     {
-        delete *ptr;
-        *ptr = nullptr;
-        return 0;
+        std::cerr << std::source_location::current().function_name() << " ptr argument is nullptr\n";
     }
+    else if (!*ptr)
+    {
+        std::cerr << std::source_location::current().function_name() << " *ptr argument is nullptr\n";
+    }
+    else
+    {
+        try
+        {
+            delete *ptr;
+            *ptr = nullptr;
+            return 0;
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+
     return -1;
 }
 
 CALUMI::UNIV::ScalarFrame* CreateScalarFrameC(const uint16_t frame, const float scalar)
 {
-    const auto outputScalar = new CALUMI::UNIV::ScalarFrame(frame, scalar);
+    try
+    {
+        const auto outputScalar = new CALUMI::UNIV::ScalarFrame(frame, scalar);
+        return outputScalar;
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught exception: " << e.what() << "\n";
+        std::cout << "ScalarFrame could not be created\n";
+    }
 
-    return outputScalar;
+    return nullptr;
 }
 
 int DeleteScalarFrameC(const CALUMI::UNIV::ScalarFrame** ptr)
 {
-    if (ptr && *ptr)
+    if (!ptr)
     {
-        delete *ptr;
-        *ptr = nullptr;
-        return 0;
+        std::cerr << std::source_location::current().function_name() << " ptr argument is nullptr\n";
     }
+    else if (!*ptr)
+    {
+        std::cerr << std::source_location::current().function_name() << " *ptr argument is nullptr\n";
+    }
+    else
+    {
+        try
+        {
+            delete *ptr;
+            *ptr = nullptr;
+            return 0;
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+
     return -1;
 }
 
 CALUMI::UNIV::PriorityFrame* CreatePriorityFrameC(const uint16_t frame, const uint8_t priority)
 {
-    const auto outputPriority = new CALUMI::UNIV::PriorityFrame(frame, priority);
+    try
+    {
+        const auto outputPriority = new CALUMI::UNIV::PriorityFrame(frame, priority);
+        return outputPriority;
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught exception: " << e.what() << "\n";
+        std::cout << "PriorityFrame could not be created\n";
+    }
 
-    return outputPriority;
+    return nullptr;
 }
 
 int DeletePriorityFrameC(const CALUMI::UNIV::PriorityFrame** ptr)
 {
-    if (ptr && *ptr)
+    if (!ptr)
     {
-        delete *ptr;
-        *ptr = nullptr;
-        return 0;
+        std::cerr << std::source_location::current().function_name() << " ptr argument is nullptr\n";
     }
+    else if (!*ptr)
+    {
+        std::cerr << std::source_location::current().function_name() << " *ptr argument is nullptr\n";
+    }
+    else
+    {
+        try
+        {
+            delete *ptr;
+            *ptr = nullptr;
+            return 0;
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+
     return -1;
 }
 
 uint16_t GetFrameFromRotationFrameC(const CALUMI::UNIV::RotationFrame* source)
 {
-    return source->frame();
+    if (source)
+    {
+        try
+        {
+            return source->frame();
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
+
+    return 0;
 }
 
 uint16_t GetFrameFromTranslationFrameC(const CALUMI::UNIV::TranslationFrame* source)
 {
     if (source)
+    {
         try
         {
             return source->frame();
         }
-    catch(const std::exception& )
-    {
+        catch(const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
+
     return 0;
 }
 
 uint16_t GetFrameFromScalarFrameC(const CALUMI::UNIV::ScalarFrame* source)
 {
     if (source)
+    {
         try
         {
             return source->frame();
         }
-    catch(const std::exception& )
-    {
+        catch(const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
+
     return 0;
 }
 
 uint16_t GetFrameFromPriorityFrameC(const CALUMI::UNIV::PriorityFrame* source)
 {
     if (source)
+    {
         try
         {
             return source->frame();
         }
-    catch(const std::exception& )
-    {
+        catch(const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
+
     return 0;
 }
 
 CALUMI::Math::Quaternion* GetValueFromRotationFrameC(const CALUMI::UNIV::RotationFrame* source)
 {
     if (source)
+    {
         try
         {
             return &source->rotationQuaternion();
         }
-    catch(const std::exception& )
-    {
+        catch(const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
+
     return nullptr;
 }
 
@@ -617,26 +774,42 @@ CALUMI::Math::Vector3D* GetValueFromTranslationFrameC(const CALUMI::UNIV::Transl
 float GetValueFromScalarFrameC(const CALUMI::UNIV::ScalarFrame* source)
 {
     if (source)
+    {
         try
         {
             return source->scalarValue();
         }
-    catch(const std::exception& )
-    {
+        catch(const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
+
     return std::numeric_limits<float>::quiet_NaN();
 }
 
 uint8_t GetValueFromPriorityFrameC(const CALUMI::UNIV::PriorityFrame* source)
 {
     if (source)
+    {
         try
         {
             return source->priorityValue();
         }
-    catch(const std::exception& )
-    {
+        catch(const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
+
     return 0;
 }
 #pragma endregion

@@ -8,11 +8,15 @@
 #include "internalvectordef.h"
 #include "internalplatform.h"
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
+
+#include <iostream>
+
 #include "utilities/CALUMI_Utilities.h"
 #include <string>
 #include <vector>
 #include <memory>
 #include <limits>
+#include <source_location>
 
 #include "sfbgs/skeletonrig/SFBGS_RigPackage.h"
 #include "univ/skeletonrig/packages/UNIV_RigManifestPackage.h"
@@ -645,7 +649,12 @@ int DeleteSkeletonRigC(CALUMI::UNIV::SkeletonRig** ptrRef)
         delete *ptrRef;
         *ptrRef = nullptr;
         return 0;
-    } catch (std::bad_alloc&) {}
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught exception: " << e.what() << "\n";
+    }
+
     return -1;
 }
 const CALUMI::UNIV::SkeletonBone* GetSkeletonRigRootC(const CALUMI::UNIV::SkeletonRig* rig)
@@ -657,7 +666,11 @@ const CALUMI::UNIV::SkeletonBone* GetSkeletonRigRootC(const CALUMI::UNIV::Skelet
     {
         return rig->root();
     }
-    catch (const std::exception&) {}
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught exception: " << e.what() << "\n";
+    }
+
     return nullptr;
 }
 int SetBoneTypeC(const CALUMI::UNIV::SkeletonBone* bone, const uint32_t boneType)
@@ -669,160 +682,293 @@ int SetBoneTypeC(const CALUMI::UNIV::SkeletonBone* bone, const uint32_t boneType
     {
         return bone->setBoneTypeProperty(CALUMI::UNIV::BoneTypeProperty::GetBoneType(boneType)) ? 0 : 1;
     }
-    catch (std::bad_alloc&) {}
+    catch (std::exception& e)
+    {
+        std::cerr << "Caught exception: " << e.what() << "\n";
+    }
+
     return -1;
 }
 int SetBoneTypeFromStringC(const CALUMI::UNIV::SkeletonBone* bone, const char* boneType)
 {
     if (bone)
-    try
     {
-        return bone->setBoneTypeProperty(CALUMI::UNIV::BoneTypeProperty::BoneTypeFromString(boneType)) ? 0 : 1;
+        try
+        {
+            return bone->setBoneTypeProperty(CALUMI::UNIV::BoneTypeProperty::BoneTypeFromString(boneType)) ? 0 : 1;
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch (std::bad_alloc&) {}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
 return -1;
 }
+
 uint32_t GetBoneTypeC(const CALUMI::UNIV::SkeletonBone* bone)
 {
-    return static_cast<uint32_t>(bone->boneTypeProperty()->type());
+    if (bone)
+    {
+        try
+        {
+            return static_cast<uint32_t>(bone->boneTypeProperty()->type());
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+    return 0xFFFFFFFF;
 }
 const char* GetBoneTypeAsStringC(const CALUMI::UNIV::SkeletonBone* bone)
 {
-    return bone->boneTypeProperty()->typeAsString();
+    if (bone)
+    {
+        try
+        {
+            return bone->boneTypeProperty()->typeAsString();
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
+    return nullptr;
 }
-int SetTwistBonePropertiesC(const CALUMI::UNIV::SkeletonBone* bone, const bool reassign, const char* twistDriver,
-    const float twistDriverWeight)
+int SetTwistBonePropertiesC(const CALUMI::UNIV::SkeletonBone* bone, const bool reassign, const char* twistDriver, const float twistDriverWeight)
 {
     if (bone)
-    try
     {
-        if (bone->boneTypeProperty()->type() != CALUMI::UNIV::BoneTypeProperty::BoneType::Twist)
+        try
         {
-            if (!reassign)
-                return 1;
+            if (bone->boneTypeProperty()->type() != CALUMI::UNIV::BoneTypeProperty::BoneType::Twist)
+            {
+                if (!reassign)
+                    return 1;
 
-            if (!bone->setBoneTypeProperty(CALUMI::UNIV::BoneTypeProperty::BoneType::Twist))
-                return 2;
+                if (!bone->setBoneTypeProperty(CALUMI::UNIV::BoneTypeProperty::BoneType::Twist))
+                    return 2;
+            }
+
+            const auto tProp = dynamic_cast<CALUMI::UNIV::TwistBoneProperty*>(const_cast<CALUMI::UNIV::BoneTypeProperty*>(bone->boneTypeProperty()));
+
+            if (tProp)
+            {
+                tProp->setTwistDriver(twistDriver);
+                tProp->setTwistDriverWeight(twistDriverWeight);
+                return 0;
+            }
+
+            return 3;
         }
-
-        const auto tProp = dynamic_cast<CALUMI::UNIV::TwistBoneProperty*>
-        (const_cast<CALUMI::UNIV::BoneTypeProperty*>(bone->boneTypeProperty()));
-
-        if (tProp)
+        catch (std::exception& e)
         {
-            tProp->setTwistDriver(twistDriver);
-            tProp->setTwistDriverWeight(twistDriverWeight);
-            return 0;
+            std::cerr << "Caught exception: " << e.what() << "\n";
         }
-
-        return 3;
     }
-    catch (std::bad_alloc&) {}
-return -1;
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+    return -1;
 }
 const char* GetTwistBoneDriverC(const CALUMI::UNIV::SkeletonBone* bone)
 {
-    if (!bone)
-        return "";
-
-    try
+    if (bone)
     {
-        const auto tProp = dynamic_cast<CALUMI::UNIV::TwistBoneProperty*>(const_cast<CALUMI::UNIV::BoneTypeProperty*>(bone->boneTypeProperty()));
+        try
+        {
+            const auto tProp = dynamic_cast<CALUMI::UNIV::TwistBoneProperty*>(const_cast<CALUMI::UNIV::BoneTypeProperty*>(bone->boneTypeProperty()));
 
-        if (tProp)
-            return tProp->twistDriver();
+            if (tProp)
+                return tProp->twistDriver();
+
+            return "";
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch(const std::exception&){}
-    return "";
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
+    return nullptr;
 }
 float GetTwistBoneDriverWeightC(const CALUMI::UNIV::SkeletonBone* bone)
 {
     if (bone)
-    try
     {
-        const auto* tProp = dynamic_cast<CALUMI::UNIV::TwistBoneProperty*>(const_cast<CALUMI::UNIV::BoneTypeProperty*>(bone->boneTypeProperty()));
+        try
+        {
+            const auto* tProp = dynamic_cast<CALUMI::UNIV::TwistBoneProperty*>(const_cast<CALUMI::UNIV::BoneTypeProperty*>(bone->boneTypeProperty()));
 
-        if (tProp)
-            return tProp->twistDriverWeight();
+            if (tProp)
+                return tProp->twistDriverWeight();
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch(const std::exception&){}
-return std::numeric_limits<float>::quiet_NaN();
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
+    return std::numeric_limits<float>::quiet_NaN();
 }
 unsigned int GetSkeletonRigBoneCountC(const CALUMI::UNIV::SkeletonRig* source)
 {
-    if (!source)
-        return 0;
-    try
+    if (source)
     {
-        return source->boneCount();
+        try
+        {
+            return source->boneCount();
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch(const std::exception&){}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+    }
+
     return 0;
 }
 unsigned int GetSkeletonRigAnimatedBoneCountC(const CALUMI::UNIV::SkeletonRig* source)
 {
-    if (!source)
-        return 0;
-    try
+    if (source)
     {
-        return source->boneTypeCount(CALUMI::UNIV::BoneTypeProperty::BoneType::Default);
+        try
+        {
+            return source->boneTypeCount(CALUMI::UNIV::BoneTypeProperty::BoneType::Default);
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch(const std::exception&){}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
     return 0;
 }
 unsigned int GetSkeletonRigNonAnimatedBoneCountC(const CALUMI::UNIV::SkeletonRig* source)
 {
-    if (!source)
-        return 0;
-    try
+    if (source)
     {
-        return source->boneTypeCount(CALUMI::UNIV::BoneTypeProperty::BoneType::Twist);
+        try
+        {
+            return source->boneTypeCount(CALUMI::UNIV::BoneTypeProperty::BoneType::Twist);
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch(const std::exception&){}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
     return 0;
 }
 const char* GetSkeletonRigNameC(const CALUMI::UNIV::SkeletonRig* source)
 {
-    if (!source)
-        return "";
-    try
+    if (source)
     {
-        return source->name();
+        try
+        {
+            return source->name();
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch(const std::exception&){}
-    return "";
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
+
+    return nullptr;
 }
 const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneC(const CALUMI::UNIV::SkeletonRig* source, const char* boneName)
 {
-    if (!source)
-        return nullptr;
-    try
+    if (source)
     {
-        return source->bone(boneName);
+        try
+        {
+            return source->bone(boneName);
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch(const std::exception&){}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
     return nullptr;
 }
 const char* GetSkeletonBoneNameC(const CALUMI::UNIV::SkeletonBone* source)
 {
-    if (!source)
-        return "";
-    try
+    if (source)
     {
-        return source->name();
+        try
+        {
+            return source->name();
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch(const std::exception&){}
-    return "";
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
+
+    return nullptr;
 }
 const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneParentC(const CALUMI::UNIV::SkeletonBone* source)
 {
-    if (!source)
-        return nullptr;
-    try
+    if (source)
     {
-        return dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(source->parent());
+        try
+        {
+            return dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(source->parent());
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch(const std::exception&){}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
+
     return nullptr;
 }
 const CALUMI::UNIV::SkeletonBone* GetSkeletonRigRootFromBoneC(const CALUMI::UNIV::SkeletonBone* bone)
@@ -833,8 +979,16 @@ const CALUMI::UNIV::SkeletonBone* GetSkeletonRigRootFromBoneC(const CALUMI::UNIV
         {
             return bone->parentRig().root();
         }
-        catch(const std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
     return nullptr;
 }
 const CALUMI::UNIV::SkeletonRig* GetSkeletonRigFromBoneC(const CALUMI::UNIV::SkeletonBone* bone)
@@ -845,200 +999,290 @@ const CALUMI::UNIV::SkeletonRig* GetSkeletonRigFromBoneC(const CALUMI::UNIV::Ske
         {
             return &bone->parentRig();
         }
-        catch(const std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
     return nullptr;
 }
 const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneChildC(const CALUMI::UNIV::SkeletonBone* parent, const unsigned int index)
 {
     if (parent)
+    {
         try
         {
             return parent->childBone(index);
         }
-    catch (const std::exception&) {}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " parent argument is nullptr\n";
+    }
     return nullptr;
 }
 const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneChildWithNameC(const CALUMI::UNIV::SkeletonBone* parent, const char* name, const bool recursive)
 {
     if (parent)
+    {
         try
         {
             return parent->childBone(name, recursive);
         }
-    catch (const std::exception&) {}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " parent argument is nullptr\n";
+    }
+
     return nullptr;
 }
 const CALUMI::Math::Quaternion* GetGlobalSkeletonBoneRotationC(const CALUMI::UNIV::SkeletonBone* source)
 {
-    if (!source)
-        return nullptr;
-
-    auto output = new CALUMI::Math::Quaternion();
-
-    try
+    if (source)
     {
-        *output = source->globalTransform().rotation();
+        auto output = new CALUMI::Math::Quaternion();
+
+        try
+        {
+            *output = source->globalTransform().rotation();
+            return output;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+            delete output;
+            output = nullptr;
+        }
     }
-    catch (const std::exception&)
+    else
     {
-        delete output;
-        output = nullptr;
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
     }
 
-    return output;
+    return nullptr;
 }
 const CALUMI::Math::Quaternion* GetLocalSkeletonBoneRotationC(const CALUMI::UNIV::SkeletonBone* source)
 {
-    if (!source)
-        return nullptr;
-
-    auto output = new CALUMI::Math::Quaternion();
-
-    try
+    if (source)
     {
-        *output = source->localTransform().rotation();
-    }
-    catch (const std::exception&)
-    {
-        delete output;
-        output = nullptr;
+        auto output = new CALUMI::Math::Quaternion();
+
+        try
+        {
+            *output = source->localTransform().rotation();
+            return output;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+            delete output;
+            output = nullptr;
+        }
     }
 
-    return output;
+    return nullptr;
 }
 const CALUMI::Math::Vector3* GetGlobalSkeletonBonePositionC(const CALUMI::UNIV::SkeletonBone* source)
 {
-    if (!source)
-        return nullptr;
-
-    auto output = new CALUMI::Math::Vector3();
-
-    try
+    if (source)
     {
-        *output = source->globalTransform().position();
+        auto output = new CALUMI::Math::Vector3();
+
+        try
+        {
+            *output = source->globalTransform().position();
+            return output;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+            delete output;
+            output = nullptr;
+        }
     }
-    catch (const std::exception&)
+    else
     {
-        delete output;
-        output = nullptr;
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
     }
 
-    return output;
+    return nullptr;
 }
 const CALUMI::Math::Vector3* GetLocalSkeletonBonePositionC(const CALUMI::UNIV::SkeletonBone* source)
 {
-    if (!source)
-        return nullptr;
-
-    auto output = new CALUMI::Math::Vector3();
-
-    try
+    if (source)
     {
-        *output = source->localTransform().position();
+        auto output = new CALUMI::Math::Vector3();
+
+        try
+        {
+            *output = source->localTransform().position();
+            return output;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+            delete output;
+            output = nullptr;
+        }
     }
-    catch (const std::exception&)
+    else
     {
-        delete output;
-        output = nullptr;
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
     }
 
-    return output;
+    return nullptr;
 }
 const CALUMI::Math::Transform* GetLocalSkeletonBoneTransformC(const CALUMI::UNIV::SkeletonBone* source)
 {
-    if (!source)
-        return nullptr;
-
-    auto output = new CALUMI::Math::Transform();
-
-    try
+    if (source)
     {
-        *output = source->localTransform();
+        auto output = new CALUMI::Math::Transform();
+
+        try
+        {
+            *output = source->localTransform();
+            return output;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+            delete output;
+            output = nullptr;
+        }
     }
-    catch (const std::exception&)
+    else
     {
-        delete output;
-        output = nullptr;
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
     }
 
-    return output;
+    return nullptr;
 }
 const CALUMI::Math::Transform* GetGlobalSkeletonBoneTransformC(const CALUMI::UNIV::SkeletonBone* source)
 {
-    if (!source)
-        return nullptr;
-
-    auto output = new CALUMI::Math::Transform();
-
-    try
+    if (source)
     {
-        *output = source->globalTransform();
+        auto output = new CALUMI::Math::Transform();
+
+        try
+        {
+            *output = source->globalTransform();
+            return output;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+            delete output;
+            output = nullptr;
+        }
     }
-    catch (const std::exception&)
+    else
     {
-        delete output;
-        output = nullptr;
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
     }
 
-    return output;
+    return nullptr;
 }
 int RenameBoneC(const CALUMI::UNIV::SkeletonRig* rig, const char* oldName, const char* newName)
 {
     if (!rig)
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
         return -1;
+    }
 
     const CALUMI::UNIV::SkeletonBone* bone = nullptr;
 
     try
     {
         bone = rig->bone(oldName);
-
-    } catch (const std::exception&)
+    }
+    catch (const std::exception& e)
     {
+        std::cerr << "Caught exception: " << e.what() << "\n";
         return -1;
     }
 
-    if (!bone)
-        return 1;
+    const std::string_view bOldNameView = oldName ? oldName : "<nullptr>";
+    const std::string_view bNewNameView = newName ? newName : "<nullptr>";
 
-    if (SCOMPARE(newName, "") == 0)
+    if (!bone)
+    {
+        std::cout << "Bone: " << bOldNameView << " was not found under rig: " << rig->name() << "\n";
+        return 1;
+    }
+
+    if (std::string_view(newName).empty())
+    {
+        std::cout << "Bone: " << bOldNameView << " could not be renamed to: " << bNewNameView << "\n";
         return 2;
+    }
 
     if (SCOMPARE(oldName, newName) == 0)
+    {
+        std::cout << "Bone: " << bOldNameView << " cannot be renamed to same name: " << bNewNameView << "\n";
         return 3;
+    }
 
     if (!bone->setName(newName))
+    {
+        std::cout << "Bone: " << bOldNameView << " cannot be renamed to: " << newName << " for an unknown reason\n";
         return 4;
+    }
 
     return 0;
 }
 int DeleteBoneC(const CALUMI::UNIV::SkeletonBone** ptrRef)
 {
     if (!ptrRef || !*ptrRef)
+    {
+        std::cerr << std::source_location::current().function_name() << " ptrRef argument and/or *ptrRef is nullptr\n";
         return -1;
+    }
 
     try
     {
         CALUMI::UNIV::SkeletonBone::DeleteBone(*ptrRef);
         return 0;
     }
-    // ReSharper disable once CppDFAUnreachableCode
-    catch (const std::exception&){}
+    catch (const std::exception& e)
+    {
+        std::cerr << "Caught exception: " << e.what() << "\n";
+    }
+
     return -1;
 }
-CALUMI::UNIV::SkeletonBone* AddChildBoneC(const CALUMI::UNIV::SkeletonBone* parentBone, float posX, float posY,
-                                float posZ, float rotX, float rotY, float rotZ, float rotW, const char* boneName)
+CALUMI::UNIV::SkeletonBone* AddChildBoneC(const CALUMI::UNIV::SkeletonBone* parentBone, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float rotW, const char* boneName)
 {
-    if (!parentBone)
-        return nullptr;
-
-    try
+    if (parentBone)
     {
-        const auto output = parentBone->addChildBone(boneName, {posX, posY, posZ}, {rotX, rotY, rotZ, rotW});
-        return output;
+        try
+        {
+            const auto output = parentBone->addChildBone(boneName, {posX, posY, posZ}, {rotX, rotY, rotZ, rotW});
+            return output;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch (const std::exception&) {}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " parentBone argument is nullptr\n";
+    }
     return nullptr;
 }
 CALUMI::UNIV::SkeletonBone* AddChildBoneWithEulerC(const CALUMI::UNIV::SkeletonBone* parentBone,
@@ -1046,45 +1290,74 @@ CALUMI::UNIV::SkeletonBone* AddChildBoneWithEulerC(const CALUMI::UNIV::SkeletonB
                                  const float rad1, const float rad2, const float rad3, const int eulerOrder,
                                  const char* boneName)
 {
-    if (!parentBone)
-        return nullptr;
-
-    try
+    if (parentBone)
     {
-        const auto output = parentBone->addChildBone(boneName, {posX, posY, posZ},
-                                                     CALUMI::Math::EulerDefinition(rad1, rad2, rad3,
-                                                     CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder)));
-        return output;
+        try
+        {
+            const auto output = parentBone->addChildBone(boneName, {posX, posY, posZ},
+                                                         CALUMI::Math::EulerDefinition(rad1, rad2, rad3,
+                                                         CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder)));
+            return output;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch (const std::exception&){}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " parentBone argument is nullptr\n";
+    }
+
     return nullptr;
 }
-CALUMI::UNIV::SkeletonBone* AddChildBoneWithVectorC(const CALUMI::UNIV::SkeletonBone* parentBone,
-                                                    const CALUMI::Math::Vector3* position,
-                                                    const CALUMI::Math::Quaternion* rotation,
-                                                    const char* boneName)
+CALUMI::UNIV::SkeletonBone* AddChildBoneWithVectorC(const CALUMI::UNIV::SkeletonBone* parentBone, const CALUMI::Math::Vector3* position, const CALUMI::Math::Quaternion* rotation, const char* boneName)
 {
-    if (!parentBone || !position || !rotation)
-        return nullptr;
-
-    try
+    if (!parentBone)
     {
-        const auto output = parentBone->addChildBone(boneName, *position, *rotation);
-        return output;
+        std::cerr << std::source_location::current().function_name() << " parentBone argument is nullptr\n";
     }
-    catch (const std::exception&) {}
+    else if (!position)
+    {
+        std::cerr << std::source_location::current().function_name() << " position argument is nullptr\n";
+    }
+    else if (!rotation)
+    {
+        std::cerr << std::source_location::current().function_name() << " rotation argument is nullptr\n";
+    }
+    else
+    {
+        try
+        {
+            const auto output = parentBone->addChildBone(boneName, *position, *rotation);
+            return output;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+
     return nullptr;
 }
 unsigned int GetSkeletonRigBoneTypeCountC(const CALUMI::UNIV::SkeletonRig* source, const uint32_t typeAsInteger)
 {
-    if (!source)
-        return 0;
-
-    try
+    if (source)
     {
-        return source->boneTypeCount(CALUMI::UNIV::BoneTypeProperty::GetBoneType(typeAsInteger));
+        try
+        {
+            return source->boneTypeCount(CALUMI::UNIV::BoneTypeProperty::GetBoneType(typeAsInteger));
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch (const std::exception&) {}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
+
     return 0;
 }
 unsigned int GetSkeletonBoneChildCountC(const CALUMI::UNIV::SkeletonBone* source)
@@ -1095,225 +1368,319 @@ unsigned int GetSkeletonBoneChildCountC(const CALUMI::UNIV::SkeletonBone* source
         {
             return source->childBoneCount();
         }
-        catch (const std::exception&) {}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+    }
+
     return 0;
 }
 int SetGlobalSkeletonBonePositionC(const CALUMI::UNIV::SkeletonBone* bone, float x, float y, float z)
 {
-    if (!bone)
-        return -1;
-
-    try
+    if (bone)
     {
-        auto global = bone->globalTransform();
-        global.setPosition({x,y,z});
-
-        if (const auto parent = dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(bone->parent()))
+        try
         {
-            const auto local = global.local(parent->globalTransform());
-            bone->setLocalTransform(local);
-            return 0;
+            auto global = bone->globalTransform();
+            global.setPosition({x,y,z});
+
+            if (const auto parent = dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(bone->parent()))
+            {
+                const auto local = global.local(parent->globalTransform());
+                bone->setLocalTransform(local);
+                return 0;
+            }
+            if (bone->isRoot())
+            {
+                return SetLocalSkeletonBonePositionC(bone, x, y, z);
+            }
+
+            return 1;
+
         }
-        if (bone->isRoot())
+        catch (const std::exception& e)
         {
-            return SetLocalSkeletonBonePositionC(bone, x, y, z);
+            std::cerr << "Caught exception: " << e.what() << "\n";
         }
-
-        return 1;
-
     }
-    catch (const std::exception&) {}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
     return -1;
 }
 int SetLocalSkeletonBonePositionC(const CALUMI::UNIV::SkeletonBone* bone, float x, float y, float z)
 {
-    if (!bone)
-        return -1;
-
-    try
+    if (bone)
     {
-        auto local = bone->localTransform();
-        local.setPosition({x,y,z});
-        bone->setLocalTransform(local);
-        return 0;
+        try
+        {
+            auto local = bone->localTransform();
+            local.setPosition({x,y,z});
+            bone->setLocalTransform(local);
+            return 0;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch (const std::exception&) {}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
     return -1;
 }
 int SetGlobalSkeletonBoneRotationC(const CALUMI::UNIV::SkeletonBone* bone, float x, float y, float z, float w)
 {
-    if (!bone)
-        return -1;
-
-    try
+    if (bone)
     {
-        auto global = bone->globalTransform();
-        global.setRotation({x,y,z,w});
-
-        if (const auto parent = dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(bone->parent()))
+        try
         {
-            const auto local = global.local(parent->globalTransform());
-            bone->setLocalTransform(local);
-            return 0;
-        }
-        if (bone->isRoot())
-        {
-            return SetLocalSkeletonBoneRotationC(bone, x, y, z, w);
-        }
-        return 1;
+            auto global = bone->globalTransform();
+            global.setRotation({x,y,z,w});
 
+            if (const auto parent = dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(bone->parent()))
+            {
+                const auto local = global.local(parent->globalTransform());
+                bone->setLocalTransform(local);
+                return 0;
+            }
+            if (bone->isRoot())
+            {
+                return SetLocalSkeletonBoneRotationC(bone, x, y, z, w);
+            }
+            return 1;
+
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch (const std::exception&) {}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
     return -1;
 }
 int SetLocalSkeletonBoneRotationC(const CALUMI::UNIV::SkeletonBone* bone, float x, float y, float z, float w)
 {
-    if (!bone)
-        return -1;
-
-    try
+    if (bone)
     {
-        auto local = bone->localTransform();
-        local.setRotation({x,y,z,w});
-        bone->setLocalTransform(local);
-        return 0;
-    }
-    catch (const std::exception&) {}
-    return -1;
-}
-int SetGlobalSkeletonBoneRotationWithEulerC(const CALUMI::UNIV::SkeletonBone* bone, const float rot1, const float rot2,
-    const float rot3, const int eulerOrder)
-{
-    if (!bone)
-        return -1;
-
-    try
-    {
-        auto global = bone->globalTransform();
-        global.setRotation({rot1,rot2,rot3,CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder)});
-
-        if (const auto parent = dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(bone->parent()))
+        try
         {
-            const auto local = global.local(parent->globalTransform());
+            auto local = bone->localTransform();
+            local.setRotation({x,y,z,w});
             bone->setLocalTransform(local);
             return 0;
         }
-        if (bone->isRoot())
+        catch (const std::exception& e)
         {
-            return SetLocalSkeletonBoneRotationWithEulerC(bone, rot1, rot2, rot3, eulerOrder);
+            std::cerr << "Caught exception: " << e.what() << "\n";
         }
-        return 1;
     }
-    catch (const std::exception&) {}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
+    return -1;
+}
+int SetGlobalSkeletonBoneRotationWithEulerC(const CALUMI::UNIV::SkeletonBone* bone, const float rot1, const float rot2, const float rot3, const int eulerOrder)
+{
+    if (bone)
+    {
+        try
+        {
+            auto global = bone->globalTransform();
+            global.setRotation({rot1,rot2,rot3,CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder)});
+
+            if (const auto parent = dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(bone->parent()))
+            {
+                const auto local = global.local(parent->globalTransform());
+                bone->setLocalTransform(local);
+                return 0;
+            }
+            if (bone->isRoot())
+            {
+                return SetLocalSkeletonBoneRotationWithEulerC(bone, rot1, rot2, rot3, eulerOrder);
+            }
+            return 1;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
     return -1;
 }
 int SetLocalSkeletonBoneRotationWithEulerC(const CALUMI::UNIV::SkeletonBone* bone, const float rot1, const float rot2,
     const float rot3, const int eulerOrder)
 {
-    if (!bone)
-        return -1;
-
-    try
+    if (bone)
     {
-        auto local = bone->localTransform();
-        local.setRotation({rot1,rot2,rot3,CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder)});
-        bone->setLocalTransform(local);
-        return 0;
-    }
-    catch (const std::exception&) {}
-    return -1;
-}
-int SetGlobalSkeletonBoneTransformC(const CALUMI::UNIV::SkeletonBone* bone, float posX, float posY, float posZ,
-    float rotX, float rotY, float rotZ, float rotW)
-{
-    if (!bone)
-        return -1;
-
-    try
-    {
-        const auto global = CALUMI::Math::Transform({posX, posY, posZ},{rotX,rotY,rotZ,rotW});
-        if (const auto parent = dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(bone->parent()))
+        try
         {
-            const auto local = global.local(parent->globalTransform());
+            auto local = bone->localTransform();
+            local.setRotation({rot1,rot2,rot3,CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder)});
             bone->setLocalTransform(local);
             return 0;
         }
-        if (bone->isRoot())
+        catch (const std::exception& e)
         {
-            return SetLocalSkeletonBoneTransformC(bone, posX, posY, posZ, rotX, rotY, rotZ, rotW);
+            std::cerr << "Caught exception: " << e.what() << "\n";
         }
-        return 1;
     }
-    catch (const std::exception&) {}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
     return -1;
 }
-
-int SetLocalSkeletonBoneTransformC(const CALUMI::UNIV::SkeletonBone* bone,
-                                   const float posX, const float posY, const float posZ,
-                                   float rotX, float rotY, float rotZ, float rotW)
+int SetGlobalSkeletonBoneTransformC(const CALUMI::UNIV::SkeletonBone* bone, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float rotW)
 {
-    if (!bone)
-        return -1;
-
-    try
+    if (bone)
     {
-        bone->setLocalTransform({posX, posY, posZ},{rotX,rotY,rotZ,rotW});
-        return 0;
-    }
-    catch (const std::exception&) {}
-    return -1;
-}
-
-int SetGlobalSkeletonBoneTransformWithEulerC(const CALUMI::UNIV::SkeletonBone* bone, const float posX, const float posY,
-                           const float posZ, const float rot1, const float rot2, const float rot3, const int eulerOrder)
-{
-    if (!bone)
-        return -1;
-
-    try
-    {
-        const auto global = CALUMI::Math::Transform({posX, posY, posZ},{rot1,rot2,rot3,CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder)});
-        if (const auto parent = dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(bone->parent()))
+        try
         {
-            const auto local = global.local(parent->globalTransform());
-            bone->setLocalTransform(local);
+            const auto global = CALUMI::Math::Transform({posX, posY, posZ},{rotX,rotY,rotZ,rotW});
+            if (const auto parent = dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(bone->parent()))
+            {
+                const auto local = global.local(parent->globalTransform());
+                bone->setLocalTransform(local);
+                return 0;
+            }
+            if (bone->isRoot())
+            {
+                return SetLocalSkeletonBoneTransformC(bone, posX, posY, posZ, rotX, rotY, rotZ, rotW);
+            }
+            return 1;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
+    return -1;
+}
+
+int SetLocalSkeletonBoneTransformC(const CALUMI::UNIV::SkeletonBone* bone, const float posX, const float posY, const float posZ, float rotX, float rotY, float rotZ, float rotW)
+{
+    if (bone)
+    {
+        try
+        {
+            bone->setLocalTransform({posX, posY, posZ},{rotX,rotY,rotZ,rotW});
             return 0;
         }
-        if (bone->isRoot())
+        catch (const std::exception& e)
         {
-            return SetLocalSkeletonBoneTransformWithEulerC(bone, posX, posY, posZ, rot1, rot2, rot3, eulerOrder);
+            std::cerr << "Caught exception: " << e.what() << "\n";
         }
-        return 1;
     }
-    catch (const std::exception&) {}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
     return -1;
 }
 
-int SetLocalSkeletonBoneTransformWithEulerC(const CALUMI::UNIV::SkeletonBone* bone, const float posX, const float posY,
-                           const float posZ, const float rot1, const float rot2, const float rot3, const int eulerOrder)
+int SetGlobalSkeletonBoneTransformWithEulerC(const CALUMI::UNIV::SkeletonBone* bone, const float posX, const float posY, const float posZ, const float rot1, const float rot2, const float rot3, const int eulerOrder)
 {
-    if (!bone)
-        return -1;
-
-    try
+    if (bone)
     {
-        bone->setLocalTransform({posX, posY, posZ},{rot1,rot2,rot3,CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder)});
-        return 0;
+        try
+        {
+            const auto global = CALUMI::Math::Transform({posX, posY, posZ},{rot1,rot2,rot3,CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder)});
+            if (const auto parent = dynamic_cast<const CALUMI::UNIV::SkeletonBone*>(bone->parent()))
+            {
+                const auto local = global.local(parent->globalTransform());
+                bone->setLocalTransform(local);
+                return 0;
+            }
+            if (bone->isRoot())
+            {
+                return SetLocalSkeletonBoneTransformWithEulerC(bone, posX, posY, posZ, rot1, rot2, rot3, eulerOrder);
+            }
+            return 1;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    catch (const std::exception&) {}
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
+    return -1;
+}
+
+int SetLocalSkeletonBoneTransformWithEulerC(const CALUMI::UNIV::SkeletonBone* bone, const float posX, const float posY, const float posZ, const float rot1, const float rot2, const float rot3, const int eulerOrder)
+{
+    if (bone)
+    {
+        try
+        {
+            bone->setLocalTransform({posX, posY, posZ},{rot1,rot2,rot3,CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder)});
+            return 0;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
+    }
+
     return -1;
 }
 int SetSkeletonBoneParentC(const CALUMI::UNIV::SkeletonBone* bone, const CALUMI::UNIV::SkeletonBone* boneParent)
 {
-    if (!bone || !boneParent)
-        return -1;
-
-    try
+    if (!bone)
     {
-        return bone->setParentBone(*boneParent) ? 0 : 1;
+        std::cerr << std::source_location::current().function_name() << " bone argument is nullptr\n";
     }
-    catch (const std::exception&) {}
+    else if (!boneParent)
+    {
+        std::cerr << std::source_location::current().function_name() << " boneParent argument is nullptr\n";
+    }
+    else
+    {
+        try
+        {
+            return bone->setParentBone(*boneParent) ? 0 : 1;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+
     return -1;
 }
 

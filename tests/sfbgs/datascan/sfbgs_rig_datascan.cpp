@@ -77,13 +77,13 @@ protected:
 		if (!std::filesystem::is_directory(SFBGS_Data::get().dataPath))
 			GTEST_SKIP() << "Data Path Is Not Directory";
 
-		std::cout << "--- STARFIELD RIG SCAN STARTING ---" << std::endl;
+		std::cout << "--- STARFIELD RIG SCAN STARTING ---\n";
 	}
 
 	static void TearDownTestSuite()
 	{
 		if (ShouldRunScans)
-			std::cout << "--- STARFIELD RIG SCAN COMPLETE ---" << std::endl;
+			std::cout << "--- STARFIELD RIG SCAN COMPLETE ---\n";
 	}
 };
 
@@ -95,7 +95,7 @@ GTEST(RigScan)
 	uint64_t filesUnexpected = 0;
 	std::filesystem::path meshesPath = SFBGS_Data::get().dataPath.string() + "/meshes";
 
-	std::cout << "\tScanning " << _YELLOW(meshesPath.string()) << " for .rig files" << std::endl;
+	std::cout << "\tScanning " << _YELLOW(meshesPath.string()) << " for .rig files\n";
 
 	for (const auto& entry : std::filesystem::recursive_directory_iterator(meshesPath))
 	{
@@ -193,8 +193,8 @@ GTEST(RigScan)
 				
 				if (rig.boneEntries().at(bIdx).nameOffset() != rig.stringArray().offset(bIdx))
 				{
-					std::cout << "Rig Bone Offset: " << rig.boneEntries().at(bIdx).nameOffset() << std::endl;
-					std::cout << "String Offset: " << rig.stringArray().offset(bIdx) << std::endl;
+					std::cout << "Rig Bone Offset: " << rig.boneEntries().at(bIdx).nameOffset() << "\n";
+					std::cout << "String Offset: " << rig.stringArray().offset(bIdx) << "\n";
 					status.flags.stringArrayMisalignedToBones = true;
 				}
 
@@ -208,71 +208,66 @@ GTEST(RigScan)
 
 		filesUnexpected++;
 
-		ADD_FAILURE() << "\t" << _YELLOW(entry.path().string()) << std::endl;
+		ADD_FAILURE() << "\t" << _YELLOW(entry.path().string()) << "\n";
 
 		if (status.flags.wrongVersion)
-			std::cout << "\tUNKNOWN VERSION: " << _BRED(rig.versionNumber()) << std::endl;
+			std::cout << "\tUNKNOWN VERSION: " << _BRED(rig.versionNumber()) << "\n";
 
 		if (status.flags.wrongFileSize)
 			std::cout << "\tINCORRECT FILE SIZE: " << _BRED(rig.fileSize()) << " EXPECTED: " << _YELLOW
-		(std::filesystem::file_size(entry)) << std::endl;
+		(std::filesystem::file_size(entry)) << "\n";
 
 		if (status.flags.wrongHeaderSize)
-			std::cout << "\tINCORRECT HEADER SIZE: " << _BRED(rig.headerSize()) << " EXPECTED: " << _YELLOW(0x50) <<
-				std::endl;
+			std::cout << "\tINCORRECT HEADER SIZE: " << _BRED(rig.headerSize()) << " EXPECTED: " << _YELLOW(0x50) << "\n";
 
 		if (status.flags.nonEmptyPadding01)
-			std::cout << "\tNON EMPTY PADDING 01: " << status.flags.nonEmptyPadding01 << " 02: " << status.flags
-		.nonEmptyPadding02 << " 03: " << status.flags.nonEmptyPadding03 << std::endl;
+			std::cout << "\tNON EMPTY PADDING 01: " << status.flags.nonEmptyPadding01 << " 02: " << status.flags.nonEmptyPadding02 << " 03: " << status.flags.nonEmptyPadding03 << "\n";
 
 		if (status.flags.wrongMatchingThree)
-			std::cout << "\tMATCHING THREE ERROR: " << rig.matchingThree().at(0) << ", " << rig.matchingThree().at(1)
-		<< ", " << rig.matchingThree().at(2) << std::endl;
+			std::cout << "\tMATCHING THREE ERROR: " << rig.matchingThree().at(0) << ", " << rig.matchingThree().at(1)<< ", " << rig.matchingThree().at(2) << "\n";
 
 		if (status.flags.wrongBoneCountAnimated)
-			std::cout << "\tBONE COUNT [ANIMATED]: SIZE NOT EXPECTED" << std::endl;
+			std::cout << "\tBONE COUNT [ANIMATED]: SIZE NOT EXPECTED\n";
 
 		if (status.flags.boneCountLessThanAnimated)
-			std::cout << "\tBONE COUNT LESS THAN BONE COUNT [ANIMATED]: " << rig.boneCount() << " < " << rig
-		.boneCountAnimated() << std::endl;
+			std::cout << "\tBONE COUNT LESS THAN BONE COUNT [ANIMATED]: " << rig.boneCount() << " < " << rig.boneCountAnimated() << "\n";
 
 		if (status.flags.unknownPrecisionSet)
-			std::cout << "\tUNKNOWN PRECISION SET: (high) " << rig.highPrecision() << " and (low) " << rig
-		.lowPrecision() << std::endl;
+			std::cout << "\tUNKNOWN PRECISION SET: (high) " << rig.highPrecision() << " and (low) " << rig.lowPrecision() << "\n";
 
 		if (status.flags.stringCountMisMatch)
-			std::cout << "\tString Count Mismatch! String Array Size of " << rig.stringArray().size() << " != Bone Entry Size of " << rig.boneEntries().size() << std::endl;
+			std::cout << "\tString Count Mismatch! String Array Size of " << rig.stringArray().size() << " != Bone Entry Size of " << rig.boneEntries().size() << "\n";
 
 		if (status.flags.stringArrayOutOfOrder)
-			std::cout << "\tString Offsets OUT OF ORDER from Bone Entries!" << std::endl;
+			std::cout << "\tString Offsets OUT OF ORDER from Bone Entries!\n";
 
 		if (status.flags.stringArrayMisalignedToBones)
-			std::cout << "\tString Array NOT in the same order as Bone Entries!" << std::endl;
+			std::cout << "\tString Array NOT in the same order as Bone Entries!\n";
 
 		if (status.flags.twistBoneHasNegativeInfluence)
-			std::cout << _CYAN("\tTwist Bone Type") << " has negative influence index!" << std::endl;
+			std::cout << _CYAN("\tTwist Bone Type") << " has negative influence index!\n";
 
 		if (status.flags.negativeTwistOnHigherIndex)
-			std::cout << "\tTwist Weight is negative float on index greater than bone!" << std::endl;
+			std::cout << "\tTwist Weight is negative float on index greater than bone!\n";
 
 		if (status.flags.defaultBoneTypeHasValues)
-			std::cout << _CYAN("\tDefault Bone Type") << " has non default values!" << std::endl;
+			std::cout << _CYAN("\tDefault Bone Type") << " has non default values!\n";
 
 		if (status.flags.unkBoneType)
-			std::cout << _BMAGENTA("\tUnknown Bone Type") << "!" << std::endl;
+			std::cout << _BMAGENTA("\tUnknown Bone Type") << "!\n";
 
 		if (status.flags.lodEnumAbove5)
-			std::cout << _BRED("\tLod on Bone above 5 or below 0!") << std::endl;
+			std::cout << _BRED("\tLod on Bone above 5 or below 0!") << "\n";
 
 		if (status.flags.lodGreaterOnChild)
-			std::cout << _BRED("\tChild LOD") << " Greater than " << _BRED("Parent LOD") << std::endl;
+			std::cout << _BRED("\tChild LOD") << " Greater than " << _BRED("Parent LOD") << "\n";
 
 	}
 
 	//====================================== End File Loop ===================================================
 
-	std::cout << "\tFILES FOUND: " << _BMAGENTA(filesFound) << std::endl;
-	std::cout << "\tFILES SCANNED: " << _GREEN(filesScanned) << std::endl;
+	std::cout << "\tFILES FOUND: " << _BMAGENTA(filesFound) << "\n";
+	std::cout << "\tFILES SCANNED: " << _GREEN(filesScanned) << "\n";
 	const std::string incAssumption = filesUnexpected == 0 ? _GREEN(filesUnexpected).c_str() : _BRED(filesUnexpected).c_str();
-	std::cout << "\tFILES WITH INCORRECT ASSUMPTIONS: " << incAssumption << std::endl;
+	std::cout << "\tFILES WITH INCORRECT ASSUMPTIONS: " << incAssumption << "\n";
 }

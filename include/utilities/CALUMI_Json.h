@@ -55,7 +55,7 @@ namespace CALUMI::Utilities
         JsonValue(JsonValue&& input) noexcept;
         ~JsonValue();
 
-        VarType varType() const;
+        [[nodiscard]] VarType varType() const;
 
         bool toBool(bool defaultValue = false, bool* ok = nullptr) const;
         float toFloat(float defaultValue = 0.0f, bool* ok = nullptr) const;
@@ -73,7 +73,7 @@ namespace CALUMI::Utilities
         JsonObject toObject(bool* ok = nullptr) const;
         JsonArray toArray(bool* ok = nullptr) const;
 
-        StringContainer serialize(unsigned int indentOffset = 0, bool raw = false) const;
+        [[nodiscard]] StringContainer serialize(unsigned int indentOffset = 0, bool raw = false) const;
 
         JsonValue& operator=(const JsonValue& input);
         JsonValue& operator=(JsonValue&& input) noexcept;
@@ -100,9 +100,9 @@ namespace CALUMI::Utilities
         JsonValue& operator[](const char* key) const;
 
         bool contains(const char* key) const;
-        StringList keys() const;
+        [[nodiscard]] StringList keys() const;
 
-        StringContainer serialize(unsigned int indentOffset = 0, bool raw = false) const;
+        [[nodiscard]] StringContainer serialize(unsigned int indentOffset = 0, bool raw = false) const;
 
         static JsonObject Deserialize(const char* input);
 

@@ -14,6 +14,7 @@
 #include <iostream>
 #include <ostream>
 #include <set>
+#include <source_location>
 #include <string>
 
 #include "internalplatform.h"
@@ -287,7 +288,8 @@ namespace CALUMI::SFBGS
     {
         if (index < 0 || index >= pImpl->m_amendedBlocks.size())
         {
-            throw std::out_of_range("SFBGS_AnimationPackage::amendedBlockHash was given an index of: " + std::to_string(index) + " while the container indices are 0 to " + std::to_string(pImpl->m_amendedBlocks.size()));
+            std::string containerCondition = pImpl->m_amendedBlocks.empty() ? "is empty" : pImpl->m_amendedBlocks.size() == 1 ? "only has index 0" : std::format("only has indices 0 through {}",pImpl->m_amendedBlocks.size() - 1);
+            throw std::out_of_range(std::format("{} was given an index of: {} while the container {}", std::source_location::current().function_name(), index, containerCondition));
         }
 
         return pImpl->m_amendedBlocks.at(index).first;
@@ -345,7 +347,7 @@ namespace CALUMI::SFBGS
             return *pkg;
         }
 
-        throw std::runtime_error("SFBGS_AnimationPackage::GetPackage() could not find nor add animation package.");
+        throw std::runtime_error(std::format("{} {}", std::source_location::current().function_name(), "could not find nor add animation package."));
     }
 }
 
@@ -354,11 +356,20 @@ namespace CALUMI::SFBGS
 int SFBGSAnimationPackage_AddPackageToAnimationC(const CALUMI::UNIV::Animation* animation, const bool overwrite)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::AddPackage(*animation, overwrite) ? 0 : 1;
         }
-        catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -366,11 +377,20 @@ int SFBGSAnimationPackage_AddPackageToAnimationC(const CALUMI::UNIV::Animation* 
 int SFBGSAnimationPackage_RemovePackageFromAnimationC(const CALUMI::UNIV::Animation* animation)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::RemovePackage(*animation) ? 0 : 1;
         }
-        catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -378,11 +398,20 @@ int SFBGSAnimationPackage_RemovePackageFromAnimationC(const CALUMI::UNIV::Animat
 int SFBGSAnimationPackage_HasAmendedBlockC(const CALUMI::UNIV::Animation* animation, const char* name)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).hasAmendedBlock(name) ? 1 : 0;
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -390,11 +419,20 @@ int SFBGSAnimationPackage_HasAmendedBlockC(const CALUMI::UNIV::Animation* animat
 int SFBGSAnimationPackage_HasAmendedBlockHashC(const CALUMI::UNIV::Animation* animation, const uint32_t hash)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).hasAmendedBlock(hash) ? 1 : 0;
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -402,11 +440,20 @@ int SFBGSAnimationPackage_HasAmendedBlockHashC(const CALUMI::UNIV::Animation* an
 CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockC(const CALUMI::UNIV::Animation* animation, const int index)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).amendedBlock(index);
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return nullptr;
 }
@@ -414,12 +461,21 @@ CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockC(const CALUM
 CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockHashC(const CALUMI::UNIV::Animation* animation, const uint32_t hash)
 {
     if (animation)
+    {
         try
         {
             const auto& pkg = CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation);
             return pkg.amendedBlock(pkg.findAmendedBlock(hash));
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return nullptr;
 }
@@ -427,12 +483,21 @@ CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockHashC(const C
 CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockNameC(const CALUMI::UNIV::Animation* animation, const char* name)
 {
     if (animation)
+    {
         try
         {
             const auto& pkg = CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation);
             return pkg.amendedBlock(pkg.findAmendedBlock(name));
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return nullptr;
 }
@@ -440,13 +505,19 @@ CALUMI::UNIV::AnimationBlock* SFBGSAnimationPackage_GetAmendedBlockNameC(const C
 int64_t SFBGSAnimationPackage_GetAmendedBlockHashFromIndexC(const CALUMI::UNIV::Animation* animation, const int index)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).amendedBlockHash(index);
         }
-    catch (std::exception& e)
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\nReturning hash key may not be valid.\n";
+        }
+    }
+    else
     {
-        std::cerr << "Caught exception: " << e.what() << "\nReturning hash key may not be valid.\n";
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
     }
 
     return -1;
@@ -455,12 +526,21 @@ int64_t SFBGSAnimationPackage_GetAmendedBlockHashFromIndexC(const CALUMI::UNIV::
 const char* SFBGSAnimationPackage_GetAmendedBlockNameFromIndexC(const CALUMI::UNIV::Animation* animation, const int index)
 {
     if (animation)
+    {
         try
         {
             const auto hash = CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).amendedBlockHash(index);
             return CALUMI::Utilities::HashRegistry::Get().knownHashString(hash);
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return nullptr;
 }
@@ -468,11 +548,20 @@ const char* SFBGSAnimationPackage_GetAmendedBlockNameFromIndexC(const CALUMI::UN
 int SFBGSAnimationPackage_GetAmendedBlockCountC(const CALUMI::UNIV::Animation* animation)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).amendedBlockCount();
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -480,13 +569,22 @@ int SFBGSAnimationPackage_GetAmendedBlockCountC(const CALUMI::UNIV::Animation* a
 int SFBGSAnimationPackage_OverrideRigWithDefaultPrecisionC(const CALUMI::UNIV::Animation* animation)
 {
     if (animation)
+    {
         try
         {
             CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).overrideRigPrecision(
                                                             CALUMI::SFBGS::PrecisionSet::DefaultPrecision());
             return 0;
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -494,13 +592,22 @@ int SFBGSAnimationPackage_OverrideRigWithDefaultPrecisionC(const CALUMI::UNIV::A
 int SFBGSAnimationPackage_OverrideRigWith1stPersonPrecisionC(const CALUMI::UNIV::Animation* animation)
 {
     if (animation)
+    {
         try
         {
             CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).overrideRigPrecision(
                                                             CALUMI::SFBGS::PrecisionSet::FirstPersonPrecision());
             return 0;
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -508,13 +615,21 @@ int SFBGSAnimationPackage_OverrideRigWith1stPersonPrecisionC(const CALUMI::UNIV:
 int SFBGSAnimationPackage_OverrideRigWithShipPrecisionC(const CALUMI::UNIV::Animation * animation)
 {
     if (animation)
+    {
         try
         {
-            CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).overrideRigPrecision(
-                                                            CALUMI::SFBGS::PrecisionSet::ShipPrecision());
+            CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).overrideRigPrecision(CALUMI::SFBGS::PrecisionSet::ShipPrecision());
             return 0;
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -522,13 +637,21 @@ int SFBGSAnimationPackage_OverrideRigWithShipPrecisionC(const CALUMI::UNIV::Anim
 int SFBGSAnimationPackage_OverrideRigWithCustomPrecisionC(const CALUMI::UNIV::Animation* animation, const float custom1, const float custom2)
 {
     if (animation)
+    {
         try
         {
-            CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).overrideRigPrecision(
-                                                            CALUMI::SFBGS::PrecisionSet(custom1, custom2));
+            CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).overrideRigPrecision(CALUMI::SFBGS::PrecisionSet(custom1, custom2));
             return 0;
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -536,11 +659,20 @@ int SFBGSAnimationPackage_OverrideRigWithCustomPrecisionC(const CALUMI::UNIV::An
 float SFBGSAnimationPackage_GetOverridePrecisionHighC(const CALUMI::UNIV::Animation* animation)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).overridePrecisionSet().high();
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return std::numeric_limits<float>::quiet_NaN();
 }
@@ -548,11 +680,20 @@ float SFBGSAnimationPackage_GetOverridePrecisionHighC(const CALUMI::UNIV::Animat
 float SFBGSAnimationPackage_GetOverridePrecisionLowC(const CALUMI::UNIV::Animation* animation)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).overridePrecisionSet().low();
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return std::numeric_limits<float>::quiet_NaN();
 }
@@ -560,35 +701,65 @@ float SFBGSAnimationPackage_GetOverridePrecisionLowC(const CALUMI::UNIV::Animati
 const char* SFBGSAnimationPackage_GetPrecisionSet(const CALUMI::UNIV::Animation* animation)
 {
     if (animation)
+    {
         try
         {
             const auto& pkg = CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation);
             return pkg.usesRigForPrecision() ? "Follows Rig" : pkg.overridePrecisionSet().precisionType();
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
+
     return nullptr;
 }
 
 int SFBGSAnimationPackage_UsesRigPrecision(const CALUMI::UNIV::Animation* animation)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).usesRigForPrecision() ? 1 : 0;
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
+
     return -1;
 }
 
 int SFBGSAnimationPackage_ResetPrecision(const CALUMI::UNIV::Animation* animation)
 {
     if (animation)
+    {
         try
         {
             CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).resetPrecision();
             return 0;
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
+
     return -1;
 }
 
@@ -596,11 +767,21 @@ int SFBGSAnimationPackage_AddAmendedBlockWithNameC(const CALUMI::UNIV::Animation
     CALUMI::UNIV::AnimationBlock* block, const bool overwrite)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).addAmendedBlock(*block, overwrite) ? 0 : 1;
         }
-        catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
+
     return -1;
 }
 
@@ -608,22 +789,41 @@ int SFBGSAnimationPackage_AddAmendedBlockWithHashC(const CALUMI::UNIV::Animation
     const CALUMI::UNIV::AnimationBlock* block, const bool overwrite)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).addAmendedBlock(hash, *block, overwrite) ? 0 : 1;
         }
-        catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
+
     return -1;
 }
 
 int SFBGSAnimationPackage_RemoveAmendedBlockWithNameC(const CALUMI::UNIV::Animation* animation, const char* name)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).removeAmendedBlock(name) ? 0 : 1;
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -631,11 +831,20 @@ int SFBGSAnimationPackage_RemoveAmendedBlockWithNameC(const CALUMI::UNIV::Animat
 int SFBGSAnimationPackage_RemoveAmendedBlockWithHashC(const CALUMI::UNIV::Animation* animation, const uint32_t hash)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).removeAmendedBlock(hash) ? 0 : 1;
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -643,12 +852,21 @@ int SFBGSAnimationPackage_RemoveAmendedBlockWithHashC(const CALUMI::UNIV::Animat
 int SFBGSAnimationPackage_RemoveAmendedBlockWithIndexC(const CALUMI::UNIV::Animation* animation, const uint16_t index)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).removeAmendedBlockUsingIndex(index)
             ? 0 : 1;
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -656,11 +874,20 @@ int SFBGSAnimationPackage_RemoveAmendedBlockWithIndexC(const CALUMI::UNIV::Anima
 int SFBGSAnimationPackage_HasAmendedBlockWithNameC(const CALUMI::UNIV::Animation* animation, const char* name)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).hasAmendedBlock(name) ? 1 : 0;
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -668,11 +895,20 @@ int SFBGSAnimationPackage_HasAmendedBlockWithNameC(const CALUMI::UNIV::Animation
 int SFBGSAnimationPackage_HasAmendedBlockWithHashC(const CALUMI::UNIV::Animation* animation, const uint32_t hash)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).hasAmendedBlock(hash) ? 1 : 0;
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -680,11 +916,20 @@ int SFBGSAnimationPackage_HasAmendedBlockWithHashC(const CALUMI::UNIV::Animation
 int SFBGSAnimationPackage_FindAmendedBlockWithNameC(const CALUMI::UNIV::Animation* animation, const char* name)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).findAmendedBlock(name);
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -692,11 +937,20 @@ int SFBGSAnimationPackage_FindAmendedBlockWithNameC(const CALUMI::UNIV::Animatio
 int SFBGSAnimationPackage_FindAmendedBlockWithHashC(const CALUMI::UNIV::Animation* animation, const uint32_t hash)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).findAmendedBlock(hash);
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -704,11 +958,20 @@ int SFBGSAnimationPackage_FindAmendedBlockWithHashC(const CALUMI::UNIV::Animatio
 int SFBGSAnimationPackage_SetSkippedBoneC(const CALUMI::UNIV::Animation* animation, const char* name, const bool skip)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).setSkippedBone(name, skip);
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -716,22 +979,37 @@ int SFBGSAnimationPackage_SetSkippedBoneC(const CALUMI::UNIV::Animation* animati
 int SFBGSAnimationPackage_SkippedBoneCountC(const CALUMI::UNIV::Animation* animation)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).skippedBoneCount();
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+
     return -1;
 }
 
 int SFBGSAnimationPackage_HasSkippedBoneC(const CALUMI::UNIV::Animation* animation, const char* name)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).hasSkippedBone(name);
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -739,11 +1017,20 @@ int SFBGSAnimationPackage_HasSkippedBoneC(const CALUMI::UNIV::Animation* animati
 const char* SFBGSAnimationPackage_SkippedBoneNameC(const CALUMI::UNIV::Animation* animation, const int index)
 {
     if (animation)
+    {
         try
         {
             return CALUMI::SFBGS::SFBGS_AnimationPackage::GetPackage(*animation).skippedBone(index);
         }
-    catch (std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
+    }
 
     return nullptr;
 }

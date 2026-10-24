@@ -12,6 +12,8 @@
 #include "internalplatform.h"
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
 
+//TODO: ERROR HANDLING IN EXTERN C
+
 namespace CALUMI::UNIV
 {
     struct RigManifestPackage::Impl

@@ -19,7 +19,7 @@
 
 namespace CALUMI::Utilities
 {
-    std::string s_RemoveWhiteSpaces(std::string&& text)
+    static std::string s_RemoveWhiteSpaces(std::string&& text)
     {
         std::string output;
         bool inString = false;
@@ -43,7 +43,7 @@ namespace CALUMI::Utilities
         return output;
     }
 
-    std::string s_GetScope(std::string&& text)
+    static std::string s_GetScope(std::string&& text)
     {
         std::string output;
 
@@ -103,7 +103,7 @@ namespace CALUMI::Utilities
                      float, double,
                      bool,
                      JsonObject, JsonArray> m_value;
-        std::string m_stringHolder = "";
+        std::string m_stringHolder;
     };
 
     JsonValue::JsonValue() : pImpl(new Impl()) {}
@@ -359,9 +359,7 @@ namespace CALUMI::Utilities
                     return pImpl->m_stringHolder.c_str();
                 }
             case VarType::JsonObject:
-                break;
             case VarType::JsonArray:
-                break;
             default:
                 break;
             }
@@ -614,7 +612,7 @@ namespace CALUMI::Utilities
         if (ok)
             *ok = false;
 
-        return JsonObject();
+        return {};
     }
 
     JsonArray JsonValue::toArray(bool* ok) const
@@ -631,7 +629,7 @@ namespace CALUMI::Utilities
         if (ok)
             *ok = false;
 
-        return JsonArray();
+        return {};
     }
 
     JsonValue& JsonValue::operator=(const JsonValue& input)
@@ -657,13 +655,13 @@ namespace CALUMI::Utilities
         const std::string text = s_RemoveWhiteSpaces(input);
 
         if (SCOMPARE(text.c_str(), "null") == 0 || text.empty())
-            return JsonValue();
+            return {};
 
         if (SCOMPARE(text.c_str(), "true") == 0)
-            return JsonValue(true);
+            return {true};
 
         if (SCOMPARE(text.c_str(), "false") == 0)
-            return JsonValue(false);
+            return {false};
 
         if (*text.begin() == '{' && text.back() == '}')
             return JsonObject::Deserialize(s_GetScope(text.c_str()).c_str());
@@ -690,7 +688,7 @@ namespace CALUMI::Utilities
         {
             try
             {
-                const double dVal = std::stod(text.c_str());
+                const double dVal = std::stod(text);
                 return dVal;
             }
             catch ( const std::exception&) {}
@@ -700,7 +698,7 @@ namespace CALUMI::Utilities
         {
             try
             {
-                const int64_t iVal = std::stoll(text.c_str());
+                const int64_t iVal = std::stoll(text);
                 // ReSharper disable once CppRedundantCastExpression
                 return static_cast<signed long long>(iVal);
             }
@@ -709,7 +707,7 @@ namespace CALUMI::Utilities
 
         try
         {
-            const uint64_t uVal = std::stoull(text.c_str());
+            const uint64_t uVal = std::stoull(text);
             // ReSharper disable once CppRedundantCastExpression
             return static_cast<unsigned long long>(uVal);
         }
@@ -717,7 +715,7 @@ namespace CALUMI::Utilities
         {}
 
 
-        return JsonValue();
+        return {};
     }
 
     JsonArray JsonValue::DeserializeArray(const char* input)
@@ -839,40 +837,40 @@ namespace CALUMI::Utilities
         switch (varType())
             {
             case VarType::Char:
-                output += std::format("{}", toChar()).c_str();
+                output += std::format("{}", toChar());
                 break;
             case VarType::String:
-                output += std::format(R"("{}")", toString()).c_str();
+                output += std::format(R"("{}")", toString());
                 break;
             case VarType::Int8:
-                output += std::format("{}", toInt8()).c_str();
+                output += std::format("{}", toInt8());
                 break;
             case VarType::UInt8:
-                output += std::format("{}", toUInt8()).c_str();
+                output += std::format("{}", toUInt8());
                 break;
             case VarType::Int16:
-                output += std::format("{}", toInt16()).c_str();
+                output += std::format("{}", toInt16());
                 break;
             case VarType::UInt16:
-                output += std::format("{}", toUInt16()).c_str();
+                output += std::format("{}", toUInt16());
                 break;
             case VarType::Int32:
-                output += std::format("{}", toInt()).c_str();
+                output += std::format("{}", toInt());
                 break;
             case VarType::UInt32:
-                output += std::format("{}", toUInt()).c_str();
+                output += std::format("{}", toUInt());
                 break;
             case VarType::Int64:
-                output += std::format("{}", toInt64()).c_str();
+                output += std::format("{}", toInt64());
                 break;
             case VarType::UInt64:
-                output += std::format("{}", toUInt64()).c_str();
+                output += std::format("{}", toUInt64());
                 break;
             case VarType::Float:
-                output += std::format("{}", toFloat()).c_str();
+                output += std::format("{}", toFloat());
                 break;
             case VarType::Double:
-                output += std::format("{}", toDouble()).c_str();
+                output += std::format("{}", toDouble());
                 break;
             case VarType::Bool:
                 output += toBool() ? "true" : "false";
@@ -882,7 +880,7 @@ namespace CALUMI::Utilities
                 break;
             case VarType::JsonArray:
                 {
-                    output += "[";
+                    output += '[';
 
                     uint64_t count = 0;
                     for (const auto arrayCopy = toArray(); const auto& entry : arrayCopy.pImpl->vector)
@@ -891,7 +889,7 @@ namespace CALUMI::Utilities
                         output += newline + indent + entry.serialize(indentOffset + 1, raw).c_str();
 
                         if (count < arrayCopy.pImpl->vector.size())
-                            output += ",";
+                            output += ',';
                     }
                     output += newline + "]";
                     break;
@@ -929,14 +927,14 @@ namespace CALUMI::Utilities
             output += value.serialize(indentOffset + 1, raw).c_str();
 
             if (keyCount < pImpl->m_values.size())
-                output += ",";
+                output += ',';
         }
 
         if (!raw && indentOffset > 0)
             newline.pop_back();
 
         output += newline;
-        output += "}";
+        output += '}';
 
         return output.c_str();
     }

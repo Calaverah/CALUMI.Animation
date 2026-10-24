@@ -703,7 +703,7 @@ namespace CALUMI::SFBGS
 #ifdef DEBUG_BUILD
 		//WARN IF FILE SIZE VAR != BUFFER
 		if (pImpl->m_fileSize != buffer.size())
-			std::cout << std::format("WARNING: THE VARIABLE, FILE SIZE = {} DOES NOT MATCH THE BUFFER SIZE OF {}", pImpl->m_fileSize, buffer.size()).c_str() << std::endl;
+			std::cout << std::format("WARNING: THE VARIABLE, FILE SIZE = {} DOES NOT MATCH THE BUFFER SIZE OF {}\n", pImpl->m_fileSize, buffer.size()).c_str();
 #endif
 
 		//READ BONE ENTRIES IN ORDER
@@ -740,13 +740,13 @@ namespace CALUMI::SFBGS
 #ifdef DEBUG_BUILD
 		if (buffer.size() != addressIndex)
 		{
-			std::cout << std::format("===========================================================").c_str() << std::endl;
-			std::cout << std::format("===========================================================").c_str() << std::endl;
-			std::cout << std::format("==WARNING CURRENT BUFFER ADDRESS IS NOT AT FINAL POSITION==").c_str() << std::endl;
-			std::cout << std::format("BUFFER  SIZE: {}", buffer.size()).c_str() << std::endl;
-			std::cout << std::format("BUFFER START: {}", static_cast<void*>(buffer.data())).c_str() << std::endl;
-			std::cout << std::format("Size+Start: {}", static_cast<void*>(buffer.size() + buffer.data())). c_str() << std::endl;
-			std::cout << std::format("===========================================================").c_str() << std::endl;
+			std::cout << "===========================================================\n";
+			std::cout << "===========================================================\n";
+			std::cout << "==WARNING CURRENT BUFFER ADDRESS IS NOT AT FINAL POSITION==\n";
+			std::cout << std::format("BUFFER  SIZE: {}\n", buffer.size()).c_str();
+			std::cout << std::format("BUFFER START: {}\n", static_cast<void*>(buffer.data())).c_str();
+			std::cout << std::format("Size+Start: {}\n", static_cast<void*>(buffer.size() + buffer.data())). c_str();
+			std::cout << "===========================================================\n";
 		}
 #endif
 
@@ -843,12 +843,12 @@ namespace CALUMI::SFBGS
 #ifdef DEBUG_BUILD
 		if (pImpl->m_fileSize != addressIndex)
 		{
-			std::cout << std::format("===========================================================").c_str() << std::endl;
-			std::cout << std::format("===========================================================").c_str() << std::endl;
-			std::cout << std::format("==WARNING CURRENT BUFFER ADDRESS IS NOT AT FINAL POSITION==").c_str() << std::endl;
-			std::cout << std::format("BUFFER  SIZE: {}", buffer.size()).c_str() << std::endl;
-			std::cout << std::format("FILE  SIZE: {}", pImpl->m_fileSize).c_str() << std::endl;
-			std::cout << std::format("===========================================================").c_str() << std::endl;
+			std::cout << "===========================================================\n";
+			std::cout << "===========================================================\n";
+			std::cout << "==WARNING CURRENT BUFFER ADDRESS IS NOT AT FINAL POSITION==\n";
+			std::cout << std::format("BUFFER  SIZE: {}\n", buffer.size()).c_str();
+			std::cout << std::format("FILE  SIZE: {}\n", pImpl->m_fileSize).c_str();
+			std::cout << "===========================================================\n";
 		}
 #endif
 

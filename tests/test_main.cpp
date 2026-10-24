@@ -10,7 +10,7 @@ int main (int argc, char** argv)
         if (SCOMPARE(argv[i], "--scans") == 0)
         {
             ShouldRunScans = true;
-            std::cout << "--Run Scans Arg Found" << std::endl;
+            std::cout << "--Run Scans Arg Found\n";
         }
     }
     return RUN_ALL_TESTS();

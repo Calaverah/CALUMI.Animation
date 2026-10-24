@@ -11,6 +11,9 @@
 #include <filesystem>
 #include <cctype>
 #include <cstdint>
+#include <iostream>
+#include <source_location>
+
 #include "internal/internalvectordef.h"
 
 namespace CALUMI::Utilities
@@ -620,17 +623,35 @@ namespace CALUMI::Utilities
 
 CALUMI::Utilities::StringContainer* CreateStringContainerC()
 {
-	return new CALUMI::Utilities::StringContainer();
+	try
+	{
+		return new CALUMI::Utilities::StringContainer();
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Caught exception: " << e.what() << "\n";
+		std::cout << "String container could not be created\n";
+		return nullptr;
+	}
 }
 
 const char* GetStringFromContainerC(const CALUMI::Utilities::StringContainer* source)
 {
 	if (source)
+	{
 		try
 		{
 			return source->c_str();
 		}
-		catch ( std::bad_alloc& ) {}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
 
 	return nullptr;
 }
@@ -638,23 +659,45 @@ const char* GetStringFromContainerC(const CALUMI::Utilities::StringContainer* so
 uint64_t GetStringContainerSizeC(const CALUMI::Utilities::StringContainer* source)
 {
 	if (source)
+	{
 		try
 		{
 			return source->length();
 		}
-	catch ( std::bad_alloc& ){}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
 
 	return 0;
 }
 
 void DeleteStringContainerC(const CALUMI::Utilities::StringContainer** ptr)
 {
-	if (ptr && *ptr)
+	if (!ptr)
+	{
+		std::cerr << std::source_location::current().function_name() << " ptr argument is nullptr\n";
+	}
+	else if (!*ptr)
+	{
+		std::cerr << std::source_location::current().function_name() << " *ptr argument is nullptr\n";
+	}
+	else
+	{
 		try
 		{
 			delete *ptr;
 			*ptr = nullptr;
 		}
-		catch ( std::bad_alloc& ){}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
 }
 #pragma endregion

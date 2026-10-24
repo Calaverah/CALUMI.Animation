@@ -6,9 +6,11 @@
 #include <algorithm>
 #include <AnimStarfield>
 #include <cmath>
+#include <iostream>
 
 #include "internalplatform.h"
 #include <ranges>
+#include <source_location>
 #include <string>
 #include <unordered_map>
 
@@ -466,7 +468,6 @@ namespace CALUMI::SFBGS
 				pImpl->m_boneLODs.erase(key);
 				break;
 			}
-
 		}
 
 		return true;
@@ -478,33 +479,60 @@ namespace CALUMI::SFBGS
 	int SFBGSRigPackage_AddPackageToSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig, const bool overwrite)
 	{
 		if (rig)
+		{
 			try
 			{
 				return CALUMI::SFBGS::SFBGS_RigPackage::AddPackage(*rig, overwrite) ? 0 : 1;
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return -1;
 	}
 	int SFBGSRigPackage_RemoveRigPackageFromSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig)
 	{
 		if (rig)
+		{
 			try
 			{
 				return CALUMI::SFBGS::SFBGS_RigPackage::RemovePackage(*rig) ? 0 : 1;
 			}
-			catch ( const std::exception&){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 		return -1;
 	}
 
 	int SFBGSRigPackage_BoneIsMappedC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName)
 	{
 		if (rig)
+		{
 			try
 			{
 				return CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).boneIsMapped(boneName) ? 1 : 0;
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return -1;
 	}
@@ -512,11 +540,20 @@ namespace CALUMI::SFBGS
 	int SFBGSRigPackage_KeyIsMappedC(const CALUMI::UNIV::SkeletonRig* rig, uint8_t key)
 	{
 		if (rig)
+		{
 			try
 			{
 				return CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).keyIsMapped(static_cast<CALUMI::SFBGS::SFBGS_RigPackage::BoneMapKey>(key)) ? 1 : 0;
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return -1;
 	}
@@ -524,11 +561,20 @@ namespace CALUMI::SFBGS
 	int SFBGSRigPackage_AddBoneNameToMapC(const CALUMI::UNIV::SkeletonRig* rig, uint8_t key, const char* boneName, const bool overwrite)
 	{
 		if (rig)
+		{
 			try
 			{
 				return CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).addBoneToMap(static_cast<CALUMI::SFBGS::SFBGS_RigPackage::BoneMapKey>(key), boneName, overwrite) ? 0 : 1;
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return -1;
 	}
@@ -542,11 +588,20 @@ namespace CALUMI::SFBGS
 	int SFBGSRigPackage_RemoveBoneFromMapUsingKeyC(const CALUMI::UNIV::SkeletonRig* rig, uint8_t key)
 	{
 		if (rig)
+		{
 			try
 			{
 				return CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).removeBoneFromMap(static_cast<CALUMI::SFBGS::SFBGS_RigPackage::BoneMapKey>(key)) ? 0 : 1;
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return -1;
 	}
@@ -554,11 +609,20 @@ namespace CALUMI::SFBGS
 	int SFBGSRigPackage_RemoveBoneFromMapUsingNameC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName)
 	{
 		if (rig)
+		{
 			try
 			{
 				return CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).removeBoneFromMap(boneName) ? 0 : 1;
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return -1;
 
@@ -567,11 +631,20 @@ namespace CALUMI::SFBGS
 	uint8_t SFBGSRigPackage_GetBoneKeyC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName)
 	{
 		if (rig)
+		{
 			try
 			{
 				return static_cast<uint8_t>(CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).boneKey(boneName));
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return -1;
 	}
@@ -579,6 +652,7 @@ namespace CALUMI::SFBGS
 	const char* SFBGSRigPackage_GetBoneNameFromKeyC(const CALUMI::UNIV::SkeletonRig* rig, const uint8_t key)
 	{
 		if (rig)
+		{
 			try
 			{
 				const auto boneMapKey = CALUMI::SFBGS::SFBGS_RigPackage::GetBoneTag(key);
@@ -588,7 +662,15 @@ namespace CALUMI::SFBGS
 
 				return CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).boneNameFromKey(boneMapKey);
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return nullptr;
 
@@ -597,12 +679,21 @@ namespace CALUMI::SFBGS
 	int SFBGSRigPackage_SetMannequinC(const CALUMI::UNIV::SkeletonRig* rig, const bool isMannequin)
 	{
 		if (rig)
+		{
 			try
 			{
 				CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).setIsMannequin(isMannequin);
 				return 0;
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return -1;
 	}
@@ -610,11 +701,20 @@ namespace CALUMI::SFBGS
 	int SFBGSRigPackage_IsMannequinC(const CALUMI::UNIV::SkeletonRig* rig)
 	{
 		if (rig)
+		{
 			try
 			{
 				return CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).isMannequin() ? 1 : 0;
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return -1;
 	}
@@ -627,12 +727,21 @@ namespace CALUMI::SFBGS
 	int SFBGSRigPackage_SetPrecisionToDefaultC(const CALUMI::UNIV::SkeletonRig* rig)
 	{
 		if (rig)
+		{
 			try
 			{
 				CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).setPrecisionValues(CALUMI::SFBGS::PrecisionSet::DefaultPrecision());
 				return 0;
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return -1;
 	}
@@ -640,12 +749,21 @@ namespace CALUMI::SFBGS
 	int SFBGSRigPackage_SetPrecisionToFirstPersonC(const CALUMI::UNIV::SkeletonRig* rig)
 	{
 		if (rig)
+		{
 			try
 			{
 				CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).setPrecisionValues(CALUMI::SFBGS::PrecisionSet::FirstPersonPrecision());
 				return 0;
 			}
-		catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return -1;
 	}
@@ -653,12 +771,21 @@ namespace CALUMI::SFBGS
 	int SFBGSRigPackage_SetPrecisionToShipValuesC(const CALUMI::UNIV::SkeletonRig* rig)
 	{
 		if (rig)
+		{
 			try
 			{
 				CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).setPrecisionValues(CALUMI::SFBGS::PrecisionSet::ShipPrecision());
 				return 0;
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return -1;
 	}
@@ -666,12 +793,21 @@ namespace CALUMI::SFBGS
 	int SFBGSRigPackage_SetPrecisionToCustomC(const CALUMI::UNIV::SkeletonRig* rig, const float custom1, const float custom2)
 	{
 		if (rig)
+		{
 			try
 			{
 				CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).setPrecisionValues(CALUMI::SFBGS::PrecisionSet(custom1, custom2));
 				return 0;
 			}
-		catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return -1;
 	}
@@ -679,11 +815,20 @@ namespace CALUMI::SFBGS
 	const char* SFBGSRigPackage_GetPrecisionType(const CALUMI::UNIV::SkeletonRig* rig)
 	{
 		if (rig)
+		{
 			try
 			{
 				return CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).precisionSet().precisionType();
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return nullptr;
 	}
@@ -691,11 +836,20 @@ namespace CALUMI::SFBGS
 	float SFBGSRigPackage_GetHighPrecisionValueC(const CALUMI::UNIV::SkeletonRig* rig)
 	{
 		if (rig)
+		{
 			try
 			{
 				return CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).precisionSet().high();
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return std::numeric_limits<float>::quiet_NaN();
 	}
@@ -703,11 +857,20 @@ namespace CALUMI::SFBGS
 	float SFBGSRigPackage_GetLowPrecisionValueC(const CALUMI::UNIV::SkeletonRig* rig)
 	{
 		if (rig)
+		{
 			try
 			{
 				return CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).precisionSet().low();
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return std::numeric_limits<float>::quiet_NaN();
 	}
@@ -715,11 +878,20 @@ namespace CALUMI::SFBGS
 	int SFBGSRigPackage_GetBoneLODValueC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName)
 	{
 		if (rig)
+		{
 			try
 			{
 				return static_cast<int>(CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).boneLod(boneName));
 			}
-			catch ( const std::exception& ){}
+			catch (std::exception& e)
+			{
+				std::cerr << "Caught exception: " << e.what() << "\n";
+			}
+		}
+		else
+		{
+			std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+		}
 
 		return -1;
 	}
@@ -727,6 +899,7 @@ namespace CALUMI::SFBGS
 int SFBGSRigPackage_SetBoneLODValueC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName, int value)
 {
 	if (rig)
+	{
 		try
 		{
 			if (SCOMPARE(boneName, "") ==0)
@@ -739,7 +912,15 @@ int SFBGSRigPackage_SetBoneLODValueC(const CALUMI::UNIV::SkeletonRig* rig, const
 			CALUMI::SFBGS::SFBGS_RigPackage::GetPackage(*rig).setBoneLod(boneName, lod);
 			return 0;
 		}
-		catch ( const std::exception& ){}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+	}
 
 	return -1;
 }

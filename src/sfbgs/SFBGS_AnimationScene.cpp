@@ -380,20 +380,33 @@ namespace CALUMI::SFBGS
 
 #pragma region Extern "C"
 
-int SaveAnimationSceneToSFBGSFormatPathOverrideC(CALUMI::UNIV::AnimationScene* scene,
-                                                 const wchar_t**               directoryPathArray,
-                                                 const uint64_t                arraySize)
+int SaveAnimationSceneToSFBGSFormatPathOverrideC(CALUMI::UNIV::AnimationScene* scene, const wchar_t** directoryPathArray, const uint64_t arraySize)
 {
-    if (arraySize < 1 || !directoryPathArray || !directoryPathArray[0])
+    if (arraySize < 1)
     {
+        std::cerr << std::source_location::current().function_name() << " array size is 0 or less\n";
         return -1;
+    }
+    if (!directoryPathArray)
+    {
+        std::cerr << std::source_location::current().function_name() << " directoryPathArray argument is nullptr\n";
+        return -1;
+    }
+    for (uint64_t i = 0; i < arraySize; i++)
+    {
+        if (!directoryPathArray[i])
+        {
+            std::cerr << std::source_location::current().function_name() << " directoryPathArray[" << std::to_string(i) << "] is nullptr\n";
+            return -1;
+        }
     }
 
     if (scene)
+    {
         try
         {
             std::vector<std::filesystem::path> animationFilePaths;
-            std::filesystem::path              rigFilePath;
+            std::filesystem::path rigFilePath;
 
             for (unsigned int i = 0; i < arraySize; i++)
             {
@@ -419,26 +432,26 @@ int SaveAnimationSceneToSFBGSFormatPathOverrideC(CALUMI::UNIV::AnimationScene* s
             {
                 switch (rigResult.fileErrorCode())
                 {
-                case CALUMI::Utilities::FileResult::FileErrorCode::FileNotFound:
-                    return 10;
-                case CALUMI::Utilities::FileResult::FileErrorCode::PermissionDenied:
-                    return 11;
-                case CALUMI::Utilities::FileResult::FileErrorCode::NotAFile:
-                    return 12;
-                case CALUMI::Utilities::FileResult::FileErrorCode::ReadFailure:
-                    return 13;
-                case CALUMI::Utilities::FileResult::FileErrorCode::IncorrectFileType:
-                    return 14;
-                case CALUMI::Utilities::FileResult::FileErrorCode::FileTooLarge:
-                    return 15;
-                case CALUMI::Utilities::FileResult::FileErrorCode::FileTooSmall:
-                    return 16;
-                case CALUMI::Utilities::FileResult::FileErrorCode::UnknownErrorCode:
-                    return 17;
-                case CALUMI::Utilities::FileResult::FileErrorCode::WriteFailure:
-                    return 18;
-                default:
-                    return 19;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::FileNotFound:
+                        return 10;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::PermissionDenied:
+                        return 11;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::NotAFile:
+                        return 12;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::ReadFailure:
+                        return 13;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::IncorrectFileType:
+                        return 14;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::FileTooLarge:
+                        return 15;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::FileTooSmall:
+                        return 16;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::UnknownErrorCode:
+                        return 17;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::WriteFailure:
+                        return 18;
+                    default:
+                        return 19;
                 }
             }
 
@@ -451,52 +464,74 @@ int SaveAnimationSceneToSFBGSFormatPathOverrideC(CALUMI::UNIV::AnimationScene* s
                 {
                     switch (animResult.fileErrorCode())
                     {
-                    case CALUMI::Utilities::FileResult::FileErrorCode::FileNotFound:
-                        return 20;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::PermissionDenied:
-                        return 21;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::NotAFile:
-                        return 22;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::ReadFailure:
-                        return 23;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::IncorrectFileType:
-                        return 24;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::FileTooLarge:
-                        return 25;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::FileTooSmall:
-                        return 26;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::UnknownErrorCode:
-                        return 27;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::WriteFailure:
-                        return 28;
-                    default:
-                        return 29;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::FileNotFound:
+                            return 20;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::PermissionDenied:
+                            return 21;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::NotAFile:
+                            return 22;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::ReadFailure:
+                            return 23;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::IncorrectFileType:
+                            return 24;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::FileTooLarge:
+                            return 25;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::FileTooSmall:
+                            return 26;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::UnknownErrorCode:
+                            return 27;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::WriteFailure:
+                            return 28;
+                        default:
+                            return 29;
                     }
                 }
             }
 
             return 0;
         }
-        catch (std::exception&)
+        catch (const std::exception& e)
         {
+            std::cerr << "Caught exception: " << e.what() << "\n";
         }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " scene argument is nullptr\n";
+    }
 
     return -2;
 }
 
 //Warning, desired directory _path array must be in the same order as the animations in the scene.
-int SaveAnimationSceneToSFBGSFormatUsingRigReferencePathOverrideC(const CALUMI::UNIV::AnimationScene* scene,
-                                                                  const
-                                                                  wchar_t**      directoryPathArray,
-                                                                  const uint64_t arraySize,
-                                                                  const wchar_t* sfbgsRigPath)
+int SaveAnimationSceneToSFBGSFormatUsingRigReferencePathOverrideC(const CALUMI::UNIV::AnimationScene* scene, const wchar_t** directoryPathArray, const uint64_t arraySize, const wchar_t* sfbgsRigPath)
 {
-    if (arraySize < 1 || !directoryPathArray || !directoryPathArray[0])
+    if (arraySize < 1)
     {
+        std::cerr << std::source_location::current().function_name() << " array size is 0 or less\n";
+        return -1;
+    }
+    if (!directoryPathArray)
+    {
+        std::cerr << std::source_location::current().function_name() << " directoryPathArray argument is nullptr\n";
+        return -1;
+    }
+    for (uint64_t i = 0; i < arraySize; i++)
+    {
+        if (!directoryPathArray[i])
+        {
+            std::cerr << std::source_location::current().function_name() << " directoryPathArray[" << std::to_string(i) << "] is nullptr\n";
+            return -1;
+        }
+    }
+    if (!sfbgsRigPath)
+    {
+        std::cerr << std::source_location::current().function_name() << " sfbgsRigPath argument is nullptr\n";
         return -1;
     }
 
     if (scene)
+    {
         try
         {
             const std::filesystem::path rigPath(sfbgsRigPath);
@@ -510,26 +545,26 @@ int SaveAnimationSceneToSFBGSFormatUsingRigReferencePathOverrideC(const CALUMI::
             {
                 switch (rigResult.fileErrorCode())
                 {
-                case CALUMI::Utilities::FileResult::FileErrorCode::FileNotFound:
-                    return 10;
-                case CALUMI::Utilities::FileResult::FileErrorCode::PermissionDenied:
-                    return 11;
-                case CALUMI::Utilities::FileResult::FileErrorCode::NotAFile:
-                    return 12;
-                case CALUMI::Utilities::FileResult::FileErrorCode::ReadFailure:
-                    return 13;
-                case CALUMI::Utilities::FileResult::FileErrorCode::IncorrectFileType:
-                    return 14;
-                case CALUMI::Utilities::FileResult::FileErrorCode::FileTooLarge:
-                    return 15;
-                case CALUMI::Utilities::FileResult::FileErrorCode::FileTooSmall:
-                    return 16;
-                case CALUMI::Utilities::FileResult::FileErrorCode::UnknownErrorCode:
-                    return 17;
-                case CALUMI::Utilities::FileResult::FileErrorCode::WriteFailure:
-                    return 18;
-                default:
-                    return 19;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::FileNotFound:
+                        return 10;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::PermissionDenied:
+                        return 11;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::NotAFile:
+                        return 12;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::ReadFailure:
+                        return 13;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::IncorrectFileType:
+                        return 14;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::FileTooLarge:
+                        return 15;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::FileTooSmall:
+                        return 16;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::UnknownErrorCode:
+                        return 17;
+                    case CALUMI::Utilities::FileResult::FileErrorCode::WriteFailure:
+                        return 18;
+                    default:
+                        return 19;
                 }
             }
 
@@ -557,87 +592,116 @@ int SaveAnimationSceneToSFBGSFormatUsingRigReferencePathOverrideC(const CALUMI::
                 {
                     switch (animResult.fileErrorCode())
                     {
-                    case CALUMI::Utilities::FileResult::FileErrorCode::FileNotFound:
-                        return 20;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::PermissionDenied:
-                        return 21;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::NotAFile:
-                        return 22;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::ReadFailure:
-                        return 23;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::IncorrectFileType:
-                        return 24;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::FileTooLarge:
-                        return 25;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::FileTooSmall:
-                        return 26;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::UnknownErrorCode:
-                        return 27;
-                    case CALUMI::Utilities::FileResult::FileErrorCode::WriteFailure:
-                        return 28;
-                    default:
-                        return 29;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::FileNotFound:
+                            return 20;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::PermissionDenied:
+                            return 21;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::NotAFile:
+                            return 22;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::ReadFailure:
+                            return 23;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::IncorrectFileType:
+                            return 24;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::FileTooLarge:
+                            return 25;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::FileTooSmall:
+                            return 26;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::UnknownErrorCode:
+                            return 27;
+                        case CALUMI::Utilities::FileResult::FileErrorCode::WriteFailure:
+                            return 28;
+                        default:
+                            return 29;
                     }
                 }
             }
             return 0;
         }
-        catch (std::exception&)
+        catch (const std::exception& e)
         {
+            std::cerr << "Caught exception: " << e.what() << "\n";
         }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " scene argument is nullptr\n";
+    }
+
     return -2;
 }
 
-CALUMI::UNIV::AnimationScene* LoadAnimationSceneFromSFBGSFormatC(const wchar_t** filePathsArray,
-                                                                 const int
-                                                                 numberOfFiles)
+CALUMI::UNIV::AnimationScene* LoadAnimationSceneFromSFBGSFormatC(const wchar_t** filePathsArray, const int numberOfFiles)
 {
-    if (numberOfFiles < 1 || !filePathsArray)
+    if (numberOfFiles < 1)
     {
+        std::cerr << std::source_location::current().function_name() << " numberOfFiles is 0 or less\n";
         return nullptr;
     }
-
-    CALUMI::SFBGS::AnimationScene sfbgsAnimationScene;
-
-    for (int i = 0; i < numberOfFiles; i++)
+    if (!filePathsArray)
     {
-        std::filesystem::path pathToAdd(filePathsArray[i]);
-        if (pathToAdd.extension() == ".af")
+        std::cerr << std::source_location::current().function_name() << " filePathsArray argument is nullptr\n";
+        return nullptr;
+    }
+    for (uint64_t i = 0; i < numberOfFiles; i++)
+    {
+        if (!filePathsArray[i])
         {
-            CALUMI::SFBGS::Animation anim;
-            if (auto animResult = anim.readFromFile(pathToAdd.c_str()); animResult.hasError())
-            {
-                return nullptr;
-            }
-
-            // ReSharper disable once CppExpressionWithoutSideEffects
-            sfbgsAnimationScene.addAnimationToScene(anim);
-        }
-        if (pathToAdd.extension() == ".rig")
-        {
-            CALUMI::SFBGS::SkeletonRig rig;
-            if (auto rigResult = rig.readFromFile(pathToAdd.c_str()); rigResult.hasError())
-            {
-                return nullptr;
-            }
-            sfbgsAnimationScene.rig() = rig;
+            std::cerr << std::source_location::current().function_name() << " filePathsArray[" << std::to_string(i) << "] is nullptr\n";
+            return nullptr;
         }
     }
 
-    if (sfbgsAnimationScene.rig().boneEntries().empty())
+    try
     {
-        return nullptr;
+        CALUMI::SFBGS::AnimationScene sfbgsAnimationScene;
+
+        for (int i = 0; i < numberOfFiles; i++)
+        {
+            std::filesystem::path pathToAdd(filePathsArray[i]);
+            if (pathToAdd.extension() == ".af")
+            {
+                CALUMI::SFBGS::Animation anim;
+                if (auto animResult = anim.readFromFile(pathToAdd.c_str()); animResult.hasError())
+                {
+                    return nullptr;
+                }
+
+                // ReSharper disable once CppExpressionWithoutSideEffects
+                sfbgsAnimationScene.addAnimationToScene(anim);
+            }
+            if (pathToAdd.extension() == ".rig")
+            {
+                CALUMI::SFBGS::SkeletonRig rig;
+                if (auto rigResult = rig.readFromFile(pathToAdd.c_str()); rigResult.hasError())
+                {
+                    return nullptr;
+                }
+                sfbgsAnimationScene.rig() = rig;
+            }
+        }
+
+        if (sfbgsAnimationScene.rig().boneEntries().empty())
+        {
+            return nullptr;
+        }
+
+        const auto output = new CALUMI::UNIV::AnimationScene;
+        *output = sfbgsAnimationScene.convertToUniversalScene();
+
+        return output;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Caught exception: " << e.what() << "\n";
     }
 
-    const auto output = new CALUMI::UNIV::AnimationScene;
-    *output = sfbgsAnimationScene.convertToUniversalScene();
-
-    return output;
+    return nullptr;
 }
 
 CALUMI::UNIV::SkeletonRig* LoadSFBGSSkeletonRigFromFileC(const wchar_t* filePath)
 {
     if (filePath)
+    {
         try
         {
             const std::filesystem::path pathToLoad(filePath);
@@ -656,19 +720,36 @@ CALUMI::UNIV::SkeletonRig* LoadSFBGSSkeletonRigFromFileC(const wchar_t* filePath
             *output = rig.convertToUniversalRig();
             return output;
         }
-        catch (std::exception&)
+        catch (std::exception& e)
         {
+            std::cerr << "Caught exception: " << e.what() << "\n";
         }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " filePath argument is nullptr\n";
+    }
+
     return nullptr;
 }
 
-int SaveAnimationToSFBGSFormatDirectC(const CALUMI::UNIV::Animation* animation,
-                                      const wchar_t*                 filePath,
-                                      const CALUMI::
-                                      UNIV::SkeletonRig* rig)
+int SaveAnimationToSFBGSFormatDirectC(const CALUMI::UNIV::Animation* animation, const wchar_t* filePath, const CALUMI::UNIV::SkeletonRig* rig)
 {
-    if (!filePath || !rig || !animation)
+    if (!filePath)
     {
+        std::cerr << std::source_location::current().function_name() << " filePath argument is nullptr\n";
+        return -1;
+    }
+
+    if (!rig)
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+        return -1;
+    }
+
+    if (!animation)
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
         return -1;
     }
 
@@ -706,18 +787,30 @@ int SaveAnimationToSFBGSFormatDirectC(const CALUMI::UNIV::Animation* animation,
 
         return 0;
     }
-    catch (std::exception&)
+    catch (std::exception& e)
     {
+        std::cerr << "Caught exception: " << e.what() << "\n";
     }
     return -2;
 }
 
-int SaveAnimationToSFBGSFormatWithExistingRigDirectC(const CALUMI::UNIV::Animation* animation,
-                                                     const wchar_t*                 filePath,
-                                                     const wchar_t*                 sfbgsRigPath)
+int SaveAnimationToSFBGSFormatWithExistingRigDirectC(const CALUMI::UNIV::Animation* animation, const wchar_t* filePath, const wchar_t* sfbgsRigPath)
 {
-    if (!filePath || !sfbgsRigPath || !animation)
+    if (!filePath)
     {
+        std::cerr << std::source_location::current().function_name() << " filePath argument is nullptr\n";
+        return -1;
+    }
+
+    if (!sfbgsRigPath)
+    {
+        std::cerr << std::source_location::current().function_name() << " sfbgsRigPath argument is nullptr\n";
+        return -1;
+    }
+
+    if (!animation)
+    {
+        std::cerr << std::source_location::current().function_name() << " animation argument is nullptr\n";
         return -1;
     }
 
@@ -788,13 +881,21 @@ int SaveAnimationToSFBGSFormatWithExistingRigDirectC(const CALUMI::UNIV::Animati
     {
         std::cerr << "Caught exception: " << e.what() << "\n";
     }
+
     return -2;
 }
 
 int SaveSkeletonRigToSFBGSFormatDirectC(const CALUMI::UNIV::SkeletonRig* rig, const wchar_t* filePath)
 {
-    if (!filePath || !rig)
+    if (!filePath)
     {
+        std::cerr << std::source_location::current().function_name() << " filePath argument is nullptr\n";
+        return -1;
+    }
+
+    if (!rig)
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
         return -1;
     }
 
@@ -829,9 +930,11 @@ int SaveSkeletonRigToSFBGSFormatDirectC(const CALUMI::UNIV::SkeletonRig* rig, co
             }
         }
     }
-    catch (std::exception&)
+    catch (std::exception& e)
     {
+        std::cerr << "Caught exception: " << e.what() << "\n";
     }
+
     return -2;
 }
 

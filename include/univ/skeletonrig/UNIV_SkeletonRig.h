@@ -491,13 +491,13 @@ extern "C"
 	/**
 	 * @brief
 	 * @param bone Ptr to bone
-	 * @return The unsigned int/uint32_t form of the bone type enum
+	 * @return The unsigned int/uint32_t form of the bone type enum, or 0xFFFFFFFF if error has occurred
 	 */
 	CALUMIANIMATION_API uint32_t GetBoneTypeC(const CALUMI::UNIV::SkeletonBone* bone);
 	/**
 	 * @brief
 	 * @param bone Ptr to bone
-	 * @return The string form of the bone type enum
+	 * @return The string form of the bone type enum or nullptr if error
 	 */
 	CALUMIANIMATION_API const char* GetBoneTypeAsStringC(const CALUMI::UNIV::SkeletonBone* bone);
 	/**
@@ -514,7 +514,7 @@ extern "C"
 	/**
 	 * @brief
 	 * @param bone
-	 * @return Name of the bone that dynamically drives this bone in game, empty string if none exists or is not set
+	 * @return Name of the bone that dynamically drives this bone in game, empty string if none exists or is not set. Nullptr if error
 	 */
 	CALUMIANIMATION_API const char* GetTwistBoneDriverC(const CALUMI::UNIV::SkeletonBone* bone);
 	/**
@@ -558,7 +558,7 @@ extern "C"
 	/**
 	 * @brief
 	 * @param source Ptr to the skeleton to check
-	 * @return Name of skeleton rig
+	 * @return Name of skeleton rig or nullptr if error
 	 */
 	CALUMIANIMATION_API const char* GetSkeletonRigNameC(const CALUMI::UNIV::SkeletonRig* source);
 	/**
@@ -566,14 +566,14 @@ extern "C"
 
 	 * @param source Ptr to rig
 	 * @param boneName
-	 * @return Ptr, if one exists, to the skeleton bone at the given index
+	 * @return Ptr, if one exists, to the skeleton bone at the given index. Nullptr if error
 	 */
 	CALUMIANIMATION_API const CALUMI::UNIV::SkeletonBone* GetSkeletonBoneC(const CALUMI::UNIV::SkeletonRig* source, const char* boneName);
 	/**
 	 * @brief
 
 	 * @param source Ptr to the bone in question
-	 * @return C String of the bone's name
+	 * @return C String of the bone's name, nullptr if error
 	 */
 	CALUMIANIMATION_API const char* GetSkeletonBoneNameC(const CALUMI::UNIV::SkeletonBone* source);
 	/**

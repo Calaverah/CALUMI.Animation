@@ -408,7 +408,6 @@ namespace CALUMI::SFBGS
             all = 2 ///< all indices
         };
 
-    public:
         /**
          * @name Constructors
          * @{
@@ -651,7 +650,6 @@ namespace CALUMI::SFBGS
 
         /// @}
 
-    public:
         /// @name IReadWritable
         /// @{
 
@@ -662,7 +660,6 @@ namespace CALUMI::SFBGS
 
         /// @}
 
-    public:
         /// @name Validation
             /// @{
 
@@ -677,8 +674,7 @@ namespace CALUMI::SFBGS
     private:
         struct Impl;
         Impl* pImpl;
-
-    private:
+        
         friend class AnimationScene;
     };
 

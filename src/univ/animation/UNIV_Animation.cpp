@@ -13,7 +13,10 @@
 #include <vector>
 #include "internal/internalvectordef.h"
 #include <iostream>
+#include <numbers>
 #include <ostream>
+#include <source_location>
+#include <string>
 
 #include "sfbgs/animation/SFBGS_AnimationPackage.h"
 
@@ -801,13 +804,23 @@ namespace CALUMI::UNIV
 
 CALUMI::UNIV::Animation* CreateAnimationC(const char* animationTitle, const unsigned int rigBoneCount)
 {
-	const auto outputAnimation = new CALUMI::UNIV::Animation(animationTitle, rigBoneCount);
-	return outputAnimation;
+	try
+	{
+		const auto outputAnimation = new CALUMI::UNIV::Animation(animationTitle, rigBoneCount);
+		return outputAnimation;
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Caught exception: " << e.what() << "\n";
+		std::cout << "UNIV Animation could not be created\n";
+		return nullptr;
+	}
 }
 
 CALUMI::UNIV::AnimationBlock* GetAnimationBlockC(const CALUMI::UNIV::Animation* source, const char* boneName)
 {
 	if (source)
+	{
 		try
 		{
 			const int index = source->findAnimationBlock(boneName);
@@ -818,35 +831,58 @@ CALUMI::UNIV::AnimationBlock* GetAnimationBlockC(const CALUMI::UNIV::Animation* 
 			}
 			return &source->animationBlocks().at(index);
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
 	return nullptr;
 }
 
 uint64_t GetAnimationBlockCountC(const CALUMI::UNIV::Animation* source)
 {
 	if (source)
+	{
 		try
 		{
 			return source->animationBlocks().size();
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
 	return 0;
 }
 
 const char* GetAnimationTitleC(const CALUMI::UNIV::Animation* source)
 {
 	if (source)
+	{
 		try
 		{
 			return source->animationTitle();
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
 	return nullptr;
 }
 
@@ -865,50 +901,101 @@ uint64_t GetFrameCountC(const CALUMI::UNIV::Animation* source)
 
 int DeleteAnimationC(const CALUMI::UNIV::Animation** ptr)
 {
-	if (ptr && *ptr)
+	if (!ptr)
 	{
-		delete *ptr;
-		*ptr = nullptr;
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " ptr argument is nullptr\n";
+	}
+	else if (!*ptr)
+	{
+		std::cerr << std::source_location::current().function_name() << " *ptr argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			delete *ptr;
+			*ptr = nullptr;
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
 
 	return -1;
 }
 
-int AddAnimBlockToAnimationC(const CALUMI::UNIV::Animation* anim,
-							  const CALUMI::UNIV::AnimationBlock* blockToAdd,
-							  const bool overwrite)
+int AddAnimBlockToAnimationC(const CALUMI::UNIV::Animation* anim, const CALUMI::UNIV::AnimationBlock* blockToAdd, const bool overwrite)
 {
-	if (anim && blockToAdd)
+	if (!anim)
+	{
+		std::cerr << std::source_location::current().function_name() << " anim argument is nullptr\n";
+	}
+	else if (!blockToAdd)
+	{
+		std::cerr << std::source_location::current().function_name() << " blockToAdd argument is nullptr\n";
+	}
+	else
+	{
 		try
 		{
 			return anim->addAnimationBlock(*blockToAdd, overwrite) ? 0 : 1;
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
+
 	return -1;
 }
 
 CALUMI::UNIV::AnimationBlock* CreateAnimBlockC(const char* boneName)
 {
-	if (!boneName)
+	if (boneName)
 	{
-		return nullptr;
+		try
+		{
+			const auto outputAnimationBlock = new CALUMI::UNIV::AnimationBlock;
+			outputAnimationBlock->setBoneName(boneName);
+			return outputAnimationBlock;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " boneName argument is nullptr\n";
 	}
 
-	const auto outputAnimationBlock = new CALUMI::UNIV::AnimationBlock;
-	outputAnimationBlock->setBoneName(boneName);
-	return outputAnimationBlock;
+	return nullptr;
 }
 
 int DeleteAnimationBlockC(const CALUMI::UNIV::AnimationBlock** ptr)
 {
-	if (ptr && *ptr)
+	if (!ptr)
 	{
-		delete *ptr;
-		*ptr = nullptr;
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " ptr argument is nullptr\n";
+	}
+	else if (!*ptr)
+	{
+		std::cerr << std::source_location::current().function_name() << " *ptr argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			delete *ptr;
+			*ptr = nullptr;
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
 	return -1;
 }
@@ -916,7 +1003,20 @@ int DeleteAnimationBlockC(const CALUMI::UNIV::AnimationBlock** ptr)
 const char* GetAnimBlockBoneNameC(const CALUMI::UNIV::AnimationBlock* source)
 {
 	if (source)
-		return source->boneName();
+	{
+		try
+		{
+			return source->boneName();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
 
 	return nullptr;
 }
@@ -924,19 +1024,38 @@ const char* GetAnimBlockBoneNameC(const CALUMI::UNIV::AnimationBlock* source)
 unsigned int GetLastFrameInAnimBlockC(const CALUMI::UNIV::AnimationBlock* source)
 {
 	if (source)
-		return source->lastFrameInBlock();
+	{
+		try
+		{
+			return source->lastFrameInBlock();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
 
 	return 0;
 }
 
-unsigned int AddRotationSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block,
-									   const CALUMI::UNIV::RotationFrame* rotSq,
-									   const unsigned int size,
-									   const bool overwrite)
+unsigned int AddRotationSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block, const CALUMI::UNIV::RotationFrame* rotSq, const unsigned int size, const bool overwrite)
 {
 	unsigned int added = 0;
 
-	if (block && rotSq)
+	if (!block)
+	{
+		std::cerr << std::source_location::current().function_name() << " block is nullptr\n";
+	}
+	else if (!rotSq)
+	{
+		std::cerr << std::source_location::current().function_name() << " rotSq is nullptr\n";
+	}
+	else
+	{
 		try
 		{
 			for (unsigned int i = 0; i < size; i++)
@@ -947,8 +1066,10 @@ unsigned int AddRotationSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block
 				added++;
 			}
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
 
 	return added;
@@ -956,60 +1077,121 @@ unsigned int AddRotationSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block
 
 CALUMI::UNIV::RotationFrame* GetRotationSqArrayC(const CALUMI::UNIV::AnimationBlock* source)
 {
-	if (!source || source->rotationSequence().empty())
-		return nullptr;
+	if (!source)
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+	else if (source->rotationSequence().empty())
+	{
+		std::cout << std::source_location::current().function_name() << " rotationSequence is empty\n";
+	}
+	else
+	{
+		try
+		{
+			return source->rotationSequence().data();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
 
-	return source->rotationSequence().data();
+	return nullptr;
 }
 
 CALUMI::UNIV::RotationFrame* GetRotationFromSqC(const CALUMI::UNIV::AnimationBlock* source, const int index)
 {
-	if (source)
+	if (index < 0)
+	{
+		std::cerr << std::source_location::current().function_name() << " index is less than 0\n";
+	}
+	else if (source)
+	{
 		try
 		{
-			if (index >= source->rotationSequence().size() || index < 0)
+			if (index >= source->rotationSequence().size())
 			{
+				std::cerr << std::source_location::current().function_name() << " index: " << std::to_string(index) << " is greater than vector size: " << std::to_string(source->rotationSequence().size()) << " allows\n";
 				return nullptr;
 			}
 			return &source->rotationSequence().at(index);
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
 	return nullptr;
 }
 
 uint64_t GetRotationSqSizeC(const CALUMI::UNIV::AnimationBlock* source)
 {
 	if (source)
-		return source->rotationSequence().size();
+	{
+		try
+		{
+			return source->rotationSequence().size();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source is nullptr\n";
+	}
 
 	return 0;
 }
 
 int ExecuteRDPReduction_RotationC(const CALUMI::UNIV::AnimationBlock* source, const float tolerance)
 {
+	if (tolerance < std::numeric_limits<float>::epsilon() * 10)
+	{
+		std::cout << "WARNING: RDP Reduction algorithm was given a low tolerance that may be difficult or near impossible to succeed\n";
+	}
+
 	if (source)
+	{
 		try
 		{
 			source->executeRDPReduction_Rotation(tolerance);
 			return 0;
 		}
-	catch (std::exception&)
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
 	{
+		std::cerr << std::source_location::current().function_name() << " source is nullptr\n";
 	}
 
 	return -1;
 }
 
-unsigned int AddTranslationSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block,
-								  const CALUMI::UNIV::TranslationFrame* trnSq,
-								  const unsigned int size,
-								  const bool overwrite)
+unsigned int AddTranslationSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block, const CALUMI::UNIV::TranslationFrame* trnSq, const unsigned int size, const bool overwrite)
 {
 	unsigned int added = 0;
 
-	if (block && trnSq)
+	if (!block)
+	{
+		std::cerr << std::source_location::current().function_name() << " block argument is nullptr\n";
+	}
+	else if (!trnSq)
+	{
+		std::cerr << std::source_location::current().function_name() << " trnSq argument is nullptr\n";
+	}
+	else
+	{
 		try
 		{
 			for (unsigned int i = 0; i < size; i++)
@@ -1020,8 +1202,10 @@ unsigned int AddTranslationSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* bl
 				added++;
 			}
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
 
 	return added;
@@ -1029,63 +1213,121 @@ unsigned int AddTranslationSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* bl
 
 CALUMI::UNIV::TranslationFrame* GetTranslationSqArrayC(const CALUMI::UNIV::AnimationBlock* source)
 {
-	if (!source || source->translationSequence().empty())
-		return nullptr;
+	if (!source)
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+	else if (source->translationSequence().empty())
+	{
+		std::cerr << std::source_location::current().function_name() << " translation sequence is empty\n";
+	}
+	else
+	{
+		try
+		{
+			return source->translationSequence().data();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
 
-	return source->translationSequence().data();
+	return nullptr;
 }
 
 CALUMI::UNIV::TranslationFrame* GetTranslationFromSqC(const CALUMI::UNIV::AnimationBlock* source, const int index)
 {
-	if (source)
+	if (index < 0)
+	{
+		std::cerr << std::source_location::current().function_name() << " index is less than 0\n";
+	}
+	else if (source)
+	{
 		try
 		{
-			if (index >= source->translationSequence().size() || index < 0)
+			if (index >= source->translationSequence().size())
 			{
+				std::cerr << std::source_location::current().function_name() << " translation sequence index: " << std::to_string(index) << " is greater than size: " << std::to_string(source->translationSequence().size()) << " allows\n";
 				return nullptr;
 			}
 			return &source->translationSequence().at(index);
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source is nullptr\n";
+	}
+
 	return nullptr;
 }
 
 uint64_t GetTranslationSqSizeC(const CALUMI::UNIV::AnimationBlock* source)
 {
 	if (source)
+	{
 		try
 		{
 			return source->translationSequence().size();
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source is nullptr\n";
+	}
+
 	return 0;
 }
 
 int ExecuteRDPReduction_TranslationC(const CALUMI::UNIV::AnimationBlock* source, const float tolerance)
 {
+	if (tolerance < std::numeric_limits<float>::epsilon() * 10)
+	{
+		std::cout << "WARNING: RDP Reduction algorithm was given a low tolerance that may be difficult or near impossible to succeed\n";
+	}
+
 	if (source)
+	{
 		try
 		{
 			source->executeRDPReduction_Translation(tolerance);
 			return 0;
 		}
-	catch (std::exception&)
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
 	{
+		std::cerr << std::source_location::current().function_name() << " source is nullptr\n";
 	}
 
 	return -1;
 }
 
-unsigned int AddScalarSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block,
-									 const CALUMI::UNIV::ScalarFrame* sclrSq, const unsigned int size, const bool overwrite)
+unsigned int AddScalarSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block, const CALUMI::UNIV::ScalarFrame* sclrSq, const unsigned int size, const bool overwrite)
 {
 	unsigned int added = 0;
 
-	if (block && sclrSq)
+	if (!block)
+	{
+		std::cerr << std::source_location::current().function_name() << " block argument is nullptr\n";
+	}
+	else if (!sclrSq)
+	{
+		std::cerr << std::source_location::current().function_name() << " sclrSq argument is nullptr\n";
+	}
+	else
+	{
 		try
 		{
 			for (unsigned int i = 0; i < size; i++)
@@ -1096,70 +1338,132 @@ unsigned int AddScalarSqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block,
 				added++;
 			}
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
+
 	return added;
 }
 
 CALUMI::UNIV::ScalarFrame* GetScalarSqArrayC(const CALUMI::UNIV::AnimationBlock* source)
 {
-	if (!source || source->scalarSequence().empty())
-		return nullptr;
+	if (!source)
+	{
+		std::cerr << std::source_location::current().function_name() << " source is nullptr\n";
+	}
+	else if (source->scalarSequence().empty())
+	{
+		std::cerr << std::source_location::current().function_name() << " scalar sequence is empty\n";
+	}
+	else
+	{
+		try
+		{
+			return source->scalarSequence().data();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
 
-	return source->scalarSequence().data();
+	return nullptr;
 }
 
 CALUMI::UNIV::ScalarFrame* GetScalarFromSqC(const CALUMI::UNIV::AnimationBlock* source, const int index)
 {
+	if (index < 0)
+	{
+		std::cerr << std::source_location::current().function_name() << " index is less than 0\n";
+	}
 	if (source)
+	{
 		try
 		{
-			if (index >= source->scalarSequence().size() || index < 0)
+			if (index >= source->scalarSequence().size())
 			{
+				std::cerr << std::source_location::current().function_name() << " index: " << std::to_string(index) << " is greater than vector size: " << std::to_string(source->scalarSequence().size()) << " allows\n";
 				return nullptr;
 			}
 			return &source->scalarSequence().at(index);
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source is nullptr\n";
+	}
+
 	return nullptr;
 }
 
 uint64_t GetScalarSqSizeC(const CALUMI::UNIV::AnimationBlock* source)
 {
 	if (source)
+	{
 		try
 		{
 			return source->scalarSequence().size();
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
 	return 0;
 }
 
 int ExecuteRDPReduction_ScalarC(const CALUMI::UNIV::AnimationBlock* source, const float tolerance)
 {
+	if (tolerance < std::numeric_limits<float>::epsilon() * 10)
+	{
+		std::cout << "WARNING: RDP Reduction algorithm was given a low tolerance that may be difficult or near impossible to succeed\n";
+	}
+
 	if (source)
+	{
 		try
 		{
 			source->executeRDPReduction_Scalar(tolerance);
 			return 0;
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
 	return -1;
 }
 
-bool AddPrioritySqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block, const CALUMI::UNIV::PriorityFrame* prtySq,
-							   const unsigned int size, const bool overwrite)
+bool AddPrioritySqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block, const CALUMI::UNIV::PriorityFrame* prtySq, const unsigned int size, const bool overwrite)
 {
 	unsigned int added = 0;
 
-	if (block && prtySq)
+	if (!block)
+	{
+		std::cerr << std::source_location::current().function_name() << " block argument is nullptr\n";
+	}
+	else if (!prtySq)
+	{
+		std::cerr << std::source_location::current().function_name() << " prtySq argument is nullptr\n";
+	}
+	else
+	{
 		try
 		{
 			for (unsigned int i = 0; i < size; i++)
@@ -1170,47 +1474,88 @@ bool AddPrioritySqToAnimBlockC(const CALUMI::UNIV::AnimationBlock* block, const 
 				added++;
 			}
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
+
 	return added;
 }
 
 CALUMI::UNIV::PriorityFrame* GetPrioritySqArrayC(const CALUMI::UNIV::AnimationBlock* source)
 {
-	if (!source || source->prioritySequence().empty())
-		return nullptr;
+	if (!source)
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+	else if (source->prioritySequence().empty())
+	{
+		std::cerr << std::source_location::current().function_name() << " priority sequence is empty\n";
+	}
+	else
+	{
+		try
+		{
+			return source->prioritySequence().data();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
 
-	return source->prioritySequence().data();
+	return nullptr;
 }
 
 CALUMI::UNIV::PriorityFrame* GetPriorityFromSqC(const CALUMI::UNIV::AnimationBlock* source, const int index)
 {
-	if (source)
+	if (index < 0)
+	{
+		std::cerr << std::source_location::current().function_name() << " index is less than 0\n";
+	}
+	else if (source)
+	{
 		try
 		{
-			if (index >= source->scalarSequence().size() || index < 0)
+			if (index >= source->prioritySequence().size())
 			{
+				std::cerr << std::source_location::current().function_name() << " index: " << std::to_string(index) << " is greater than vector size: " << std::to_string(source->prioritySequence().size()) << " allows\n";
 				return nullptr;
 			}
 			return &source->prioritySequence().at(index);
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
 	return nullptr;
 }
 
 uint64_t GetPrioritySqSizeC(const CALUMI::UNIV::AnimationBlock* source)
 {
 	if (source)
+	{
 		try
 		{
 			return source->prioritySequence().size();
 		}
-	catch (std::exception&)
-	{
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+	
 	return 0;
 }
 #pragma endregion

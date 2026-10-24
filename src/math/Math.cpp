@@ -12,7 +12,7 @@
 #include <cmath>
 #include "internalplatform.h"
 
-
+//TODO: ERROR HANDLING IN EXTERN C
 
 namespace CALUMI::Math
 {

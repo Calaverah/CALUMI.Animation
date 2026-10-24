@@ -11,6 +11,7 @@ namespace CALUMI::UNIV
 {
 #pragma region RIGPACKAGEMANAGER
 
+    // ReSharper disable CppMemberFunctionMayBeConst
     bool RigPackageManager::onBoneRename(const char* oldBone, const char* newName)
     {
         bool output = true;
@@ -28,6 +29,7 @@ namespace CALUMI::UNIV
 
         return output;
     }
+    // ReSharper restore CppMemberFunctionMayBeConst
 
 #pragma endregion
 }

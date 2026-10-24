@@ -4,9 +4,13 @@
 
 
 #include "utilities/CALUMI_Hashes.h"
+
+#include <iostream>
+
 #include "internalplatform.h"
 
 #include <ranges>
+#include <source_location>
 #include <unordered_map>
 #include <string>
 #include <utilities/CALUMI_Utilities.h>
@@ -339,7 +343,21 @@ namespace CALUMI::Utilities
 
 	uint32_t HashRegistry::CalculateHash(const char* string)
 	{
-		return BGS_Str_CRC32C(string);
+		if (!string)
+		{
+			throw std::invalid_argument(std::format("{} nullptr when string is expected", std::source_location::current().function_name()));
+		}
+
+		uint32_t output = 0;
+		const char* c = string;
+
+		while (*c != 0x00)
+		{
+			output = output >> 8u ^ _bgs_string_lookup_table_crc32[(output ^ static_cast<unsigned char>(*c)) &0xFFU];
+			c++;
+		}
+
+		return output;
 	}
 
 	StringList HashRegistry::registeredStrings() const
@@ -363,7 +381,7 @@ namespace CALUMI::Utilities
 
 		for (const auto& [hash, string] : pImpl->m_known_string_hash_list)
 		{
-			if (const uint32_t calculatedHash = BGS_Str_CRC32C(string.c_str()); calculatedHash != hash)
+			if (const uint32_t calculatedHash = CalculateHash(string.c_str()); calculatedHash != hash)
 				output.push_back(std::format("Str: {}, Hash: {}, Calc: {}", string, hash, calculatedHash).c_str());
 		}
 
@@ -372,32 +390,54 @@ namespace CALUMI::Utilities
 #endif
 }
 
-uint32_t BGS_Str_CRC32C(const char* string)
+int64_t BGS_Str_CRC32C(const char* string)
 {
-	uint32_t output = 0;
-	const char* c = string;
-
-	while (*c != 0x00)
+	try
 	{
-		output = output >> 8u ^ CALUMI::Utilities::_bgs_string_lookup_table_crc32[(output ^ static_cast<unsigned char>(*c)) &
-			0xFFU];
-		c++;
+		return CALUMI::Utilities::HashRegistry::CalculateHash(string);
 	}
-
-	return output;
+	catch (std::exception& e)
+	{
+		std::cerr << "Caught exception: " << e.what() << "\n";
+		return -1;
+	}
 }
 
 CALUMI::Utilities::StringList* BGS_HashRegisteredStringListC()
 {
-	return new CALUMI::Utilities::StringList(CALUMI::Utilities::HashRegistry::Get().registeredStrings());
+	try
+	{
+		return new CALUMI::Utilities::StringList(CALUMI::Utilities::HashRegistry::Get().registeredStrings());
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Caught exception: " << e.what() << "\n";
+		return nullptr;
+	}
 }
 
 const char* BGS_HashRegisteredStringC(const unsigned int hash)
 {
-	return CALUMI::Utilities::HashRegistry::Get().knownHashString(hash);
+	try
+	{
+		return CALUMI::Utilities::HashRegistry::Get().knownHashString(hash);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Caught exception: " << e.what() << "\n";
+		return nullptr;
+	}
 }
 
 bool BGS_IsKnownHashC(const unsigned int hash)
 {
-	return CALUMI::Utilities::HashRegistry::Get().isKnownHash(hash);
+	try
+	{
+		return CALUMI::Utilities::HashRegistry::Get().isKnownHash(hash);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Caught exception: " << e.what() << "\n";
+		return false;
+	}
 }
