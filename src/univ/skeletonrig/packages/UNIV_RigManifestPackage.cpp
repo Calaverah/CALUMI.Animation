@@ -5,14 +5,14 @@
 #include "univ/skeletonrig/packages/UNIV_RigManifestPackage.h"
 
 #include <algorithm>
+#include <iostream>
 #include <set>
+#include <source_location>
 #include <string>
 #include <vector>
 
 #include "internalplatform.h"
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
-
-//TODO: ERROR HANDLING IN EXTERN C
 
 namespace CALUMI::UNIV
 {
@@ -243,7 +243,7 @@ namespace CALUMI::UNIV
             const auto list = data["list"].toArray();
             for (uint64_t i = 0; i < list.size(); i++)
             {
-                pImpl->m_list.push_back(list.at(i).toString());
+                pImpl->m_list.emplace_back(list.at(i).toString());
             }
         }
     }
@@ -279,11 +279,20 @@ namespace CALUMI::UNIV
 int UNIVManifestRigPackage_AddPackageToSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig, const bool overwrite)
 {
     if (rig)
+    {
         try
         {
             return CALUMI::UNIV::RigManifestPackage::AddPackage(*rig, overwrite) ? 0 : 1;
         }
-        catch ( std::exception&){}
+        catch ( std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -291,11 +300,20 @@ int UNIVManifestRigPackage_AddPackageToSkeletonRigC(const CALUMI::UNIV::Skeleton
 int UNIVManifestRigPackage_RemoveRigPackageFromSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig)
 {
     if (rig)
+    {
         try
         {
             return CALUMI::UNIV::RigManifestPackage::RemovePackage(*rig) ? 0 : 1;
         }
-        catch ( std::exception&){}
+        catch ( std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -303,11 +321,20 @@ int UNIVManifestRigPackage_RemoveRigPackageFromSkeletonRigC(const CALUMI::UNIV::
 int UNIVManifestRigPackage_AddBoneC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName)
 {
     if (rig)
+    {
         try
         {
             return CALUMI::UNIV::RigManifestPackage::GetPackage(*rig).addBone(boneName) ? 0 : 1;
         }
-        catch ( std::exception&){}
+        catch ( std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -315,11 +342,20 @@ int UNIVManifestRigPackage_AddBoneC(const CALUMI::UNIV::SkeletonRig* rig, const 
 int UNIVManifestRigPackage_InsertBoneC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName, const unsigned int index)
 {
     if (rig)
+    {
         try
         {
             return CALUMI::UNIV::RigManifestPackage::GetPackage(*rig).insertBone(boneName, index) ? 0 : 1;
         }
-        catch ( std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -327,11 +363,20 @@ int UNIVManifestRigPackage_InsertBoneC(const CALUMI::UNIV::SkeletonRig* rig, con
 int UNIVManifestRigPackage_RemoveBoneC(const CALUMI::UNIV::SkeletonRig* rig, const char* boneName)
 {
     if (rig)
+    {
         try
         {
             return CALUMI::UNIV::RigManifestPackage::GetPackage(*rig).removeBone(boneName) ? 0 : 1;
         }
-        catch ( std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -339,11 +384,20 @@ int UNIVManifestRigPackage_RemoveBoneC(const CALUMI::UNIV::SkeletonRig* rig, con
 int64_t UNIVManifestRigPackage_GetCountC(const CALUMI::UNIV::SkeletonRig* rig)
 {
     if (rig)
+    {
         try
         {
-              return CALUMI::UNIV::RigManifestPackage::GetPackage(*rig).count();
+            return CALUMI::UNIV::RigManifestPackage::GetPackage(*rig).count();
         }
-        catch ( std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+    }
 
     return -1;
 }
@@ -351,11 +405,20 @@ int64_t UNIVManifestRigPackage_GetCountC(const CALUMI::UNIV::SkeletonRig* rig)
 const char* UNIVManifestRigPackage_GetBoneC(const CALUMI::UNIV::SkeletonRig* rig, const unsigned int index)
 {
     if (rig)
+    {
         try
         {
             return CALUMI::UNIV::RigManifestPackage::GetPackage(*rig).bone(index);
         }
-        catch ( std::exception&){}
+        catch (std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+    }
 
     return nullptr;
 }

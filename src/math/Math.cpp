@@ -10,9 +10,11 @@
 // ReSharper disable CppDFANullDereference
 #include "math/Math.h"
 #include <cmath>
-#include "internalplatform.h"
+#include <iostream>
+#include <ostream>
+#include <source_location>
 
-//TODO: ERROR HANDLING IN EXTERN C
+#include "internalplatform.h"
 
 namespace CALUMI::Math
 {
@@ -1961,524 +1963,1075 @@ namespace CALUMI::Math
 
 CALUMI::Math::Vector3* CreateVector3C(float x, float y, float z)
 {
-	return new CALUMI::Math::Vector3(x, y, z);
+	try
+	{
+		return new CALUMI::Math::Vector3(x, y, z);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Caught exception: " << e.what() << "\n";
+		std::cout << "Vector3 creation failed\n";
+		return nullptr;
+	}
 }
 float GetVector3XC(CALUMI::Math::Vector3* source)
 {
-	return source->x();
+	if (source)
+	{
+		try
+		{
+			return source->x();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 
 float GetVector3YC(CALUMI::Math::Vector3* source)
 {
-	return source->y();
+	if (source)
+	{
+		try
+		{
+			return source->y();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 
 float GetVector3ZC(CALUMI::Math::Vector3* source)
 {
-	return source->z();
+	if (source)
+	{
+		try
+		{
+			return source->z();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 int DeleteVector3C(const CALUMI::Math::Vector3** ptr)
 {
-	if (!ptr || !*ptr)
-		return -1;
-
-	try
+	if (!ptr)
 	{
-		delete *ptr;
-		*ptr = nullptr;
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " ptr argument is nullptr\n";
 	}
-	catch (std::bad_alloc&){}
+	else if (!*ptr)
+	{
+		std::cerr << std::source_location::current().function_name() << " *ptr argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			delete *ptr;
+			*ptr = nullptr;
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
 
 	return -1;
 }
 
 CALUMI::Math::Vector3D* CreateVector3DC(double x, double y, double z)
 {
-	return new CALUMI::Math::Vector3D(x, y, z);
+	try
+	{
+		return new CALUMI::Math::Vector3D(x, y, z);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Caught exception: " << e.what() << "\n";
+		std::cout << "Vector3D creation failed\n";
+		return nullptr;
+	}
 }
 double GetVector3DXC(CALUMI::Math::Vector3D* source)
 {
-	return source->x();
+	if (source)
+	{
+		try
+		{
+			return source->x();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
+	return std::numeric_limits<double>::quiet_NaN();
 }
 
 double GetVector3DYC(CALUMI::Math::Vector3D* source)
 {
-	return source->y();
+	if (source)
+	{
+		try
+		{
+			return source->y();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
+	return std::numeric_limits<double>::quiet_NaN();
 }
 
 double GetVector3DZC(CALUMI::Math::Vector3D* source)
 {
-	return source->z();
+	if (source)
+	{
+		try
+		{
+			return source->z();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
+	return std::numeric_limits<double>::quiet_NaN();
 }
 int DeleteVector3DC(const CALUMI::Math::Vector3D** ptr)
 {
-	if (!ptr || !*ptr)
-		return -1;
-
-	try
+	if (!ptr)
 	{
-		delete *ptr;
-		*ptr = nullptr;
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " ptr argument is nullptr\n";
 	}
-	catch (std::bad_alloc&){}
+	else if (!*ptr)
+	{
+		std::cerr << std::source_location::current().function_name() << " *ptr argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			delete *ptr;
+			*ptr = nullptr;
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
 
 	return -1;
 }
 CALUMI::Math::Vector2D* CreateVector2DC(float x, float y)
 {
-	return new CALUMI::Math::Vector2D(x, y);
+	try
+	{
+		return new CALUMI::Math::Vector2D(x, y);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Caught exception: " << e.what() << "\n";
+		std::cout << "Vector2D creation failed\n";
+		return nullptr;
+	}
 }
 double GetVector2DXC(CALUMI::Math::Vector2D* source)
 {
-	return source->x();
+	if (source)
+	{
+		try
+		{
+			return source->x();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
+	return std::numeric_limits<double>::quiet_NaN();
 }
 double GetVector2DYC(CALUMI::Math::Vector2D* source)
 {
-	return source->y();
+	if (source)
+	{
+		try
+		{
+			return source->y();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
+	return std::numeric_limits<double>::quiet_NaN();
 }
 int DeleteVector2DC(const CALUMI::Math::Vector2D** ptr)
 {
-	if (!ptr || !*ptr)
-		return -1;
-
-	try
+	if (!ptr)
 	{
-		delete *ptr;
-		*ptr = nullptr;
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " ptr argument is nullptr\n";
 	}
-	catch (std::bad_alloc&){}
+	else if (!*ptr)
+	{
+		std::cerr << std::source_location::current().function_name() << " *ptr argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			delete *ptr;
+			*ptr = nullptr;
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
 
 	return -1;
 }
 CALUMI::Math::Vector2* CreateVector2C(float x, float y)
 {
-	return new CALUMI::Math::Vector2(x,y);
+	try
+	{
+		return new CALUMI::Math::Vector2(x,y);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Caught exception: " << e.what() << "\n";
+		std::cout << "Vector2 creation failed\n";
+		return nullptr;
+	}
 }
 float GetVector2XC(CALUMI::Math::Vector2* source)
 {
-	return source->x();
+	if (source)
+	{
+		try
+		{
+			return source->x();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 float GetVector2YC(CALUMI::Math::Vector2* source)
 {
-	return source->y();
+	if (source)
+	{
+		try
+		{
+			return source->y();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 int DeleteVector2C(const CALUMI::Math::Vector2** ptr)
 {
-	if (!ptr || !*ptr)
-		return -1;
-
-	try
+	if (!ptr)
 	{
-		delete *ptr;
-		*ptr = nullptr;
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " ptr argument is nullptr\n";
 	}
-	catch (std::bad_alloc&){}
+	else if (!*ptr)
+	{
+		std::cerr << std::source_location::current().function_name() << " *ptr argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			delete *ptr;
+			*ptr = nullptr;
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
 
 	return -1;
 }
 CALUMI::Math::Quaternion* CreateQuaternionC(float x, float y, float z, float w)
 {
-	return new CALUMI::Math::Quaternion(x, y, z, w);
+	try
+	{
+		return new CALUMI::Math::Quaternion(x, y, z, w);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Caught exception: " << e.what() << "\n";
+		std::cout << "Quaternion creation failed\n";
+		return nullptr;
+	}
 }
 CALUMI::Math::Quaternion* CreateQuaternionFromEulerC(float x, float y, float z, int eulerOrder)
 {
-	const auto euler = CALUMI::Math::EulerDefinition(x,y,z,CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder));
-
-	return new CALUMI::Math::Quaternion(euler);
+	try
+	{
+		const auto euler = CALUMI::Math::EulerDefinition(x,y,z,CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder));
+		return new CALUMI::Math::Quaternion(euler);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Caught exception: " << e.what() << "\n";
+		std::cout << "Quaternion creation failed\n";
+		return nullptr;
+	}
 }
 float GetQuaternionXC(CALUMI::Math::Quaternion* source)
 {
-	return source->x();
+	if (source)
+	{
+		try
+		{
+			return source->x();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 float GetQuaternionYC(CALUMI::Math::Quaternion* source)
 {
-	return source->y();
+	if (source)
+	{
+		try
+		{
+			return source->y();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 float GetQuaternionZC(CALUMI::Math::Quaternion* source)
 {
-	return source->z();
+	if (source)
+	{
+		try
+		{
+			return source->z();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 float GetQuaternionWC(CALUMI::Math::Quaternion* source)
 {
-	return source->w();
+	if (source)
+	{
+		try
+		{
+			return source->w();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " source argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 int RotateQuaternionByAxisAngleC(CALUMI::Math::Quaternion* input, CALUMI::Math::Quaternion* result, float x, float y, float z, float radians)
 {
-	if (!input || !result)
-		return -1;
-
-	if (x == 0 && y == 0 && z == 0)
-		return 1;
-
-	try
+	if (!input)
 	{
-		const CALUMI::Math::Quaternion rotation(CALUMI::Math::Vector3(x,y,z) , radians);
-		*result = rotation * *input;
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " input argument is nullptr\n";
 	}
-	catch ( std::bad_alloc& ){}
+	else if (!result)
+	{
+		std::cerr << std::source_location::current().function_name() << " result argument is nullptr\n";
+	}
+	else
+	{
+		if (x == 0 && y == 0 && z == 0)
+			return 1;
+
+		try
+		{
+			const CALUMI::Math::Quaternion rotation(CALUMI::Math::Vector3(x,y,z) , radians);
+			*result = rotation * *input;
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
 
 	return -1;
 }
 int GetQuaternionToEulerC(CALUMI::Math::Quaternion* input, int eulerOrder, float* first, float* second, float* third)
 {
-	if (!input || !first || !second || !third)
-		return -1;
-
-	const auto euler = CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder);
-
-	try
+	if (!input)
 	{
-		const auto result = input->toEuler(euler);
-		*first = result.first();
-		*second = result.second();
-		*third = result.third();
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " input argument is nullptr\n";
 	}
-	catch ( std::bad_alloc& ){}
+	else if (!first)
+	{
+		std::cerr << std::source_location::current().function_name() << " first argument is nullptr\n";
+	}
+	else if (!second)
+	{
+		std::cerr << std::source_location::current().function_name() << " second argument is nullptr\n";
+	}
+	else if (!third)
+	{
+		std::cerr << std::source_location::current().function_name() << " third argument is nullptr\n";
+	}
+	else
+	{
+		const auto euler = CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder);
+
+		try
+		{
+			const auto result = input->toEuler(euler);
+			*first = result.first();
+			*second = result.second();
+			*third = result.third();
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+
 	return -1;
 }
 int RotateQuaternionByQuaternionC(CALUMI::Math::Quaternion* input, CALUMI::Math::Quaternion* offset, CALUMI::Math::Quaternion* result)
 {
-	if (!input || !offset || !result)
-		return -1;
-
-	try
+	if (!input)
 	{
-		*result = *input;
-		result->rotateBy(*offset);
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " input argument is nullptr\n";
 	}
-	catch (std::bad_alloc&){}
+	else if (!offset)
+	{
+		std::cerr << std::source_location::current().function_name() << " offset argument is nullptr\n";
+	}
+	else if (!result)
+	{
+		std::cerr << std::source_location::current().function_name() << " result argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			*result = *input;
+			result->rotateBy(*offset);
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+
 	return -1;
 }
 int GetQuaternionOffsetC(CALUMI::Math::Quaternion* input, CALUMI::Math::Quaternion* reference, CALUMI::Math::Quaternion* result)
 {
-	if (!input || !reference || !result)
-		return -1;
-
-	try
+	if (!input)
 	{
-		*result = CALUMI::Math::Quaternion::rotationOffset(*reference, *input);
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " input argument is nullptr\n";
 	}
-	catch (std::bad_alloc&){}
+	else if (!reference)
+	{
+		std::cerr << std::source_location::current().function_name() << " reference argument is nullptr\n";
+	}
+	else if (!result)
+	{
+		std::cerr << std::source_location::current().function_name() << " result argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			*result = CALUMI::Math::Quaternion::rotationOffset(*reference, *input);
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+
 	return -1;
 }
 int DeleteQuaternionC(const CALUMI::Math::Quaternion** ptr)
 {
-	if (!ptr || !*ptr)
-		return -1;
-
-	try
+	if (!ptr)
 	{
-		delete *ptr;
-		*ptr = nullptr;
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " ptr argument is nullptr\n";
 	}
-	catch ( std::bad_alloc&) { }
+	else if (!*ptr)
+	{
+		std::cerr << std::source_location::current().function_name() << " *ptr argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			delete *ptr;
+			*ptr = nullptr;
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
 
 	return -1;
 }
 
 int SetTransformRotationFromReferenceC(CALUMI::Math::Transform* transform, CALUMI::Math::Quaternion* reference)
 {
-	if (!transform || !reference)
-		return -1;
-
-	try
+	if (!transform)
 	{
-		transform->setRotation(*reference);
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
 	}
-	catch (std::bad_alloc&){}
+	else if (!reference)
+	{
+		std::cerr << std::source_location::current().function_name() << " reference argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			transform->setRotation(*reference);
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+
 	return -1;
 }
 
 CALUMI::Math::Vector3* GetTransformPositionC(CALUMI::Math::Transform* transform)
 {
-	if (!transform)
-		return nullptr;
+	if (transform)
+	{
+		try
+		{
+			return new CALUMI::Math::Vector3(transform->position());
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
+	}
 
-	const auto output = new CALUMI::Math::Vector3;
-	try
-	{
-		*output = transform->position();
-		return output;
-	}
-	catch (std::bad_alloc&)
-	{
-		delete output;
-	}
 	return nullptr;
 }
 
 float GetTransformPositionXC(CALUMI::Math::Transform* transform)
 {
-	constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
-
-	if (!transform)
-		return nanOutput;
-
-	try
+	if (transform)
 	{
-		return transform->position().x();
+		try
+		{
+			return transform->position().x();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
-	catch (std::bad_alloc&){}
-	return nanOutput;
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 
 float GetTransformPositionYC(CALUMI::Math::Transform* transform)
 {
-	constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
-
-	if (!transform)
-		return nanOutput;
-
-	try
+	if (transform)
 	{
-		return transform->position().y();
+		try
+		{
+			return transform->position().y();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
-	catch (std::bad_alloc&){}
-	return nanOutput;
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 
 float GetTransformPositionZC(CALUMI::Math::Transform* transform)
 {
-	constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
-
-	if (!transform)
-		return nanOutput;
-
-	try
+	if (transform)
 	{
-		return transform->position().z();
+		try
+		{
+			return transform->position().z();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
-	catch (std::bad_alloc&){}
-	return nanOutput;
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 
 CALUMI::Math::Quaternion* GetTransformRotationC(CALUMI::Math::Transform* transform)
 {
-	if (!transform)
-		return nullptr;
-
-	const auto output = new CALUMI::Math::Quaternion;
-
-	try
+	if (transform)
 	{
-		*output = transform->rotation();
-		return output;
+		try
+		{
+			return new CALUMI::Math::Quaternion(transform->rotation());
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
-	catch (std::bad_alloc&){}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
+	}
+
 	return nullptr;
 }
 
 float GetTransformRotationXC(CALUMI::Math::Transform* transform)
 {
-	constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
-
-	if (!transform)
-		return nanOutput;
-
-	try
+	if (transform)
 	{
-		return transform->rotation().x();
+		try
+		{
+			return transform->rotation().x();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
-	catch (std::bad_alloc&){}
-	return nanOutput;
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 float GetTransformRotationYC(CALUMI::Math::Transform* transform)
 {
-	constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
-
-	if (!transform)
-		return nanOutput;
-
-	try
+	if (transform)
 	{
-		return transform->rotation().y();
+		try
+		{
+			return transform->rotation().y();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
-	catch (std::bad_alloc&){}
-	return nanOutput;
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 float GetTransformRotationZC(CALUMI::Math::Transform* transform)
 {
-	constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
-
-	if (!transform)
-		return nanOutput;
-
-	try
+	if (transform)
 	{
-		return transform->rotation().z();
+		try
+		{
+			return transform->rotation().z();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
-	catch (std::bad_alloc&){}
-	return nanOutput;
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 float GetTransformRotationWC(CALUMI::Math::Transform* transform)
 {
-	constexpr float nanOutput = std::numeric_limits<float>::quiet_NaN();
-
-	if (!transform)
-		return nanOutput;
-
-	try
+	if (transform)
 	{
-		return transform->rotation().w();
+		try
+		{
+			return transform->rotation().w();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
-	catch (std::bad_alloc&){}
-	return nanOutput;
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
+	}
+
+	return std::numeric_limits<float>::quiet_NaN();
 }
 
 int GetTransformEulerRotationC(CALUMI::Math::Transform* transform, float* first, float* second, float* third, int eulerOrder)
 {
-	if (!transform || !first || !second || !third)
-		return -1;
-
-	const auto euler = CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder);
-
-	try
+	if (!transform)
 	{
-		const auto result = transform->rotation().toEuler(euler);
-		*first = result.first();
-		*second = result.second();
-		*third = result.third();
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
 	}
-	catch (std::bad_alloc&){}
+	else if (!first)
+	{
+		std::cerr << std::source_location::current().function_name() << " first argument is nullptr\n";
+	}
+	else if (!second)
+	{
+		std::cerr << std::source_location::current().function_name() << " second argument is nullptr\n";
+	}
+	else if (!third)
+	{
+		std::cerr << std::source_location::current().function_name() << " third argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			const auto euler = CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder);
+			const auto result = transform->rotation().toEuler(euler);
+			*first = result.first();
+			*second = result.second();
+			*third = result.third();
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
+
 	return -1;
 }
 
 CALUMI::Math::Transform* CreateTransformC()
 {
-	return new CALUMI::Math::Transform;
+	try
+	{
+		return new CALUMI::Math::Transform;
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Caught exception: " << e.what() << "\n";
+		std::cout << "Transform creation failed\n";
+		return nullptr;
+	}
 }
 int DeleteTransformC(const CALUMI::Math::Transform** ptr)
 {
-	if (!ptr || !*ptr)
-		return -1;
-
-	try
+	if (!ptr)
 	{
-		delete *ptr;
-		*ptr = nullptr;
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " ptr argument is nullptr\n";
 	}
-	catch (std::bad_alloc&){}
+	else if (!*ptr)
+	{
+		std::cerr << std::source_location::current().function_name() << " *ptr argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			delete *ptr;
+			*ptr = nullptr;
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
 
 	return -1;
 }
 
 int SetTransformFromReferenceC(CALUMI::Math::Transform* transform, CALUMI::Math::Transform* reference)
 {
-	if (!transform || !reference)
-		return -1;
-
-	try
+	if (!transform)
 	{
-		*transform = *reference;
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
 	}
-	catch (std::bad_alloc&){}
+	else if (!reference)
+	{
+		std::cerr << std::source_location::current().function_name() << " reference argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			*transform = *reference;
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
 
 	return -1;
 }
 
 CALUMI::Math::Transform* GetLocalTransformC(CALUMI::Math::Transform* global, CALUMI::Math::Transform* reference)
 {
-	if (!global || !reference)
-		return nullptr;
-
-	const auto output = new CALUMI::Math::Transform;
-
-	try
+	if (!global)
 	{
-		*output = global->local(*reference);
-		return output;
+		std::cerr << std::source_location::current().function_name() << " global argument is nullptr\n";
 	}
-	catch (std::bad_alloc&)
+	else if (!reference)
 	{
-		delete output;
+		std::cerr << std::source_location::current().function_name() << " reference argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			return new CALUMI::Math::Transform(global->local(*reference));
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
 
 	return nullptr;
 }
 CALUMI::Math::Transform* GetGlobalTransformC(CALUMI::Math::Transform* local, CALUMI::Math::Transform* reference)
 {
-	if (!local || !reference)
-		return nullptr;
-
-	const auto output = new CALUMI::Math::Transform;
-
-	try
+	if (!local)
 	{
-		*output = local->global(*reference);
-		return output;
+		std::cerr << std::source_location::current().function_name() << " local argument is nullptr\n";
 	}
-	catch (std::bad_alloc&)
+	else if (!reference)
 	{
-		delete output;
+		std::cerr << std::source_location::current().function_name() << " reference argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			return new CALUMI::Math::Transform(local->global(*reference));
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
 
 	return nullptr;
 }
 int SetTransformPositionC(CALUMI::Math::Transform* transform, float x, float y, float z)
 {
-	if (!transform)
-		return -1;
-
-	try
+	if (transform)
 	{
-		transform->setPosition({x,y,z});
-		return 0;
+		try
+		{
+			transform->setPosition({x,y,z});
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
-	catch (std::bad_alloc&){}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
+	}
+
 	return -1;
 }
 int SetTransformPositionFromReferenceC(CALUMI::Math::Transform* transform, CALUMI::Math::Vector3* reference)
 {
-	if (!transform || !reference)
-		return -1;
-
-	try
+	if (!transform)
 	{
-		transform->setPosition(*reference);
-		return 0;
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
 	}
-	catch (std::bad_alloc&){}
+	else if (!reference)
+	{
+		std::cerr << std::source_location::current().function_name() << " reference argument is nullptr\n";
+	}
+	else
+	{
+		try
+		{
+			transform->setPosition(*reference);
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
+	}
 
 	return -1;
 }
 int SetTransformRotationC(CALUMI::Math::Transform* transform, float x, float y, float z, float w)
 {
-	if (!transform)
-		return -1;
-
-	try
+	if (transform)
 	{
-		transform->setRotation({x,y,z,w});
-		return 0;
+		try
+		{
+			transform->setRotation({x,y,z,w});
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
-	catch (std::bad_alloc&){}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
+	}
+
 	return -1;
 }
 int SetTransformEulerRotationC(CALUMI::Math::Transform* transform, float x, float y, float z, int eulerOrder)
 {
-	if (!transform)
-		return -1;
-
-	const auto euler = CALUMI::Math::EulerDefinition(x,y,z, CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder));
-
-	try
+	if (transform)
 	{
-		transform->setRotation(euler);
-		return 0;
+		try
+		{
+			const auto euler = CALUMI::Math::EulerDefinition(x,y,z, CALUMI::Math::EulerDefinition::GetEulerOrder(eulerOrder));
+			transform->setRotation(euler);
+			return 0;
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Caught exception: " << e.what() << "\n";
+		}
 	}
-	catch (std::bad_alloc&){}
+	else
+	{
+		std::cerr << std::source_location::current().function_name() << " transform argument is nullptr\n";
+	}
+
 	return -1;
 }

@@ -1054,18 +1054,13 @@ const CALUMI::Math::Quaternion* GetGlobalSkeletonBoneRotationC(const CALUMI::UNI
 {
     if (source)
     {
-        auto output = new CALUMI::Math::Quaternion();
-
         try
         {
-            *output = source->globalTransform().rotation();
-            return output;
+            return new CALUMI::Math::Quaternion(source->globalTransform().rotation());
         }
         catch (const std::exception& e)
         {
             std::cerr << "Caught exception: " << e.what() << "\n";
-            delete output;
-            output = nullptr;
         }
     }
     else
@@ -1079,18 +1074,13 @@ const CALUMI::Math::Quaternion* GetLocalSkeletonBoneRotationC(const CALUMI::UNIV
 {
     if (source)
     {
-        auto output = new CALUMI::Math::Quaternion();
-
         try
         {
-            *output = source->localTransform().rotation();
-            return output;
+            return new CALUMI::Math::Quaternion(source->localTransform().rotation());
         }
         catch (const std::exception& e)
         {
             std::cerr << "Caught exception: " << e.what() << "\n";
-            delete output;
-            output = nullptr;
         }
     }
 
@@ -1100,18 +1090,13 @@ const CALUMI::Math::Vector3* GetGlobalSkeletonBonePositionC(const CALUMI::UNIV::
 {
     if (source)
     {
-        auto output = new CALUMI::Math::Vector3();
-
         try
         {
-            *output = source->globalTransform().position();
-            return output;
+            return new CALUMI::Math::Vector3(source->globalTransform().position());
         }
         catch (const std::exception& e)
         {
             std::cerr << "Caught exception: " << e.what() << "\n";
-            delete output;
-            output = nullptr;
         }
     }
     else
@@ -1125,18 +1110,13 @@ const CALUMI::Math::Vector3* GetLocalSkeletonBonePositionC(const CALUMI::UNIV::S
 {
     if (source)
     {
-        auto output = new CALUMI::Math::Vector3();
-
         try
         {
-            *output = source->localTransform().position();
-            return output;
+            return new CALUMI::Math::Vector3(source->localTransform().position());
         }
         catch (const std::exception& e)
         {
             std::cerr << "Caught exception: " << e.what() << "\n";
-            delete output;
-            output = nullptr;
         }
     }
     else
@@ -1150,18 +1130,13 @@ const CALUMI::Math::Transform* GetLocalSkeletonBoneTransformC(const CALUMI::UNIV
 {
     if (source)
     {
-        auto output = new CALUMI::Math::Transform();
-
         try
         {
-            *output = source->localTransform();
-            return output;
+            return new CALUMI::Math::Transform(source->localTransform());
         }
         catch (const std::exception& e)
         {
             std::cerr << "Caught exception: " << e.what() << "\n";
-            delete output;
-            output = nullptr;
         }
     }
     else
@@ -1175,18 +1150,13 @@ const CALUMI::Math::Transform* GetGlobalSkeletonBoneTransformC(const CALUMI::UNI
 {
     if (source)
     {
-        auto output = new CALUMI::Math::Transform();
-
         try
         {
-            *output = source->globalTransform();
-            return output;
+            return new CALUMI::Math::Transform(source->globalTransform());
         }
         catch (const std::exception& e)
         {
             std::cerr << "Caught exception: " << e.what() << "\n";
-            delete output;
-            output = nullptr;
         }
     }
     else

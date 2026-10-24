@@ -4,7 +4,8 @@
 
 #include "univ/skeletonrig/packages/UNIV_RigMirrorPackage.h"
 
-#include <set>
+#include <iostream>
+#include <source_location>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,8 +13,6 @@
 #include "internalplatform.h"
 #include "univ/skeletonrig/UNIV_SkeletonRig.h"
 #include "univ/skeletonrig/UNIV_IRigPackage.h"
-
-//TODO: ERROR HANDLING IN EXTERN C
 
 namespace CALUMI::UNIV
 {
@@ -217,11 +216,11 @@ namespace CALUMI::UNIV
         throw std::runtime_error("RigMirrorPackage::GetPackage() could not find nor add rig package.");
     }
 }
-    int UNIVMirrorRigPackage_AddPackageToSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig, const bool overwrite)
-    {
-        if (!rig)
-            return -1;
 
+int UNIVMirrorRigPackage_AddPackageToSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig, const bool overwrite)
+{
+    if (rig)
+    {
         try
         {
             if (CALUMI::UNIV::RigMirrorPackage::AddPackage(*rig, overwrite))
@@ -229,15 +228,23 @@ namespace CALUMI::UNIV
 
             return 1;
         }
-        catch ( const std::exception&) {}
-            return -1;
+        catch ( const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
     }
 
-    int UNIVMirrorRigPackage_RemoveRigPackageFromSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig)
-    {
-        if (!rig)
-            return -1;
+    return -1;
+}
 
+int UNIVMirrorRigPackage_RemoveRigPackageFromSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig)
+{
+    if (rig)
+    {
         try
         {
             if (CALUMI::UNIV::RigMirrorPackage::RemovePackage(*rig))
@@ -245,23 +252,27 @@ namespace CALUMI::UNIV
 
             return 1;
         }
-        catch ( const std::exception&) {}
-        return -1;
+        catch ( const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
     }
 
-    int UNIVMirrorRigPackage_AddPairToRigPackageFromSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig, const char*
-        bone1,
-        const
-        char* bone2)
-    {
-        if (!rig)
-            return -1;
+    return -1;
+}
 
+int UNIVMirrorRigPackage_AddPairToRigPackageFromSkeletonRigC(const CALUMI::UNIV::SkeletonRig* rig, const char* bone1, const char* bone2)
+{
+    if (rig)
+    {
         try
         {
             auto& mgr = rig->packageManager();
-            const auto pkg = dynamic_cast<CALUMI::UNIV::RigMirrorPackage*>(mgr.package
-                (CALUMI::UNIV::MIRROR_RIG_PACKAGE));
+            const auto pkg = dynamic_cast<CALUMI::UNIV::RigMirrorPackage*>(mgr.package(CALUMI::UNIV::MIRROR_RIG_PACKAGE));
 
             if (!pkg)
                 return 1;
@@ -269,15 +280,23 @@ namespace CALUMI::UNIV
             pkg->addPair(bone1, bone2);
             return 0;
         }
-        catch ( const std::exception&) {}
-        return -1;
+        catch ( const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
+    }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
     }
 
-    int64_t UNIVMirrorRigPackage_GetPairCountC(const CALUMI::UNIV::SkeletonRig* rig)
-    {
-        if (!rig)
-            return -1;
+    return -1;
+}
 
+int64_t UNIVMirrorRigPackage_GetPairCountC(const CALUMI::UNIV::SkeletonRig* rig)
+{
+    if (rig)
+    {
         try
         {
             auto& mgr = rig->packageManager();
@@ -289,15 +308,22 @@ namespace CALUMI::UNIV
 
             return pkg->pairCount();
         }
-        catch ( const std::exception&) {}
-        return -1;
+        catch ( const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
-    const char* UNIVMirrorRigPackage_GetFirstOfPairEntryC(const CALUMI::UNIV::SkeletonRig* rig, const unsigned int
-        index)
+    else
     {
-        if (!rig)
-            return nullptr;
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+    }
 
+    return -1;
+}
+const char* UNIVMirrorRigPackage_GetFirstOfPairEntryC(const CALUMI::UNIV::SkeletonRig* rig, const unsigned int index)
+{
+    if (rig)
+    {
         try
         {
             auto& mgr = rig->packageManager();
@@ -309,15 +335,22 @@ namespace CALUMI::UNIV
 
             return pkg->firstOfPair(index);
         }
-        catch ( const std::exception&) {}
-        return nullptr;
+            catch ( const std::exception& e)
+            {
+                std::cerr << "Caught exception: " << e.what() << "\n";
+            }
     }
-    const char* UNIVMirrorRigPackage_GetSecondOfPairEntryC(const CALUMI::UNIV::SkeletonRig* rig, const unsigned int
-        index)
+    else
     {
-        if (!rig)
-            return nullptr;
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+    }
 
+    return nullptr;
+}
+const char* UNIVMirrorRigPackage_GetSecondOfPairEntryC(const CALUMI::UNIV::SkeletonRig* rig, const unsigned int index)
+{
+    if (rig)
+    {
         try
         {
             auto& mgr = rig->packageManager();
@@ -329,6 +362,15 @@ namespace CALUMI::UNIV
 
             return pkg->secondOfPair(index);
         }
-        catch ( const std::exception&) {}
-        return nullptr;
+        catch ( const std::exception& e)
+        {
+            std::cerr << "Caught exception: " << e.what() << "\n";
+        }
     }
+    else
+    {
+        std::cerr << std::source_location::current().function_name() << " rig argument is nullptr\n";
+    }
+
+    return nullptr;
+}

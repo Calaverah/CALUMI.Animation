@@ -815,14 +815,20 @@ CALUMIANIMATION_API int DeleteVector2DC(const CALUMI::Math::Vector2D** ptr);
 CALUMIANIMATION_API CALUMI::Math::Vector3* CreateVector3C(float x, float y, float z);
 /**
  *  @brief
+ *  @param source
+ *  @return value or NaN if error
  */
 CALUMIANIMATION_API float GetVector3XC(CALUMI::Math::Vector3* source);
 /**
  *  @brief
+ *  @param source
+ *  @return value or NaN if error
  */
 CALUMIANIMATION_API float GetVector3YC(CALUMI::Math::Vector3* source);
 /**
  *  @brief
+ *  @param source
+ *  @return value or NaN if error
  */
 CALUMIANIMATION_API float GetVector3ZC(CALUMI::Math::Vector3* source);
 /**
