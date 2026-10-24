@@ -119,6 +119,12 @@ extern "C" {
 	 * @return Whether this hash key is registered with a string
 	 */
 	CALUMIANIMATION_API bool BGS_IsKnownHashC(unsigned int hash);
+
+	/**
+	 * @param string String to test
+	 * @return uint32_t (unsigned 32bit int) hash key or -1 if error
+	 */
+	CALUMIANIMATION_API int64_t BGS_RegisterHashC(const char* string);
 }
 /// @}
 /// @}

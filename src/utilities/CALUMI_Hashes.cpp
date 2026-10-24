@@ -441,3 +441,16 @@ bool BGS_IsKnownHashC(const unsigned int hash)
 		return false;
 	}
 }
+
+int64_t BGS_RegisterHashC(const char* string)
+{
+	try
+	{
+		return CALUMI::Utilities::HashRegistry::Get().registerHash(string);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Caught exception: " << e.what() << "\n";
+		return -1;
+	}
+}
