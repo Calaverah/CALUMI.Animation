@@ -56,3 +56,4 @@ namespace fmt_lib = fmt;
 #endif
 
 inline bool ShouldRunScans = false;
+inline bool ShouldRunHashScan = false;

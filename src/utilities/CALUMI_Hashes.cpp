@@ -292,7 +292,7 @@ namespace CALUMI::Utilities
 		};
 
 		///@private
-		std::unordered_map<uint32_t, std::string> _registeredHashes;
+		std::unordered_map<uint32_t, std::string> m_registeredHashes;
 	};
 
 	HashRegistry::HashRegistry() : pImpl(new Impl())
@@ -317,14 +317,14 @@ namespace CALUMI::Utilities
 		if (pImpl->m_known_string_hash_list.contains(hash))
 			return pImpl->m_known_string_hash_list.at(hash).c_str();
 
-		if (pImpl->_registeredHashes.contains(hash))
-			return pImpl->_registeredHashes.at(hash).c_str();
+		if (pImpl->m_registeredHashes.contains(hash))
+			return pImpl->m_registeredHashes.at(hash).c_str();
 
 		return nullptr;
 	}
 	bool HashRegistry::isKnownHash(const uint32_t hash) const
 	{
-		return pImpl->m_known_string_hash_list.contains(hash) || pImpl->_registeredHashes.contains(hash);
+		return pImpl->m_known_string_hash_list.contains(hash) || pImpl->m_registeredHashes.contains(hash);
 	}
 	uint32_t HashRegistry::registerHash(const char* string) const
 	{
@@ -333,9 +333,9 @@ namespace CALUMI::Utilities
 		if (pImpl->m_known_string_hash_list.contains(hash))
 			return hash;
 
-		if (!pImpl->_registeredHashes.contains(hash))
+		if (!pImpl->m_registeredHashes.contains(hash))
 		{
-			pImpl->_registeredHashes[hash] = string;
+			pImpl->m_registeredHashes[hash] = string;
 		}
 
 		return hash;
@@ -364,9 +364,9 @@ namespace CALUMI::Utilities
 	{
 		StringList output;
 
-		output.reserve(pImpl->_registeredHashes.size());
+		output.reserve(pImpl->m_registeredHashes.size());
 
-		for (auto& string : pImpl->_registeredHashes | std::views::values)
+		for (auto& string : pImpl->m_registeredHashes | std::views::values)
 		{
 			output.push_back(string.c_str());
 		}

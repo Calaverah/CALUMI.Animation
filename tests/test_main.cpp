@@ -12,6 +12,12 @@ int main (int argc, char** argv)
             ShouldRunScans = true;
             std::cout << "--Run Scans Arg Found\n";
         }
+
+        if (SCOMPARE(argv[i], "--hash") == 0)
+        {
+            ShouldRunHashScan = true;
+            std::cout << "--Run Hash Arg Found\n";
+        }
     }
     return RUN_ALL_TESTS();
 }

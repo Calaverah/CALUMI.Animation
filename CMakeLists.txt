@@ -62,21 +62,9 @@ target_include_directories(${PROJECT_NAME}
 
 enable_testing()
 
-add_executable(run_tests tests/test_main.cpp
-    tests/math/quaternion.cpp
-    tests/math/vector3.cpp
-    tests/datacompression/sequence_compression.cpp 
-    tests/mockdata/mock_sfbgs.cpp
-    tests/univ/univ_entries.cpp 
-    tests/sfbgs/datascan/sfbgs_animation_datascan.cpp
-    tests/Common.h
-    tests/sfbgs/datascan/sfbgs_rig_datascan.cpp
-    tests/sfbgs/datascan/sfbgs_common.h
-    tests/utilities/util_hash.cpp
-    tests/math/transform.cpp
-    tests/univ/univ_rig.cpp
-    tests/json/json.cpp
-)
+add_executable(run_tests tests/test_main.cpp)
+
+add_subdirectory(tests)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(run_tests PRIVATE DEBUG_BUILD)

@@ -1,0 +1,16 @@
+target_sources(run_tests
+    PRIVATE
+        math/quaternion.cpp
+        math/vector3.cpp
+        datacompression/sequence_compression.cpp
+        mockdata/mock_sfbgs.cpp
+        univ/univ_entries.cpp
+        sfbgs/datascan/sfbgs_animation_datascan.cpp
+        Common.h
+        sfbgs/datascan/sfbgs_rig_datascan.cpp
+        sfbgs/datascan/sfbgs_common.h
+        utilities/util_hash.cpp
+        math/transform.cpp
+        univ/univ_rig.cpp
+        json/json.cpp
+)

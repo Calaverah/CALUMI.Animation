@@ -1,6 +1,8 @@
+#include <filesystem>
 #include <gtest/gtest.h>
 #include "../../include/utilities/CALUMI_Hashes.h"
 #include "../Common.h"
+#include "../sfbgs/datascan/sfbgs_common.h"
 
 #define GTEST(x) TEST(HashUtil, x)
 
@@ -59,4 +61,96 @@ GTEST(RegisterHash)
     EXPECT_EQ(hash5, Utilities::HashRegistry::Get().registerHash("TestxyzHash5"));
 
     EXPECT_EQ(outputList.size(), Utilities::HashRegistry::Get().registeredStrings().size());
+}
+
+GTEST(Scan_Anim_Hash)
+{
+    std::set<uint32_t> unkHashSet;
+
+    if (!ShouldRunHashScan)
+        GTEST_SKIP();
+
+    const bool inputExists = std::filesystem::exists(SFBGS_Data::get().inputPath);
+    ASSERT_TRUE(inputExists);
+
+    if (!inputExists)
+        GTEST_SKIP() << "File path: "<< SFBGS_Data::get().inputPath << " could not be found.";
+
+    std::filesystem::path dataPath;
+
+    if (std::ifstream dataDirInput(SFBGS_Data::get().inputPath); dataDirInput.is_open())
+    {
+        std::stringstream buffer;
+        buffer << dataDirInput.rdbuf();
+
+        const std::string content = buffer.str();
+
+        dataDirInput.close();
+
+        ASSERT_FALSE(content.empty());
+
+        dataPath = content;
+    }
+    else
+    {
+        GTEST_SKIP() << "Getting filepath failed.";
+    }
+
+    if (!std::filesystem::exists(dataPath))
+        GTEST_SKIP() << "Data Path: " << dataPath.string() << " Not Found";
+
+    if (!std::filesystem::is_directory(dataPath))
+        GTEST_SKIP() << "Data Path: " << dataPath.string() << " Is Not Directory";
+
+    const std::filesystem::path meshesPath = dataPath.string() + "/meshes";
+
+    std::cout << "\tScanning " << _YELLOW(meshesPath.string()) << " for .af files\n";
+
+    uint64_t filesFound = 0;
+
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(meshesPath))
+    {
+        if (!std::filesystem::is_regular_file(entry.path()) || entry.path().extension() != SFBGS_Data::get().afExt)
+            continue;
+
+        filesFound++;
+
+        SFBGS::Animation anim;
+
+        ASSERT_FALSE(anim.readFromFile(entry.path().c_str()).hasError());
+
+        if (!anim.amendedHashSet().empty())
+        {
+            for (int i = 0; i < anim.amendedHashSet().size(); ++i)
+            {
+                if (const auto hash = anim.amendedHashSet().at(i); !Utilities::HashRegistry::Get().isKnownHash(hash))
+                    unkHashSet.insert(hash);
+            }
+        }
+    }
+
+
+    std::cout << "\tUnknowns:\n";
+    for (const auto& entry : unkHashSet)
+    {
+        std::cout << "\tUnk Hash: " << entry << "\n";
+    }
+
+    std::cout << "\tScanned " << _BMAGENTA(filesFound) << " files from " << _YELLOW(meshesPath.string()) << "\n";
+
+    const std::filesystem::path niNodeListPath = "D:/output/ninodes_names.dat";
+
+    if (std::ifstream niNodeStream(niNodeListPath); niNodeStream.is_open())
+    {
+        std::string line;
+        while (std::getline(niNodeStream, line))
+        {
+            const auto hash = Utilities::HashRegistry::CalculateHash(line.c_str());
+            if (unkHashSet.contains(hash))
+            {
+                std::cout << "\t\t{" << hash << "UL, \"" << line << "},\"\n";
+            }
+        }
+    }
+
 }
