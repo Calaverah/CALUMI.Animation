@@ -345,6 +345,26 @@ GTEST(Rig00Reconversion)
 	}
 }
 
+GTEST(RigGlobalQuaternionHemisphereRoundTrip)
+{
+	SFBGS::SkeletonRig source = SampleSFBGSData::get().sfbgsRig00;
+	const Math::Quaternion sourceLocal = source.boneEntries().at(1).localRotation();
+	const Math::Quaternion sourceGlobal = -source.boneEntries().at(1).globalRotation();
+	source.boneEntries().at(1).globalRotation() = sourceGlobal;
+
+	const UNIV::SkeletonRig univ = source.convertToUniversalRig();
+	const SFBGS::SkeletonRig roundTripped(univ);
+
+	EXPECT_QUATNEAR(roundTripped.boneEntries().at(1).localRotation(), sourceLocal, 0.000001f);
+	EXPECT_QUATNEAR(roundTripped.boneEntries().at(1).globalRotation(), sourceGlobal, 0.000001f);
+
+	const UNIV::SkeletonRig restored(univ.toJson());
+	const SFBGS::SkeletonRig jsonRoundTripped(restored);
+
+	EXPECT_QUATNEAR(jsonRoundTripped.boneEntries().at(1).localRotation(), sourceLocal, 0.000001f);
+	EXPECT_QUATNEAR(jsonRoundTripped.boneEntries().at(1).globalRotation(), sourceGlobal, 0.000001f);
+}
+
 GTEST(Rig00Json)
 {
 	const std::filesystem::path json00Path = "assets/00/skeleton.json";

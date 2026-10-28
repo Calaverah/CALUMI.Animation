@@ -56,3 +56,24 @@ GTEST(TransformConversion)
     EXPECT_QUATNEAR(relative.rotation(), expectedRelative.rotation(), 0.000001f);
     EXPECT_VEC3NEAR(relative.position(), expectedRelative.position(), 0.000005f);
 }
+
+GTEST(TransformQuaternionOrder)
+{
+    const Transform root(
+        Vector3(),
+        Quaternion(Vector3::UnitZ, ToRadians(90.0))
+    );
+    const Transform child(
+        Vector3(),
+        Quaternion(Vector3::UnitX, ToRadians(45.0))
+    );
+
+    const Quaternion expectedGlobal = root.rotation() * child.rotation();
+    const Transform childGlobal = child.global(root);
+
+    EXPECT_QUATNEAR(childGlobal.rotation(), expectedGlobal, 0.000001f);
+
+    const Transform recoveredLocal = childGlobal.local(root);
+
+    EXPECT_QUATNEAR(recoveredLocal.rotation(), child.rotation(), 0.000001f);
+}
